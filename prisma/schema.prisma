@@ -35,6 +35,14 @@ model User {
   accounts      Account[]
   posts         Post[]
 
+  properties      Property[]
+  policies        Policy[]
+  investments     Investment[]
+  loans           Loan[]
+  financialEvents FinancialEvent[]
+  reminders       Reminder[]
+  documents       Document[]
+
   @@map("user")
 }
 
@@ -80,4 +88,439 @@ model Verification {
   updatedAt  DateTime @updatedAt
 
   @@map("verification")
+}
+
+// ---------------------------------------------------------------------------
+// Domain models — Personal Asset & Reminder Hub
+// See property-management-platform-scope.md §7 (High-Level Data Model)
+// ---------------------------------------------------------------------------
+
+enum PropertyType {
+  SELF_OCCUPIED
+  RENTED
+  UNDER_CONSTRUCTION
+  INVESTMENT
+}
+
+enum OccupancyStatus {
+  VACANT
+  OCCUPIED
+  UNDER_MAINTENANCE
+}
+
+enum BillType {
+  ELECTRICITY
+  WATER
+  PROPERTY_TAX
+  MAINTENANCE
+  GAS
+  OTHER
+}
+
+enum PaymentStatus {
+  DUE
+  PAID
+  OVERDUE
+  PARTIALLY_PAID
+}
+
+enum PolicyType {
+  TERM_LIFE
+  ENDOWMENT
+  MONEY_BACK
+  ULIP
+  HEALTH
+  VEHICLE
+  HOME
+}
+
+enum PolicyStatus {
+  ACTIVE
+  LAPSED
+  MATURED
+  CLAIMED
+  CANCELLED
+}
+
+enum PremiumFrequency {
+  MONTHLY
+  QUARTERLY
+  HALF_YEARLY
+  YEARLY
+  SINGLE
+}
+
+enum ClaimStatus {
+  FILED
+  APPROVED
+  REJECTED
+  SETTLED
+}
+
+enum InvestmentType {
+  PROPERTY
+  FIXED_DEPOSIT
+  RECURRING_DEPOSIT
+  MUTUAL_FUND
+  STOCKS
+  GOLD
+  BUSINESS
+  PPF
+  NPS
+}
+
+enum LoanType {
+  HOME_LOAN
+  LOAN_AGAINST_PROPERTY
+  PERSONAL_LOAN
+  VEHICLE_LOAN
+  EDUCATION_LOAN
+  GOLD_LOAN
+}
+
+enum LinkedAssetType {
+  PROPERTY
+  POLICY
+  INVESTMENT
+  NONE
+}
+
+enum FinancialEventType {
+  INFLOW
+  OUTFLOW
+}
+
+enum FinancialEventSource {
+  RENT
+  BILL
+  PREMIUM
+  PAYOUT
+  EMI
+  RETURN
+  CLAIM_SETTLEMENT
+}
+
+enum ReminderChannel {
+  EMAIL
+  PUSH
+  WHATSAPP
+  SMS
+}
+
+enum ReminderStatus {
+  PENDING
+  SENT
+  SNOOZED
+  DONE
+  DISMISSED
+}
+
+enum DocumentOwnerType {
+  PROPERTY
+  ROOM
+  TENANT
+  POLICY
+  CLAIM
+  INVESTMENT
+  LOAN
+}
+
+model Property {
+  id                    String       @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId               String       @db.ObjectId
+  owner                 User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                  String
+  type                  PropertyType
+  addressLine1          String
+  addressLine2          String?
+  city                  String
+  state                 String
+  pinCode               String
+  country               String       @default("India")
+  purchasePrice         Float?
+  currentEstimatedValue Float?
+  purchaseDate          DateTime?
+  photos                String[]
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+
+  rooms        Room[]
+  tenants      Tenant[]
+  rentPayments RentPayment[]
+  bills        Bill[]
+
+  @@index([ownerId])
+}
+
+model Room {
+  id              String          @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId      String          @db.ObjectId
+  property        Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  label           String
+  floor           String?
+  areaSqft        Float?
+  occupancyStatus OccupancyStatus @default(VACANT)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  tenants Tenant[]
+
+  @@index([propertyId])
+}
+
+model Tenant {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId    String    @db.ObjectId
+  property      Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  roomId        String?   @db.ObjectId
+  room          Room?     @relation(fields: [roomId], references: [id])
+  name          String
+  phone         String
+  email         String?
+  leaseStart    DateTime
+  leaseEnd      DateTime?
+  rentAmount    Float
+  depositAmount Float
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  rentPayments RentPayment[]
+
+  @@index([propertyId])
+  @@index([roomId])
+}
+
+model RentPayment {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId String        @db.ObjectId
+  property   Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  tenantId   String        @db.ObjectId
+  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  dueDate    DateTime
+  amount     Float
+  status     PaymentStatus @default(DUE)
+  paidDate   DateTime?
+  paidAmount Float?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([propertyId])
+  @@index([tenantId])
+}
+
+model Bill {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId String        @db.ObjectId
+  property   Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  type       BillType
+  dueDate    DateTime
+  amount     Float
+  status     PaymentStatus @default(DUE)
+  paidDate   DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([propertyId])
+}
+
+model Policy {
+  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId             String       @db.ObjectId
+  owner               User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  type                PolicyType
+  insurer             String
+  policyNumber        String
+  holderName          String
+  nominees            String[]
+  startDate           DateTime
+  tenureYears         Int?
+  status              PolicyStatus @default(ACTIVE)
+  sumAssured          Float?
+  roomRentLimit       Float?
+  coPayPercent        Float?
+  waitingPeriodMonths Int?
+  networkHospitals    String[]
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+
+  premiumPayments PremiumPayment[]
+  payouts         Payout[]
+  claims          Claim[]
+
+  @@index([ownerId])
+}
+
+model PremiumPayment {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  policyId        String           @db.ObjectId
+  policy          Policy           @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  amount          Float
+  frequency       PremiumFrequency
+  dueDate         DateTime
+  gracePeriodDays Int?
+  status          PaymentStatus    @default(DUE)
+  paidDate        DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  @@index([policyId])
+}
+
+model Payout {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  policyId     String        @db.ObjectId
+  policy       Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  label        String
+  expectedDate DateTime
+  amount       Float
+  status       PaymentStatus @default(DUE)
+  receivedDate DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([policyId])
+}
+
+model Claim {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  policyId      String      @db.ObjectId
+  policy        Policy      @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  filedDate     DateTime
+  amount        Float
+  status        ClaimStatus @default(FILED)
+  settledAmount Float?
+  settledDate   DateTime?
+  description   String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([policyId])
+}
+
+model Investment {
+  id                    String         @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId               String         @db.ObjectId
+  owner                 User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name                  String
+  type                  InvestmentType
+  institution           String?
+  investedDate          DateTime
+  capitalDeployed       Float
+  expectedReturnType    String?
+  expectedReturnDate    DateTime?
+  targetRoiPercent      Float?
+  currentEstimatedValue Float?
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+
+  returns Return[]
+
+  @@index([ownerId])
+}
+
+model Return {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  investmentId String     @db.ObjectId
+  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  date         DateTime
+  amount       Float
+  label        String
+  createdAt    DateTime   @default(now())
+
+  @@index([investmentId])
+}
+
+model Loan {
+  id                  String          @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId             String          @db.ObjectId
+  owner               User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  lender              String
+  type                LoanType
+  principal           Float
+  interestRatePercent Float
+  tenureMonths        Int
+  emiAmount           Float
+  emiDueDay           Int
+  startDate           DateTime
+  outstandingBalance  Float
+  linkedAssetType     LinkedAssetType @default(NONE)
+  linkedAssetId       String?         @db.ObjectId
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+
+  emiPayments EMIPayment[]
+
+  @@index([ownerId])
+}
+
+model EMIPayment {
+  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
+  loanId             String        @db.ObjectId
+  loan               Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  installmentNumber  Int
+  dueDate            DateTime
+  principalComponent Float
+  interestComponent  Float
+  amount             Float
+  status             PaymentStatus @default(DUE)
+  paidDate           DateTime?
+  createdAt          DateTime      @default(now())
+
+  @@index([loanId])
+}
+
+model FinancialEvent {
+  id          String               @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String               @db.ObjectId
+  owner       User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  type        FinancialEventType
+  source      FinancialEventSource
+  sourceId    String               @db.ObjectId
+  amount      Float
+  dueDate     DateTime
+  status      PaymentStatus        @default(DUE)
+  description String?
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  reminders Reminder[]
+
+  @@index([ownerId])
+  @@index([dueDate])
+}
+
+model Reminder {
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId          String            @db.ObjectId
+  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  financialEventId String?           @db.ObjectId
+  financialEvent   FinancialEvent?   @relation(fields: [financialEventId], references: [id])
+  title            String
+  dueDate          DateTime
+  leadTimeDays     Int               @default(7)
+  escalationDays   Int[]
+  channels         ReminderChannel[]
+  status           ReminderStatus    @default(PENDING)
+  lastSentAt       DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  @@index([ownerId])
+  @@index([financialEventId])
+}
+
+model Document {
+  id         String            @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId    String            @db.ObjectId
+  owner      User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerType  DocumentOwnerType
+  ownerRefId String            @db.ObjectId
+  fileName   String
+  fileUrl    String
+  mimeType   String?
+  uploadedAt DateTime          @default(now())
+
+  @@index([ownerId])
+  @@index([ownerType, ownerRefId])
 }

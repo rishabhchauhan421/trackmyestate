@@ -140,6 +140,231 @@ exports.Prisma.VerificationScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.PropertyScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  name: 'name',
+  type: 'type',
+  addressLine1: 'addressLine1',
+  addressLine2: 'addressLine2',
+  city: 'city',
+  state: 'state',
+  pinCode: 'pinCode',
+  country: 'country',
+  purchasePrice: 'purchasePrice',
+  currentEstimatedValue: 'currentEstimatedValue',
+  purchaseDate: 'purchaseDate',
+  photos: 'photos',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RoomScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  label: 'label',
+  floor: 'floor',
+  areaSqft: 'areaSqft',
+  occupancyStatus: 'occupancyStatus',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.TenantScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  roomId: 'roomId',
+  name: 'name',
+  phone: 'phone',
+  email: 'email',
+  leaseStart: 'leaseStart',
+  leaseEnd: 'leaseEnd',
+  rentAmount: 'rentAmount',
+  depositAmount: 'depositAmount',
+  active: 'active',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RentPaymentScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  tenantId: 'tenantId',
+  dueDate: 'dueDate',
+  amount: 'amount',
+  status: 'status',
+  paidDate: 'paidDate',
+  paidAmount: 'paidAmount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BillScalarFieldEnum = {
+  id: 'id',
+  propertyId: 'propertyId',
+  type: 'type',
+  dueDate: 'dueDate',
+  amount: 'amount',
+  status: 'status',
+  paidDate: 'paidDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PolicyScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  type: 'type',
+  insurer: 'insurer',
+  policyNumber: 'policyNumber',
+  holderName: 'holderName',
+  nominees: 'nominees',
+  startDate: 'startDate',
+  tenureYears: 'tenureYears',
+  status: 'status',
+  sumAssured: 'sumAssured',
+  roomRentLimit: 'roomRentLimit',
+  coPayPercent: 'coPayPercent',
+  waitingPeriodMonths: 'waitingPeriodMonths',
+  networkHospitals: 'networkHospitals',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PremiumPaymentScalarFieldEnum = {
+  id: 'id',
+  policyId: 'policyId',
+  amount: 'amount',
+  frequency: 'frequency',
+  dueDate: 'dueDate',
+  gracePeriodDays: 'gracePeriodDays',
+  status: 'status',
+  paidDate: 'paidDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PayoutScalarFieldEnum = {
+  id: 'id',
+  policyId: 'policyId',
+  label: 'label',
+  expectedDate: 'expectedDate',
+  amount: 'amount',
+  status: 'status',
+  receivedDate: 'receivedDate',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClaimScalarFieldEnum = {
+  id: 'id',
+  policyId: 'policyId',
+  filedDate: 'filedDate',
+  amount: 'amount',
+  status: 'status',
+  settledAmount: 'settledAmount',
+  settledDate: 'settledDate',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.InvestmentScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  name: 'name',
+  type: 'type',
+  institution: 'institution',
+  investedDate: 'investedDate',
+  capitalDeployed: 'capitalDeployed',
+  expectedReturnType: 'expectedReturnType',
+  expectedReturnDate: 'expectedReturnDate',
+  targetRoiPercent: 'targetRoiPercent',
+  currentEstimatedValue: 'currentEstimatedValue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReturnScalarFieldEnum = {
+  id: 'id',
+  investmentId: 'investmentId',
+  date: 'date',
+  amount: 'amount',
+  label: 'label',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.LoanScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  lender: 'lender',
+  type: 'type',
+  principal: 'principal',
+  interestRatePercent: 'interestRatePercent',
+  tenureMonths: 'tenureMonths',
+  emiAmount: 'emiAmount',
+  emiDueDay: 'emiDueDay',
+  startDate: 'startDate',
+  outstandingBalance: 'outstandingBalance',
+  linkedAssetType: 'linkedAssetType',
+  linkedAssetId: 'linkedAssetId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EMIPaymentScalarFieldEnum = {
+  id: 'id',
+  loanId: 'loanId',
+  installmentNumber: 'installmentNumber',
+  dueDate: 'dueDate',
+  principalComponent: 'principalComponent',
+  interestComponent: 'interestComponent',
+  amount: 'amount',
+  status: 'status',
+  paidDate: 'paidDate',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.FinancialEventScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  type: 'type',
+  source: 'source',
+  sourceId: 'sourceId',
+  amount: 'amount',
+  dueDate: 'dueDate',
+  status: 'status',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ReminderScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  financialEventId: 'financialEventId',
+  title: 'title',
+  dueDate: 'dueDate',
+  leadTimeDays: 'leadTimeDays',
+  escalationDays: 'escalationDays',
+  channels: 'channels',
+  status: 'status',
+  lastSentAt: 'lastSentAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.DocumentScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  ownerType: 'ownerType',
+  ownerRefId: 'ownerRefId',
+  fileName: 'fileName',
+  fileUrl: 'fileUrl',
+  mimeType: 'mimeType',
+  uploadedAt: 'uploadedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -149,14 +374,158 @@ exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 };
+exports.PropertyType = exports.$Enums.PropertyType = {
+  SELF_OCCUPIED: 'SELF_OCCUPIED',
+  RENTED: 'RENTED',
+  UNDER_CONSTRUCTION: 'UNDER_CONSTRUCTION',
+  INVESTMENT: 'INVESTMENT'
+};
 
+exports.OccupancyStatus = exports.$Enums.OccupancyStatus = {
+  VACANT: 'VACANT',
+  OCCUPIED: 'OCCUPIED',
+  UNDER_MAINTENANCE: 'UNDER_MAINTENANCE'
+};
+
+exports.BillType = exports.$Enums.BillType = {
+  ELECTRICITY: 'ELECTRICITY',
+  WATER: 'WATER',
+  PROPERTY_TAX: 'PROPERTY_TAX',
+  MAINTENANCE: 'MAINTENANCE',
+  GAS: 'GAS',
+  OTHER: 'OTHER'
+};
+
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  DUE: 'DUE',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE',
+  PARTIALLY_PAID: 'PARTIALLY_PAID'
+};
+
+exports.PolicyType = exports.$Enums.PolicyType = {
+  TERM_LIFE: 'TERM_LIFE',
+  ENDOWMENT: 'ENDOWMENT',
+  MONEY_BACK: 'MONEY_BACK',
+  ULIP: 'ULIP',
+  HEALTH: 'HEALTH',
+  VEHICLE: 'VEHICLE',
+  HOME: 'HOME'
+};
+
+exports.PolicyStatus = exports.$Enums.PolicyStatus = {
+  ACTIVE: 'ACTIVE',
+  LAPSED: 'LAPSED',
+  MATURED: 'MATURED',
+  CLAIMED: 'CLAIMED',
+  CANCELLED: 'CANCELLED'
+};
+
+exports.PremiumFrequency = exports.$Enums.PremiumFrequency = {
+  MONTHLY: 'MONTHLY',
+  QUARTERLY: 'QUARTERLY',
+  HALF_YEARLY: 'HALF_YEARLY',
+  YEARLY: 'YEARLY',
+  SINGLE: 'SINGLE'
+};
+
+exports.ClaimStatus = exports.$Enums.ClaimStatus = {
+  FILED: 'FILED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  SETTLED: 'SETTLED'
+};
+
+exports.InvestmentType = exports.$Enums.InvestmentType = {
+  PROPERTY: 'PROPERTY',
+  FIXED_DEPOSIT: 'FIXED_DEPOSIT',
+  RECURRING_DEPOSIT: 'RECURRING_DEPOSIT',
+  MUTUAL_FUND: 'MUTUAL_FUND',
+  STOCKS: 'STOCKS',
+  GOLD: 'GOLD',
+  BUSINESS: 'BUSINESS',
+  PPF: 'PPF',
+  NPS: 'NPS'
+};
+
+exports.LoanType = exports.$Enums.LoanType = {
+  HOME_LOAN: 'HOME_LOAN',
+  LOAN_AGAINST_PROPERTY: 'LOAN_AGAINST_PROPERTY',
+  PERSONAL_LOAN: 'PERSONAL_LOAN',
+  VEHICLE_LOAN: 'VEHICLE_LOAN',
+  EDUCATION_LOAN: 'EDUCATION_LOAN',
+  GOLD_LOAN: 'GOLD_LOAN'
+};
+
+exports.LinkedAssetType = exports.$Enums.LinkedAssetType = {
+  PROPERTY: 'PROPERTY',
+  POLICY: 'POLICY',
+  INVESTMENT: 'INVESTMENT',
+  NONE: 'NONE'
+};
+
+exports.FinancialEventType = exports.$Enums.FinancialEventType = {
+  INFLOW: 'INFLOW',
+  OUTFLOW: 'OUTFLOW'
+};
+
+exports.FinancialEventSource = exports.$Enums.FinancialEventSource = {
+  RENT: 'RENT',
+  BILL: 'BILL',
+  PREMIUM: 'PREMIUM',
+  PAYOUT: 'PAYOUT',
+  EMI: 'EMI',
+  RETURN: 'RETURN',
+  CLAIM_SETTLEMENT: 'CLAIM_SETTLEMENT'
+};
+
+exports.ReminderChannel = exports.$Enums.ReminderChannel = {
+  EMAIL: 'EMAIL',
+  PUSH: 'PUSH',
+  WHATSAPP: 'WHATSAPP',
+  SMS: 'SMS'
+};
+
+exports.ReminderStatus = exports.$Enums.ReminderStatus = {
+  PENDING: 'PENDING',
+  SENT: 'SENT',
+  SNOOZED: 'SNOOZED',
+  DONE: 'DONE',
+  DISMISSED: 'DISMISSED'
+};
+
+exports.DocumentOwnerType = exports.$Enums.DocumentOwnerType = {
+  PROPERTY: 'PROPERTY',
+  ROOM: 'ROOM',
+  TENANT: 'TENANT',
+  POLICY: 'POLICY',
+  CLAIM: 'CLAIM',
+  INVESTMENT: 'INVESTMENT',
+  LOAN: 'LOAN'
+};
 
 exports.Prisma.ModelName = {
   Post: 'Post',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
-  Verification: 'Verification'
+  Verification: 'Verification',
+  Property: 'Property',
+  Room: 'Room',
+  Tenant: 'Tenant',
+  RentPayment: 'RentPayment',
+  Bill: 'Bill',
+  Policy: 'Policy',
+  PremiumPayment: 'PremiumPayment',
+  Payout: 'Payout',
+  Claim: 'Claim',
+  Investment: 'Investment',
+  Return: 'Return',
+  Loan: 'Loan',
+  EMIPayment: 'EMIPayment',
+  FinancialEvent: 'FinancialEvent',
+  Reminder: 'Reminder',
+  Document: 'Document'
 };
 /**
  * Create the Client
@@ -206,13 +575,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// Prisma schema for Better Auth\n// learn more: https://better-auth.com/docs/concepts/database\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mongodb\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Post {\n  id        String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  name      String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  createdBy   User   @relation(fields: [createdById], references: [id])\n  createdById String @db.ObjectId\n\n  @@index([name])\n}\n\nmodel User {\n  id            String    @id @default(auto()) @map(\"_id\") @db.ObjectId\n  name          String\n  email         String    @unique\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  sessions      Session[]\n  accounts      Account[]\n  posts         Post[]\n\n  @@map(\"user\")\n}\n\nmodel Session {\n  id        String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  expiresAt DateTime\n  token     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String   @db.ObjectId\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"session\")\n}\n\nmodel Account {\n  id                    String    @id @default(auto()) @map(\"_id\") @db.ObjectId\n  accountId             String\n  providerId            String\n  userId                String    @db.ObjectId\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@map(\"account\")\n}\n\nmodel Verification {\n  id         String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@map(\"verification\")\n}\n",
-  "inlineSchemaHash": "850ca23b4cf57265d155e91797a4d1d2a408e31b42c7fddbca301b58b37ba457",
+  "inlineSchema": "// Prisma schema for Better Auth\n// learn more: https://better-auth.com/docs/concepts/database\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mongodb\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Post {\n  id        String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  name      String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n\n  createdBy   User   @relation(fields: [createdById], references: [id])\n  createdById String @db.ObjectId\n\n  @@index([name])\n}\n\nmodel User {\n  id            String    @id @default(auto()) @map(\"_id\") @db.ObjectId\n  name          String\n  email         String    @unique\n  emailVerified Boolean   @default(false)\n  image         String?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  sessions      Session[]\n  accounts      Account[]\n  posts         Post[]\n\n  properties      Property[]\n  policies        Policy[]\n  investments     Investment[]\n  loans           Loan[]\n  financialEvents FinancialEvent[]\n  reminders       Reminder[]\n  documents       Document[]\n\n  @@map(\"user\")\n}\n\nmodel Session {\n  id        String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  expiresAt DateTime\n  token     String   @unique\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  ipAddress String?\n  userAgent String?\n  userId    String   @db.ObjectId\n  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)\n\n  @@map(\"session\")\n}\n\nmodel Account {\n  id                    String    @id @default(auto()) @map(\"_id\") @db.ObjectId\n  accountId             String\n  providerId            String\n  userId                String    @db.ObjectId\n  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)\n  accessToken           String?\n  refreshToken          String?\n  idToken               String?\n  accessTokenExpiresAt  DateTime?\n  refreshTokenExpiresAt DateTime?\n  scope                 String?\n  password              String?\n  createdAt             DateTime  @default(now())\n  updatedAt             DateTime  @updatedAt\n\n  @@map(\"account\")\n}\n\nmodel Verification {\n  id         String   @id @default(auto()) @map(\"_id\") @db.ObjectId\n  identifier String\n  value      String\n  expiresAt  DateTime\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n\n  @@map(\"verification\")\n}\n\n// ---------------------------------------------------------------------------\n// Domain models — Personal Asset & Reminder Hub\n// See property-management-platform-scope.md §7 (High-Level Data Model)\n// ---------------------------------------------------------------------------\n\nenum PropertyType {\n  SELF_OCCUPIED\n  RENTED\n  UNDER_CONSTRUCTION\n  INVESTMENT\n}\n\nenum OccupancyStatus {\n  VACANT\n  OCCUPIED\n  UNDER_MAINTENANCE\n}\n\nenum BillType {\n  ELECTRICITY\n  WATER\n  PROPERTY_TAX\n  MAINTENANCE\n  GAS\n  OTHER\n}\n\nenum PaymentStatus {\n  DUE\n  PAID\n  OVERDUE\n  PARTIALLY_PAID\n}\n\nenum PolicyType {\n  TERM_LIFE\n  ENDOWMENT\n  MONEY_BACK\n  ULIP\n  HEALTH\n  VEHICLE\n  HOME\n}\n\nenum PolicyStatus {\n  ACTIVE\n  LAPSED\n  MATURED\n  CLAIMED\n  CANCELLED\n}\n\nenum PremiumFrequency {\n  MONTHLY\n  QUARTERLY\n  HALF_YEARLY\n  YEARLY\n  SINGLE\n}\n\nenum ClaimStatus {\n  FILED\n  APPROVED\n  REJECTED\n  SETTLED\n}\n\nenum InvestmentType {\n  PROPERTY\n  FIXED_DEPOSIT\n  RECURRING_DEPOSIT\n  MUTUAL_FUND\n  STOCKS\n  GOLD\n  BUSINESS\n  PPF\n  NPS\n}\n\nenum LoanType {\n  HOME_LOAN\n  LOAN_AGAINST_PROPERTY\n  PERSONAL_LOAN\n  VEHICLE_LOAN\n  EDUCATION_LOAN\n  GOLD_LOAN\n}\n\nenum LinkedAssetType {\n  PROPERTY\n  POLICY\n  INVESTMENT\n  NONE\n}\n\nenum FinancialEventType {\n  INFLOW\n  OUTFLOW\n}\n\nenum FinancialEventSource {\n  RENT\n  BILL\n  PREMIUM\n  PAYOUT\n  EMI\n  RETURN\n  CLAIM_SETTLEMENT\n}\n\nenum ReminderChannel {\n  EMAIL\n  PUSH\n  WHATSAPP\n  SMS\n}\n\nenum ReminderStatus {\n  PENDING\n  SENT\n  SNOOZED\n  DONE\n  DISMISSED\n}\n\nenum DocumentOwnerType {\n  PROPERTY\n  ROOM\n  TENANT\n  POLICY\n  CLAIM\n  INVESTMENT\n  LOAN\n}\n\nmodel Property {\n  id                    String       @id @default(auto()) @map(\"_id\") @db.ObjectId\n  ownerId               String       @db.ObjectId\n  owner                 User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  name                  String\n  type                  PropertyType\n  addressLine1          String\n  addressLine2          String?\n  city                  String\n  state                 String\n  pinCode               String\n  country               String       @default(\"India\")\n  purchasePrice         Float?\n  currentEstimatedValue Float?\n  purchaseDate          DateTime?\n  photos                String[]\n  createdAt             DateTime     @default(now())\n  updatedAt             DateTime     @updatedAt\n\n  rooms        Room[]\n  tenants      Tenant[]\n  rentPayments RentPayment[]\n  bills        Bill[]\n\n  @@index([ownerId])\n}\n\nmodel Room {\n  id              String          @id @default(auto()) @map(\"_id\") @db.ObjectId\n  propertyId      String          @db.ObjectId\n  property        Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)\n  label           String\n  floor           String?\n  areaSqft        Float?\n  occupancyStatus OccupancyStatus @default(VACANT)\n  createdAt       DateTime        @default(now())\n  updatedAt       DateTime        @updatedAt\n\n  tenants Tenant[]\n\n  @@index([propertyId])\n}\n\nmodel Tenant {\n  id            String    @id @default(auto()) @map(\"_id\") @db.ObjectId\n  propertyId    String    @db.ObjectId\n  property      Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)\n  roomId        String?   @db.ObjectId\n  room          Room?     @relation(fields: [roomId], references: [id])\n  name          String\n  phone         String\n  email         String?\n  leaseStart    DateTime\n  leaseEnd      DateTime?\n  rentAmount    Float\n  depositAmount Float\n  active        Boolean   @default(true)\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n\n  rentPayments RentPayment[]\n\n  @@index([propertyId])\n  @@index([roomId])\n}\n\nmodel RentPayment {\n  id         String        @id @default(auto()) @map(\"_id\") @db.ObjectId\n  propertyId String        @db.ObjectId\n  property   Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)\n  tenantId   String        @db.ObjectId\n  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)\n  dueDate    DateTime\n  amount     Float\n  status     PaymentStatus @default(DUE)\n  paidDate   DateTime?\n  paidAmount Float?\n  createdAt  DateTime      @default(now())\n  updatedAt  DateTime      @updatedAt\n\n  @@index([propertyId])\n  @@index([tenantId])\n}\n\nmodel Bill {\n  id         String        @id @default(auto()) @map(\"_id\") @db.ObjectId\n  propertyId String        @db.ObjectId\n  property   Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)\n  type       BillType\n  dueDate    DateTime\n  amount     Float\n  status     PaymentStatus @default(DUE)\n  paidDate   DateTime?\n  createdAt  DateTime      @default(now())\n  updatedAt  DateTime      @updatedAt\n\n  @@index([propertyId])\n}\n\nmodel Policy {\n  id                  String       @id @default(auto()) @map(\"_id\") @db.ObjectId\n  ownerId             String       @db.ObjectId\n  owner               User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  type                PolicyType\n  insurer             String\n  policyNumber        String\n  holderName          String\n  nominees            String[]\n  startDate           DateTime\n  tenureYears         Int?\n  status              PolicyStatus @default(ACTIVE)\n  sumAssured          Float?\n  roomRentLimit       Float?\n  coPayPercent        Float?\n  waitingPeriodMonths Int?\n  networkHospitals    String[]\n  createdAt           DateTime     @default(now())\n  updatedAt           DateTime     @updatedAt\n\n  premiumPayments PremiumPayment[]\n  payouts         Payout[]\n  claims          Claim[]\n\n  @@index([ownerId])\n}\n\nmodel PremiumPayment {\n  id              String           @id @default(auto()) @map(\"_id\") @db.ObjectId\n  policyId        String           @db.ObjectId\n  policy          Policy           @relation(fields: [policyId], references: [id], onDelete: Cascade)\n  amount          Float\n  frequency       PremiumFrequency\n  dueDate         DateTime\n  gracePeriodDays Int?\n  status          PaymentStatus    @default(DUE)\n  paidDate        DateTime?\n  createdAt       DateTime         @default(now())\n  updatedAt       DateTime         @updatedAt\n\n  @@index([policyId])\n}\n\nmodel Payout {\n  id           String        @id @default(auto()) @map(\"_id\") @db.ObjectId\n  policyId     String        @db.ObjectId\n  policy       Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)\n  label        String\n  expectedDate DateTime\n  amount       Float\n  status       PaymentStatus @default(DUE)\n  receivedDate DateTime?\n  createdAt    DateTime      @default(now())\n  updatedAt    DateTime      @updatedAt\n\n  @@index([policyId])\n}\n\nmodel Claim {\n  id            String      @id @default(auto()) @map(\"_id\") @db.ObjectId\n  policyId      String      @db.ObjectId\n  policy        Policy      @relation(fields: [policyId], references: [id], onDelete: Cascade)\n  filedDate     DateTime\n  amount        Float\n  status        ClaimStatus @default(FILED)\n  settledAmount Float?\n  settledDate   DateTime?\n  description   String?\n  createdAt     DateTime    @default(now())\n  updatedAt     DateTime    @updatedAt\n\n  @@index([policyId])\n}\n\nmodel Investment {\n  id                    String         @id @default(auto()) @map(\"_id\") @db.ObjectId\n  ownerId               String         @db.ObjectId\n  owner                 User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  name                  String\n  type                  InvestmentType\n  institution           String?\n  investedDate          DateTime\n  capitalDeployed       Float\n  expectedReturnType    String?\n  expectedReturnDate    DateTime?\n  targetRoiPercent      Float?\n  currentEstimatedValue Float?\n  createdAt             DateTime       @default(now())\n  updatedAt             DateTime       @updatedAt\n\n  returns Return[]\n\n  @@index([ownerId])\n}\n\nmodel Return {\n  id           String     @id @default(auto()) @map(\"_id\") @db.ObjectId\n  investmentId String     @db.ObjectId\n  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)\n  date         DateTime\n  amount       Float\n  label        String\n  createdAt    DateTime   @default(now())\n\n  @@index([investmentId])\n}\n\nmodel Loan {\n  id                  String          @id @default(auto()) @map(\"_id\") @db.ObjectId\n  ownerId             String          @db.ObjectId\n  owner               User            @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  lender              String\n  type                LoanType\n  principal           Float\n  interestRatePercent Float\n  tenureMonths        Int\n  emiAmount           Float\n  emiDueDay           Int\n  startDate           DateTime\n  outstandingBalance  Float\n  linkedAssetType     LinkedAssetType @default(NONE)\n  linkedAssetId       String?         @db.ObjectId\n  createdAt           DateTime        @default(now())\n  updatedAt           DateTime        @updatedAt\n\n  emiPayments EMIPayment[]\n\n  @@index([ownerId])\n}\n\nmodel EMIPayment {\n  id                 String        @id @default(auto()) @map(\"_id\") @db.ObjectId\n  loanId             String        @db.ObjectId\n  loan               Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)\n  installmentNumber  Int\n  dueDate            DateTime\n  principalComponent Float\n  interestComponent  Float\n  amount             Float\n  status             PaymentStatus @default(DUE)\n  paidDate           DateTime?\n  createdAt          DateTime      @default(now())\n\n  @@index([loanId])\n}\n\nmodel FinancialEvent {\n  id          String               @id @default(auto()) @map(\"_id\") @db.ObjectId\n  ownerId     String               @db.ObjectId\n  owner       User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  type        FinancialEventType\n  source      FinancialEventSource\n  sourceId    String               @db.ObjectId\n  amount      Float\n  dueDate     DateTime\n  status      PaymentStatus        @default(DUE)\n  description String?\n  createdAt   DateTime             @default(now())\n  updatedAt   DateTime             @updatedAt\n\n  reminders Reminder[]\n\n  @@index([ownerId])\n  @@index([dueDate])\n}\n\nmodel Reminder {\n  id               String            @id @default(auto()) @map(\"_id\") @db.ObjectId\n  ownerId          String            @db.ObjectId\n  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  financialEventId String?           @db.ObjectId\n  financialEvent   FinancialEvent?   @relation(fields: [financialEventId], references: [id])\n  title            String\n  dueDate          DateTime\n  leadTimeDays     Int               @default(7)\n  escalationDays   Int[]\n  channels         ReminderChannel[]\n  status           ReminderStatus    @default(PENDING)\n  lastSentAt       DateTime?\n  createdAt        DateTime          @default(now())\n  updatedAt        DateTime          @updatedAt\n\n  @@index([ownerId])\n  @@index([financialEventId])\n}\n\nmodel Document {\n  id         String            @id @default(auto()) @map(\"_id\") @db.ObjectId\n  ownerId    String            @db.ObjectId\n  owner      User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)\n  ownerType  DocumentOwnerType\n  ownerRefId String            @db.ObjectId\n  fileName   String\n  fileUrl    String\n  mimeType   String?\n  uploadedAt DateTime          @default(now())\n\n  @@index([ownerId])\n  @@index([ownerType, ownerRefId])\n}\n",
+  "inlineSchemaHash": "d2bcf1f57325bc2d056381154e8760f1e03d0f92256273829c86293dc2c0ebcd",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PostToUser\"},{\"name\":\"createdById\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"accounts\",\"kind\":\"object\",\"type\":\"Account\",\"relationName\":\"AccountToUser\"},{\"name\":\"posts\",\"kind\":\"object\",\"type\":\"Post\",\"relationName\":\"PostToUser\"}],\"dbName\":\"user\"},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"}],\"dbName\":\"session\"},\"Account\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"accountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AccountToUser\"},{\"name\":\"accessToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"idToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accessTokenExpiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"refreshTokenExpiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"scope\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"account\"},\"Verification\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"identifier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"verification\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Post\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdBy\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PostToUser\"},{\"name\":\"createdById\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null},\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"sessions\",\"kind\":\"object\",\"type\":\"Session\",\"relationName\":\"SessionToUser\"},{\"name\":\"accounts\",\"kind\":\"object\",\"type\":\"Account\",\"relationName\":\"AccountToUser\"},{\"name\":\"posts\",\"kind\":\"object\",\"type\":\"Post\",\"relationName\":\"PostToUser\"},{\"name\":\"properties\",\"kind\":\"object\",\"type\":\"Property\",\"relationName\":\"PropertyToUser\"},{\"name\":\"policies\",\"kind\":\"object\",\"type\":\"Policy\",\"relationName\":\"PolicyToUser\"},{\"name\":\"investments\",\"kind\":\"object\",\"type\":\"Investment\",\"relationName\":\"InvestmentToUser\"},{\"name\":\"loans\",\"kind\":\"object\",\"type\":\"Loan\",\"relationName\":\"LoanToUser\"},{\"name\":\"financialEvents\",\"kind\":\"object\",\"type\":\"FinancialEvent\",\"relationName\":\"FinancialEventToUser\"},{\"name\":\"reminders\",\"kind\":\"object\",\"type\":\"Reminder\",\"relationName\":\"ReminderToUser\"},{\"name\":\"documents\",\"kind\":\"object\",\"type\":\"Document\",\"relationName\":\"DocumentToUser\"}],\"dbName\":\"user\"},\"Session\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"token\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"ipAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userAgent\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SessionToUser\"}],\"dbName\":\"session\"},\"Account\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"accountId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"providerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AccountToUser\"},{\"name\":\"accessToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"refreshToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"idToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"accessTokenExpiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"refreshTokenExpiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"scope\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"account\"},\"Verification\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"identifier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"value\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"verification\"},\"Property\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PropertyToUser\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"PropertyType\"},{\"name\":\"addressLine1\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"addressLine2\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"state\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"pinCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"country\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"purchasePrice\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"currentEstimatedValue\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"purchaseDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"photos\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"rooms\",\"kind\":\"object\",\"type\":\"Room\",\"relationName\":\"PropertyToRoom\"},{\"name\":\"tenants\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"PropertyToTenant\"},{\"name\":\"rentPayments\",\"kind\":\"object\",\"type\":\"RentPayment\",\"relationName\":\"PropertyToRentPayment\"},{\"name\":\"bills\",\"kind\":\"object\",\"type\":\"Bill\",\"relationName\":\"BillToProperty\"}],\"dbName\":null},\"Room\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"propertyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"property\",\"kind\":\"object\",\"type\":\"Property\",\"relationName\":\"PropertyToRoom\"},{\"name\":\"label\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"floor\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"areaSqft\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"occupancyStatus\",\"kind\":\"enum\",\"type\":\"OccupancyStatus\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"tenants\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"RoomToTenant\"}],\"dbName\":null},\"Tenant\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"propertyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"property\",\"kind\":\"object\",\"type\":\"Property\",\"relationName\":\"PropertyToTenant\"},{\"name\":\"roomId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"room\",\"kind\":\"object\",\"type\":\"Room\",\"relationName\":\"RoomToTenant\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"leaseStart\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"leaseEnd\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"rentAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"depositAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"active\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"rentPayments\",\"kind\":\"object\",\"type\":\"RentPayment\",\"relationName\":\"RentPaymentToTenant\"}],\"dbName\":null},\"RentPayment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"propertyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"property\",\"kind\":\"object\",\"type\":\"Property\",\"relationName\":\"PropertyToRentPayment\"},{\"name\":\"tenantId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tenant\",\"kind\":\"object\",\"type\":\"Tenant\",\"relationName\":\"RentPaymentToTenant\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"paidDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"paidAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Bill\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"propertyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"property\",\"kind\":\"object\",\"type\":\"Property\",\"relationName\":\"BillToProperty\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"BillType\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"paidDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Policy\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"PolicyToUser\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"PolicyType\"},{\"name\":\"insurer\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"policyNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"holderName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"nominees\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"tenureYears\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PolicyStatus\"},{\"name\":\"sumAssured\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"roomRentLimit\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"coPayPercent\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"waitingPeriodMonths\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"networkHospitals\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"premiumPayments\",\"kind\":\"object\",\"type\":\"PremiumPayment\",\"relationName\":\"PolicyToPremiumPayment\"},{\"name\":\"payouts\",\"kind\":\"object\",\"type\":\"Payout\",\"relationName\":\"PayoutToPolicy\"},{\"name\":\"claims\",\"kind\":\"object\",\"type\":\"Claim\",\"relationName\":\"ClaimToPolicy\"}],\"dbName\":null},\"PremiumPayment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"policyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"policy\",\"kind\":\"object\",\"type\":\"Policy\",\"relationName\":\"PolicyToPremiumPayment\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"frequency\",\"kind\":\"enum\",\"type\":\"PremiumFrequency\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"gracePeriodDays\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"paidDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Payout\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"policyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"policy\",\"kind\":\"object\",\"type\":\"Policy\",\"relationName\":\"PayoutToPolicy\"},{\"name\":\"label\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expectedDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"receivedDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Claim\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"policyId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"policy\",\"kind\":\"object\",\"type\":\"Policy\",\"relationName\":\"ClaimToPolicy\"},{\"name\":\"filedDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ClaimStatus\"},{\"name\":\"settledAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"settledDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Investment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"InvestmentToUser\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"InvestmentType\"},{\"name\":\"institution\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"investedDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"capitalDeployed\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"expectedReturnType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expectedReturnDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"targetRoiPercent\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"currentEstimatedValue\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"returns\",\"kind\":\"object\",\"type\":\"Return\",\"relationName\":\"InvestmentToReturn\"}],\"dbName\":null},\"Return\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"investmentId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"investment\",\"kind\":\"object\",\"type\":\"Investment\",\"relationName\":\"InvestmentToReturn\"},{\"name\":\"date\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"label\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Loan\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"LoanToUser\"},{\"name\":\"lender\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"LoanType\"},{\"name\":\"principal\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"interestRatePercent\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"tenureMonths\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"emiAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"emiDueDay\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"startDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"outstandingBalance\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"linkedAssetType\",\"kind\":\"enum\",\"type\":\"LinkedAssetType\"},{\"name\":\"linkedAssetId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"emiPayments\",\"kind\":\"object\",\"type\":\"EMIPayment\",\"relationName\":\"EMIPaymentToLoan\"}],\"dbName\":null},\"EMIPayment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"loanId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"loan\",\"kind\":\"object\",\"type\":\"Loan\",\"relationName\":\"EMIPaymentToLoan\"},{\"name\":\"installmentNumber\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"principalComponent\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"interestComponent\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"paidDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"FinancialEvent\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"FinancialEventToUser\"},{\"name\":\"type\",\"kind\":\"enum\",\"type\":\"FinancialEventType\"},{\"name\":\"source\",\"kind\":\"enum\",\"type\":\"FinancialEventSource\"},{\"name\":\"sourceId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"amount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"PaymentStatus\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"reminders\",\"kind\":\"object\",\"type\":\"Reminder\",\"relationName\":\"FinancialEventToReminder\"}],\"dbName\":null},\"Reminder\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ReminderToUser\"},{\"name\":\"financialEventId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"financialEvent\",\"kind\":\"object\",\"type\":\"FinancialEvent\",\"relationName\":\"FinancialEventToReminder\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"dueDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"leadTimeDays\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"escalationDays\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"channels\",\"kind\":\"enum\",\"type\":\"ReminderChannel\"},{\"name\":\"status\",\"kind\":\"enum\",\"type\":\"ReminderStatus\"},{\"name\":\"lastSentAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Document\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\",\"dbName\":\"_id\"},{\"name\":\"ownerId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"owner\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"DocumentToUser\"},{\"name\":\"ownerType\",\"kind\":\"enum\",\"type\":\"DocumentOwnerType\"},{\"name\":\"ownerRefId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"fileUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"mimeType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"uploadedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
