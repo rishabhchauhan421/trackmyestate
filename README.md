@@ -1,29 +1,59 @@
-# Create T3 App
+# Asset Hub
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A personal asset & reminder hub — track properties, insurance policies, investments
+and loans, with every payment date and expected return flowing into one timeline.
 
-## What's next? How do I make an app with this?
+Stack: Next.js 15 (App Router) · TypeScript · Prisma · PostgreSQL. Auth is
+email/password with a signed httpOnly-cookie session (jose), no external auth service.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Data model in one breath
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+- `User` owns many `Asset` rows. `Asset` is a supertype; each concrete kind
+  (`Property`, `InsurancePolicy`, `Investment`, `Loan`) 1:1-extends it via `assetId`.
+- `RecurringSchedule` is the single mechanism for premiums, EMIs, rent and recurring
+  bills — they were all the same shape, so they share one table.
+- `FinancialEvent` is the spine: every dated inflow/outflow. The timeline is a query
+  over it; reminders derive from it plus asset key-dates (e.g. policy renewal).
+- Money is `Decimal(14,2)` (exact NUMERIC), never a float.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+## Getting started
 
-## Learn More
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Copy env and fill in values:
+   ```bash
+   cp .env.example .env
+   # set DATABASE_URL to your Postgres, and generate AUTH_SECRET:
+   #   openssl rand -base64 32
+   ```
+3. Create the tables:
+   ```bash
+   npx prisma db push
+   ```
+4. (Optional) Seed demo data — login demo@assethub.test / demopass123:
+   ```bash
+   npx tsx prisma/seed.ts
+   ```
+5. Run:
+   ```bash
+   npm run dev
+   ```
+   Open http://localhost:3000 — you'll be sent to /login. Register, and you're in.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## What's built
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+- Register / sign in / sign out, with protected routes via middleware.
+- Dashboard (asset counts + upcoming events).
+- Properties: list + add (the CRUD template for the other modules).
+- Timeline: reads the FinancialEvent spine.
+- Policies / Investments / Loans: stubbed — they follow the Properties pattern exactly.
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+## What's next
 
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- Build the Policies / Investments / Loans add-forms (copy Properties).
+- Add the `RecurringSchedule` -> `FinancialEvent` generator (a scheduled job that
+  materialises the next N months of premiums, EMIs and rent).
+- Build the reminder worker (scan upcoming events + key-dates, dispatch email/push/WhatsApp).
+- Rooms, tenants and leases under a property.
