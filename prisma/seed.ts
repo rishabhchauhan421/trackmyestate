@@ -34,7 +34,6 @@ async function resetDomainData() {
   // Children first, to respect foreign keys on Mongo (Prisma won't cascade
   // automatically at the DB level for every relation here).
   await db.document.deleteMany();
-  await db.reminder.deleteMany();
   await db.financialEvent.deleteMany();
   await db.eMIPayment.deleteMany();
   await db.loan.deleteMany();
@@ -44,7 +43,9 @@ async function resetDomainData() {
   await db.payout.deleteMany();
   await db.premiumPayment.deleteMany();
   await db.policy.deleteMany();
-  await db.bill.deleteMany();
+  await db.utilityBill.deleteMany();
+  await db.utilityRecipient.deleteMany();
+  await db.utility.deleteMany();
   await db.rentPayment.deleteMany();
   await db.tenant.deleteMany();
   await db.room.deleteMany();
@@ -163,33 +164,78 @@ async function seedAnanyaPortfolio(ownerId: string) {
   );
   const currentRent = rentPayments[rentPayments.length - 1]!;
 
-  const maintenanceBill = await db.bill.create({
+  // --- Utilities (recurring schedules) + their current bill instance ---
+  const maintenanceUtility = await db.utility.create({
     data: {
       propertyId: rented.id,
       type: "MAINTENANCE",
+      provider: "Prestige Shantiniketan Owners' Association",
+      recurrence: "MONTHLY",
+      defaultAmount: 3_500,
+      dueDay: daysFromNow(5).getDate(),
+      reminderLeadDays: 5,
+    },
+  });
+  const maintenanceBill = await db.utilityBill.create({
+    data: {
+      propertyId: rented.id,
+      utilityId: maintenanceUtility.id,
       dueDate: daysFromNow(5),
       amount: 3_500,
       status: "DUE",
     },
   });
 
-  const propertyTaxBill = await db.bill.create({
+  const propertyTaxUtility = await db.utility.create({
     data: {
       propertyId: selfOccupied.id,
       type: "PROPERTY_TAX",
+      provider: "BBMP",
+      recurrence: "YEARLY",
+      defaultAmount: 18_400,
+      dueDay: daysFromNow(40).getDate(),
+      dueMonth: daysFromNow(40).getMonth() + 1,
+      reminderLeadDays: 14,
+    },
+  });
+  const propertyTaxBill = await db.utilityBill.create({
+    data: {
+      propertyId: selfOccupied.id,
+      utilityId: propertyTaxUtility.id,
       dueDate: daysFromNow(40),
       amount: 18_400,
       status: "DUE",
     },
   });
 
-  const electricityBill = await db.bill.create({
+  const electricityUtility = await db.utility.create({
     data: {
       propertyId: selfOccupied.id,
       type: "ELECTRICITY",
+      provider: "BESCOM",
+      accountNumber: "BESCOM-448821",
+      recurrence: "MONTHLY",
+      defaultAmount: 4_120,
+      dueDay: daysFromNow(-3).getDate(),
+      reminderLeadDays: 5,
+    },
+  });
+  const electricityBill = await db.utilityBill.create({
+    data: {
+      propertyId: selfOccupied.id,
+      utilityId: electricityUtility.id,
       dueDate: daysFromNow(-3),
       amount: 4_120,
       status: "OVERDUE",
+    },
+  });
+
+  await db.utilityRecipient.create({
+    data: {
+      utilityId: electricityUtility.id,
+      name: "Radha Rao",
+      email: "radha.rao@example.in",
+      notifyOnDue: true,
     },
   });
 
@@ -466,52 +512,6 @@ async function seedAnanyaPortfolio(ownerId: string) {
     ],
   });
 
-  // --- Reminders (a subset of the events above, with escalation) --------
-  const rentEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "RENT", sourceId: currentRent.id },
-  });
-  const emiEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "EMI", sourceId: upcomingEmi.id },
-  });
-  const lifePremiumEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "PREMIUM", sourceId: lifePremium.id },
-  });
-
-  await db.reminder.createMany({
-    data: [
-      {
-        ownerId,
-        financialEventId: rentEvent.id,
-        title: "Collect rent - Whitefield Rented Flat",
-        dueDate: rentEvent.dueDate,
-        leadTimeDays: 3,
-        escalationDays: [3, 1, 0],
-        channels: ["PUSH", "WHATSAPP"],
-        status: "PENDING",
-      },
-      {
-        ownerId,
-        financialEventId: emiEvent.id,
-        title: "SBI home loan EMI due",
-        dueDate: emiEvent.dueDate,
-        leadTimeDays: 5,
-        escalationDays: [5, 2, 0],
-        channels: ["PUSH", "EMAIL"],
-        status: "PENDING",
-      },
-      {
-        ownerId,
-        financialEventId: lifePremiumEvent.id,
-        title: "LIC Jeevan Anand premium due",
-        dueDate: lifePremiumEvent.dueDate,
-        leadTimeDays: 30,
-        escalationDays: [30, 7, 1],
-        channels: ["EMAIL", "PUSH", "WHATSAPP"],
-        status: "PENDING",
-      },
-    ],
-  });
-
   return { selfOccupied, rented, homeLoan, lifePolicy, healthPolicy };
 }
 
@@ -571,23 +571,54 @@ async function seedVikramPortfolio(ownerId: string) {
     },
   });
 
-  const societyMaintenance = await db.bill.create({
+  const societyMaintenanceUtility = await db.utility.create({
     data: {
       propertyId: selfOccupied.id,
       type: "MAINTENANCE",
+      provider: "Hiranandani Gardens CHS",
+      recurrence: "MONTHLY",
+      defaultAmount: 9_800,
+      dueDay: daysFromNow(12).getDate(),
+      reminderLeadDays: 5,
+    },
+  });
+  const societyMaintenance = await db.utilityBill.create({
+    data: {
+      propertyId: selfOccupied.id,
+      utilityId: societyMaintenanceUtility.id,
       dueDate: daysFromNow(12),
       amount: 9_800,
       status: "DUE",
     },
   });
 
-  const waterBill = await db.bill.create({
+  const waterUtility = await db.utility.create({
     data: {
       propertyId: investmentFlat.id,
       type: "WATER",
+      provider: "BMC Water Supply",
+      recurrence: "MONTHLY",
+      defaultAmount: 1_450,
+      dueDay: daysFromNow(-1).getDate(),
+      reminderLeadDays: 3,
+    },
+  });
+  const waterBill = await db.utilityBill.create({
+    data: {
+      propertyId: investmentFlat.id,
+      utilityId: waterUtility.id,
       dueDate: daysFromNow(-1),
       amount: 1_450,
       status: "OVERDUE",
+    },
+  });
+
+  await db.utilityRecipient.create({
+    data: {
+      utilityId: waterUtility.id,
+      name: "Shalini Mehta",
+      email: "shalini.mehta@example.in",
+      notifyOnDue: true,
     },
   });
 
@@ -894,52 +925,6 @@ async function seedVikramPortfolio(ownerId: string) {
     ],
   });
 
-  const emiEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "EMI", sourceId: upcomingEmi.id },
-  });
-  const healthPremiumEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "PREMIUM", sourceId: healthPremium.id },
-  });
-  const carEmiEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "EMI", sourceId: carEmi.id },
-  });
-
-  await db.reminder.createMany({
-    data: [
-      {
-        ownerId,
-        financialEventId: healthPremiumEvent.id,
-        title: "Star Health premium overdue - renew to avoid lapse",
-        dueDate: healthPremiumEvent.dueDate,
-        leadTimeDays: 15,
-        escalationDays: [15, 7, 1, 0],
-        channels: ["EMAIL", "PUSH", "WHATSAPP", "SMS"],
-        status: "SENT",
-        lastSentAt: daysFromNow(-1),
-      },
-      {
-        ownerId,
-        financialEventId: emiEvent.id,
-        title: "HDFC home loan EMI due",
-        dueDate: emiEvent.dueDate,
-        leadTimeDays: 5,
-        escalationDays: [5, 2, 0],
-        channels: ["PUSH", "EMAIL"],
-        status: "PENDING",
-      },
-      {
-        ownerId,
-        financialEventId: carEmiEvent.id,
-        title: "Axis Bank car loan EMI due",
-        dueDate: carEmiEvent.dueDate,
-        leadTimeDays: 3,
-        escalationDays: [3, 0],
-        channels: ["PUSH"],
-        status: "PENDING",
-      },
-    ],
-  });
-
   return {
     selfOccupied,
     investmentFlat,
@@ -1017,23 +1002,55 @@ async function seedRishabhPortfolio(ownerId: string) {
   );
   const currentRent = rentPayments[rentPayments.length - 1]!;
 
-  const maintenanceBill = await db.bill.create({
+  const maintenanceUtility = await db.utility.create({
     data: {
       propertyId: rented.id,
       type: "MAINTENANCE",
+      provider: "Vipul World RWA",
+      recurrence: "MONTHLY",
+      defaultAmount: 4_200,
+      dueDay: daysFromNow(8).getDate(),
+      reminderLeadDays: 5,
+    },
+  });
+  const maintenanceBill = await db.utilityBill.create({
+    data: {
+      propertyId: rented.id,
+      utilityId: maintenanceUtility.id,
       dueDate: daysFromNow(8),
       amount: 4_200,
       status: "DUE",
     },
   });
 
-  const propertyTaxBill = await db.bill.create({
+  const propertyTaxUtility = await db.utility.create({
     data: {
       propertyId: selfOccupied.id,
       type: "PROPERTY_TAX",
+      provider: "Municipal Corporation of Gurugram",
+      recurrence: "YEARLY",
+      defaultAmount: 21_600,
+      dueDay: daysFromNow(-6).getDate(),
+      dueMonth: daysFromNow(-6).getMonth() + 1,
+      reminderLeadDays: 14,
+    },
+  });
+  const propertyTaxBill = await db.utilityBill.create({
+    data: {
+      propertyId: selfOccupied.id,
+      utilityId: propertyTaxUtility.id,
       dueDate: daysFromNow(-6),
       amount: 21_600,
       status: "OVERDUE",
+    },
+  });
+
+  await db.utilityRecipient.create({
+    data: {
+      utilityId: propertyTaxUtility.id,
+      name: "Priya Chauhan",
+      email: "priya.chauhan@example.in",
+      notifyOnDue: true,
     },
   });
 
@@ -1263,52 +1280,6 @@ async function seedRishabhPortfolio(ownerId: string) {
         dueDate: sipReturn.date,
         status: "PAID",
         description: "Parag Parikh Flexi Cap Fund - dividend reinvestment",
-      },
-    ],
-  });
-
-  // --- Reminders (a subset of the events above, with escalation) --------
-  const rentEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "RENT", sourceId: currentRent.id },
-  });
-  const emiEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "EMI", sourceId: upcomingEmi.id },
-  });
-  const healthPremiumEvent = await db.financialEvent.findFirstOrThrow({
-    where: { ownerId, source: "PREMIUM", sourceId: healthPremium.id },
-  });
-
-  await db.reminder.createMany({
-    data: [
-      {
-        ownerId,
-        financialEventId: rentEvent.id,
-        title: "Collect rent - Sector 50 Rented Flat",
-        dueDate: rentEvent.dueDate,
-        leadTimeDays: 3,
-        escalationDays: [3, 1, 0],
-        channels: ["PUSH", "WHATSAPP"],
-        status: "PENDING",
-      },
-      {
-        ownerId,
-        financialEventId: emiEvent.id,
-        title: "ICICI home loan EMI due",
-        dueDate: emiEvent.dueDate,
-        leadTimeDays: 5,
-        escalationDays: [5, 2, 0],
-        channels: ["PUSH", "EMAIL"],
-        status: "PENDING",
-      },
-      {
-        ownerId,
-        financialEventId: healthPremiumEvent.id,
-        title: "Niva Bupa health premium due",
-        dueDate: healthPremiumEvent.dueDate,
-        leadTimeDays: 15,
-        escalationDays: [15, 7, 1],
-        channels: ["EMAIL", "PUSH"],
-        status: "PENDING",
       },
     ],
   });

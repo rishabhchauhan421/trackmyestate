@@ -1,5 +1,5 @@
-// Prisma schema for Better Auth
-// learn more: https://better-auth.com/docs/concepts/database
+// Prisma schema for Better Auth & Asset Management Platform
+// Database: MongoDB
 
 generator client {
   provider = "prisma-client-js"
@@ -10,6 +10,10 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+// ---------------------------------------------------------------------------
+// Core / Auth Models
+// ---------------------------------------------------------------------------
 
 model Post {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -24,24 +28,34 @@ model Post {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  email         String    @unique
-  emailVerified Boolean   @default(false)
+  email         String  @unique
+  emailVerified Boolean @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  posts         Post[]
 
-  properties      Property[]
-  policies        Policy[]
-  investments     Investment[]
-  loans           Loan[]
-  financialEvents FinancialEvent[]
-  reminders       Reminder[]
-  documents       Document[]
+  // Base currency derived at the User level
+  currency Currency @default(INR)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Auth relations
+  sessions Session[]
+  accounts Account[]
+  posts    Post[]
+
+  // Domain relations
+  properties        Property[]
+  policies          Policy[]
+  investments       Investment[]
+  loans             Loan[]
+  financialEvents   FinancialEvent[]
+  notificationRules NotificationRule[]
+  notificationJobs  NotificationJob[]
+  documents         Document[]
+  auditLogs         AuditLog[]
+  transactions      PaymentTransaction[]
 
   @@map("user")
 }
@@ -91,9 +105,19 @@ model Verification {
 }
 
 // ---------------------------------------------------------------------------
-// Domain models — Personal Asset & Reminder Hub
-// See property-management-platform-scope.md §7 (High-Level Data Model)
+// Enums — Domain & Financial Assets
 // ---------------------------------------------------------------------------
+
+enum Currency {
+  INR
+  USD
+  EUR
+  GBP
+  CAD
+  AED
+  SGD
+  AUD
+}
 
 enum PropertyType {
   SELF_OCCUPIED
@@ -114,7 +138,22 @@ enum BillType {
   PROPERTY_TAX
   MAINTENANCE
   GAS
+  INTERNET
   OTHER
+}
+
+enum BillingType {
+  FIXED
+  VARIABLE
+}
+
+enum UtilityRecurrence {
+  WEEKLY
+  BI_WEEKLY
+  MONTHLY
+  QUARTERLY
+  HALF_YEARLY
+  YEARLY
 }
 
 enum PaymentStatus {
@@ -122,6 +161,19 @@ enum PaymentStatus {
   PAID
   OVERDUE
   PARTIALLY_PAID
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  DEBIT_CARD
+  UPI
+  CHEQUE
+  AUTO_DEBIT
+  OTHER
 }
 
 enum PolicyType {
@@ -200,21 +252,6 @@ enum FinancialEventSource {
   CLAIM_SETTLEMENT
 }
 
-enum ReminderChannel {
-  EMAIL
-  PUSH
-  WHATSAPP
-  SMS
-}
-
-enum ReminderStatus {
-  PENDING
-  SENT
-  SNOOZED
-  DONE
-  DISMISSED
-}
-
 enum DocumentOwnerType {
   PROPERTY
   ROOM
@@ -225,31 +262,78 @@ enum DocumentOwnerType {
   LOAN
 }
 
+// ---------------------------------------------------------------------------
+// Enums — Scalable Notification Engine
+// ---------------------------------------------------------------------------
+
+enum ReminderChannel {
+  EMAIL
+  PUSH
+  WHATSAPP
+  SMS
+}
+
+enum EntityType {
+  UTILITY_BILL
+  LOAN_EMI
+  RENT_PAYMENT
+  POLICY_PREMIUM
+  INVESTMENT_MATURITY
+  CUSTOM
+}
+
+enum NotificationTrigger {
+  BEFORE_DUE
+  ON_DUE_DATE
+  OVERDUE
+  PAYMENT_RECEIVED
+}
+
+enum NotificationStatus {
+  SCHEDULED
+  PROCESSING
+  SENT
+  FAILED
+  CANCELLED
+  SKIPPED
+}
+
+// ---------------------------------------------------------------------------
+// Domain Models — Real Estate, Rental & Utility Tracking
+// ---------------------------------------------------------------------------
+
 model Property {
-  id                    String       @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId               String       @db.ObjectId
-  owner                 User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  name                  String
-  type                  PropertyType
-  addressLine1          String
-  addressLine2          String?
-  city                  String
-  state                 String
-  pinCode               String
-  country               String       @default("India")
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId      String       @db.ObjectId
+  owner        User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name         String
+  type         PropertyType
+  addressLine1 String
+  addressLine2 String?
+  city         String
+  state        String
+  pinCode      String
+  country      String       @default("India")
+
+  // Inherits from User, overrideable if needed
+  currency              Currency?
   purchasePrice         Float?
   currentEstimatedValue Float?
   purchaseDate          DateTime?
   photos                String[]
-  createdAt             DateTime     @default(now())
-  updatedAt             DateTime     @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   rooms        Room[]
   tenants      Tenant[]
   rentPayments RentPayment[]
-  bills        Bill[]
+  utilities    Utility[]
+  utilityBills UtilityBill[]
 
   @@index([ownerId])
+  @@index([deletedAt])
 }
 
 model Room {
@@ -260,12 +344,15 @@ model Room {
   floor           String?
   areaSqft        Float?
   occupancyStatus OccupancyStatus @default(VACANT)
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   tenants Tenant[]
 
   @@index([propertyId])
+  @@index([deletedAt])
 }
 
 model Tenant {
@@ -281,14 +368,18 @@ model Tenant {
   leaseEnd      DateTime?
   rentAmount    Float
   depositAmount Float
+  currency      Currency?
   active        Boolean   @default(true)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   rentPayments RentPayment[]
 
   @@index([propertyId])
   @@index([roomId])
+  @@index([deletedAt])
 }
 
 model RentPayment {
@@ -299,30 +390,111 @@ model RentPayment {
   tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   dueDate    DateTime
   amount     Float
+  currency   Currency?
   status     PaymentStatus @default(DUE)
   paidDate   DateTime?
   paidAmount Float?
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([propertyId])
   @@index([tenantId])
+  @@index([dueDate, status])
+  @@index([deletedAt])
 }
 
-model Bill {
-  id         String        @id @default(auto()) @map("_id") @db.ObjectId
-  propertyId String        @db.ObjectId
-  property   Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  type       BillType
-  dueDate    DateTime
-  amount     Float
-  status     PaymentStatus @default(DUE)
-  paidDate   DateTime?
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+model Utility {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  propertyId String   @db.ObjectId
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  type          BillType
+  provider      String?
+  accountNumber String?
+  meterNumber   String?
+
+  billingType BillingType       @default(VARIABLE)
+  recurrence  UtilityRecurrence @default(MONTHLY)
+
+  dueDay           Int // 1-31 (day of month) or 1-7 (day of week)
+  dueMonth         Int? // 1-12 (for YEARLY recurrence)
+  reminderLeadDays Int  @default(7)
+
+  defaultAmount    Float?
+  currency         Currency?
+  autoGenerateBill Boolean   @default(true)
+  active           Boolean   @default(true)
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  recipients UtilityRecipient[]
+  bills      UtilityBill[]
 
   @@index([propertyId])
+  @@index([deletedAt])
 }
+
+model UtilityRecipient {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  utilityId String  @db.ObjectId
+  utility   Utility @relation(fields: [utilityId], references: [id], onDelete: Cascade)
+
+  name         String
+  email        String
+  phone        String?
+  notifyOnDue  Boolean @default(true)
+  notifyOnPaid Boolean @default(false)
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([utilityId])
+  @@index([deletedAt])
+}
+
+model UtilityBill {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  utilityId String  @db.ObjectId
+  utility   Utility @relation(fields: [utilityId], references: [id], onDelete: Cascade)
+
+  propertyId String   @db.ObjectId
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  previousMeterValue Float?
+  currentMeterValue  Float?
+
+  billingPeriodStart DateTime?
+  billingPeriodEnd   DateTime?
+  dueDate            DateTime
+
+  amount     Float
+  currency   Currency?
+  status     PaymentStatus @default(DUE)
+  paidDate   DateTime?
+  paidAmount Float?
+
+  billDocumentUrl    String?
+  receiptDocumentUrl String?
+  notes              String?
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([utilityId])
+  @@index([propertyId])
+  @@index([dueDate, status])
+  @@index([deletedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Domain Models — Insurance Policies
+// ---------------------------------------------------------------------------
 
 model Policy {
   id                  String       @id @default(auto()) @map("_id") @db.ObjectId
@@ -337,18 +509,22 @@ model Policy {
   tenureYears         Int?
   status              PolicyStatus @default(ACTIVE)
   sumAssured          Float?
+  currency            Currency?
   roomRentLimit       Float?
   coPayPercent        Float?
   waitingPeriodMonths Int?
   networkHospitals    String[]
-  createdAt           DateTime     @default(now())
-  updatedAt           DateTime     @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   premiumPayments PremiumPayment[]
   payouts         Payout[]
   claims          Claim[]
 
   @@index([ownerId])
+  @@index([deletedAt])
 }
 
 model PremiumPayment {
@@ -356,15 +532,20 @@ model PremiumPayment {
   policyId        String           @db.ObjectId
   policy          Policy           @relation(fields: [policyId], references: [id], onDelete: Cascade)
   amount          Float
+  currency        Currency?
   frequency       PremiumFrequency
   dueDate         DateTime
   gracePeriodDays Int?
   status          PaymentStatus    @default(DUE)
   paidDate        DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([policyId])
+  @@index([dueDate, status])
+  @@index([deletedAt])
 }
 
 model Payout {
@@ -374,12 +555,16 @@ model Payout {
   label        String
   expectedDate DateTime
   amount       Float
+  currency     Currency?
   status       PaymentStatus @default(DUE)
   receivedDate DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([policyId])
+  @@index([deletedAt])
 }
 
 model Claim {
@@ -388,15 +573,23 @@ model Claim {
   policy        Policy      @relation(fields: [policyId], references: [id], onDelete: Cascade)
   filedDate     DateTime
   amount        Float
+  currency      Currency?
   status        ClaimStatus @default(FILED)
   settledAmount Float?
   settledDate   DateTime?
   description   String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([policyId])
+  @@index([deletedAt])
 }
+
+// ---------------------------------------------------------------------------
+// Domain Models — Investments & Loans
+// ---------------------------------------------------------------------------
 
 model Investment {
   id                    String         @id @default(auto()) @map("_id") @db.ObjectId
@@ -407,16 +600,20 @@ model Investment {
   institution           String?
   investedDate          DateTime
   capitalDeployed       Float
+  currency              Currency?
   expectedReturnType    String?
   expectedReturnDate    DateTime?
   targetRoiPercent      Float?
   currentEstimatedValue Float?
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime       @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   returns Return[]
 
   @@index([ownerId])
+  @@index([deletedAt])
 }
 
 model Return {
@@ -425,10 +622,14 @@ model Return {
   investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
   date         DateTime
   amount       Float
+  currency     Currency?
   label        String
-  createdAt    DateTime   @default(now())
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
 
   @@index([investmentId])
+  @@index([deletedAt])
 }
 
 model Loan {
@@ -438,6 +639,7 @@ model Loan {
   lender              String
   type                LoanType
   principal           Float
+  currency            Currency?
   interestRatePercent Float
   tenureMonths        Int
   emiAmount           Float
@@ -446,12 +648,15 @@ model Loan {
   outstandingBalance  Float
   linkedAssetType     LinkedAssetType @default(NONE)
   linkedAssetId       String?         @db.ObjectId
-  createdAt           DateTime        @default(now())
-  updatedAt           DateTime        @updatedAt
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   emiPayments EMIPayment[]
 
   @@index([ownerId])
+  @@index([deletedAt])
 }
 
 model EMIPayment {
@@ -463,11 +668,16 @@ model EMIPayment {
   principalComponent Float
   interestComponent  Float
   amount             Float
+  currency           Currency?
   status             PaymentStatus @default(DUE)
   paidDate           DateTime?
-  createdAt          DateTime      @default(now())
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
 
   @@index([loanId])
+  @@index([dueDate, status])
+  @@index([deletedAt])
 }
 
 model FinancialEvent {
@@ -478,37 +688,135 @@ model FinancialEvent {
   source      FinancialEventSource
   sourceId    String               @db.ObjectId
   amount      Float
+  currency    Currency?
   dueDate     DateTime
   status      PaymentStatus        @default(DUE)
   description String?
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
 
-  reminders Reminder[]
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([ownerId])
   @@index([dueDate])
+  @@index([deletedAt])
 }
 
-model Reminder {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId          String            @db.ObjectId
-  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  financialEventId String?           @db.ObjectId
-  financialEvent   FinancialEvent?   @relation(fields: [financialEventId], references: [id])
-  title            String
-  dueDate          DateTime
-  leadTimeDays     Int               @default(7)
-  escalationDays   Int[]
-  channels         ReminderChannel[]
-  status           ReminderStatus    @default(PENDING)
-  lastSentAt       DateTime?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
+// ---------------------------------------------------------------------------
+// Universal Payment Ledger & Audit Trail
+// ---------------------------------------------------------------------------
+
+model PaymentTransaction {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId String @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  entityType EntityType
+  entityId   String     @db.ObjectId
+
+  amount          Float
+  currency        Currency?
+  paymentMethod   PaymentMethod @default(BANK_TRANSFER)
+  referenceNumber String? // Bank UTR, Cheque No, Transaction ID
+  receiptUrl      String?
+
+  paidAt DateTime @default(now())
+  notes  String?
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
 
   @@index([ownerId])
-  @@index([financialEventId])
+  @@index([entityType, entityId])
+  @@index([deletedAt])
 }
+
+model AuditLog {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId String? @db.ObjectId
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  action     String // e.g., "CREATE_UTILITY", "MARK_PAID_EMI", "UPDATE_TENANT"
+  entityType String // e.g., "UtilityBill", "Loan"
+  entityId   String @db.ObjectId
+
+  changes   Json? // Snapshot of before/after delta
+  ipAddress String?
+
+  createdAt DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Scalable Notification Engine
+// ---------------------------------------------------------------------------
+
+model NotificationRule {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId String @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  entityType EntityType
+  entityId   String     @db.ObjectId
+
+  trigger  NotificationTrigger @default(BEFORE_DUE)
+  leadDays Int                 @default(3)
+
+  channels   ReminderChannel[]
+  recipients String[] // Email addresses or phone numbers
+
+  active    Boolean   @default(true)
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  jobs NotificationJob[]
+
+  @@index([ownerId])
+  @@index([entityType, entityId])
+  @@index([deletedAt])
+}
+
+model NotificationJob {
+  id                 String            @id @default(auto()) @map("_id") @db.ObjectId
+  notificationRuleId String?           @db.ObjectId
+  notificationRule   NotificationRule? @relation(fields: [notificationRuleId], references: [id], onDelete: SetNull)
+
+  ownerId String @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  entityType EntityType
+  entityId   String     @db.ObjectId
+
+  scheduledFor DateTime
+  status       NotificationStatus @default(SCHEDULED)
+
+  channel   ReminderChannel
+  recipient String
+  title     String
+  body      String
+
+  idempotencyKey String? @unique
+  batchGroup     String?
+  metadata       Json?
+
+  sentAt       DateTime?
+  failedReason String?
+  retryCount   Int       @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, scheduledFor])
+  @@index([entityType, entityId])
+  @@index([ownerId])
+}
+
+// ---------------------------------------------------------------------------
+// Document Storage
+// ---------------------------------------------------------------------------
 
 model Document {
   id         String            @id @default(auto()) @map("_id") @db.ObjectId
@@ -519,8 +827,11 @@ model Document {
   fileName   String
   fileUrl    String
   mimeType   String?
-  uploadedAt DateTime          @default(now())
+
+  deletedAt  DateTime? // Soft delete
+  uploadedAt DateTime  @default(now())
 
   @@index([ownerId])
   @@index([ownerType, ownerRefId])
+  @@index([deletedAt])
 }

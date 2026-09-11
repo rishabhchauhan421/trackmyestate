@@ -10,7 +10,10 @@ export default async function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
-  const name = session?.user?.name ?? session?.user?.email ?? "Your account";
+  if (!session) {
+    redirect("/");
+  }
+  const name = session.user?.name ?? session.user?.email ?? "Your account";
   const initial = name.charAt(0).toUpperCase();
 
   return (
@@ -35,7 +38,7 @@ export default async function AppLayout({
                 {name}
               </p>
               <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                {session?.user?.email}
+                {session.user?.email}
               </p>
             </div>
             <form>

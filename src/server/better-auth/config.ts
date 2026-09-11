@@ -1,3 +1,9 @@
+/**
+ * better-auth server instance: the single source of truth for how sign-in,
+ * sessions and OAuth work in this app. Server Components/Actions read
+ * `auth.api.getSession`/`auth.api.signOut` etc. (see `./server.ts`); the
+ * `[...all]` route handler forwards raw HTTP auth requests to `auth.handler`.
+ */
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
@@ -5,6 +11,7 @@ import { nextCookies } from "better-auth/next-js";
 import { env } from "~/env";
 import { db } from "~/server/db";
 
+/** better-auth instance, configured for MongoDB + Google OAuth + email/password. */
 export const auth = betterAuth({
   database: prismaAdapter(db, {
     provider: "mongodb",
@@ -35,4 +42,5 @@ export const auth = betterAuth({
   plugins: [nextCookies()],
 });
 
+/** Inferred session/user shape, derived from the actual `auth` config above. */
 export type Session = typeof auth.$Infer.Session;

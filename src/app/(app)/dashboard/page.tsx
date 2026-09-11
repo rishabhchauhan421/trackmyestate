@@ -1,19 +1,59 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { AlertIcon, ArrowRightIcon } from "~/app/_components/icons";
 import { navItems } from "~/app/_components/nav";
 import { PageHeader } from "~/app/_components/page-header";
-
-const stats = [
-  { label: "Net worth", value: "—", hint: "Assets minus liabilities" },
-  { label: "Total coverage", value: "—", hint: "Across all policies" },
-  { label: "Upcoming outflows", value: "—", hint: "Next 30 days" },
-  { label: "Expected inflows", value: "—", hint: "Next 30 days" },
-];
+import { formatDate, formatINR } from "~/lib/format";
+import { getSession } from "~/server/better-auth/server";
+import { getDashboardData } from "~/server/queries";
 
 const quickLinks = navItems.filter((item) => item.href !== "/dashboard");
 
-export default function DashboardPage() {
+const SOURCE_LABELS: Record<string, string> = {
+  RENT: "Rent",
+  BILL: "Bill",
+  PREMIUM: "Premium",
+  PAYOUT: "Payout",
+  EMI: "EMI",
+  RETURN: "Return",
+  CLAIM_SETTLEMENT: "Claim settlement",
+};
+
+export default async function DashboardPage() {
+  const session = await getSession();
+  if (!session) redirect("/");
+  const {
+    netWorth,
+    totalCoverage,
+    upcomingOutflows,
+    expectedInflows,
+    attentionItems,
+  } = await getDashboardData(session.user.id);
+
+  const stats = [
+    {
+      label: "Net worth",
+      value: formatINR(netWorth),
+      hint: "Assets minus liabilities",
+    },
+    {
+      label: "Total coverage",
+      value: formatINR(totalCoverage),
+      hint: "Across all policies",
+    },
+    {
+      label: "Upcoming outflows",
+      value: formatINR(upcomingOutflows),
+      hint: "Next 30 days",
+    },
+    {
+      label: "Expected inflows",
+      value: formatINR(expectedInflows),
+      hint: "Next 30 days",
+    },
+  ];
+
   return (
     <>
       <PageHeader
@@ -47,10 +87,40 @@ export default function DashboardPage() {
             Needs attention
           </h2>
         </div>
-        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          Lapsing policies, overdue bills and EMIs will show up here the
-          moment you add your first asset.
-        </p>
+        {attentionItems.length === 0 ? (
+          <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+            Nothing overdue or due in the next 7 days. You&apos;re all caught
+            up.
+          </p>
+        ) : (
+          <ul className="mt-3 divide-y divide-slate-100 dark:divide-slate-800">
+            {attentionItems.map((item) => (
+              <li
+                key={item.id}
+                className="flex items-center justify-between gap-4 py-3"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                    {item.description ?? SOURCE_LABELS[item.source]}
+                  </p>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    {item.status === "OVERDUE" ? "Overdue" : "Due"}{" "}
+                    {formatDate(item.dueDate)}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 text-sm font-semibold ${
+                    item.status === "OVERDUE"
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-slate-800 dark:text-slate-100"
+                  }`}
+                >
+                  {formatINR(item.amount)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       <div>
