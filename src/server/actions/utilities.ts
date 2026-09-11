@@ -3,14 +3,16 @@
 /**
  * Server Actions for the property Utilities feature.
  *
- * Model recap: `Utility` is an immutable template (type, provider,
- * recurrence, amount, reminder lead time) — it can only be deactivated, not
- * edited or deleted, once created. `UtilityBill` is a generated instance
- * that a notification actually goes out for. Owners never create a bill
- * directly here; that's the job of a background job (not yet built) that
- * calls `generateUtilityBill` on the date of each cycle's first
- * notification. Every mutation below re-checks ownership itself rather than
- * trusting the caller, since these are invoked directly from client forms.
+ * Model recap: a utility is a `BillSchedule` row (category `"BILL"`) — an
+ * immutable template (type, provider, recurrence, amount, reminder lead
+ * time) that can only be deactivated, not edited or deleted, once created.
+ * `BillSchedule` is shared across every recurring-bill category (see the
+ * model comment in `prisma/schema.prisma`); this file only ever touches
+ * `category: "BILL"` rows. Its generated bill instances are `Bill` rows —
+ * see `~/server/actions/bills` for `generateBill`/`markBillPaid`, shared
+ * across every bill category. Every mutation below re-checks ownership
+ * itself rather than trusting the caller, since these are invoked directly
+ * from client forms.
  */
 
 import { revalidatePath } from "next/cache";
@@ -18,10 +20,9 @@ import { redirect } from "next/navigation";
 
 import type {
   BillingType,
+  BillRecurrence,
   BillType,
-  UtilityRecurrence,
 } from "../../../generated/prisma";
-import { BILL_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 
@@ -40,77 +41,34 @@ async function requireOwnedProperty(propertyId: string) {
   return { session, property };
 }
 
-/** Same as `requireOwnedProperty`, but for a utility (via its parent property's owner). */
+/** Same as `requireOwnedProperty`, but for a utility `BillSchedule` row. */
 async function requireOwnedUtility(utilityId: string, ownerId: string) {
-  const utility = await db.utility.findFirst({
-    where: { id: utilityId, property: { ownerId } },
+  const utility = await db.billSchedule.findFirst({
+    where: { id: utilityId, category: "BILL", ownerId },
   });
   if (!utility) throw new Error("Utility not found");
   return utility;
 }
 
 /**
- * Creates one `UtilityBill` instance and its matching `FinancialEvent`.
- * Owners never trigger this directly — it's exported so the (not-yet-built)
- * background job has the generation logic ready to call once it exists.
- */
-export async function generateUtilityBill(args: {
-  ownerId: string;
-  property: { id: string; name: string };
-  utility: { id: string; type: BillType; provider: string | null };
-  dueDate: Date;
-  amount: number;
-}) {
-  const { ownerId, property, utility, dueDate, amount } = args;
-
-  const bill = await db.utilityBill.create({
-    data: {
-      propertyId: property.id,
-      utilityId: utility.id,
-      dueDate,
-      amount,
-      status: "DUE",
-    },
-  });
-
-  const label = utility.provider
-    ? `${utility.provider} (${BILL_TYPE_LABELS[utility.type]})`
-    : BILL_TYPE_LABELS[utility.type];
-
-  await db.financialEvent.create({
-    data: {
-      ownerId,
-      type: "OUTFLOW",
-      source: "BILL",
-      sourceId: bill.id,
-      amount,
-      dueDate,
-      status: "DUE",
-      description: `${label} - ${property.name}`,
-    },
-  });
-
-  return bill;
-}
-
-/**
- * Creates a new `Utility` template for a property, from the "Add utility"
- * form. Deliberately does **not** create a bill or financial event — see
- * `generateUtilityBill`. Once created, a utility's fields are fixed; the
- * only allowed change afterward is `deactivateUtility`.
+ * Creates a new utility `BillSchedule` for a property, from the "Add
+ * utility" form. Deliberately does **not** create a bill or financial
+ * event — see `generateBill` in `~/server/actions/bills`. Once created, a
+ * utility's fields are fixed; the only allowed change afterward is
+ * `deactivateUtility`.
  */
 export async function createUtility(formData: FormData) {
   const propertyId = String(formData.get("propertyId"));
-  const { property } = await requireOwnedProperty(propertyId);
+  const { session, property } = await requireOwnedProperty(propertyId);
 
-  const type = String(formData.get("type")) as BillType;
+  const billType = String(formData.get("type")) as BillType;
   const provider = String(formData.get("provider") ?? "").trim() || null;
   const accountNumber =
     String(formData.get("accountNumber") ?? "").trim() || null;
   const billingType = String(
     formData.get("billingType") ?? "VARIABLE",
   ) as BillingType;
-  const recurrence = String(formData.get("recurrence")) as UtilityRecurrence;
+  const recurrence = String(formData.get("recurrence")) as BillRecurrence;
   const defaultAmount = Number(formData.get("defaultAmount"));
   const firstDueDate = new Date(String(formData.get("firstDueDate")));
   const reminderLeadDays = Number(formData.get("reminderLeadDays") ?? 7);
@@ -122,10 +80,12 @@ export async function createUtility(formData: FormData) {
     throw new Error("Enter a valid first due date");
   }
 
-  await db.utility.create({
+  await db.billSchedule.create({
     data: {
+      ownerId: session.user.id,
+      category: "BILL",
       propertyId,
-      type,
+      billType,
       provider,
       accountNumber,
       billingType,
@@ -151,39 +111,12 @@ export async function deactivateUtility(utilityId: string) {
 
   const utility = await requireOwnedUtility(utilityId, session.user.id);
 
-  await db.utility.update({
+  await db.billSchedule.update({
     where: { id: utility.id },
     data: { active: false },
   });
 
   revalidatePath(`/properties/${utility.propertyId}/utilities`);
-}
-
-/**
- * Marks a generated bill paid and syncs its `FinancialEvent` to match.
- * Idempotent: marking an already-PAID bill paid again just re-applies the
- * same update.
- */
-export async function markBillPaid(utilityBillId: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
-
-  const bill = await db.utilityBill.findFirst({
-    where: { id: utilityBillId, property: { ownerId: session.user.id } },
-  });
-  if (!bill) throw new Error("Bill not found");
-
-  await db.utilityBill.update({
-    where: { id: utilityBillId },
-    data: { status: "PAID", paidDate: new Date(), paidAmount: bill.amount },
-  });
-
-  await db.financialEvent.updateMany({
-    where: { source: "BILL", sourceId: utilityBillId },
-    data: { status: "PAID" },
-  });
-
-  revalidatePath(`/properties/${bill.propertyId}/utilities`);
 }
 
 /**
@@ -206,9 +139,9 @@ export async function addUtilityRecipient(utilityId: string, formData: FormData)
   if (!name) throw new Error("Enter a name");
   if (!email.includes("@")) throw new Error("Enter a valid email");
 
-  await db.utilityRecipient.create({
+  await db.billScheduleRecipient.create({
     data: {
-      utilityId: utility.id,
+      billScheduleId: utility.id,
       name,
       email,
       phone,
@@ -226,19 +159,19 @@ export async function removeUtilityRecipient(recipientId: string) {
   const session = await getSession();
   if (!session) redirect("/");
 
-  const recipient = await db.utilityRecipient.findFirst({
+  const recipient = await db.billScheduleRecipient.findFirst({
     where: {
       id: recipientId,
-      utility: { property: { ownerId: session.user.id } },
+      billSchedule: { ownerId: session.user.id },
     },
-    include: { utility: { select: { propertyId: true } } },
+    include: { billSchedule: { select: { propertyId: true } } },
   });
   if (!recipient) throw new Error("Recipient not found");
 
-  await db.utilityRecipient.update({
+  await db.billScheduleRecipient.update({
     where: { id: recipientId },
     data: { deletedAt: new Date() },
   });
 
-  revalidatePath(`/properties/${recipient.utility.propertyId}/utilities`);
+  revalidatePath(`/properties/${recipient.billSchedule.propertyId}/utilities`);
 }

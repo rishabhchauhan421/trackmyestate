@@ -35,18 +35,12 @@ async function resetDomainData() {
   // automatically at the DB level for every relation here).
   await db.document.deleteMany();
   await db.financialEvent.deleteMany();
-  await db.eMIPayment.deleteMany();
+  await db.bill.deleteMany();
   await db.loan.deleteMany();
-  await db.return.deleteMany();
   await db.investment.deleteMany();
-  await db.claim.deleteMany();
-  await db.payout.deleteMany();
-  await db.premiumPayment.deleteMany();
   await db.policy.deleteMany();
-  await db.utilityBill.deleteMany();
-  await db.utilityRecipient.deleteMany();
-  await db.utility.deleteMany();
-  await db.rentPayment.deleteMany();
+  await db.billScheduleRecipient.deleteMany();
+  await db.billSchedule.deleteMany();
   await db.tenant.deleteMany();
   await db.room.deleteMany();
   await db.property.deleteMany();
@@ -132,6 +126,22 @@ async function seedAnanyaPortfolio(ownerId: string) {
     },
   });
 
+  // A past tenancy that ended just before Karthik's began.
+  await db.tenant.create({
+    data: {
+      propertyId: rented.id,
+      roomId: room.id,
+      name: "Divya Nair",
+      phone: "+91 90080 33412",
+      email: "divya.nair@example.in",
+      leaseStart: yearsAgo(2, 4, 1),
+      leaseEnd: monthsAgo(8, 1),
+      rentAmount: 28_500,
+      depositAmount: 85_500,
+      active: false,
+    },
+  });
+
   const tenant = await db.tenant.create({
     data: {
       propertyId: rented.id,
@@ -147,12 +157,17 @@ async function seedAnanyaPortfolio(ownerId: string) {
   });
 
   // Rent history: a few paid months, current month due, and one overdue.
-  const rentPayments = await Promise.all(
+  // Rent is a `Bill` (category RENT, an inflow) whose `sourceId` is the
+  // Tenant it was collected from.
+  const rentBills = await Promise.all(
     [-2, -1, 0].map((offset) =>
-      db.rentPayment.create({
+      db.bill.create({
         data: {
+          ownerId,
+          category: "RENT",
+          direction: "INFLOW",
+          sourceId: tenant.id,
           propertyId: rented.id,
-          tenantId: tenant.id,
           dueDate: monthsAgo(-offset, 5),
           amount: 32_000,
           status: offset < 0 ? "PAID" : "DUE",
@@ -162,13 +177,15 @@ async function seedAnanyaPortfolio(ownerId: string) {
       }),
     ),
   );
-  const currentRent = rentPayments[rentPayments.length - 1]!;
+  const currentRent = rentBills[rentBills.length - 1]!;
 
   // --- Utilities (recurring schedules) + their current bill instance ---
-  const maintenanceUtility = await db.utility.create({
+  const maintenanceUtility = await db.billSchedule.create({
     data: {
+      ownerId,
+      category: "BILL",
       propertyId: rented.id,
-      type: "MAINTENANCE",
+      billType: "MAINTENANCE",
       provider: "Prestige Shantiniketan Owners' Association",
       recurrence: "MONTHLY",
       defaultAmount: 3_500,
@@ -176,20 +193,25 @@ async function seedAnanyaPortfolio(ownerId: string) {
       reminderLeadDays: 5,
     },
   });
-  const maintenanceBill = await db.utilityBill.create({
+  const maintenanceBill = await db.bill.create({
     data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: maintenanceUtility.id,
       propertyId: rented.id,
-      utilityId: maintenanceUtility.id,
       dueDate: daysFromNow(5),
       amount: 3_500,
       status: "DUE",
     },
   });
 
-  const propertyTaxUtility = await db.utility.create({
+  const propertyTaxUtility = await db.billSchedule.create({
     data: {
+      ownerId,
+      category: "BILL",
       propertyId: selfOccupied.id,
-      type: "PROPERTY_TAX",
+      billType: "PROPERTY_TAX",
       provider: "BBMP",
       recurrence: "YEARLY",
       defaultAmount: 18_400,
@@ -198,20 +220,25 @@ async function seedAnanyaPortfolio(ownerId: string) {
       reminderLeadDays: 14,
     },
   });
-  const propertyTaxBill = await db.utilityBill.create({
+  const propertyTaxBill = await db.bill.create({
     data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: propertyTaxUtility.id,
       propertyId: selfOccupied.id,
-      utilityId: propertyTaxUtility.id,
       dueDate: daysFromNow(40),
       amount: 18_400,
       status: "DUE",
     },
   });
 
-  const electricityUtility = await db.utility.create({
+  const electricityUtility = await db.billSchedule.create({
     data: {
+      ownerId,
+      category: "BILL",
       propertyId: selfOccupied.id,
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: "BESCOM",
       accountNumber: "BESCOM-448821",
       recurrence: "MONTHLY",
@@ -220,19 +247,22 @@ async function seedAnanyaPortfolio(ownerId: string) {
       reminderLeadDays: 5,
     },
   });
-  const electricityBill = await db.utilityBill.create({
+  const electricityBill = await db.bill.create({
     data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: electricityUtility.id,
       propertyId: selfOccupied.id,
-      utilityId: electricityUtility.id,
       dueDate: daysFromNow(-3),
       amount: 4_120,
       status: "OVERDUE",
     },
   });
 
-  await db.utilityRecipient.create({
+  await db.billScheduleRecipient.create({
     data: {
-      utilityId: electricityUtility.id,
+      billScheduleId: electricityUtility.id,
       name: "Radha Rao",
       email: "radha.rao@example.in",
       notifyOnDue: true,
@@ -247,32 +277,46 @@ async function seedAnanyaPortfolio(ownerId: string) {
       type: "HOME_LOAN",
       principal: 7_200_000,
       interestRatePercent: 8.6,
-      tenureMonths: 180,
-      emiAmount: 71_250,
-      emiDueDay: 5,
       startDate: yearsAgo(6, 3, 20),
       outstandingBalance: 4_850_000,
       linkedAssetType: "PROPERTY",
       linkedAssetId: selfOccupied.id,
     },
   });
-
-  const upcomingEmi = await db.eMIPayment.create({
+  await db.billSchedule.create({
     data: {
-      loanId: homeLoan.id,
-      installmentNumber: 73,
+      ownerId,
+      category: "EMI",
+      sourceId: homeLoan.id,
+      recurrence: "MONTHLY",
+      dueDay: 5,
+      defaultAmount: 71_250,
+      tenureMonths: 180,
+    },
+  });
+
+  const upcomingEmi = await db.bill.create({
+    data: {
+      ownerId,
+      category: "EMI",
+      direction: "OUTFLOW",
+      sourceId: homeLoan.id,
       dueDate: daysFromNow(9),
+      installmentNumber: 73,
       principalComponent: 36_400,
       interestComponent: 34_850,
       amount: 71_250,
       status: "DUE",
     },
   });
-  await db.eMIPayment.create({
+  await db.bill.create({
     data: {
-      loanId: homeLoan.id,
-      installmentNumber: 72,
+      ownerId,
+      category: "EMI",
+      direction: "OUTFLOW",
+      sourceId: homeLoan.id,
       dueDate: monthsAgo(1, 5),
+      installmentNumber: 72,
       principalComponent: 36_140,
       interestComponent: 35_110,
       amount: 71_250,
@@ -319,9 +363,12 @@ async function seedAnanyaPortfolio(ownerId: string) {
     },
   });
 
-  const lifePremium = await db.premiumPayment.create({
+  const lifePremium = await db.bill.create({
     data: {
-      policyId: lifePolicy.id,
+      ownerId,
+      category: "PREMIUM",
+      direction: "OUTFLOW",
+      sourceId: lifePolicy.id,
       amount: 42_500,
       frequency: "YEARLY",
       dueDate: daysFromNow(22),
@@ -330,9 +377,12 @@ async function seedAnanyaPortfolio(ownerId: string) {
     },
   });
 
-  const healthPremium = await db.premiumPayment.create({
+  const healthPremium = await db.bill.create({
     data: {
-      policyId: healthPolicy.id,
+      ownerId,
+      category: "PREMIUM",
+      direction: "OUTFLOW",
+      sourceId: healthPolicy.id,
       amount: 18_900,
       frequency: "YEARLY",
       dueDate: daysFromNow(75),
@@ -341,24 +391,31 @@ async function seedAnanyaPortfolio(ownerId: string) {
     },
   });
 
-  const maturityPayout = await db.payout.create({
+  await db.bill.create({
     data: {
-      policyId: lifePolicy.id,
+      ownerId,
+      category: "PAYOUT",
+      direction: "INFLOW",
+      sourceId: lifePolicy.id,
       label: "Maturity benefit",
-      expectedDate: yearsAgo(-10, 5, 1), // 10 years from policy start (future)
+      dueDate: yearsAgo(-10, 5, 1), // 10 years from policy start (future)
       amount: 1_850_000,
       status: "DUE",
     },
   });
 
-  const claim = await db.claim.create({
+  const claim = await db.bill.create({
     data: {
-      policyId: healthPolicy.id,
-      filedDate: monthsAgo(2, 10),
+      ownerId,
+      category: "CLAIM_SETTLEMENT",
+      direction: "INFLOW",
+      sourceId: healthPolicy.id,
+      dueDate: monthsAgo(2, 10), // filed date
       amount: 45_000,
-      status: "SETTLED",
-      settledAmount: 40_500,
-      settledDate: monthsAgo(1, 20),
+      status: "PAID",
+      claimStatus: "SETTLED",
+      paidDate: monthsAgo(1, 20),
+      paidAmount: 40_500,
       description: "Hospitalisation - appendectomy, Manipal Hospital",
     },
   });
@@ -407,12 +464,18 @@ async function seedAnanyaPortfolio(ownerId: string) {
     },
   });
 
-  const sipReturn = await db.return.create({
+  const sipReturn = await db.bill.create({
     data: {
-      investmentId: sipInvestment.id,
-      date: monthsAgo(1, 5),
+      ownerId,
+      category: "RETURN",
+      direction: "INFLOW",
+      sourceId: sipInvestment.id,
+      dueDate: monthsAgo(1, 5),
       amount: 4_200,
       label: "Dividend reinvestment",
+      status: "PAID",
+      paidDate: monthsAgo(1, 5),
+      paidAmount: 4_200,
     },
   });
 
@@ -494,8 +557,8 @@ async function seedAnanyaPortfolio(ownerId: string) {
         type: "INFLOW",
         source: "CLAIM_SETTLEMENT",
         sourceId: claim.id,
-        amount: claim.settledAmount!,
-        dueDate: claim.settledDate!,
+        amount: claim.paidAmount!,
+        dueDate: claim.paidDate!,
         status: "PAID",
         description: "HDFC Ergo mediclaim - claim settled",
       },
@@ -505,7 +568,7 @@ async function seedAnanyaPortfolio(ownerId: string) {
         source: "RETURN",
         sourceId: sipReturn.id,
         amount: sipReturn.amount,
-        dueDate: sipReturn.date,
+        dueDate: sipReturn.dueDate,
         status: "PAID",
         description: "SBI Bluechip Fund - dividend reinvestment",
       },
@@ -561,20 +624,25 @@ async function seedVikramPortfolio(ownerId: string) {
     },
   });
 
-  const currentRent = await db.rentPayment.create({
+  const currentRent = await db.bill.create({
     data: {
+      ownerId,
+      category: "RENT",
+      direction: "INFLOW",
+      sourceId: tenant.id,
       propertyId: investmentFlat.id,
-      tenantId: tenant.id,
       dueDate: daysFromNow(6),
       amount: 58_000,
       status: "DUE",
     },
   });
 
-  const societyMaintenanceUtility = await db.utility.create({
+  const societyMaintenanceUtility = await db.billSchedule.create({
     data: {
+      ownerId,
+      category: "BILL",
       propertyId: selfOccupied.id,
-      type: "MAINTENANCE",
+      billType: "MAINTENANCE",
       provider: "Hiranandani Gardens CHS",
       recurrence: "MONTHLY",
       defaultAmount: 9_800,
@@ -582,20 +650,25 @@ async function seedVikramPortfolio(ownerId: string) {
       reminderLeadDays: 5,
     },
   });
-  const societyMaintenance = await db.utilityBill.create({
+  const societyMaintenance = await db.bill.create({
     data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: societyMaintenanceUtility.id,
       propertyId: selfOccupied.id,
-      utilityId: societyMaintenanceUtility.id,
       dueDate: daysFromNow(12),
       amount: 9_800,
       status: "DUE",
     },
   });
 
-  const waterUtility = await db.utility.create({
+  const waterUtility = await db.billSchedule.create({
     data: {
+      ownerId,
+      category: "BILL",
       propertyId: investmentFlat.id,
-      type: "WATER",
+      billType: "WATER",
       provider: "BMC Water Supply",
       recurrence: "MONTHLY",
       defaultAmount: 1_450,
@@ -603,19 +676,22 @@ async function seedVikramPortfolio(ownerId: string) {
       reminderLeadDays: 3,
     },
   });
-  const waterBill = await db.utilityBill.create({
+  const waterBill = await db.bill.create({
     data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: waterUtility.id,
       propertyId: investmentFlat.id,
-      utilityId: waterUtility.id,
       dueDate: daysFromNow(-1),
       amount: 1_450,
       status: "OVERDUE",
     },
   });
 
-  await db.utilityRecipient.create({
+  await db.billScheduleRecipient.create({
     data: {
-      utilityId: waterUtility.id,
+      billScheduleId: waterUtility.id,
       name: "Shalini Mehta",
       email: "shalini.mehta@example.in",
       notifyOnDue: true,
@@ -629,21 +705,32 @@ async function seedVikramPortfolio(ownerId: string) {
       type: "HOME_LOAN",
       principal: 16_500_000,
       interestRatePercent: 8.75,
-      tenureMonths: 240,
-      emiAmount: 145_600,
-      emiDueDay: 3,
       startDate: yearsAgo(5, 10, 25),
       outstandingBalance: 12_900_000,
       linkedAssetType: "PROPERTY",
       linkedAssetId: selfOccupied.id,
     },
   });
-
-  const upcomingEmi = await db.eMIPayment.create({
+  await db.billSchedule.create({
     data: {
-      loanId: homeLoan.id,
-      installmentNumber: 61,
+      ownerId,
+      category: "EMI",
+      sourceId: homeLoan.id,
+      recurrence: "MONTHLY",
+      dueDay: 3,
+      defaultAmount: 145_600,
+      tenureMonths: 240,
+    },
+  });
+
+  const upcomingEmi = await db.bill.create({
+    data: {
+      ownerId,
+      category: "EMI",
+      direction: "OUTFLOW",
+      sourceId: homeLoan.id,
       dueDate: daysFromNow(14),
+      installmentNumber: 61,
       principalComponent: 51_200,
       interestComponent: 94_400,
       amount: 145_600,
@@ -658,20 +745,31 @@ async function seedVikramPortfolio(ownerId: string) {
       type: "VEHICLE_LOAN",
       principal: 1_800_000,
       interestRatePercent: 9.2,
-      tenureMonths: 60,
-      emiAmount: 37_500,
-      emiDueDay: 8,
       startDate: yearsAgo(1, 6, 15),
       outstandingBalance: 1_260_000,
       linkedAssetType: "NONE",
     },
   });
-
-  const carEmi = await db.eMIPayment.create({
+  await db.billSchedule.create({
     data: {
-      loanId: carLoan.id,
-      installmentNumber: 15,
+      ownerId,
+      category: "EMI",
+      sourceId: carLoan.id,
+      recurrence: "MONTHLY",
+      dueDay: 8,
+      defaultAmount: 37_500,
+      tenureMonths: 60,
+    },
+  });
+
+  const carEmi = await db.bill.create({
+    data: {
+      ownerId,
+      category: "EMI",
+      direction: "OUTFLOW",
+      sourceId: carLoan.id,
       dueDate: daysFromNow(19),
+      installmentNumber: 15,
       principalComponent: 26_800,
       interestComponent: 10_700,
       amount: 37_500,
@@ -731,9 +829,12 @@ async function seedVikramPortfolio(ownerId: string) {
     },
   });
 
-  const termPremium = await db.premiumPayment.create({
+  const termPremium = await db.bill.create({
     data: {
-      policyId: termPolicy.id,
+      ownerId,
+      category: "PREMIUM",
+      direction: "OUTFLOW",
+      sourceId: termPolicy.id,
       amount: 68_000,
       frequency: "YEARLY",
       dueDate: daysFromNow(48),
@@ -742,9 +843,12 @@ async function seedVikramPortfolio(ownerId: string) {
     },
   });
 
-  const healthPremium = await db.premiumPayment.create({
+  const healthPremium = await db.bill.create({
     data: {
-      policyId: familyFloater.id,
+      ownerId,
+      category: "PREMIUM",
+      direction: "OUTFLOW",
+      sourceId: familyFloater.id,
       amount: 31_200,
       frequency: "YEARLY",
       dueDate: daysFromNow(-8),
@@ -753,9 +857,12 @@ async function seedVikramPortfolio(ownerId: string) {
     },
   });
 
-  const vehiclePremium = await db.premiumPayment.create({
+  await db.bill.create({
     data: {
-      policyId: vehiclePolicy.id,
+      ownerId,
+      category: "PREMIUM",
+      direction: "OUTFLOW",
+      sourceId: vehiclePolicy.id,
       amount: 14_500,
       frequency: "YEARLY",
       dueDate: daysFromNow(320),
@@ -821,21 +928,29 @@ async function seedVikramPortfolio(ownerId: string) {
   ]);
   const [axisSip, fd] = investments;
 
-  const fdReturn = await db.return.create({
+  const fdReturn = await db.bill.create({
     data: {
-      investmentId: fd!.id,
-      date: daysFromNow(400),
+      ownerId,
+      category: "RETURN",
+      direction: "INFLOW",
+      sourceId: fd!.id,
+      dueDate: daysFromNow(400),
       amount: 75_000,
       label: "Maturity payout (expected)",
+      status: "DUE",
     },
   });
 
-  const claim = await db.claim.create({
+  const claim = await db.bill.create({
     data: {
-      policyId: vehiclePolicy.id,
-      filedDate: monthsAgo(1, 5),
+      ownerId,
+      category: "CLAIM_SETTLEMENT",
+      direction: "INFLOW",
+      sourceId: vehiclePolicy.id,
+      dueDate: monthsAgo(1, 5), // filed date
       amount: 22_000,
-      status: "APPROVED",
+      status: "DUE", // APPROVED, not yet settled
+      claimStatus: "APPROVED",
       description: "Windshield + bumper repair after minor collision",
     },
   });
@@ -918,7 +1033,7 @@ async function seedVikramPortfolio(ownerId: string) {
         source: "RETURN",
         sourceId: fdReturn.id,
         amount: fdReturn.amount,
-        dueDate: fdReturn.date,
+        dueDate: fdReturn.dueDate,
         status: "DUE",
         description: "ICICI Bank FD - maturity payout expected",
       },
@@ -985,12 +1100,15 @@ async function seedRishabhPortfolio(ownerId: string) {
     },
   });
 
-  const rentPayments = await Promise.all(
+  const rentBills = await Promise.all(
     [-2, -1, 0].map((offset) =>
-      db.rentPayment.create({
+      db.bill.create({
         data: {
+          ownerId,
+          category: "RENT",
+          direction: "INFLOW",
+          sourceId: tenant.id,
           propertyId: rented.id,
-          tenantId: tenant.id,
           dueDate: monthsAgo(-offset, 3),
           amount: 38_000,
           status: offset < 0 ? "PAID" : "DUE",
@@ -1000,12 +1118,14 @@ async function seedRishabhPortfolio(ownerId: string) {
       }),
     ),
   );
-  const currentRent = rentPayments[rentPayments.length - 1]!;
+  const currentRent = rentBills[rentBills.length - 1]!;
 
-  const maintenanceUtility = await db.utility.create({
+  const maintenanceUtility = await db.billSchedule.create({
     data: {
+      ownerId,
+      category: "BILL",
       propertyId: rented.id,
-      type: "MAINTENANCE",
+      billType: "MAINTENANCE",
       provider: "Vipul World RWA",
       recurrence: "MONTHLY",
       defaultAmount: 4_200,
@@ -1013,20 +1133,25 @@ async function seedRishabhPortfolio(ownerId: string) {
       reminderLeadDays: 5,
     },
   });
-  const maintenanceBill = await db.utilityBill.create({
+  const maintenanceBill = await db.bill.create({
     data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: maintenanceUtility.id,
       propertyId: rented.id,
-      utilityId: maintenanceUtility.id,
       dueDate: daysFromNow(8),
       amount: 4_200,
       status: "DUE",
     },
   });
 
-  const propertyTaxUtility = await db.utility.create({
+  const propertyTaxUtility = await db.billSchedule.create({
     data: {
+      ownerId,
+      category: "BILL",
       propertyId: selfOccupied.id,
-      type: "PROPERTY_TAX",
+      billType: "PROPERTY_TAX",
       provider: "Municipal Corporation of Gurugram",
       recurrence: "YEARLY",
       defaultAmount: 21_600,
@@ -1035,22 +1160,129 @@ async function seedRishabhPortfolio(ownerId: string) {
       reminderLeadDays: 14,
     },
   });
-  const propertyTaxBill = await db.utilityBill.create({
+  const propertyTaxBill = await db.bill.create({
     data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: propertyTaxUtility.id,
       propertyId: selfOccupied.id,
-      utilityId: propertyTaxUtility.id,
       dueDate: daysFromNow(-6),
       amount: 21_600,
       status: "OVERDUE",
     },
   });
 
-  await db.utilityRecipient.create({
+  await db.billScheduleRecipient.create({
     data: {
-      utilityId: propertyTaxUtility.id,
+      billScheduleId: propertyTaxUtility.id,
       name: "Priya Chauhan",
       email: "priya.chauhan@example.in",
       notifyOnDue: true,
+    },
+  });
+
+  // A few more utilities whose current bill instance covers every
+  // `PaymentStatus` a utility bill can be in, alongside the DUE
+  // (maintenanceBill) and OVERDUE (propertyTaxBill) ones above.
+  const gasUtility = await db.billSchedule.create({
+    data: {
+      ownerId,
+      category: "BILL",
+      propertyId: rented.id,
+      billType: "GAS",
+      provider: "Indane Gas Agency",
+      recurrence: "MONTHLY",
+      defaultAmount: 900,
+      dueDay: monthsAgo(1, 12).getDate(),
+      reminderLeadDays: 3,
+    },
+  });
+  const gasBill = await db.bill.create({
+    data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: gasUtility.id,
+      propertyId: rented.id,
+      dueDate: monthsAgo(1, 12),
+      amount: 900,
+      status: "PAID",
+      paidDate: monthsAgo(1, 10),
+      paidAmount: 900,
+    },
+  });
+
+  const internetUtility = await db.billSchedule.create({
+    data: {
+      ownerId,
+      category: "BILL",
+      propertyId: rented.id,
+      billType: "INTERNET",
+      provider: "Airtel Xstream Fiber",
+      recurrence: "MONTHLY",
+      defaultAmount: 1_200,
+      dueDay: daysFromNow(-4).getDate(),
+      reminderLeadDays: 3,
+    },
+  });
+  const internetBill = await db.bill.create({
+    data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: internetUtility.id,
+      propertyId: rented.id,
+      dueDate: daysFromNow(-4),
+      amount: 1_200,
+      status: "PARTIALLY_PAID",
+      paidDate: daysFromNow(-2),
+      paidAmount: 700,
+    },
+  });
+
+  const waterUtility = await db.billSchedule.create({
+    data: {
+      ownerId,
+      category: "BILL",
+      propertyId: selfOccupied.id,
+      billType: "WATER",
+      provider: "Gurugram Jal Board",
+      recurrence: "MONTHLY",
+      defaultAmount: 650,
+      dueDay: monthsAgo(2, 15).getDate(),
+      reminderLeadDays: 3,
+    },
+  });
+  const waterBill = await db.bill.create({
+    data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: waterUtility.id,
+      propertyId: selfOccupied.id,
+      dueDate: monthsAgo(2, 15),
+      amount: 650,
+      status: "CANCELLED",
+      notes: "Connection transferred to RWA-managed billing; charge voided.",
+    },
+  });
+
+  // A second, historical bill instance on the existing maintenance utility
+  // — a duplicate charge that was later refunded.
+  const refundedMaintenanceBill = await db.bill.create({
+    data: {
+      ownerId,
+      category: "BILL",
+      direction: "OUTFLOW",
+      sourceId: maintenanceUtility.id,
+      propertyId: rented.id,
+      dueDate: monthsAgo(3, 8),
+      amount: 4_200,
+      status: "REFUNDED",
+      paidDate: monthsAgo(3, 6),
+      paidAmount: 4_200,
+      notes: "Duplicate charge, refunded by the RWA the following month.",
     },
   });
 
@@ -1062,32 +1294,46 @@ async function seedRishabhPortfolio(ownerId: string) {
       type: "HOME_LOAN",
       principal: 9_000_000,
       interestRatePercent: 8.4,
-      tenureMonths: 180,
-      emiAmount: 88_400,
-      emiDueDay: 7,
       startDate: yearsAgo(5, 1, 15),
       outstandingBalance: 6_950_000,
       linkedAssetType: "PROPERTY",
       linkedAssetId: selfOccupied.id,
     },
   });
-
-  const upcomingEmi = await db.eMIPayment.create({
+  await db.billSchedule.create({
     data: {
-      loanId: homeLoan.id,
-      installmentNumber: 58,
+      ownerId,
+      category: "EMI",
+      sourceId: homeLoan.id,
+      recurrence: "MONTHLY",
+      dueDay: 7,
+      defaultAmount: 88_400,
+      tenureMonths: 180,
+    },
+  });
+
+  const upcomingEmi = await db.bill.create({
+    data: {
+      ownerId,
+      category: "EMI",
+      direction: "OUTFLOW",
+      sourceId: homeLoan.id,
       dueDate: daysFromNow(11),
+      installmentNumber: 58,
       principalComponent: 43_900,
       interestComponent: 44_500,
       amount: 88_400,
       status: "DUE",
     },
   });
-  await db.eMIPayment.create({
+  await db.bill.create({
     data: {
-      loanId: homeLoan.id,
-      installmentNumber: 57,
+      ownerId,
+      category: "EMI",
+      direction: "OUTFLOW",
+      sourceId: homeLoan.id,
       dueDate: monthsAgo(1, 7),
+      installmentNumber: 57,
       principalComponent: 43_600,
       interestComponent: 44_800,
       amount: 88_400,
@@ -1134,9 +1380,12 @@ async function seedRishabhPortfolio(ownerId: string) {
     },
   });
 
-  const termPremium = await db.premiumPayment.create({
+  const termPremium = await db.bill.create({
     data: {
-      policyId: termPolicy.id,
+      ownerId,
+      category: "PREMIUM",
+      direction: "OUTFLOW",
+      sourceId: termPolicy.id,
       amount: 24_800,
       frequency: "YEARLY",
       dueDate: daysFromNow(60),
@@ -1145,9 +1394,12 @@ async function seedRishabhPortfolio(ownerId: string) {
     },
   });
 
-  const healthPremium = await db.premiumPayment.create({
+  const healthPremium = await db.bill.create({
     data: {
-      policyId: healthPolicy.id,
+      ownerId,
+      category: "PREMIUM",
+      direction: "OUTFLOW",
+      sourceId: healthPolicy.id,
       amount: 16_500,
       frequency: "YEARLY",
       dueDate: daysFromNow(18),
@@ -1199,12 +1451,18 @@ async function seedRishabhPortfolio(ownerId: string) {
     },
   });
 
-  const sipReturn = await db.return.create({
+  const sipReturn = await db.bill.create({
     data: {
-      investmentId: sipInvestment.id,
-      date: monthsAgo(1, 3),
+      ownerId,
+      category: "RETURN",
+      direction: "INFLOW",
+      sourceId: sipInvestment.id,
+      dueDate: monthsAgo(1, 3),
       amount: 3_600,
       label: "Dividend reinvestment",
+      status: "PAID",
+      paidDate: monthsAgo(1, 3),
+      paidAmount: 3_600,
     },
   });
 
@@ -1244,6 +1502,46 @@ async function seedRishabhPortfolio(ownerId: string) {
       {
         ownerId,
         type: "OUTFLOW",
+        source: "BILL",
+        sourceId: gasBill.id,
+        amount: gasBill.amount,
+        dueDate: gasBill.dueDate,
+        status: "PAID",
+        description: "Gas bill - Sector 50 Rented Flat (Indane)",
+      },
+      {
+        ownerId,
+        type: "OUTFLOW",
+        source: "BILL",
+        sourceId: internetBill.id,
+        amount: internetBill.amount,
+        dueDate: internetBill.dueDate,
+        status: "PARTIALLY_PAID",
+        description: "Internet bill - Sector 50 Rented Flat (Airtel)",
+      },
+      {
+        ownerId,
+        type: "OUTFLOW",
+        source: "BILL",
+        sourceId: waterBill.id,
+        amount: waterBill.amount,
+        dueDate: waterBill.dueDate,
+        status: "CANCELLED",
+        description: "Water bill - DLF Phase 3 Apartment (voided)",
+      },
+      {
+        ownerId,
+        type: "OUTFLOW",
+        source: "BILL",
+        sourceId: refundedMaintenanceBill.id,
+        amount: refundedMaintenanceBill.amount,
+        dueDate: refundedMaintenanceBill.dueDate,
+        status: "REFUNDED",
+        description: "Maintenance - Sector 50 Rented Flat (duplicate charge, refunded)",
+      },
+      {
+        ownerId,
+        type: "OUTFLOW",
         source: "EMI",
         sourceId: upcomingEmi.id,
         amount: upcomingEmi.amount,
@@ -1277,7 +1575,7 @@ async function seedRishabhPortfolio(ownerId: string) {
         source: "RETURN",
         sourceId: sipReturn.id,
         amount: sipReturn.amount,
-        dueDate: sipReturn.date,
+        dueDate: sipReturn.dueDate,
         status: "PAID",
         description: "Parag Parikh Flexi Cap Fund - dividend reinvestment",
       },

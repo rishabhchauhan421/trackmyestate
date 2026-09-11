@@ -51,6 +51,8 @@ model User {
   investments       Investment[]
   loans             Loan[]
   financialEvents   FinancialEvent[]
+  bills             Bill[]
+  billSchedules     BillSchedule[]
   notificationRules NotificationRule[]
   notificationJobs  NotificationJob[]
   documents         Document[]
@@ -147,7 +149,7 @@ enum BillingType {
   VARIABLE
 }
 
-enum UtilityRecurrence {
+enum BillRecurrence {
   WEEKLY
   BI_WEEKLY
   MONTHLY
@@ -326,11 +328,10 @@ model Property {
   createdAt             DateTime     @default(now())
   updatedAt             DateTime     @updatedAt
 
-  rooms        Room[]
-  tenants      Tenant[]
-  rentPayments RentPayment[]
-  utilities    Utility[]
-  utilityBills UtilityBill[]
+  rooms         Room[]
+  tenants       Tenant[]
+  billSchedules BillSchedule[]
+  bills         Bill[]
 
   @@index([ownerId])
   @@index([deletedAt])
@@ -375,74 +376,74 @@ model Tenant {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  rentPayments RentPayment[]
-
   @@index([propertyId])
   @@index([roomId])
   @@index([deletedAt])
 }
 
-model RentPayment {
-  id         String        @id @default(auto()) @map("_id") @db.ObjectId
-  propertyId String        @db.ObjectId
-  property   Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  tenantId   String        @db.ObjectId
-  tenant     Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  dueDate    DateTime
-  amount     Float
-  currency   Currency?
-  status     PaymentStatus @default(DUE)
-  paidDate   DateTime?
-  paidAmount Float?
-  
-  deletedAt  DateTime?     // Soft delete
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
+// ---------------------------------------------------------------------------
+// BillSchedule — the recurring (or one-time) template that generates `Bill`
+// instances. Generalized from what used to be just `Utility`: discriminated
+// by `category`/reused enums the same way `Bill` is, so the same model can
+// back a property's utility bills (`category: "BILL"`, scoped by
+// `propertyId`) or a loan's EMI schedule (`category: "EMI"`, `sourceId`
+// pointing at the `Loan`). `Policy` (premiums) and `Tenant` (rent) can plug
+// into this the same way once that's built — nothing wires them up yet.
+// ---------------------------------------------------------------------------
 
-  @@index([propertyId])
-  @@index([tenantId])
-  @@index([dueDate, status])
-  @@index([deletedAt])
-}
+model BillSchedule {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId String @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
-model Utility {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  propertyId       String            @db.ObjectId
-  property         Property          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  
-  type             BillType
+  category FinancialEventSource // RENT | BILL | PREMIUM | EMI
+
+  // Polymorphic parent, no declared relation (same convention as
+  // `Bill.sourceId`) — Loan.id for "EMI". Left unset for "BILL", whose only
+  // parent is the Property itself (propertyId below).
+  sourceId String? @db.ObjectId
+
+  // Populated only for "BILL" (and, eventually, "RENT").
+  propertyId String?   @db.ObjectId
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // --- BILL (utility)-specific ---
+  billType         BillType?
   provider         String?
   accountNumber    String?
   meterNumber      String?
-  
-  billingType      BillingType       @default(VARIABLE)
-  recurrence       UtilityRecurrence @default(MONTHLY)
-  
-  dueDay           Int               // 1-31 (day of month) or 1-7 (day of week)
-  dueMonth         Int?              // 1-12 (for YEARLY recurrence)
-  reminderLeadDays Int               @default(7)
-  
+  billingType      BillingType?
+  autoGenerateBill Boolean?
+
+  // --- Shared scheduling fields ---
+  recurrence       BillRecurrence @default(MONTHLY)
+  dueDay           Int            // 1-31 (day of month) or 1-7 (day of week)
+  dueMonth         Int?           // 1-12 (for YEARLY recurrence)
+  reminderLeadDays Int            @default(7)
   defaultAmount    Float?
   currency         Currency?
-  autoGenerateBill Boolean           @default(true)
-  active           Boolean           @default(true)
-  
-  deletedAt        DateTime?         // Soft delete
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
 
-  recipients       UtilityRecipient[]
-  bills            UtilityBill[]
+  // --- EMI-specific ---
+  tenureMonths Int? // total number of cycles for a finite schedule; null = indefinite
+
+  active    Boolean   @default(true)
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  recipients BillScheduleRecipient[]
 
   @@index([propertyId])
+  @@index([category, sourceId])
+  @@index([ownerId])
   @@index([deletedAt])
 }
 
-model UtilityRecipient {
-  id           String    @id @default(auto()) @map("_id") @db.ObjectId
-  utilityId    String    @db.ObjectId
-  utility      Utility   @relation(fields: [utilityId], references: [id], onDelete: Cascade)
-  
+model BillScheduleRecipient {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  billScheduleId String       @db.ObjectId
+  billSchedule   BillSchedule @relation(fields: [billScheduleId], references: [id], onDelete: Cascade)
+
   name         String
   email        String
   phone        String?
@@ -453,42 +454,7 @@ model UtilityRecipient {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  @@index([utilityId])
-  @@index([deletedAt])
-}
-
-model UtilityBill {
-  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
-  utilityId          String        @db.ObjectId
-  utility            Utility       @relation(fields: [utilityId], references: [id], onDelete: Cascade)
-  
-  propertyId         String        @db.ObjectId
-  property           Property      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-
-  previousMeterValue Float?
-  currentMeterValue  Float?
-  
-  billingPeriodStart DateTime?
-  billingPeriodEnd   DateTime?
-  dueDate            DateTime
-
-  amount             Float
-  currency           Currency?
-  status             PaymentStatus @default(DUE)
-  paidDate           DateTime?
-  paidAmount         Float?
-  
-  billDocumentUrl    String?
-  receiptDocumentUrl String?
-  notes              String?
-
-  deletedAt          DateTime?     // Soft delete
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-
-  @@index([utilityId])
-  @@index([propertyId])
-  @@index([dueDate, status])
+  @@index([billScheduleId])
   @@index([deletedAt])
 }
 
@@ -519,71 +485,7 @@ model Policy {
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
 
-  premiumPayments PremiumPayment[]
-  payouts         Payout[]
-  claims          Claim[]
-
   @@index([ownerId])
-  @@index([deletedAt])
-}
-
-model PremiumPayment {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  policyId        String           @db.ObjectId
-  policy          Policy           @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  amount          Float
-  currency        Currency?
-  frequency       PremiumFrequency
-  dueDate         DateTime
-  gracePeriodDays Int?
-  status          PaymentStatus    @default(DUE)
-  paidDate        DateTime?
-  
-  deletedAt       DateTime?        // Soft delete
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-
-  @@index([policyId])
-  @@index([dueDate, status])
-  @@index([deletedAt])
-}
-
-model Payout {
-  id           String        @id @default(auto()) @map("_id") @db.ObjectId
-  policyId     String        @db.ObjectId
-  policy       Policy        @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  label        String
-  expectedDate DateTime
-  amount       Float
-  currency     Currency?
-  status       PaymentStatus @default(DUE)
-  receivedDate DateTime?
-  
-  deletedAt    DateTime?     // Soft delete
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-
-  @@index([policyId])
-  @@index([deletedAt])
-}
-
-model Claim {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
-  policyId      String      @db.ObjectId
-  policy        Policy      @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  filedDate     DateTime
-  amount        Float
-  currency      Currency?
-  status        ClaimStatus @default(FILED)
-  settledAmount Float?
-  settledDate   DateTime?
-  description   String?
-  
-  deletedAt     DateTime?   // Soft delete
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  @@index([policyId])
   @@index([deletedAt])
 }
 
@@ -610,28 +512,14 @@ model Investment {
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
 
-  returns Return[]
-
   @@index([ownerId])
   @@index([deletedAt])
 }
 
-model Return {
-  id           String     @id @default(auto()) @map("_id") @db.ObjectId
-  investmentId String     @db.ObjectId
-  investment   Investment @relation(fields: [investmentId], references: [id], onDelete: Cascade)
-  date         DateTime
-  amount       Float
-  currency     Currency?
-  label        String
-  
-  deletedAt    DateTime?  // Soft delete
-  createdAt    DateTime   @default(now())
-
-  @@index([investmentId])
-  @@index([deletedAt])
-}
-
+// EMI schedule (tenureMonths, due day, EMI amount) lives on this loan's
+// `BillSchedule` row (category "EMI"), not here — see the `BillSchedule`
+// model comment. `startDate` stays here since it's a loan fact (when it was
+// disbursed), not a billing-schedule concept.
 model Loan {
   id                  String          @id @default(auto()) @map("_id") @db.ObjectId
   ownerId             String          @db.ObjectId
@@ -641,42 +529,16 @@ model Loan {
   principal           Float
   currency            Currency?
   interestRatePercent Float
-  tenureMonths        Int
-  emiAmount           Float
-  emiDueDay           Int
   startDate           DateTime
   outstandingBalance  Float
   linkedAssetType     LinkedAssetType @default(NONE)
   linkedAssetId       String?         @db.ObjectId
-  
+
   deletedAt           DateTime?       // Soft delete
   createdAt           DateTime        @default(now())
   updatedAt           DateTime        @updatedAt
 
-  emiPayments EMIPayment[]
-
   @@index([ownerId])
-  @@index([deletedAt])
-}
-
-model EMIPayment {
-  id                 String        @id @default(auto()) @map("_id") @db.ObjectId
-  loanId             String        @db.ObjectId
-  loan               Loan          @relation(fields: [loanId], references: [id], onDelete: Cascade)
-  installmentNumber  Int
-  dueDate            DateTime
-  principalComponent Float
-  interestComponent  Float
-  amount             Float
-  currency           Currency?
-  status             PaymentStatus @default(DUE)
-  paidDate           DateTime?
-  
-  deletedAt          DateTime?     // Soft delete
-  createdAt          DateTime      @default(now())
-
-  @@index([loanId])
-  @@index([dueDate, status])
   @@index([deletedAt])
 }
 
@@ -699,6 +561,79 @@ model FinancialEvent {
 
   @@index([ownerId])
   @@index([dueDate])
+  @@index([deletedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Bill — the single "amount due on a date, later paid/received" record.
+// Replaces what used to be UtilityBill / EMIPayment / PremiumPayment /
+// RentPayment / Payout / Return / Claim: every one of those was the same
+// shape (dueDate, amount, status, paidDate) with a handful of
+// category-specific extras, so they're one model now, discriminated by
+// `category` (reusing `FinancialEventSource`, the same enum FinancialEvent
+// already uses for this) and `direction` (reusing `FinancialEventType`). A
+// Bill is always a single, one-time occurrence — recurrence lives on the
+// template that generates them (Utility, Loan, Policy, a Tenant lease),
+// which either spawns one Bill once or spawns a new one each cycle.
+// ---------------------------------------------------------------------------
+
+model Bill {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId String @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  category  FinancialEventSource // RENT | BILL | PREMIUM | PAYOUT | EMI | RETURN | CLAIM_SETTLEMENT
+  direction FinancialEventType   // INFLOW | OUTFLOW
+
+  // Polymorphic parent, no declared relation (same convention as
+  // FinancialEvent.sourceId) — Tenant.id / Utility.id / Loan.id / Policy.id
+  // / Investment.id, depending on `category`.
+  sourceId String @db.ObjectId
+
+  // Populated only for RENT and BILL, so property-scoped queries (the
+  // utilities page, /properties' overdue-amount sum) don't need a join.
+  propertyId String?   @db.ObjectId
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  dueDate    DateTime
+  amount     Float
+  currency   Currency?
+  status     PaymentStatus @default(DUE)
+  paidDate   DateTime?
+  paidAmount Float?
+  notes      String?
+
+  // --- Category-specific fields (nullable; only one group populated per row) ---
+  // EMI
+  installmentNumber  Int?
+  principalComponent Float?
+  interestComponent  Float?
+  // BILL (utility)
+  previousMeterValue Float?
+  currentMeterValue  Float?
+  billingPeriodStart DateTime?
+  billingPeriodEnd   DateTime?
+  billDocumentUrl    String?
+  receiptDocumentUrl String?
+  // PREMIUM
+  frequency       PremiumFrequency?
+  gracePeriodDays Int?
+  // PAYOUT / RETURN
+  label String?
+  // CLAIM_SETTLEMENT — `claimStatus` kept for extra granularity alongside
+  // the shared `status`, since FILED/APPROVED/REJECTED/SETTLED doesn't map
+  // 1:1 onto PaymentStatus.
+  claimStatus ClaimStatus?
+  description String?
+
+  deletedAt DateTime? // Soft delete
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([ownerId])
+  @@index([category, sourceId])
+  @@index([propertyId])
+  @@index([dueDate, status])
   @@index([deletedAt])
 }
 

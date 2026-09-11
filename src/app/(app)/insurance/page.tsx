@@ -51,7 +51,7 @@ export default async function InsurancePage() {
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
           <ul className="divide-y divide-slate-100 dark:divide-slate-800">
             {policies.map((policy) => {
-              const nextPremium = policy.premiumPayments[0];
+              const nextPremium = policy.nextPremium;
               return (
                 <li
                   key={policy.id}

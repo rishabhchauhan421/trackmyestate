@@ -5,15 +5,9 @@ import { EmptyState } from "~/app/_components/empty-state";
 import { PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatINR } from "~/lib/format";
+import { PROPERTY_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
 import { getProperties } from "~/server/queries";
-
-const TYPE_LABELS: Record<string, string> = {
-  SELF_OCCUPIED: "Self-occupied",
-  RENTED: "Rented",
-  UNDER_CONSTRUCTION: "Under construction",
-  INVESTMENT: "Investment",
-};
 
 export default async function PropertiesPage() {
   const session = await getSession();
@@ -48,7 +42,10 @@ export default async function PropertiesPage() {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {properties.map((property) => {
             const tenant = property.tenants[0];
-            const dueBill = property.utilityBills[0];
+            const overdueAmount = property.openBills.reduce(
+              (sum, bill) => sum + bill.amount,
+              0,
+            );
             return (
               <div
                 key={property.id}
@@ -64,7 +61,7 @@ export default async function PropertiesPage() {
                     </p>
                   </div>
                   <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                    {TYPE_LABELS[property.type]}
+                    {PROPERTY_TYPE_LABELS[property.type]}
                   </span>
                 </div>
 
@@ -86,25 +83,26 @@ export default async function PropertiesPage() {
                     · {formatINR(tenant.rentAmount)}/mo
                   </p>
                 )}
-                {dueBill && (
-                  <p
-                    className={`mt-1 text-xs font-medium ${
-                      dueBill.status === "OVERDUE"
-                        ? "text-red-600 dark:text-red-400"
-                        : "text-amber-600 dark:text-amber-400"
-                    }`}
-                  >
-                    {dueBill.status === "OVERDUE" ? "Overdue" : "Due"}:{" "}
-                    {formatINR(dueBill.amount)} bill
+                {overdueAmount > 0 && (
+                  <p className="mt-1 text-xs font-medium text-red-600 dark:text-red-400">
+                    Overdue amount: {formatINR(overdueAmount)}
                   </p>
                 )}
 
-                <Link
-                  href={`/properties/${property.id}/utilities`}
-                  className="mt-4 inline-block text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
-                >
-                  Utilities →
-                </Link>
+                <div className="mt-4 flex items-center gap-4">
+                  <Link
+                    href={`/properties/${property.id}`}
+                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                  >
+                    Details →
+                  </Link>
+                  <Link
+                    href={`/properties/${property.id}/utilities`}
+                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                  >
+                    Utilities →
+                  </Link>
+                </div>
               </div>
             );
           })}

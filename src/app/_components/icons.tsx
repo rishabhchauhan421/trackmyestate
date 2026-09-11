@@ -63,6 +63,19 @@ export function InvestmentsIcon(props: IconProps) {
   );
 }
 
+export function LoansIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3 L21 8 H3 Z" />
+      <line x1="5" y1="8" x2="5" y2="18" />
+      <line x1="10" y1="8" x2="10" y2="18" />
+      <line x1="14" y1="8" x2="14" y2="18" />
+      <line x1="19" y1="8" x2="19" y2="18" />
+      <line x1="3" y1="21" x2="21" y2="21" />
+    </svg>
+  );
+}
+
 export function DocumentsIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

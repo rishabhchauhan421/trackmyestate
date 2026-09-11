@@ -5,8 +5,13 @@ import { db } from "~/server/db";
 import {
   getActiveUtilitiesForProperty,
   getDashboardData,
+  getLoanForOwner,
+  getRoomsForProperty,
+  getTenantForOwner,
+  getTenantsForProperty,
   getTimelineEvents,
   getUtilityBillsForProperty,
+  hasBillsForTenant,
 } from "~/server/queries";
 
 jest.mock("~/server/db");
@@ -272,24 +277,30 @@ describe("getTimelineEvents", () => {
 });
 
 describe("getActiveUtilitiesForProperty", () => {
-  it("only queries active utilities for the given property", async () => {
-    dbMock.utility.findMany.mockResolvedValue([]);
+  it("only queries active BILL-category schedules for the given property", async () => {
+    dbMock.billSchedule.findMany.mockResolvedValue([]);
 
     await getActiveUtilitiesForProperty("prop-1");
 
-    const call = dbMock.utility.findMany.mock.calls[0]?.[0];
-    expect(call?.where).toEqual({ propertyId: "prop-1", active: true });
+    const call = dbMock.billSchedule.findMany.mock.calls[0]?.[0];
+    expect(call?.where).toEqual({
+      propertyId: "prop-1",
+      category: "BILL",
+      active: true,
+    });
   });
 
   it("does not mix up recipients between different utilities", async () => {
-    dbMock.utility.findMany.mockResolvedValue([
+    dbMock.billSchedule.findMany.mockResolvedValue([
       {
         id: "utility-1",
+        billType: "ELECTRICITY",
         recipients: [{ id: "u1-recipient", email: "u1@x.com" }],
       },
-      { id: "utility-2", recipients: [] },
+      { id: "utility-2", billType: "WATER", recipients: [] },
       {
         id: "utility-3",
+        billType: "GAS",
         recipients: [{ id: "u3-recipient", email: "u3@x.com" }],
       },
     ] as never);
@@ -306,7 +317,7 @@ describe("getActiveUtilitiesForProperty", () => {
   });
 
   it("returns an empty array when the property has no active utilities", async () => {
-    dbMock.utility.findMany.mockResolvedValue([]);
+    dbMock.billSchedule.findMany.mockResolvedValue([]);
 
     const result = await getActiveUtilitiesForProperty("prop-1");
 
@@ -318,65 +329,275 @@ describe("getActiveUtilitiesForProperty", () => {
     // key is explicitly null — records that never had the key set (created
     // before this field existed, or without setting it) are missing it
     // entirely and would be silently excluded. The OR variant catches both.
-    dbMock.utility.findMany.mockResolvedValue([]);
+    dbMock.billSchedule.findMany.mockResolvedValue([]);
 
     await getActiveUtilitiesForProperty("prop-1");
 
-    const call = dbMock.utility.findMany.mock.calls[0]?.[0];
+    const call = dbMock.billSchedule.findMany.mock.calls[0]?.[0];
     expect(call?.include?.recipients).toMatchObject({
       where: { OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }] },
     });
   });
+
+  it("exposes billType back as `type`, its field name back when this was `Utility`", async () => {
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      { id: "utility-1", billType: "ELECTRICITY", recipients: [] },
+    ] as never);
+
+    const result = await getActiveUtilitiesForProperty("prop-1");
+
+    expect(result[0]?.type).toBe("ELECTRICITY");
+  });
 });
 
 describe("getUtilityBillsForProperty", () => {
-  it("queries every bill for the property, not scoped to active utilities", async () => {
-    dbMock.utilityBill.findMany.mockResolvedValue([]);
+  it("queries every BILL-category Bill for the property, not scoped to active utilities", async () => {
+    dbMock.bill.findMany.mockResolvedValue([]);
 
     await getUtilityBillsForProperty("prop-1");
 
-    const call = dbMock.utilityBill.findMany.mock.calls[0]?.[0];
-    expect(call?.where).toEqual({ propertyId: "prop-1" });
+    const call = dbMock.bill.findMany.mock.calls[0]?.[0];
+    expect(call?.where).toEqual({ propertyId: "prop-1", category: "BILL" });
   });
 
   it("orders bills by due date, newest first", async () => {
-    dbMock.utilityBill.findMany.mockResolvedValue([]);
+    dbMock.bill.findMany.mockResolvedValue([]);
 
     await getUtilityBillsForProperty("prop-1");
 
-    const call = dbMock.utilityBill.findMany.mock.calls[0]?.[0];
+    const call = dbMock.bill.findMany.mock.calls[0]?.[0];
     expect(call?.orderBy).toEqual({ dueDate: "desc" });
   });
 
-  it("includes the parent utility's type/provider/active for display", async () => {
-    dbMock.utilityBill.findMany.mockResolvedValue([]);
+  it("attaches the parent utility's type/provider/active for display, fetched separately since Bill has no declared relation to BillSchedule", async () => {
+    dbMock.bill.findMany.mockResolvedValue([
+      { id: "bill-1", sourceId: "utility-1" },
+    ] as never);
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      { id: "utility-1", billType: "ELECTRICITY", provider: "BESCOM", active: true },
+    ] as never);
 
-    await getUtilityBillsForProperty("prop-1");
+    const result = await getUtilityBillsForProperty("prop-1");
 
-    const call = dbMock.utilityBill.findMany.mock.calls[0]?.[0];
-    expect(call?.include?.utility).toEqual({
-      select: { type: true, provider: true, active: true },
+    const utilityCall = dbMock.billSchedule.findMany.mock.calls[0]?.[0];
+    expect(utilityCall?.where).toEqual({ id: { in: ["utility-1"] } });
+    expect(utilityCall?.select).toEqual({
+      id: true,
+      billType: true,
+      provider: true,
+      active: true,
+    });
+    expect(result[0]?.utility).toEqual({
+      type: "ELECTRICITY",
+      provider: "BESCOM",
+      active: true,
     });
   });
 
   it("returns an empty array when nothing has been generated yet", async () => {
-    dbMock.utilityBill.findMany.mockResolvedValue([]);
+    dbMock.bill.findMany.mockResolvedValue([]);
 
     const result = await getUtilityBillsForProperty("prop-1");
 
     expect(result).toEqual([]);
+    expect(dbMock.billSchedule.findMany).not.toHaveBeenCalled();
   });
 
   it("still returns bills belonging to a now-inactive utility", async () => {
-    dbMock.utilityBill.findMany.mockResolvedValue([
-      {
-        id: "bill-1",
-        utility: { type: "ELECTRICITY", provider: "BESCOM", active: false },
-      },
+    dbMock.bill.findMany.mockResolvedValue([
+      { id: "bill-1", sourceId: "utility-1" },
+    ] as never);
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      { id: "utility-1", billType: "ELECTRICITY", provider: "BESCOM", active: false },
     ] as never);
 
     const result = await getUtilityBillsForProperty("prop-1");
 
     expect(result[0]?.utility.active).toBe(false);
+  });
+});
+
+describe("getLoanForOwner", () => {
+  it("returns null for a loan that doesn't exist or isn't owned by this user", async () => {
+    dbMock.loan.findFirst.mockResolvedValue(null);
+
+    const result = await getLoanForOwner("loan-1", "owner-1");
+
+    expect(result).toBeNull();
+    expect(dbMock.billSchedule.findFirst).not.toHaveBeenCalled();
+  });
+
+  it("flattens the loan's EMI BillSchedule back onto its old field names", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({
+      id: "loan-1",
+      ownerId: "owner-1",
+      lender: "HDFC Bank",
+    } as never);
+    dbMock.billSchedule.findFirst.mockResolvedValue({
+      dueDay: 5,
+      defaultAmount: 43_000,
+      tenureMonths: 240,
+    } as never);
+
+    const result = await getLoanForOwner("loan-1", "owner-1");
+
+    const scheduleCall = dbMock.billSchedule.findFirst.mock.calls[0]?.[0];
+    expect(scheduleCall?.where).toEqual({ category: "EMI", sourceId: "loan-1" });
+    expect(result).toMatchObject({
+      id: "loan-1",
+      lender: "HDFC Bank",
+      emiDueDay: 5,
+      emiAmount: 43_000,
+      tenureMonths: 240,
+    });
+  });
+});
+
+describe("getTenantsForProperty", () => {
+  it("queries every tenant for the property, not just active ones", async () => {
+    dbMock.tenant.findMany.mockResolvedValue([]);
+
+    await getTenantsForProperty("prop-1");
+
+    const call = dbMock.tenant.findMany.mock.calls[0]?.[0];
+    expect(call?.where).toMatchObject({ propertyId: "prop-1" });
+  });
+
+  it("excludes soft-deleted tenants, matching both explicit null and absent deletedAt", async () => {
+    dbMock.tenant.findMany.mockResolvedValue([]);
+
+    await getTenantsForProperty("prop-1");
+
+    const call = dbMock.tenant.findMany.mock.calls[0]?.[0];
+    expect(call?.where).toMatchObject({
+      OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }],
+    });
+  });
+
+  it("orders tenants by lease start, newest first", async () => {
+    dbMock.tenant.findMany.mockResolvedValue([]);
+
+    await getTenantsForProperty("prop-1");
+
+    const call = dbMock.tenant.findMany.mock.calls[0]?.[0];
+    expect(call?.orderBy).toEqual({ leaseStart: "desc" });
+  });
+
+  it("includes the tenant's room label for display", async () => {
+    dbMock.tenant.findMany.mockResolvedValue([]);
+
+    await getTenantsForProperty("prop-1");
+
+    const call = dbMock.tenant.findMany.mock.calls[0]?.[0];
+    expect(call?.include?.room).toEqual({ select: { label: true } });
+  });
+
+  it("returns both active and past tenants, unfiltered", async () => {
+    const tenants = [
+      { id: "t1", active: true },
+      { id: "t2", active: false },
+    ];
+    dbMock.tenant.findMany.mockResolvedValue(tenants as never);
+
+    const result = await getTenantsForProperty("prop-1");
+
+    expect(result).toBe(tenants);
+  });
+});
+
+describe("getTenantForOwner", () => {
+  it("scopes the lookup to the owner through the tenant's property relation", async () => {
+    dbMock.tenant.findFirst.mockResolvedValue(null);
+
+    await getTenantForOwner("tenant-1", "owner-1");
+
+    expect(dbMock.tenant.findFirst).toHaveBeenCalledWith({
+      where: { id: "tenant-1", property: { ownerId: "owner-1" } },
+    });
+  });
+
+  it("returns null when the tenant doesn't exist or belongs to another owner", async () => {
+    dbMock.tenant.findFirst.mockResolvedValue(null);
+
+    const result = await getTenantForOwner("tenant-1", "owner-1");
+
+    expect(result).toBeNull();
+  });
+
+  it("returns the tenant when found", async () => {
+    const tenant = { id: "tenant-1", propertyId: "prop-1" };
+    dbMock.tenant.findFirst.mockResolvedValue(tenant as never);
+
+    const result = await getTenantForOwner("tenant-1", "owner-1");
+
+    expect(result).toBe(tenant);
+  });
+});
+
+describe("hasBillsForTenant", () => {
+  it("queries RENT-category bills scoped to the tenant as sourceId", async () => {
+    dbMock.bill.findFirst.mockResolvedValue(null);
+
+    await hasBillsForTenant("tenant-1");
+
+    expect(dbMock.bill.findFirst).toHaveBeenCalledWith({
+      where: { category: "RENT", sourceId: "tenant-1" },
+      select: { id: true },
+    });
+  });
+
+  it("returns true when a rent bill exists", async () => {
+    dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
+
+    const result = await hasBillsForTenant("tenant-1");
+
+    expect(result).toBe(true);
+  });
+
+  it("returns false when no rent bill exists", async () => {
+    dbMock.bill.findFirst.mockResolvedValue(null);
+
+    const result = await hasBillsForTenant("tenant-1");
+
+    expect(result).toBe(false);
+  });
+});
+
+describe("getRoomsForProperty", () => {
+  it("queries rooms scoped to the given property", async () => {
+    dbMock.room.findMany.mockResolvedValue([]);
+
+    await getRoomsForProperty("prop-1");
+
+    const call = dbMock.room.findMany.mock.calls[0]?.[0];
+    expect(call?.where).toMatchObject({ propertyId: "prop-1" });
+  });
+
+  it("excludes soft-deleted rooms, matching both explicit null and absent deletedAt", async () => {
+    dbMock.room.findMany.mockResolvedValue([]);
+
+    await getRoomsForProperty("prop-1");
+
+    const call = dbMock.room.findMany.mock.calls[0]?.[0];
+    expect(call?.where).toMatchObject({
+      OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }],
+    });
+  });
+
+  it("orders rooms by creation order", async () => {
+    dbMock.room.findMany.mockResolvedValue([]);
+
+    await getRoomsForProperty("prop-1");
+
+    const call = dbMock.room.findMany.mock.calls[0]?.[0];
+    expect(call?.orderBy).toEqual({ createdAt: "asc" });
+  });
+
+  it("returns an empty array when the property has no rooms", async () => {
+    dbMock.room.findMany.mockResolvedValue([]);
+
+    const result = await getRoomsForProperty("prop-1");
+
+    expect(result).toEqual([]);
   });
 });

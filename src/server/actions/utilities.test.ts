@@ -7,8 +7,6 @@ import {
   addUtilityRecipient,
   createUtility,
   deactivateUtility,
-  generateUtilityBill,
-  markBillPaid,
   removeUtilityRecipient,
 } from "./utilities";
 
@@ -80,7 +78,7 @@ describe("createUtility", () => {
     await expect(createUtility(buildUtilityForm())).rejects.toThrow(
       "Property not found",
     );
-    expect(dbMock.utility.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
   });
 
   it("rejects a non-positive amount before writing anything", async () => {
@@ -89,7 +87,7 @@ describe("createUtility", () => {
     await expect(
       createUtility(buildUtilityForm({ defaultAmount: "0" })),
     ).rejects.toThrow("Enter a valid amount");
-    expect(dbMock.utility.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
   });
 
   it("rejects an unparseable due date before writing anything", async () => {
@@ -98,14 +96,14 @@ describe("createUtility", () => {
     await expect(
       createUtility(buildUtilityForm({ firstDueDate: "" })),
     ).rejects.toThrow("Enter a valid first due date");
-    expect(dbMock.utility.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
   });
 
-  it("creates only the utility template, then redirects", async () => {
+  it("creates only the utility BillSchedule template, then redirects", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: "BESCOM",
     } as never);
 
@@ -113,10 +111,12 @@ describe("createUtility", () => {
       "REDIRECT:/properties/prop-1/utilities",
     );
 
-    expect(dbMock.utility.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
+        ownerId: "user-1",
+        category: "BILL",
         propertyId: "prop-1",
-        type: "ELECTRICITY",
+        billType: "ELECTRICITY",
         provider: "BESCOM",
         accountNumber: "ACC-1",
         billingType: "VARIABLE",
@@ -132,12 +132,13 @@ describe("createUtility", () => {
   });
 
   // Bills are never spawned by the owner-facing create flow — only the
-  // (not-yet-built) background job creates them, via generateUtilityBill.
+  // (not-yet-built) background job creates them, via `generateBill` in
+  // `~/server/actions/bills`.
   it("does not create a bill or financial event", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: "BESCOM",
     } as never);
 
@@ -145,15 +146,15 @@ describe("createUtility", () => {
       "REDIRECT:",
     );
 
-    expect(dbMock.utilityBill.create).not.toHaveBeenCalled();
+    expect(dbMock.bill.create).not.toHaveBeenCalled();
     expect(dbMock.financialEvent.create).not.toHaveBeenCalled();
   });
 
   it("records dueMonth for a YEARLY recurrence, taken from the first due date", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "PROPERTY_TAX",
+      billType: "PROPERTY_TAX",
       provider: null,
     } as never);
 
@@ -167,16 +168,16 @@ describe("createUtility", () => {
       ),
     ).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.utility.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ dueDay: 20, dueMonth: 9 }),
     });
   });
 
   it("does not set dueMonth for a non-YEARLY recurrence", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: null,
     } as never);
 
@@ -184,7 +185,7 @@ describe("createUtility", () => {
       createUtility(buildUtilityForm({ recurrence: "WEEKLY" })),
     ).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.utility.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ dueMonth: null }),
     });
   });
@@ -195,7 +196,7 @@ describe("createUtility", () => {
     await expect(
       createUtility(buildUtilityForm({ defaultAmount: "not-a-number" })),
     ).rejects.toThrow("Enter a valid amount");
-    expect(dbMock.utility.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
   });
 
   it("rejects a negative amount", async () => {
@@ -204,14 +205,14 @@ describe("createUtility", () => {
     await expect(
       createUtility(buildUtilityForm({ defaultAmount: "-100" })),
     ).rejects.toThrow("Enter a valid amount");
-    expect(dbMock.utility.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
   });
 
   it("defaults billingType to VARIABLE when the field is absent entirely", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: null,
     } as never);
 
@@ -220,16 +221,16 @@ describe("createUtility", () => {
 
     await expect(createUtility(formData)).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.utility.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ billingType: "VARIABLE" }),
     });
   });
 
   it("defaults reminderLeadDays to 7 when the field is absent entirely", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: null,
     } as never);
 
@@ -238,16 +239,16 @@ describe("createUtility", () => {
 
     await expect(createUtility(formData)).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.utility.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ reminderLeadDays: 7 }),
     });
   });
 
   it("treats a whitespace-only provider/accountNumber as absent (null)", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: null,
     } as never);
 
@@ -257,16 +258,16 @@ describe("createUtility", () => {
       ),
     ).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.utility.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ provider: null, accountNumber: null }),
     });
   });
 
   it("accepts a leap-day first due date", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.utility.create.mockResolvedValue({
+    dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
-      type: "ELECTRICITY",
+      billType: "ELECTRICITY",
       provider: null,
     } as never);
 
@@ -274,88 +275,9 @@ describe("createUtility", () => {
       createUtility(buildUtilityForm({ firstDueDate: "2028-02-29" })),
     ).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.utility.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ dueDay: 29 }),
     });
-  });
-});
-
-describe("generateUtilityBill", () => {
-  const UTILITY = {
-    id: "utility-1",
-    type: "ELECTRICITY" as const,
-    provider: "BESCOM",
-  };
-
-  it("creates the bill and a matching OUTFLOW financial event", async () => {
-    dbMock.utilityBill.create.mockResolvedValue({ id: "bill-1" } as never);
-    dbMock.financialEvent.create.mockResolvedValue({ id: "event-1" } as never);
-
-    const dueDate = new Date(2026, 6, 10);
-    await generateUtilityBill({
-      ownerId: "user-1",
-      property: PROPERTY,
-      utility: UTILITY,
-      dueDate,
-      amount: 1500,
-    });
-
-    expect(dbMock.utilityBill.create).toHaveBeenCalledWith({
-      data: {
-        propertyId: "prop-1",
-        utilityId: "utility-1",
-        dueDate,
-        amount: 1500,
-        status: "DUE",
-      },
-    });
-    expect(dbMock.financialEvent.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        ownerId: "user-1",
-        type: "OUTFLOW",
-        source: "BILL",
-        sourceId: "bill-1",
-        amount: 1500,
-        dueDate,
-        status: "DUE",
-        description: "BESCOM (Electricity) - Test Flat",
-      }),
-    });
-  });
-
-  it("labels the event with the bill type alone when there is no provider", async () => {
-    dbMock.utilityBill.create.mockResolvedValue({ id: "bill-1" } as never);
-    dbMock.financialEvent.create.mockResolvedValue({ id: "event-1" } as never);
-
-    await generateUtilityBill({
-      ownerId: "user-1",
-      property: PROPERTY,
-      utility: { id: "utility-1", type: "PROPERTY_TAX", provider: null },
-      dueDate: new Date(2026, 6, 10),
-      amount: 5000,
-    });
-
-    expect(dbMock.financialEvent.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        description: "Property tax - Test Flat",
-      }),
-    });
-  });
-
-  it("returns the created bill", async () => {
-    const created = { id: "bill-1" };
-    dbMock.utilityBill.create.mockResolvedValue(created as never);
-    dbMock.financialEvent.create.mockResolvedValue({ id: "event-1" } as never);
-
-    const result = await generateUtilityBill({
-      ownerId: "user-1",
-      property: PROPERTY,
-      utility: UTILITY,
-      dueDate: new Date(2026, 6, 10),
-      amount: 1500,
-    });
-
-    expect(result).toBe(created);
   });
 });
 
@@ -369,23 +291,23 @@ describe("deactivateUtility", () => {
   });
 
   it("throws when the utility doesn't belong to this owner", async () => {
-    dbMock.utility.findFirst.mockResolvedValue(null);
+    dbMock.billSchedule.findFirst.mockResolvedValue(null);
 
     await expect(deactivateUtility("utility-1")).rejects.toThrow(
       "Utility not found",
     );
-    expect(dbMock.utility.update).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
   it("sets active to false and revalidates the utilities page", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
 
     await deactivateUtility("utility-1");
 
-    expect(dbMock.utility.update).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
       where: { id: "utility-1" },
       data: { active: false },
     });
@@ -393,81 +315,21 @@ describe("deactivateUtility", () => {
   });
 
   it("does not touch any other utility field", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
 
     await deactivateUtility("utility-1");
 
-    const call = dbMock.utility.update.mock.calls[0]?.[0];
+    const call = dbMock.billSchedule.update.mock.calls[0]?.[0];
     expect(Object.keys(call?.data ?? {})).toEqual(["active"]);
-  });
-});
-
-describe("markBillPaid", () => {
-  it("throws when the bill doesn't belong to this owner", async () => {
-    dbMock.utilityBill.findFirst.mockResolvedValue(null);
-
-    await expect(markBillPaid("bill-1")).rejects.toThrow("Bill not found");
-    expect(dbMock.utilityBill.update).not.toHaveBeenCalled();
-  });
-
-  it("marks the bill paid and syncs its financial event", async () => {
-    dbMock.utilityBill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      propertyId: "prop-1",
-      amount: 1500,
-    } as never);
-
-    await markBillPaid("bill-1");
-
-    expect(dbMock.utilityBill.update).toHaveBeenCalledWith({
-      where: { id: "bill-1" },
-      data: expect.objectContaining({ status: "PAID", paidAmount: 1500 }),
-    });
-    expect(dbMock.financialEvent.updateMany).toHaveBeenCalledWith({
-      where: { source: "BILL", sourceId: "bill-1" },
-      data: { status: "PAID" },
-    });
-    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/utilities");
-  });
-
-  it("records paidAmount as 0 for a free/zero-amount bill", async () => {
-    dbMock.utilityBill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      propertyId: "prop-1",
-      amount: 0,
-    } as never);
-
-    await markBillPaid("bill-1");
-
-    expect(dbMock.utilityBill.update).toHaveBeenCalledWith({
-      where: { id: "bill-1" },
-      data: expect.objectContaining({ paidAmount: 0 }),
-    });
-  });
-
-  it("is idempotent: marking an already-PAID bill paid again still succeeds", async () => {
-    dbMock.utilityBill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      propertyId: "prop-1",
-      amount: 1500,
-      status: "PAID",
-    } as never);
-
-    await markBillPaid("bill-1");
-
-    expect(dbMock.utilityBill.update).toHaveBeenCalledWith({
-      where: { id: "bill-1" },
-      data: expect.objectContaining({ status: "PAID" }),
-    });
   });
 });
 
 describe("addUtilityRecipient", () => {
   it("throws when the utility doesn't belong to this owner", async () => {
-    dbMock.utility.findFirst.mockResolvedValue(null);
+    dbMock.billSchedule.findFirst.mockResolvedValue(null);
 
     const formData = new FormData();
     formData.set("name", "Spouse");
@@ -476,11 +338,11 @@ describe("addUtilityRecipient", () => {
     await expect(
       addUtilityRecipient("utility-1", formData),
     ).rejects.toThrow("Utility not found");
-    expect(dbMock.utilityRecipient.create).not.toHaveBeenCalled();
+    expect(dbMock.billScheduleRecipient.create).not.toHaveBeenCalled();
   });
 
   it("rejects a missing name or invalid email", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
@@ -498,11 +360,11 @@ describe("addUtilityRecipient", () => {
       addUtilityRecipient("utility-1", badEmail),
     ).rejects.toThrow("Enter a valid email");
 
-    expect(dbMock.utilityRecipient.create).not.toHaveBeenCalled();
+    expect(dbMock.billScheduleRecipient.create).not.toHaveBeenCalled();
   });
 
   it("creates the recipient and revalidates the utilities page", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
@@ -514,9 +376,9 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.utilityRecipient.create).toHaveBeenCalledWith({
+    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
       data: {
-        utilityId: "utility-1",
+        billScheduleId: "utility-1",
         name: "Spouse",
         email: "spouse@example.com",
         phone: null,
@@ -529,7 +391,7 @@ describe("addUtilityRecipient", () => {
   });
 
   it("trims whitespace from name and email before validating and storing", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
@@ -540,7 +402,7 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.utilityRecipient.create).toHaveBeenCalledWith({
+    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         name: "Spouse",
         email: "spouse@example.com",
@@ -549,7 +411,7 @@ describe("addUtilityRecipient", () => {
   });
 
   it("rejects a whitespace-only name after trimming", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
@@ -561,11 +423,11 @@ describe("addUtilityRecipient", () => {
     await expect(
       addUtilityRecipient("utility-1", formData),
     ).rejects.toThrow("Enter a name");
-    expect(dbMock.utilityRecipient.create).not.toHaveBeenCalled();
+    expect(dbMock.billScheduleRecipient.create).not.toHaveBeenCalled();
   });
 
   it("defaults phone to null and both notify flags to false when the form omits them (unchecked checkboxes)", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
@@ -579,7 +441,7 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.utilityRecipient.create).toHaveBeenCalledWith({
+    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         phone: null,
         notifyOnDue: false,
@@ -591,7 +453,7 @@ describe("addUtilityRecipient", () => {
   // Documents the current (shallow) validation: any string containing "@"
   // passes, even one that isn't a real email address.
   it("accepts any string containing '@', not just well-formed emails", async () => {
-    dbMock.utility.findFirst.mockResolvedValue({
+    dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
@@ -602,7 +464,7 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.utilityRecipient.create).toHaveBeenCalledWith({
+    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ email: "not@@really-an-email" }),
     });
   });
@@ -610,23 +472,23 @@ describe("addUtilityRecipient", () => {
 
 describe("removeUtilityRecipient", () => {
   it("throws when the recipient doesn't belong to this owner", async () => {
-    dbMock.utilityRecipient.findFirst.mockResolvedValue(null);
+    dbMock.billScheduleRecipient.findFirst.mockResolvedValue(null);
 
     await expect(removeUtilityRecipient("recipient-1")).rejects.toThrow(
       "Recipient not found",
     );
-    expect(dbMock.utilityRecipient.update).not.toHaveBeenCalled();
+    expect(dbMock.billScheduleRecipient.update).not.toHaveBeenCalled();
   });
 
   it("soft-deletes the recipient and revalidates the utilities page", async () => {
-    dbMock.utilityRecipient.findFirst.mockResolvedValue({
+    dbMock.billScheduleRecipient.findFirst.mockResolvedValue({
       id: "recipient-1",
-      utility: { propertyId: "prop-1" },
+      billSchedule: { propertyId: "prop-1" },
     } as never);
 
     await removeUtilityRecipient("recipient-1");
 
-    expect(dbMock.utilityRecipient.update).toHaveBeenCalledWith({
+    expect(dbMock.billScheduleRecipient.update).toHaveBeenCalledWith({
       where: { id: "recipient-1" },
       data: { deletedAt: expect.any(Date) as Date },
     });

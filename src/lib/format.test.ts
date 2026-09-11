@@ -1,4 +1,4 @@
-import { formatDate, formatINR } from "./format";
+import { formatDate, formatINR, toDateInputValue } from "./format";
 
 describe("formatINR", () => {
   it("formats whole rupee amounts with the ₹ symbol and no decimals", () => {
@@ -69,5 +69,21 @@ describe("formatDate", () => {
     expect(() => formatDate(new Date("not-a-date"))).toThrow(
       /Invalid time value/,
     );
+  });
+});
+
+describe("toDateInputValue", () => {
+  it("formats a date as YYYY-MM-DD", () => {
+    expect(toDateInputValue(new Date(2026, 2, 5))).toBe("2026-03-05");
+  });
+
+  it("pads single-digit months and days", () => {
+    expect(toDateInputValue(new Date(2026, 0, 3))).toBe("2026-01-03");
+  });
+
+  it("uses local calendar fields, not a UTC shift", () => {
+    // Local midnight on the 5th must stay the 5th, even though its UTC
+    // instant could fall on the 4th at a negative UTC offset.
+    expect(toDateInputValue(new Date(2026, 2, 5, 0, 0))).toBe("2026-03-05");
   });
 });

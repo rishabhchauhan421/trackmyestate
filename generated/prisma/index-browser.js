@@ -220,72 +220,39 @@ exports.Prisma.TenantScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.RentPaymentScalarFieldEnum = {
+exports.Prisma.BillScheduleScalarFieldEnum = {
   id: 'id',
+  ownerId: 'ownerId',
+  category: 'category',
+  sourceId: 'sourceId',
   propertyId: 'propertyId',
-  tenantId: 'tenantId',
-  dueDate: 'dueDate',
-  amount: 'amount',
-  currency: 'currency',
-  status: 'status',
-  paidDate: 'paidDate',
-  paidAmount: 'paidAmount',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.UtilityScalarFieldEnum = {
-  id: 'id',
-  propertyId: 'propertyId',
-  type: 'type',
+  billType: 'billType',
   provider: 'provider',
   accountNumber: 'accountNumber',
   meterNumber: 'meterNumber',
   billingType: 'billingType',
+  autoGenerateBill: 'autoGenerateBill',
   recurrence: 'recurrence',
   dueDay: 'dueDay',
   dueMonth: 'dueMonth',
   reminderLeadDays: 'reminderLeadDays',
   defaultAmount: 'defaultAmount',
   currency: 'currency',
-  autoGenerateBill: 'autoGenerateBill',
+  tenureMonths: 'tenureMonths',
   active: 'active',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.UtilityRecipientScalarFieldEnum = {
+exports.Prisma.BillScheduleRecipientScalarFieldEnum = {
   id: 'id',
-  utilityId: 'utilityId',
+  billScheduleId: 'billScheduleId',
   name: 'name',
   email: 'email',
   phone: 'phone',
   notifyOnDue: 'notifyOnDue',
   notifyOnPaid: 'notifyOnPaid',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.UtilityBillScalarFieldEnum = {
-  id: 'id',
-  utilityId: 'utilityId',
-  propertyId: 'propertyId',
-  previousMeterValue: 'previousMeterValue',
-  currentMeterValue: 'currentMeterValue',
-  billingPeriodStart: 'billingPeriodStart',
-  billingPeriodEnd: 'billingPeriodEnd',
-  dueDate: 'dueDate',
-  amount: 'amount',
-  currency: 'currency',
-  status: 'status',
-  paidDate: 'paidDate',
-  paidAmount: 'paidAmount',
-  billDocumentUrl: 'billDocumentUrl',
-  receiptDocumentUrl: 'receiptDocumentUrl',
-  notes: 'notes',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -313,50 +280,6 @@ exports.Prisma.PolicyScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.PremiumPaymentScalarFieldEnum = {
-  id: 'id',
-  policyId: 'policyId',
-  amount: 'amount',
-  currency: 'currency',
-  frequency: 'frequency',
-  dueDate: 'dueDate',
-  gracePeriodDays: 'gracePeriodDays',
-  status: 'status',
-  paidDate: 'paidDate',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.PayoutScalarFieldEnum = {
-  id: 'id',
-  policyId: 'policyId',
-  label: 'label',
-  expectedDate: 'expectedDate',
-  amount: 'amount',
-  currency: 'currency',
-  status: 'status',
-  receivedDate: 'receivedDate',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
-exports.Prisma.ClaimScalarFieldEnum = {
-  id: 'id',
-  policyId: 'policyId',
-  filedDate: 'filedDate',
-  amount: 'amount',
-  currency: 'currency',
-  status: 'status',
-  settledAmount: 'settledAmount',
-  settledDate: 'settledDate',
-  description: 'description',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-};
-
 exports.Prisma.InvestmentScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
@@ -375,17 +298,6 @@ exports.Prisma.InvestmentScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
-exports.Prisma.ReturnScalarFieldEnum = {
-  id: 'id',
-  investmentId: 'investmentId',
-  date: 'date',
-  amount: 'amount',
-  currency: 'currency',
-  label: 'label',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt'
-};
-
 exports.Prisma.LoanScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
@@ -394,9 +306,6 @@ exports.Prisma.LoanScalarFieldEnum = {
   principal: 'principal',
   currency: 'currency',
   interestRatePercent: 'interestRatePercent',
-  tenureMonths: 'tenureMonths',
-  emiAmount: 'emiAmount',
-  emiDueDay: 'emiDueDay',
   startDate: 'startDate',
   outstandingBalance: 'outstandingBalance',
   linkedAssetType: 'linkedAssetType',
@@ -404,21 +313,6 @@ exports.Prisma.LoanScalarFieldEnum = {
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
-};
-
-exports.Prisma.EMIPaymentScalarFieldEnum = {
-  id: 'id',
-  loanId: 'loanId',
-  installmentNumber: 'installmentNumber',
-  dueDate: 'dueDate',
-  principalComponent: 'principalComponent',
-  interestComponent: 'interestComponent',
-  amount: 'amount',
-  currency: 'currency',
-  status: 'status',
-  paidDate: 'paidDate',
-  deletedAt: 'deletedAt',
-  createdAt: 'createdAt'
 };
 
 exports.Prisma.FinancialEventScalarFieldEnum = {
@@ -431,6 +325,39 @@ exports.Prisma.FinancialEventScalarFieldEnum = {
   currency: 'currency',
   dueDate: 'dueDate',
   status: 'status',
+  description: 'description',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.BillScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  category: 'category',
+  direction: 'direction',
+  sourceId: 'sourceId',
+  propertyId: 'propertyId',
+  dueDate: 'dueDate',
+  amount: 'amount',
+  currency: 'currency',
+  status: 'status',
+  paidDate: 'paidDate',
+  paidAmount: 'paidAmount',
+  notes: 'notes',
+  installmentNumber: 'installmentNumber',
+  principalComponent: 'principalComponent',
+  interestComponent: 'interestComponent',
+  previousMeterValue: 'previousMeterValue',
+  currentMeterValue: 'currentMeterValue',
+  billingPeriodStart: 'billingPeriodStart',
+  billingPeriodEnd: 'billingPeriodEnd',
+  billDocumentUrl: 'billDocumentUrl',
+  receiptDocumentUrl: 'receiptDocumentUrl',
+  frequency: 'frequency',
+  gracePeriodDays: 'gracePeriodDays',
+  label: 'label',
+  claimStatus: 'claimStatus',
   description: 'description',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
@@ -546,13 +473,14 @@ exports.OccupancyStatus = exports.$Enums.OccupancyStatus = {
   UNDER_MAINTENANCE: 'UNDER_MAINTENANCE'
 };
 
-exports.PaymentStatus = exports.$Enums.PaymentStatus = {
-  DUE: 'DUE',
-  PAID: 'PAID',
-  OVERDUE: 'OVERDUE',
-  PARTIALLY_PAID: 'PARTIALLY_PAID',
-  CANCELLED: 'CANCELLED',
-  REFUNDED: 'REFUNDED'
+exports.FinancialEventSource = exports.$Enums.FinancialEventSource = {
+  RENT: 'RENT',
+  BILL: 'BILL',
+  PREMIUM: 'PREMIUM',
+  PAYOUT: 'PAYOUT',
+  EMI: 'EMI',
+  RETURN: 'RETURN',
+  CLAIM_SETTLEMENT: 'CLAIM_SETTLEMENT'
 };
 
 exports.BillType = exports.$Enums.BillType = {
@@ -570,7 +498,7 @@ exports.BillingType = exports.$Enums.BillingType = {
   VARIABLE: 'VARIABLE'
 };
 
-exports.UtilityRecurrence = exports.$Enums.UtilityRecurrence = {
+exports.BillRecurrence = exports.$Enums.BillRecurrence = {
   WEEKLY: 'WEEKLY',
   BI_WEEKLY: 'BI_WEEKLY',
   MONTHLY: 'MONTHLY',
@@ -595,21 +523,6 @@ exports.PolicyStatus = exports.$Enums.PolicyStatus = {
   MATURED: 'MATURED',
   CLAIMED: 'CLAIMED',
   CANCELLED: 'CANCELLED'
-};
-
-exports.PremiumFrequency = exports.$Enums.PremiumFrequency = {
-  MONTHLY: 'MONTHLY',
-  QUARTERLY: 'QUARTERLY',
-  HALF_YEARLY: 'HALF_YEARLY',
-  YEARLY: 'YEARLY',
-  SINGLE: 'SINGLE'
-};
-
-exports.ClaimStatus = exports.$Enums.ClaimStatus = {
-  FILED: 'FILED',
-  APPROVED: 'APPROVED',
-  REJECTED: 'REJECTED',
-  SETTLED: 'SETTLED'
 };
 
 exports.InvestmentType = exports.$Enums.InvestmentType = {
@@ -645,14 +558,28 @@ exports.FinancialEventType = exports.$Enums.FinancialEventType = {
   OUTFLOW: 'OUTFLOW'
 };
 
-exports.FinancialEventSource = exports.$Enums.FinancialEventSource = {
-  RENT: 'RENT',
-  BILL: 'BILL',
-  PREMIUM: 'PREMIUM',
-  PAYOUT: 'PAYOUT',
-  EMI: 'EMI',
-  RETURN: 'RETURN',
-  CLAIM_SETTLEMENT: 'CLAIM_SETTLEMENT'
+exports.PaymentStatus = exports.$Enums.PaymentStatus = {
+  DUE: 'DUE',
+  PAID: 'PAID',
+  OVERDUE: 'OVERDUE',
+  PARTIALLY_PAID: 'PARTIALLY_PAID',
+  CANCELLED: 'CANCELLED',
+  REFUNDED: 'REFUNDED'
+};
+
+exports.PremiumFrequency = exports.$Enums.PremiumFrequency = {
+  MONTHLY: 'MONTHLY',
+  QUARTERLY: 'QUARTERLY',
+  HALF_YEARLY: 'HALF_YEARLY',
+  YEARLY: 'YEARLY',
+  SINGLE: 'SINGLE'
+};
+
+exports.ClaimStatus = exports.$Enums.ClaimStatus = {
+  FILED: 'FILED',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  SETTLED: 'SETTLED'
 };
 
 exports.EntityType = exports.$Enums.EntityType = {
@@ -717,19 +644,13 @@ exports.Prisma.ModelName = {
   Property: 'Property',
   Room: 'Room',
   Tenant: 'Tenant',
-  RentPayment: 'RentPayment',
-  Utility: 'Utility',
-  UtilityRecipient: 'UtilityRecipient',
-  UtilityBill: 'UtilityBill',
+  BillSchedule: 'BillSchedule',
+  BillScheduleRecipient: 'BillScheduleRecipient',
   Policy: 'Policy',
-  PremiumPayment: 'PremiumPayment',
-  Payout: 'Payout',
-  Claim: 'Claim',
   Investment: 'Investment',
-  Return: 'Return',
   Loan: 'Loan',
-  EMIPayment: 'EMIPayment',
   FinancialEvent: 'FinancialEvent',
+  Bill: 'Bill',
   PaymentTransaction: 'PaymentTransaction',
   AuditLog: 'AuditLog',
   NotificationRule: 'NotificationRule',

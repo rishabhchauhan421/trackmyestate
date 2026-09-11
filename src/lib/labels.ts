@@ -5,9 +5,12 @@
  * `labels.test.ts` for the runtime drift guard (values, not just keys).
  */
 import type {
+  BillRecurrence,
   BillType,
+  InvestmentType,
+  LoanType,
   PremiumFrequency,
-  UtilityRecurrence,
+  PropertyType,
 } from "../../generated/prisma";
 
 /** Display label for each `BillType` (used for both `Utility.type` and, historically, direct bills). */
@@ -30,12 +33,43 @@ export const FREQUENCY_LABELS: Record<PremiumFrequency, string> = {
   SINGLE: "One-time",
 };
 
-/** Display label for each `UtilityRecurrence` (how often a utility bill cycle repeats). */
-export const UTILITY_RECURRENCE_LABELS: Record<UtilityRecurrence, string> = {
+/** Display label for each `BillRecurrence` (how often a utility bill cycle repeats). */
+export const UTILITY_RECURRENCE_LABELS: Record<BillRecurrence, string> = {
   WEEKLY: "Weekly",
   BI_WEEKLY: "Every 2 weeks",
   MONTHLY: "Monthly",
   QUARTERLY: "Quarterly",
   HALF_YEARLY: "Half-yearly",
   YEARLY: "Yearly",
+};
+
+/** Display label for each `InvestmentType`. */
+export const INVESTMENT_TYPE_LABELS: Record<InvestmentType, string> = {
+  PROPERTY: "Property",
+  FIXED_DEPOSIT: "Fixed deposit",
+  RECURRING_DEPOSIT: "Recurring deposit",
+  MUTUAL_FUND: "Mutual fund",
+  STOCKS: "Stocks",
+  GOLD: "Gold",
+  BUSINESS: "Business",
+  PPF: "PPF",
+  NPS: "NPS",
+};
+
+/** Display label for each `LoanType`. */
+export const LOAN_TYPE_LABELS: Record<LoanType, string> = {
+  HOME_LOAN: "Home loan",
+  LOAN_AGAINST_PROPERTY: "Loan against property",
+  PERSONAL_LOAN: "Personal loan",
+  VEHICLE_LOAN: "Vehicle loan",
+  EDUCATION_LOAN: "Education loan",
+  GOLD_LOAN: "Gold loan",
+};
+
+/** Display label for each `PropertyType`. */
+export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
+  SELF_OCCUPIED: "Self-occupied",
+  RENTED: "Rented",
+  UNDER_CONSTRUCTION: "Under construction",
+  INVESTMENT: "Investment",
 };

@@ -1,3 +1,4 @@
+import { type Metadata } from "next";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -6,14 +7,99 @@ import {
   DocumentsIcon,
   InsuranceIcon,
   InvestmentsIcon,
+  LoansIcon,
   PropertiesIcon,
   TimelineIcon,
 } from "~/app/_components/icons";
+import { env } from "~/env";
 import { auth } from "~/server/better-auth";
 import { getSession } from "~/server/better-auth/server";
 
 // TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
 // See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
+
+const title =
+  "TrackMyEstate — Free Property, Policy, Loan and Investment Tracker";
+const description =
+  "Aggregate every property, insurance policy, investment and loan in one place, free. Get reminders for premiums, EMIs, rent and maturities before you miss a date.";
+
+export const metadata: Metadata = {
+  title,
+  description,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "TrackMyEstate",
+    locale: "en_US",
+    title,
+    description,
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "TrackMyEstate",
+  applicationCategory: "FinanceApplication",
+  operatingSystem: "Web",
+  description,
+  url: env.NEXT_PUBLIC_SITE_URL,
+  isAccessibleForFree: true,
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "INR",
+  },
+};
+
+const faqs = [
+  {
+    question: "Is TrackMyEstate free to use?",
+    answer:
+      "Yes. Every core feature — properties, insurance, investments, loans, documents and reminders — is free to use, with no card required to get started.",
+  },
+  {
+    question: "What can I track with TrackMyEstate?",
+    answer:
+      "Properties and tenants, insurance policies, investments like FDs, mutual funds, stocks and gold, loan EMIs and amortization, and every document tied to them.",
+  },
+  {
+    question: "How do the reminders work?",
+    answer:
+      "You get a nudge on push, email or WhatsApp ahead of a premium, EMI, rent collection or maturity date, with escalation as the deadline nears.",
+  },
+  {
+    question: "Is my financial data secure?",
+    answer:
+      "Every document is encrypted and only visible to your account. We never sell or share your data with third parties.",
+  },
+  {
+    question: "Do I have to enter everything manually?",
+    answer:
+      "No. Drop in a policy PDF, loan statement or property paper and we pre-fill the record, or start with just a name and a date and enrich it later.",
+  },
+];
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map(({ question, answer }) => ({
+    "@type": "Question",
+    name: question,
+    acceptedAnswer: {
+      "@type": "Answer",
+      text: answer,
+    },
+  })),
+};
 
 const pillars = [
   {
@@ -36,22 +122,32 @@ const pillars = [
 const modules = [
   {
     label: "Properties",
-    description: "Homes, rentals and investment property, with tenants, rent and bills.",
+    description:
+      "Homes, rentals and investment property, with tenants, rent and bills.",
     Icon: PropertiesIcon,
   },
   {
     label: "Insurance",
-    description: "Life, health, vehicle and home policies — premiums, cover and maturity.",
+    description:
+      "Life, health, vehicle and home policies — premiums, cover and maturity.",
     Icon: InsuranceIcon,
   },
   {
-    label: "Investments & loans",
-    description: "FDs, mutual funds, stocks and gold, alongside EMIs and amortization.",
+    label: "Investments",
+    description:
+      "FDs, mutual funds, stocks and gold — capital deployed and current value.",
     Icon: InvestmentsIcon,
   },
   {
+    label: "Loans",
+    description:
+      "EMIs and amortization, with outstanding balance kept current.",
+    Icon: LoansIcon,
+  },
+  {
     label: "Documents",
-    description: "Every paper trail, encrypted and attached to the asset it belongs to.",
+    description:
+      "Every paper trail, encrypted and attached to the asset it belongs to.",
     Icon: DocumentsIcon,
   },
 ];
@@ -61,6 +157,10 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
         <div className="flex items-center gap-2">
           <span className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-600 text-sm font-bold text-white">
@@ -116,22 +216,22 @@ export default async function Home() {
 
       <section className="mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 py-20 text-center sm:py-28">
         <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-          For people with a lot going on
+          Free for people with a lot going on
         </span>
         <h1 className="text-4xl font-bold tracking-tight text-balance sm:text-5xl">
           Aggregate everything. Never miss a date.
         </h1>
         <p className="max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-          Properties, insurance, investments and loans — every premium,
-          renewal, EMI, rent collection and maturity, in one place, with a
-          reminder that actually reaches you in time.
+          Properties, insurance, investments and loans — every premium, renewal,
+          EMI, rent collection and maturity, in one place, with a reminder that
+          actually reaches you in time.
         </p>
         <div className="mt-2 flex flex-col gap-3 sm:flex-row">
           <Link
             href="/dashboard"
             className="rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-500"
           >
-            Get started
+            Get started for free
           </Link>
           <Link
             href="/timeline"
@@ -140,13 +240,16 @@ export default async function Home() {
             See the timeline
           </Link>
         </div>
+        <p className="text-xs text-slate-400 dark:text-slate-500">
+          Free to use, forever. No credit card required.
+        </p>
       </section>
 
       <section className="border-y border-slate-100 bg-slate-50 dark:border-slate-900 dark:bg-slate-900/40">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-6 py-16 sm:grid-cols-3">
           {pillars.map((pillar) => (
             <div key={pillar.title}>
-              <h3 className="text-base font-semibold">{pillar.title}</h3>
+              <h2 className="text-base font-semibold">{pillar.title}</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
                 {pillar.description}
               </p>
@@ -161,9 +264,9 @@ export default async function Home() {
             Everything you own, one shared spine
           </h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-            Every asset reduces to dated money in, money out, and the dates
-            that matter. Build that once, and it powers the timeline, the
-            dashboard and every reminder.
+            Every asset reduces to dated money in, money out, and the dates that
+            matter. Build that once, and it powers the timeline, the dashboard
+            and every reminder.
           </p>
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -184,10 +287,32 @@ export default async function Home() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-3xl px-6 py-20">
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Frequently asked questions
+        </h2>
+        <div className="mt-6 divide-y divide-slate-100 dark:divide-slate-800">
+          {faqs.map((faq) => (
+            <details key={faq.question} className="group py-4">
+              <summary className="cursor-pointer list-none text-sm font-semibold marker:content-none">
+                {faq.question}
+              </summary>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                {faq.answer}
+              </p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       <footer className="border-t border-slate-100 px-6 py-8 text-center text-xs text-slate-400 dark:border-slate-900">
-        TrackMyEstate — your whole financial life, tracked, dated and
-        reminded.
+        TrackMyEstate — your whole financial life, tracked, dated and reminded.
       </footer>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
     </main>
   );
 }

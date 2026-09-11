@@ -1,11 +1,11 @@
 /**
- * Cycle math for `Utility.recurrence`. Lives here (not in
+ * Cycle math for a `BillSchedule.recurrence`. Lives here (not in
  * `server/actions/utilities.ts`) because a `"use server"` file may only
  * export async functions, and this is pure/sync — it's also meant to be
- * reused by the not-yet-built background job that generates `UtilityBill`
- * rows, not just by the app's own actions.
+ * reused by the not-yet-built background job that generates `Bill` rows,
+ * not just by the app's own actions.
  */
-import type { UtilityRecurrence } from "../../generated/prisma";
+import type { BillRecurrence } from "../../generated/prisma";
 
 /**
  * Returns a new `Date` one cycle after `date`, per `recurrence`. Does not
@@ -18,7 +18,7 @@ import type { UtilityRecurrence } from "../../generated/prisma";
  */
 export function advanceByRecurrence(
   date: Date,
-  recurrence: UtilityRecurrence,
+  recurrence: BillRecurrence,
 ): Date {
   const next = new Date(date);
   switch (recurrence) {

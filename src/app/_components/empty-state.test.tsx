@@ -59,4 +59,21 @@ describe("EmptyState", () => {
     expect(button).toBeDisabled();
     expect(button).toHaveAttribute("title", "Coming soon");
   });
+
+  it("renders a working link instead of a disabled button when actionHref is given", () => {
+    render(
+      <EmptyState
+        Icon={PropertiesIcon}
+        title="t"
+        description="d"
+        actionLabel="Add your first investment"
+        actionHref="/investments/new"
+      />,
+    );
+    const link = screen.getByRole("link", {
+      name: "Add your first investment",
+    });
+    expect(link).toHaveAttribute("href", "/investments/new");
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

@@ -3,6 +3,7 @@ import {
   DocumentsIcon,
   InsuranceIcon,
   InvestmentsIcon,
+  LoansIcon,
   PropertiesIcon,
   SettingsIcon,
   TimelineIcon,
@@ -34,10 +35,16 @@ export const navItems = [
     Icon: InsuranceIcon,
   },
   {
-    label: "Investments & Loans",
+    label: "Investments",
     href: "/investments",
-    description: "FDs, mutual funds, stocks, EMIs and amortization",
+    description: "FDs, mutual funds, stocks and gold",
     Icon: InvestmentsIcon,
+  },
+  {
+    label: "Loans",
+    href: "/loans",
+    description: "EMIs, amortization and outstanding balance",
+    Icon: LoansIcon,
   },
   {
     label: "Documents",

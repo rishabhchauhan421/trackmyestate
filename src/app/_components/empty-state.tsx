@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 
 export function EmptyState({
@@ -5,11 +6,14 @@ export function EmptyState({
   title,
   description,
   actionLabel,
+  actionHref,
 }: {
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
   title: string;
   description: string;
   actionLabel: string;
+  /** When provided, the action is a working link instead of a disabled "Coming soon" button. */
+  actionHref?: string;
 }) {
   return (
     <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-white px-6 py-16 text-center dark:border-slate-800 dark:bg-slate-900/40">
@@ -24,14 +28,23 @@ export function EmptyState({
           {description}
         </p>
       </div>
-      <button
-        type="button"
-        disabled
-        title="Coming soon"
-        className="mt-2 cursor-not-allowed rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white opacity-40 dark:bg-slate-100 dark:text-slate-900"
-      >
-        {actionLabel}
-      </button>
+      {actionHref ? (
+        <Link
+          href={actionHref}
+          className="mt-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+        >
+          {actionLabel}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          disabled
+          title="Coming soon"
+          className="mt-2 cursor-not-allowed rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white opacity-40 dark:bg-slate-100 dark:text-slate-900"
+        >
+          {actionLabel}
+        </button>
+      )}
     </div>
   );
 }

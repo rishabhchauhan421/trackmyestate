@@ -27,3 +27,15 @@ export function formatDate(date: Date): string {
     year: "numeric",
   }).format(date);
 }
+
+/**
+ * Formats a date as `"2026-03-05"`, the value an `<input type="date">`
+ * expects for `defaultValue` — using local calendar fields, not `toISOString`
+ * (which would shift the date at UTC offsets behind local midnight).
+ */
+export function toDateInputValue(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}

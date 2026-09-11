@@ -10,7 +10,6 @@ import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
 import {
   addUtilityRecipient,
   deactivateUtility,
-  markBillPaid,
   removeUtilityRecipient,
 } from "~/server/actions/utilities";
 import { getSession } from "~/server/better-auth/server";
@@ -191,36 +190,24 @@ export default async function PropertyUtilitiesPage({
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
                 <ul className="divide-y divide-slate-100 dark:divide-slate-800">
                   {bills.map((bill) => (
-                    <li
-                      key={bill.id}
-                      className="flex items-center justify-between gap-4 px-5 py-4"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                          {bill.utility.provider
-                            ? `${bill.utility.provider} · ${BILL_TYPE_LABELS[bill.utility.type]}`
-                            : BILL_TYPE_LABELS[bill.utility.type]}
-                        </p>
-                        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                          {formatINR(bill.amount)} · due{" "}
-                          {formatDate(bill.dueDate)}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-2">
+                    <li key={bill.id}>
+                      <Link
+                        href={`/properties/${id}/utilities/bills/${bill.id}`}
+                        className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                            {bill.utility.provider
+                              ? `${bill.utility.provider} · ${BILL_TYPE_LABELS[bill.utility.type]}`
+                              : BILL_TYPE_LABELS[bill.utility.type]}
+                          </p>
+                          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                            {formatINR(bill.amount)} · due{" "}
+                            {formatDate(bill.dueDate)}
+                          </p>
+                        </div>
                         <StatusBadge status={bill.status} />
-                        {(bill.status === "DUE" ||
-                          bill.status === "OVERDUE" ||
-                          bill.status === "PARTIALLY_PAID") && (
-                          <form>
-                            <button
-                              formAction={markBillPaid.bind(null, bill.id)}
-                              className="rounded-md bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white transition hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
-                            >
-                              Mark paid
-                            </button>
-                          </form>
-                        )}
-                      </div>
+                      </Link>
                     </li>
                   ))}
                 </ul>

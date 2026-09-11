@@ -1,11 +1,17 @@
 import {
+  BillRecurrence,
   BillType,
+  InvestmentType,
+  LoanType,
   PremiumFrequency,
-  UtilityRecurrence,
+  PropertyType,
 } from "../../generated/prisma";
 import {
   BILL_TYPE_LABELS,
   FREQUENCY_LABELS,
+  INVESTMENT_TYPE_LABELS,
+  LOAN_TYPE_LABELS,
+  PROPERTY_TYPE_LABELS,
   UTILITY_RECURRENCE_LABELS,
 } from "./labels";
 
@@ -27,9 +33,27 @@ describe("label maps stay in sync with their Prisma enums", () => {
     );
   });
 
-  it("UTILITY_RECURRENCE_LABELS covers every UtilityRecurrence value", () => {
+  it("UTILITY_RECURRENCE_LABELS covers every BillRecurrence value", () => {
     expect(Object.keys(UTILITY_RECURRENCE_LABELS).sort()).toEqual(
-      Object.values(UtilityRecurrence).sort(),
+      Object.values(BillRecurrence).sort(),
+    );
+  });
+
+  it("INVESTMENT_TYPE_LABELS covers every InvestmentType value", () => {
+    expect(Object.keys(INVESTMENT_TYPE_LABELS).sort()).toEqual(
+      Object.values(InvestmentType).sort(),
+    );
+  });
+
+  it("LOAN_TYPE_LABELS covers every LoanType value", () => {
+    expect(Object.keys(LOAN_TYPE_LABELS).sort()).toEqual(
+      Object.values(LoanType).sort(),
+    );
+  });
+
+  it("PROPERTY_TYPE_LABELS covers every PropertyType value", () => {
+    expect(Object.keys(PROPERTY_TYPE_LABELS).sort()).toEqual(
+      Object.values(PropertyType).sort(),
     );
   });
 
@@ -39,6 +63,9 @@ describe("label maps stay in sync with their Prisma enums", () => {
     ["BILL_TYPE_LABELS", BILL_TYPE_LABELS],
     ["FREQUENCY_LABELS", FREQUENCY_LABELS],
     ["UTILITY_RECURRENCE_LABELS", UTILITY_RECURRENCE_LABELS],
+    ["INVESTMENT_TYPE_LABELS", INVESTMENT_TYPE_LABELS],
+    ["LOAN_TYPE_LABELS", LOAN_TYPE_LABELS],
+    ["PROPERTY_TYPE_LABELS", PROPERTY_TYPE_LABELS],
   ] as const)("%s has no blank or duplicate label values", (_name, map) => {
     const values = Object.values(map);
     for (const value of values) {
