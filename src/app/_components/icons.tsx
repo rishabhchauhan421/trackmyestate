@@ -100,6 +100,26 @@ export function SettingsIcon(props: IconProps) {
   );
 }
 
+export function ShieldIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <path d="M12 3 L19 6 V11 C19 16 16 19.5 12 21 C8 19.5 5 16 5 11 V6 Z" />
+      <polyline points="9,12 11,14 15,10" />
+    </svg>
+  );
+}
+
+export function UsersIcon(props: IconProps) {
+  return (
+    <svg {...base} {...props}>
+      <circle cx="9" cy="8" r="3.25" />
+      <path d="M3 20 C3 16 5.5 14 9 14 C12.5 14 15 16 15 20" />
+      <circle cx="17" cy="9.5" r="2.25" />
+      <path d="M16 14.25 C18.75 14.75 21 16.5 21 20" />
+    </svg>
+  );
+}
+
 export function AlertIcon(props: IconProps) {
   return (
     <svg {...base} {...props}>

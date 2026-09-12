@@ -1,7 +1,14 @@
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+} from "~/app/_components/dropdown";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
@@ -20,11 +27,7 @@ export default async function PropertiesPage() {
       <PageHeader
         title="Properties"
         description="Every home, rental and investment property — with its rent, bills, tenants and paper trail."
-        action={
-          <Button type="button" disabled title="Coming soon">
-            Add property
-          </Button>
-        }
+        action={<Button href="/properties/new">Add property</Button>}
       />
 
       {properties.length === 0 ? (
@@ -33,6 +36,7 @@ export default async function PropertiesPage() {
           title="No properties yet"
           description="Add a property to start tracking rent, utility bills, occupancy and the loan or insurance linked to it."
           actionLabel="Add your first property"
+          actionHref="/properties/new"
         />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -85,19 +89,37 @@ export default async function PropertiesPage() {
                   </p>
                 )}
 
-                <div className="mt-4 flex items-center gap-4">
+                <div className="mt-4 flex items-center justify-between gap-4">
                   <Link
                     href={`/properties/${property.id}`}
                     className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Details →
                   </Link>
-                  <Link
-                    href={`/properties/${property.id}/utilities`}
-                    className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                  >
-                    Utilities →
-                  </Link>
+                  <Dropdown>
+                    <DropdownButton
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                    >
+                      Manage
+                      <ChevronDownIcon className="size-4" />
+                    </DropdownButton>
+                    <DropdownMenu anchor="bottom end">
+                      <DropdownItem href={`/properties/${property.id}/edit`}>
+                        Edit
+                      </DropdownItem>
+                      <DropdownItem href={`/properties/${property.id}/utilities`}>
+                        Utilities
+                      </DropdownItem>
+                      <DropdownItem href={`/properties/${property.id}/rentals`}>
+                        Rental units
+                      </DropdownItem>
+                      <DropdownItem href={`/properties/${property.id}/leases`}>
+                        Leases
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
               </div>
             );

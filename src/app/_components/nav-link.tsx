@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
 
-/** A text nav link for the marketing site header/footer — not the app's own sidebar (see `sidebar-nav.tsx`). */
+/** A text nav link for the marketing site header/footer — not the app's own sidebar (see `app-shell.tsx`). */
 export function NavLink({
   className,
   ...props

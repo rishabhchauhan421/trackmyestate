@@ -2,7 +2,7 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
-import { getLoanForOwner } from "~/server/queries/loans";
+import { getLoanForOwner, getLoans } from "~/server/queries/loans";
 
 jest.mock("~/server/db");
 
@@ -45,5 +45,37 @@ describe("getLoanForOwner", () => {
       emiAmount: 43_000,
       tenureMonths: 240,
     });
+  });
+});
+
+describe("getLoans", () => {
+  it("attaches the linked property's name for a loan with linkedPropertyId set", async () => {
+    dbMock.loan.findMany.mockResolvedValue([
+      { id: "loan-1", linkedPropertyId: "prop-1" },
+      { id: "loan-2", linkedPropertyId: null },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValue([]);
+    dbMock.property.findMany.mockResolvedValue([
+      { id: "prop-1", name: "Whitefield Flat" },
+    ] as never);
+
+    const result = await getLoans("owner-1");
+
+    const propertyCall = dbMock.property.findMany.mock.calls[0]?.[0];
+    expect(propertyCall?.where).toEqual({ id: { in: ["prop-1"] } });
+    expect(result[0]?.linkedPropertyName).toBe("Whitefield Flat");
+    expect(result[1]?.linkedPropertyName).toBeNull();
+  });
+
+  it("skips the property lookup entirely when no loan is linked", async () => {
+    dbMock.loan.findMany.mockResolvedValue([
+      { id: "loan-1", linkedPropertyId: null },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValue([]);
+
+    const result = await getLoans("owner-1");
+
+    expect(dbMock.property.findMany).not.toHaveBeenCalled();
+    expect(result[0]?.linkedPropertyName).toBeNull();
   });
 });

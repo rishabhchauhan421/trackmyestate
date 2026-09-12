@@ -7,6 +7,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
+import { admin } from "better-auth/plugins";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
@@ -33,13 +34,21 @@ export const auth = betterAuth({
       clientSecret: env.BETTER_AUTH_GOOGLE_CLIENT_SECRET,
     },
   },
-  // Calls to `auth.api.*` from Server Components/Actions (see app/page.tsx)
-  // only set real response cookies when this plugin forwards them via
-  // `next/headers`. Without it, e.g. the OAuth state cookie never reaches
-  // the browser even though the DB-side verification record is written,
-  // causing "State mismatch: State not persisted correctly" on callback.
-  // Must stay the last plugin.
-  plugins: [nextCookies()],
+  plugins: [
+    // Adds `role`/`banned`/`banReason`/`banExpires` to the session user and
+    // the `/admin/*` server endpoints (set-role, ban, impersonate, ...).
+    // `role: "admin"` is what gates `(app)/admin` — see
+    // `src/server/better-auth/server.ts`'s `requireAdminSession`. Promote
+    // the first admin with `pnpm tsx scripts/set-admin-role.ts <email>`.
+    admin(),
+    // Calls to `auth.api.*` from Server Components/Actions (see app/page.tsx)
+    // only set real response cookies when this plugin forwards them via
+    // `next/headers`. Without it, e.g. the OAuth state cookie never reaches
+    // the browser even though the DB-side verification record is written,
+    // causing "State mismatch: State not persisted correctly" on callback.
+    // Must stay the last plugin.
+    nextCookies(),
+  ],
 });
 
 /** Inferred session/user shape, derived from the actual `auth` config above. */

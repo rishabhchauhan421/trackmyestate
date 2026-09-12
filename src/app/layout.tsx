@@ -1,5 +1,6 @@
 import "~/styles/globals.css";
 
+import { GoogleTagManager } from "@next/third-parties/google";
 import { type Metadata } from "next";
 import { Inter, Lexend } from "next/font/google";
 
@@ -64,6 +65,9 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${inter.variable} ${lexend.variable}`}>
+      {env.NEXT_PUBLIC_GTM_ID && (
+        <GoogleTagManager gtmId={env.NEXT_PUBLIC_GTM_ID} />
+      )}
       <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>

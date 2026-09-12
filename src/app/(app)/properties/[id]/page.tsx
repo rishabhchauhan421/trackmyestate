@@ -1,13 +1,20 @@
+import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import {
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  DropdownMenu,
+} from "~/app/_components/dropdown";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
-import { PROPERTY_TYPE_LABELS } from "~/lib/labels";
+import { EVENT_CATEGORY_LABELS, PROPERTY_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
-import { getLeasesForProperty } from "~/server/queries/leases";
+import { getAllBillsForProperty } from "~/server/queries/bills";
 import { getPropertyForOwner } from "~/server/queries/properties";
 
 export default async function PropertyDetailPage({
@@ -24,10 +31,7 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
-  const leases = await getLeasesForProperty(id);
-  const currentLeases = leases.filter((lease) => lease.active);
-  const pastLeases = leases.filter((lease) => !lease.active);
-  const isSelfOccupied = property.type === "SELF_OCCUPIED";
+  const bills = await getAllBillsForProperty(id);
 
   const address = [
     property.addressLine1,
@@ -55,25 +59,26 @@ export default async function PropertyDetailPage({
         title={property.name}
         description={address}
         action={
-          <div className="flex flex-wrap items-center gap-3">
-            <Button href={`/properties/${id}/utilities`} variant="outline">
-              Utilities →
-            </Button>
-            <Button href={`/properties/${id}/rentals`} variant="outline">
-              Rental units →
-            </Button>
-            {isSelfOccupied ? (
-              <Button
-                type="button"
-                disabled
-                title="Self-occupied properties can't have leases"
-              >
-                Add lease
-              </Button>
-            ) : (
-              <Button href={`/properties/${id}/leases/new`}>Add lease</Button>
-            )}
-          </div>
+          <Dropdown>
+            <DropdownButton variant="outline">
+              Manage
+              <ChevronDownIcon className="size-4" />
+            </DropdownButton>
+            <DropdownMenu anchor="bottom end">
+              <DropdownItem href={`/properties/${id}/edit`}>
+                Edit
+              </DropdownItem>
+              <DropdownItem href={`/properties/${id}/utilities`}>
+                Utilities
+              </DropdownItem>
+              <DropdownItem href={`/properties/${id}/rentals`}>
+                Rental units
+              </DropdownItem>
+              <DropdownItem href={`/properties/${id}/leases`}>
+                Leases
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
         }
       />
 
@@ -111,93 +116,34 @@ export default async function PropertyDetailPage({
 
       <div>
         <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          Current leases
+          Open bills
         </h2>
-        {currentLeases.length === 0 ? (
+        {bills.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            {isSelfOccupied
-              ? "This property is self-occupied, so it can't have leases."
-              : "No active lease — this property is currently vacant."}
+            No bills on record for this property yet — utility bills, rent
+            and EMIs from a linked loan will all show up here.
           </p>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-              {currentLeases.map((lease) => (
+              {bills.map((bill) => (
                 <li
-                  key={lease.id}
+                  key={bill.id}
                   className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                      {lease.tenantName}
+                      {bill.description ?? EVENT_CATEGORY_LABELS[bill.category]}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                      {lease.tenantPhone}
-                      {lease.tenantEmail && <> · {lease.tenantEmail}</>}
-                      {lease.room && <> · {lease.room.label}</>}
+                      {EVENT_CATEGORY_LABELS[bill.category]} · due{" "}
+                      {formatDate(bill.dueDate)}
                     </p>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                      {formatINR(lease.rentAmount)}/mo
-                    </p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500">
-                      since {formatDate(lease.leaseStart)}
-                      {lease.rentDueDay != null && (
-                        <> · due day {lease.rentDueDay}</>
-                      )}
-                    </p>
-                  </div>
-                  <StatusBadge status="ACTIVE" />
-                  <Link
-                    href={`/properties/${id}/leases/${lease.id}/edit`}
-                    className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                  >
-                    Edit →
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-
-      <div>
-        <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          Past leases
-        </h2>
-        {pastLeases.length === 0 ? (
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            No past leases on record.
-          </p>
-        ) : (
-          <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-            <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-              {pastLeases.map((lease) => (
-                <li
-                  key={lease.id}
-                  className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                      {lease.tenantName}
-                    </p>
-                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                      {formatDate(lease.leaseStart)} –{" "}
-                      {lease.leaseEnd ? formatDate(lease.leaseEnd) : "—"}
-                      {lease.room && <> · {lease.room.label}</>}
-                    </p>
-                  </div>
-                  <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                    {formatINR(lease.rentAmount)}/mo
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    {formatINR(bill.amount)}
                   </p>
-                  <StatusBadge status="PAST" />
-                  <Link
-                    href={`/properties/${id}/leases/${lease.id}/edit`}
-                    className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
-                  >
-                    Edit →
-                  </Link>
+                  <StatusBadge status={bill.status} />
                 </li>
               ))}
             </ul>

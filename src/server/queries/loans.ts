@@ -1,16 +1,17 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
+import { NOT_SOFT_DELETED, OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
 /**
  * Loans for the Loans page, each with its next open EMI `Bill`, if any.
  * Batch-fetched and grouped in application code — same rationale as
- * `getProperties`.
+ * `getProperties`. Deleted loans (see `deleteLoan` in
+ * `~/server/actions/loans`) are excluded.
  */
 export async function getLoans(ownerId: string) {
   const loans = await db.loan.findMany({
-    where: { ownerId },
+    where: { ownerId, ...NOT_SOFT_DELETED },
     orderBy: { createdAt: "asc" },
   });
 
@@ -33,9 +34,29 @@ export async function getLoans(ownerId: string) {
     }
   }
 
+  const linkedPropertyIds = [
+    ...new Set(
+      loans
+        .map((loan) => loan.linkedPropertyId)
+        .filter((propertyId): propertyId is string => propertyId != null),
+    ),
+  ];
+  const linkedProperties = linkedPropertyIds.length
+    ? await db.property.findMany({
+        where: { id: { in: linkedPropertyIds } },
+        select: { id: true, name: true },
+      })
+    : [];
+  const propertyNameById = new Map(
+    linkedProperties.map((property) => [property.id, property.name]),
+  );
+
   return loans.map((loan) => ({
     ...loan,
     nextEmi: nextEmiByLoan.get(loan.id) ?? null,
+    linkedPropertyName: loan.linkedPropertyId
+      ? (propertyNameById.get(loan.linkedPropertyId) ?? null)
+      : null,
   }));
 }
 
@@ -49,7 +70,9 @@ export async function getLoans(ownerId: string) {
  * page's field access unchanged.
  */
 export async function getLoanForOwner(loanId: string, ownerId: string) {
-  const loan = await db.loan.findFirst({ where: { id: loanId, ownerId } });
+  const loan = await db.loan.findFirst({
+    where: { id: loanId, ownerId, ...NOT_SOFT_DELETED },
+  });
   if (!loan) return null;
 
   const schedule = await db.billSchedule.findFirst({
@@ -64,4 +87,18 @@ export async function getLoanForOwner(loanId: string, ownerId: string) {
     emiAmount: schedule!.defaultAmount!,
     emiDueDay: schedule!.dueDay,
   };
+}
+
+/**
+ * Whether any `Bill` has ever been generated for this loan (an EMI payment
+ * on record). A loan with billing history can't be deleted — see
+ * `deleteLoan` in `~/server/actions/loans` — same rationale as
+ * `hasBillsForLease`.
+ */
+export async function hasBillsForLoan(loanId: string) {
+  const bill = await db.bill.findFirst({
+    where: { loanId },
+    select: { id: true },
+  });
+  return bill != null;
 }

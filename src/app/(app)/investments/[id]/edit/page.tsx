@@ -5,9 +5,12 @@ import { Button } from "~/app/_components/button";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
-import { updateInvestment } from "~/server/actions/investments";
+import { deleteInvestment, updateInvestment } from "~/server/actions/investments";
 import { getSession } from "~/server/better-auth/server";
-import { getInvestmentForOwner } from "~/server/queries/investments";
+import {
+  getInvestmentForOwner,
+  hasBillsForInvestment,
+} from "~/server/queries/investments";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
@@ -26,6 +29,7 @@ export default async function EditInvestmentPage({
   if (!investment) {
     notFound();
   }
+  const canDelete = !(await hasBillsForInvestment(id));
 
   return (
     <>
@@ -45,6 +49,7 @@ export default async function EditInvestmentPage({
 
       <form
         action={updateInvestment.bind(null, investment.id)}
+        data-gtm-event="investment_updated"
         className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -170,6 +175,33 @@ export default async function EditInvestmentPage({
           </Link>
         </div>
       </form>
+
+      <div className="max-w-xl space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+        <div>
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            Delete investment
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {canDelete
+              ? "Permanently removes this investment. Only possible when it has no bills on record."
+              : "This investment has bills on record, so it can't be deleted."}
+          </p>
+        </div>
+        <form
+          action={deleteInvestment.bind(null, investment.id)}
+          data-gtm-event="investment_deleted"
+        >
+          <Button
+            type="submit"
+            variant="outline"
+            color="red"
+            disabled={!canDelete}
+            title={canDelete ? undefined : "Bills exist for this investment"}
+          >
+            Delete investment
+          </Button>
+        </form>
+      </div>
     </>
   );
 }

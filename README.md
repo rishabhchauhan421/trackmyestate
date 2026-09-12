@@ -84,6 +84,22 @@ restart `pnpm dev`. The dev server caches a single `PrismaClient` instance acros
 hot reloads (see `src/server/db.ts`), so it keeps the pre-change client — missing
 new models/fields — until the process itself restarts, not just the file.
 
+## Granting the first admin
+
+`/admin` (user list, roles, bans — via better-auth's `admin` plugin) is gated
+server-side by `User.role === "admin"` (see `src/server/better-auth/is-admin.ts`).
+There's no in-app way to self-promote — a non-admin can't reach `/admin` to grant
+it to themselves — so the first admin has to be set directly against the database:
+
+```bash
+pnpm tsx scripts/set-admin-role.ts <email> [role]
+```
+
+The account must already have signed in at least once (a `User` row has to exist).
+`role` defaults to `"admin"` if omitted. Log out and back in afterwards so the
+session picks up the new role. Once at least one admin exists, further promotions
+can go through the admin UI (`auth.api.setRole`) instead of the script.
+
 ## What's built
 
 - Sign in / sign up / sign out via better-auth (Google OAuth + email/password), with

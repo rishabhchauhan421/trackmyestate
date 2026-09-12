@@ -16,7 +16,7 @@ const navItems = [
 
 /**
  * The marketing homepage's own header — not the signed-in app's sidebar
- * (see `sidebar-nav.tsx`). Session-aware: shows a "Sign in" link (to the
+ * (see `app-shell.tsx`). Session-aware: shows a "Sign in" link (to the
  * dedicated `/login` page, which offers both email/password and Google) or
  * a dashboard/sign-out pair. The mobile menu is a `<details>` disclosure,
  * so it needs no client JS.
@@ -55,7 +55,7 @@ export function SiteHeader({
               <Button href="/dashboard" pill size="sm">
                 Dashboard
               </Button>
-              <form>
+              <form data-gtm-event="sign_out">
                 <button
                   formAction={async () => {
                     "use server";

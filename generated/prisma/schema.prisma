@@ -36,6 +36,15 @@ model User {
 
   currency Currency @default(INR)
 
+  // better-auth `admin` plugin fields (see `src/server/better-auth/config.ts`).
+  // All optional: existing users have none of these set and are treated as
+  // ordinary, unbanned, non-admin users until explicitly promoted/banned —
+  // see `scripts/set-admin-role.ts`.
+  role       String?
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -69,6 +78,10 @@ model Session {
   userAgent String?
   userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // better-auth `admin` plugin: set on an admin's session while they're
+  // impersonating another user (holds the admin's own user id).
+  impersonatedBy String?
 
   @@map("session")
 }

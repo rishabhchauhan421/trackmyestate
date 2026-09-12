@@ -6,6 +6,7 @@ import { PageHeader } from "~/app/_components/page-header";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { createLoan } from "~/server/actions/loans";
 import { getSession } from "~/server/better-auth/server";
+import { getPropertyOptionsForOwner } from "~/server/queries/properties";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
@@ -14,6 +15,7 @@ const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 export default async function NewLoanPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  const properties = await getPropertyOptionsForOwner(session.user.id);
 
   return (
     <>
@@ -33,6 +35,7 @@ export default async function NewLoanPage() {
 
       <form
         action={createLoan}
+        data-gtm-event="loan_created"
         className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -142,6 +145,26 @@ export default async function NewLoanPage() {
             placeholder="Defaults to the principal"
             className={`${inputClass} sm:w-56`}
           />
+        </div>
+
+        <div>
+          <label className={labelClass}>Linked property (optional)</label>
+          <select
+            name="linkedPropertyId"
+            defaultValue=""
+            className={`${inputClass} sm:w-72`}
+          >
+            <option value="">Not linked to a property</option>
+            {properties.map((property) => (
+              <option key={property.id} value={property.id}>
+                {property.name}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            Links this loan&apos;s EMI bills to a property, e.g. a home loan
+            against a property you own.
+          </p>
         </div>
 
         <div className="flex items-center gap-3 pt-2">

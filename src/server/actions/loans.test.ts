@@ -3,7 +3,7 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
-import { createLoan, updateLoan } from "./loans";
+import { createLoan, deleteLoan, updateLoan } from "./loans";
 
 jest.mock("~/server/db");
 jest.mock("~/server/better-auth/server", () => ({
@@ -154,6 +154,7 @@ describe("createLoan", () => {
         interestRatePercent: 8.5,
         startDate: new Date("2024-04-05"),
         outstandingBalance: 4800000,
+        linkedPropertyId: null,
       },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/loans");
@@ -178,6 +179,32 @@ describe("createLoan", () => {
         tenureMonths: 240,
       },
     });
+  });
+
+  it("links the loan to an owned property when linkedPropertyId is given", async () => {
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-1" } as never);
+    dbMock.loan.create.mockResolvedValue({ id: "loan-1" } as never);
+
+    await expect(
+      createLoan(buildLoanForm({ linkedPropertyId: "prop-1" })),
+    ).rejects.toThrow("REDIRECT:/loans");
+
+    expect(dbMock.property.findFirst).toHaveBeenCalledWith({
+      where: { id: "prop-1", ownerId: "user-1" },
+    });
+    expect(dbMock.loan.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ linkedPropertyId: "prop-1" }),
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
+  });
+
+  it("rejects a linkedPropertyId that doesn't belong to this owner", async () => {
+    dbMock.property.findFirst.mockResolvedValue(null);
+
+    await expect(
+      createLoan(buildLoanForm({ linkedPropertyId: "someone-elses-prop" })),
+    ).rejects.toThrow("Property not found");
+    expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 });
 
@@ -252,5 +279,94 @@ describe("updateLoan", () => {
       where: { category: "EMI", loanId: "loan-1" },
       data: { dueDay: 10, defaultAmount: 44000, tenureMonths: 180 },
     });
+  });
+
+  it("re-links the loan to a different owned property and revalidates both", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({
+      id: "loan-1",
+      ownerId: "user-1",
+      linkedPropertyId: "prop-old",
+    } as never);
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-new" } as never);
+    dbMock.loan.update.mockResolvedValue({ id: "loan-1" } as never);
+
+    await expect(
+      updateLoan("loan-1", buildLoanForm({ linkedPropertyId: "prop-new" })),
+    ).rejects.toThrow("REDIRECT:/loans");
+
+    expect(dbMock.loan.update).toHaveBeenCalledWith({
+      where: { id: "loan-1" },
+      data: expect.objectContaining({ linkedPropertyId: "prop-new" }),
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-old");
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-new");
+  });
+
+  it("rejects a linkedPropertyId that doesn't belong to this owner", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({
+      id: "loan-1",
+      ownerId: "user-1",
+      linkedPropertyId: null,
+    } as never);
+    dbMock.property.findFirst.mockResolvedValue(null);
+
+    await expect(
+      updateLoan(
+        "loan-1",
+        buildLoanForm({ linkedPropertyId: "someone-elses-prop" }),
+      ),
+    ).rejects.toThrow("Property not found");
+    expect(dbMock.loan.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("deleteLoan", () => {
+  it("redirects to / when there is no session", async () => {
+    getSessionMock.mockResolvedValue(null);
+
+    await expect(deleteLoan("loan-1")).rejects.toThrow("REDIRECT:/");
+  });
+
+  it("throws when the loan doesn't belong to this owner", async () => {
+    dbMock.loan.findFirst.mockResolvedValue(null);
+
+    await expect(deleteLoan("loan-1")).rejects.toThrow("Loan not found");
+    expect(dbMock.loan.update).not.toHaveBeenCalled();
+  });
+
+  it("refuses to delete a loan that has EMI payments on record", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({
+      id: "loan-1",
+      ownerId: "user-1",
+    } as never);
+    dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
+
+    await expect(deleteLoan("loan-1")).rejects.toThrow(
+      "Cannot delete a loan that has EMI payments on record",
+    );
+    expect(dbMock.loan.update).not.toHaveBeenCalled();
+  });
+
+  it("soft-deletes the loan and its EMI BillSchedule, then redirects", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({
+      id: "loan-1",
+      ownerId: "user-1",
+      linkedPropertyId: "prop-1",
+    } as never);
+    dbMock.bill.findFirst.mockResolvedValue(null);
+    dbMock.loan.update.mockResolvedValue({ id: "loan-1" } as never);
+
+    await expect(deleteLoan("loan-1")).rejects.toThrow("REDIRECT:/loans");
+
+    expect(dbMock.loan.update).toHaveBeenCalledWith({
+      where: { id: "loan-1" },
+      data: { deletedAt: expect.any(Date) },
+    });
+    expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
+      where: { category: "EMI", loanId: "loan-1" },
+      data: { deletedAt: expect.any(Date) },
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/loans");
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
   });
 });

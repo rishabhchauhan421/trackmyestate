@@ -98,7 +98,7 @@ export default async function PropertyUtilitiesPage({
                           )}
                         </p>
                       </div>
-                      <form>
+                      <form data-gtm-event="utility_deactivated">
                         <button
                           formAction={deactivateUtility.bind(null, utility.id)}
                           className="shrink-0 rounded-md border border-slate-200 px-2.5 py-1.5 text-xs font-medium text-slate-500 transition hover:border-red-200 hover:text-red-600 dark:border-slate-700 dark:text-slate-400 dark:hover:border-red-900 dark:hover:text-red-400"
@@ -123,7 +123,7 @@ export default async function PropertyUtilitiesPage({
                               <span className="truncate">
                                 {recipient.name} · {recipient.email}
                               </span>
-                              <form>
+                              <form data-gtm-event="utility_recipient_removed">
                                 <button
                                   formAction={removeUtilityRecipient.bind(
                                     null,
@@ -143,6 +143,7 @@ export default async function PropertyUtilitiesPage({
 
                       <form
                         action={addUtilityRecipient.bind(null, utility.id)}
+                        data-gtm-event="utility_recipient_added"
                         className="mt-2 flex flex-wrap gap-2"
                       >
                         <input

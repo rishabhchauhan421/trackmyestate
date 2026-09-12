@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
@@ -6,18 +7,9 @@ import { InsuranceIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
+import { POLICY_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
 import { getPolicies } from "~/server/queries/policies";
-
-const TYPE_LABELS: Record<string, string> = {
-  TERM_LIFE: "Term life",
-  ENDOWMENT: "Endowment",
-  MONEY_BACK: "Money back",
-  ULIP: "ULIP",
-  HEALTH: "Health",
-  VEHICLE: "Vehicle",
-  HOME: "Home",
-};
 
 export default async function InsurancePage() {
   const session = await getSession();
@@ -29,11 +21,7 @@ export default async function InsurancePage() {
       <PageHeader
         title="Insurance"
         description="Life, health, vehicle and home policies — premiums, coverage, maturity and claims."
-        action={
-          <Button type="button" disabled title="Coming soon">
-            Add policy
-          </Button>
-        }
+        action={<Button href="/insurance/new">Add policy</Button>}
       />
 
       {policies.length === 0 ? (
@@ -42,6 +30,7 @@ export default async function InsurancePage() {
           title="No policies yet"
           description="Add a policy to track premium due dates, sum assured, maturity payouts and claims — renewal reminders are set up automatically."
           actionLabel="Add your first policy"
+          actionHref="/insurance/new"
         />
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -58,7 +47,7 @@ export default async function InsurancePage() {
                       {policy.insurer}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                      {TYPE_LABELS[policy.type]} · {policy.policyNumber}
+                      {POLICY_TYPE_LABELS[policy.type]} · {policy.policyNumber}
                     </p>
                   </div>
                   <div className="text-right">
@@ -84,6 +73,12 @@ export default async function InsurancePage() {
                     </span>
                   )}
                   <StatusBadge status={policy.status} />
+                  <Link
+                    href={`/insurance/${policy.id}/edit`}
+                    className="shrink-0 text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  >
+                    Edit →
+                  </Link>
                 </li>
               );
             })}

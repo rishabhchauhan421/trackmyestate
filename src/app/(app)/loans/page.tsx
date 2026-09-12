@@ -50,6 +50,9 @@ export default async function LoansPage() {
                     <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                       {LOAN_TYPE_LABELS[loan.type]} ·{" "}
                       {loan.interestRatePercent}% p.a.
+                      {loan.linkedPropertyName && (
+                        <> · linked to {loan.linkedPropertyName}</>
+                      )}
                     </p>
                   </div>
                   <div className="text-right">

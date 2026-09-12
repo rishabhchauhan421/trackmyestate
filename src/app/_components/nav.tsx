@@ -5,8 +5,9 @@ import {
   InvestmentsIcon,
   LoansIcon,
   PropertiesIcon,
-  SettingsIcon,
+  ShieldIcon,
   TimelineIcon,
+  UsersIcon,
 } from "~/app/_components/icons";
 
 export const navItems = [
@@ -52,12 +53,28 @@ export const navItems = [
     description: "Every policy, statement and paper, in one vault",
     Icon: DocumentsIcon,
   },
-  {
-    label: "Settings",
-    href: "/settings",
-    description: "Profile, security and notification channels",
-    Icon: SettingsIcon,
-  },
 ] as const;
 
 export type NavItem = (typeof navItems)[number];
+
+/** Only rendered for admins — see `isAdmin` in `~/server/better-auth/server`. */
+export const adminNavItems = [
+  {
+    label: "Overview",
+    href: "/admin",
+    description: "Platform-wide users, portfolio value and notification health",
+    Icon: ShieldIcon,
+  },
+  {
+    label: "Users",
+    href: "/admin/users",
+    description: "Every signed-up user and their portfolio size",
+    Icon: UsersIcon,
+  },
+] as const;
+
+/** `pathname.startsWith(href + "/")`, not a bare prefix — without the
+ * trailing slash, "/investments-old" would false-positive match "/investments". */
+export function isActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`);
+}

@@ -150,7 +150,7 @@ describe("createLease", () => {
     dbMock.lease.create.mockResolvedValue({ id: "lease-1" } as never);
 
     await expect(createLease(buildLeaseForm())).rejects.toThrow(
-      "REDIRECT:/properties/prop-1",
+      "REDIRECT:/properties/prop-1/leases",
     );
 
     expect(dbMock.lease.create).toHaveBeenCalledWith({
@@ -169,7 +169,7 @@ describe("createLease", () => {
         active: true,
       },
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/leases");
   });
 
   it("rejects an out-of-range or non-integer rent due day", async () => {
@@ -324,7 +324,7 @@ describe("updateLease", () => {
 
     await expect(
       updateLease("lease-1", buildLeaseUpdateForm()),
-    ).rejects.toThrow("REDIRECT:/properties/prop-1");
+    ).rejects.toThrow("REDIRECT:/properties/prop-1/leases");
 
     expect(dbMock.lease.update).toHaveBeenCalledWith({
       where: { id: "lease-1" },
@@ -336,7 +336,7 @@ describe("updateLease", () => {
         leaseEnd: null,
       },
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/leases");
   });
 
   it("rejects an out-of-range rent due day before writing anything", async () => {
@@ -409,14 +409,14 @@ describe("endLease", () => {
     dbMock.lease.update.mockResolvedValue({ id: "lease-1" } as never);
 
     await expect(endLease("lease-1")).rejects.toThrow(
-      "REDIRECT:/properties/prop-1",
+      "REDIRECT:/properties/prop-1/leases",
     );
 
     expect(dbMock.lease.update).toHaveBeenCalledWith({
       where: { id: "lease-1" },
       data: { active: false, leaseEnd: expect.any(Date) as Date },
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/leases");
   });
 
   it("preserves an already-set leaseEnd instead of overwriting it", async () => {
@@ -479,13 +479,13 @@ describe("deleteLease", () => {
     dbMock.lease.update.mockResolvedValue({ id: "lease-1" } as never);
 
     await expect(deleteLease("lease-1")).rejects.toThrow(
-      "REDIRECT:/properties/prop-1",
+      "REDIRECT:/properties/prop-1/leases",
     );
 
     expect(dbMock.lease.update).toHaveBeenCalledWith({
       where: { id: "lease-1" },
       data: { deletedAt: expect.any(Date) as Date },
     });
-    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
+    expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/leases");
   });
 });

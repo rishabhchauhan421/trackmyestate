@@ -9,8 +9,13 @@
  * A loan's EMI schedule (tenure, due day, EMI amount) lives on its own
  * `BillSchedule` row (category `"EMI"`, `loanId` = the Loan's id) rather
  * than on `Loan` itself — see the `BillSchedule` model comment in
- * `prisma/schema.prisma`. `createLoan`/`updateLoan` write both records;
- * the form itself is unchanged.
+ * `prisma/schema.prisma`. `createLoan`/`updateLoan` write both records.
+ *
+ * A loan can optionally be linked to one of the owner's properties
+ * (`linkedPropertyId`, an "Exclusive Arc" on `Loan` — see the model
+ * comment) so its EMI bills surface on that property's page even though
+ * the `Bill` rows themselves only carry `loanId`, not `propertyId` — see
+ * `getAllBillsForProperty` in `~/server/queries/bills`.
  *
  * Every mutation re-checks ownership itself rather than trusting the
  * caller, since these are invoked directly from client forms.
@@ -51,6 +56,8 @@ function parseLoanFields(formData: FormData) {
   const outstandingBalance = outstandingBalanceRaw
     ? Number(outstandingBalanceRaw)
     : principal;
+  const linkedPropertyId =
+    String(formData.get("linkedPropertyId") ?? "").trim() || null;
 
   if (!lender) throw new Error("Enter a lender");
   if (!Number.isFinite(principal) || principal <= 0) {
@@ -85,13 +92,35 @@ function parseLoanFields(formData: FormData) {
     emiDueDay,
     startDate,
     outstandingBalance,
+    linkedPropertyId,
   };
+}
+
+/**
+ * Confirms a `linkedPropertyId` (if given) actually belongs to the owner,
+ * the same way `createLease` checks a `roomId` — a loan can only be linked
+ * to one of the signed-in owner's own properties.
+ */
+async function requireOwnedLinkedProperty(
+  linkedPropertyId: string | null,
+  ownerId: string,
+) {
+  if (!linkedPropertyId) return null;
+  const property = await db.property.findFirst({
+    where: { id: linkedPropertyId, ownerId },
+  });
+  if (!property) throw new Error("Property not found");
+  return linkedPropertyId;
 }
 
 /** Creates a new `Loan` and its EMI `BillSchedule` for the signed-in owner. */
 export async function createLoan(formData: FormData) {
   const session = await requireSession();
   const fields = parseLoanFields(formData);
+  const linkedPropertyId = await requireOwnedLinkedProperty(
+    fields.linkedPropertyId,
+    session.user.id,
+  );
 
   const loan = await db.loan.create({
     data: {
@@ -102,6 +131,7 @@ export async function createLoan(formData: FormData) {
       interestRatePercent: fields.interestRatePercent,
       startDate: fields.startDate,
       outstandingBalance: fields.outstandingBalance,
+      linkedPropertyId,
     },
   });
 
@@ -118,14 +148,19 @@ export async function createLoan(formData: FormData) {
   });
 
   revalidatePath("/loans");
+  if (linkedPropertyId) revalidatePath(`/properties/${linkedPropertyId}`);
   redirect("/loans");
 }
 
 /** Updates every editable field of an existing `Loan` and its EMI `BillSchedule`. */
 export async function updateLoan(loanId: string, formData: FormData) {
   const session = await requireSession();
-  await requireOwnedLoan(loanId, session.user.id);
+  const existingLoan = await requireOwnedLoan(loanId, session.user.id);
   const fields = parseLoanFields(formData);
+  const linkedPropertyId = await requireOwnedLinkedProperty(
+    fields.linkedPropertyId,
+    session.user.id,
+  );
 
   await db.loan.update({
     where: { id: loanId },
@@ -136,6 +171,7 @@ export async function updateLoan(loanId: string, formData: FormData) {
       interestRatePercent: fields.interestRatePercent,
       startDate: fields.startDate,
       outstandingBalance: fields.outstandingBalance,
+      linkedPropertyId,
     },
   });
 
@@ -149,5 +185,40 @@ export async function updateLoan(loanId: string, formData: FormData) {
   });
 
   revalidatePath("/loans");
+  if (existingLoan.linkedPropertyId) {
+    revalidatePath(`/properties/${existingLoan.linkedPropertyId}`);
+  }
+  if (linkedPropertyId) revalidatePath(`/properties/${linkedPropertyId}`);
+  redirect("/loans");
+}
+
+/**
+ * Soft-deletes a loan and its EMI `BillSchedule` — refused if any EMI
+ * `Bill` has ever been generated for it, since that payment history needs
+ * the loan record to stay meaningful. Same rationale as `deleteLease`.
+ */
+export async function deleteLoan(loanId: string) {
+  const session = await requireSession();
+  const loan = await requireOwnedLoan(loanId, session.user.id);
+
+  const existingBill = await db.bill.findFirst({
+    where: { loanId },
+    select: { id: true },
+  });
+  if (existingBill) {
+    throw new Error("Cannot delete a loan that has EMI payments on record");
+  }
+
+  await db.loan.update({
+    where: { id: loanId },
+    data: { deletedAt: new Date() },
+  });
+  await db.billSchedule.updateMany({
+    where: { category: "EMI", loanId },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/loans");
+  if (loan.linkedPropertyId) revalidatePath(`/properties/${loan.linkedPropertyId}`);
   redirect("/loans");
 }

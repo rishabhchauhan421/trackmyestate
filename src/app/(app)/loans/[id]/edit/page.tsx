@@ -5,9 +5,10 @@ import { Button } from "~/app/_components/button";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
-import { updateLoan } from "~/server/actions/loans";
+import { deleteLoan, updateLoan } from "~/server/actions/loans";
 import { getSession } from "~/server/better-auth/server";
-import { getLoanForOwner } from "~/server/queries/loans";
+import { getLoanForOwner, hasBillsForLoan } from "~/server/queries/loans";
+import { getPropertyOptionsForOwner } from "~/server/queries/properties";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
@@ -26,6 +27,8 @@ export default async function EditLoanPage({
   if (!loan) {
     notFound();
   }
+  const properties = await getPropertyOptionsForOwner(session.user.id);
+  const canDelete = !(await hasBillsForLoan(id));
 
   return (
     <>
@@ -45,6 +48,7 @@ export default async function EditLoanPage({
 
       <form
         action={updateLoan.bind(null, loan.id)}
+        data-gtm-event="loan_updated"
         className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -167,6 +171,26 @@ export default async function EditLoanPage({
           />
         </div>
 
+        <div>
+          <label className={labelClass}>Linked property (optional)</label>
+          <select
+            name="linkedPropertyId"
+            defaultValue={loan.linkedPropertyId ?? ""}
+            className={`${inputClass} sm:w-72`}
+          >
+            <option value="">Not linked to a property</option>
+            {properties.map((property) => (
+              <option key={property.id} value={property.id}>
+                {property.name}
+              </option>
+            ))}
+          </select>
+          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            Links this loan&apos;s EMI bills to a property, e.g. a home loan
+            against a property you own.
+          </p>
+        </div>
+
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit">Save changes</Button>
           <Link
@@ -177,6 +201,33 @@ export default async function EditLoanPage({
           </Link>
         </div>
       </form>
+
+      <div className="max-w-xl space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+        <div>
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+            Delete loan
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            {canDelete
+              ? "Permanently removes this loan and its EMI schedule. Only possible when it has no EMI payments on record."
+              : "This loan has EMI payments on record, so it can't be deleted."}
+          </p>
+        </div>
+        <form
+          action={deleteLoan.bind(null, loan.id)}
+          data-gtm-event="loan_deleted"
+        >
+          <Button
+            type="submit"
+            variant="outline"
+            color="red"
+            disabled={!canDelete}
+            title={canDelete ? undefined : "EMI payments exist for this loan"}
+          >
+            Delete loan
+          </Button>
+        </form>
+      </div>
     </>
   );
 }

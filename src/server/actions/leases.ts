@@ -121,8 +121,8 @@ export async function createLease(formData: FormData) {
     },
   });
 
-  revalidatePath(`/properties/${propertyId}`);
-  redirect(`/properties/${propertyId}`);
+  revalidatePath(`/properties/${propertyId}/leases`);
+  redirect(`/properties/${propertyId}/leases`);
 }
 
 /**
@@ -164,8 +164,8 @@ export async function updateLease(leaseId: string, formData: FormData) {
     data: { roomId, rentAmount, rentDueDay, depositAmount, leaseEnd },
   });
 
-  revalidatePath(`/properties/${lease.propertyId}`);
-  redirect(`/properties/${lease.propertyId}`);
+  revalidatePath(`/properties/${lease.propertyId}/leases`);
+  redirect(`/properties/${lease.propertyId}/leases`);
 }
 
 /**
@@ -184,8 +184,8 @@ export async function endLease(leaseId: string) {
     data: { active: false, leaseEnd: lease.leaseEnd ?? new Date() },
   });
 
-  revalidatePath(`/properties/${lease.propertyId}`);
-  redirect(`/properties/${lease.propertyId}`);
+  revalidatePath(`/properties/${lease.propertyId}/leases`);
+  redirect(`/properties/${lease.propertyId}/leases`);
 }
 
 /**
@@ -212,6 +212,6 @@ export async function deleteLease(leaseId: string) {
     data: { deletedAt: new Date() },
   });
 
-  revalidatePath(`/properties/${lease.propertyId}`);
-  redirect(`/properties/${lease.propertyId}`);
+  revalidatePath(`/properties/${lease.propertyId}/leases`);
+  redirect(`/properties/${lease.propertyId}/leases`);
 }

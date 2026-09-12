@@ -1,7 +1,7 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
+import { NOT_SOFT_DELETED, OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
 /**
  * Properties for the Properties list page, each with its active lease (if
@@ -9,11 +9,12 @@ import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
  * "Overdue amount" across all of them. `Bill.propertyId` has no back-relation
  * on `Property` for `include`-ing here in one query (see the `Bill` model
  * comment in `schema.prisma`), so open bills are batch-fetched and grouped
- * in application code instead.
+ * in application code instead. Deleted properties (see `deleteProperty` in
+ * `~/server/actions/properties`) are excluded.
  */
 export async function getProperties(ownerId: string) {
   const properties = await db.property.findMany({
-    where: { ownerId },
+    where: { ownerId, ...NOT_SOFT_DELETED },
     include: { leases: { where: { active: true } } },
     orderBy: { createdAt: "asc" },
   });
@@ -51,5 +52,48 @@ export async function getProperties(ownerId: string) {
  * which property ids exist.
  */
 export async function getPropertyForOwner(propertyId: string, ownerId: string) {
-  return db.property.findFirst({ where: { id: propertyId, ownerId } });
+  return db.property.findFirst({
+    where: { id: propertyId, ownerId, ...NOT_SOFT_DELETED },
+  });
+}
+
+/**
+ * Id/name pairs for every one of the owner's properties, for a "link to
+ * property" select — e.g. the Loan form's optional `linkedPropertyId`.
+ */
+export async function getPropertyOptionsForOwner(ownerId: string) {
+  return db.property.findMany({
+    where: { ownerId, ...NOT_SOFT_DELETED },
+    select: { id: true, name: true },
+    orderBy: { name: "asc" },
+  });
+}
+
+/**
+ * Whether a property has any real history hanging off it — bills, leases,
+ * rental units, utility schedules, or a loan linked to it — that a
+ * `deleteProperty` (see `~/server/actions/properties`) would otherwise
+ * orphan. Mirrors `hasBillsForLease`'s rationale in `~/server/queries/leases`.
+ */
+export async function hasDependentRecordsForProperty(propertyId: string) {
+  const [bill, lease, room, billSchedule, loan] = await Promise.all([
+    db.bill.findFirst({ where: { propertyId }, select: { id: true } }),
+    db.lease.findFirst({
+      where: { propertyId, ...NOT_SOFT_DELETED },
+      select: { id: true },
+    }),
+    db.room.findFirst({
+      where: { propertyId, ...NOT_SOFT_DELETED },
+      select: { id: true },
+    }),
+    db.billSchedule.findFirst({
+      where: { propertyId, ...NOT_SOFT_DELETED },
+      select: { id: true },
+    }),
+    db.loan.findFirst({
+      where: { linkedPropertyId: propertyId, ...NOT_SOFT_DELETED },
+      select: { id: true },
+    }),
+  ]);
+  return Boolean(bill ?? lease ?? room ?? billSchedule ?? loan);
 }

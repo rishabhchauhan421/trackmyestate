@@ -30,7 +30,7 @@ export default async function NewLeasePage({
   // Self-occupied properties can't be rented out — the link to this page
   // is disabled, but a direct visit still needs to be turned away.
   if (property.type === "SELF_OCCUPIED") {
-    redirect(`/properties/${id}`);
+    redirect(`/properties/${id}/leases`);
   }
 
   const rooms = await getRoomsForProperty(id);
@@ -40,10 +40,10 @@ export default async function NewLeasePage({
     <>
       <div>
         <Link
-          href={`/properties/${id}`}
+          href={`/properties/${id}/leases`}
           className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
         >
-          ← {property.name}
+          ← {property.name} leases
         </Link>
       </div>
 
@@ -54,6 +54,7 @@ export default async function NewLeasePage({
 
       <form
         action={createLease}
+        data-gtm-event="lease_created"
         className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
       >
         <input type="hidden" name="propertyId" value={id} />
@@ -162,7 +163,7 @@ export default async function NewLeasePage({
         <div className="flex items-center gap-3 pt-2">
           <Button type="submit">Save lease</Button>
           <Link
-            href={`/properties/${id}`}
+            href={`/properties/${id}/leases`}
             className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
           >
             Cancel

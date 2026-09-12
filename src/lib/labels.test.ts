@@ -1,16 +1,24 @@
 import {
   BillRecurrence,
   BillType,
+  EventCategory,
   InvestmentType,
   LoanType,
+  NotificationStatus,
+  PolicyStatus,
+  PolicyType,
   PremiumFrequency,
   PropertyType,
 } from "../../generated/prisma";
 import {
   BILL_TYPE_LABELS,
+  EVENT_CATEGORY_LABELS,
   FREQUENCY_LABELS,
   INVESTMENT_TYPE_LABELS,
   LOAN_TYPE_LABELS,
+  NOTIFICATION_STATUS_LABELS,
+  POLICY_STATUS_LABELS,
+  POLICY_TYPE_LABELS,
   PROPERTY_TYPE_LABELS,
   UTILITY_RECURRENCE_LABELS,
 } from "./labels";
@@ -57,6 +65,30 @@ describe("label maps stay in sync with their Prisma enums", () => {
     );
   });
 
+  it("POLICY_TYPE_LABELS covers every PolicyType value", () => {
+    expect(Object.keys(POLICY_TYPE_LABELS).sort()).toEqual(
+      Object.values(PolicyType).sort(),
+    );
+  });
+
+  it("POLICY_STATUS_LABELS covers every PolicyStatus value", () => {
+    expect(Object.keys(POLICY_STATUS_LABELS).sort()).toEqual(
+      Object.values(PolicyStatus).sort(),
+    );
+  });
+
+  it("EVENT_CATEGORY_LABELS covers every EventCategory value", () => {
+    expect(Object.keys(EVENT_CATEGORY_LABELS).sort()).toEqual(
+      Object.values(EventCategory).sort(),
+    );
+  });
+
+  it("NOTIFICATION_STATUS_LABELS covers every NotificationStatus value", () => {
+    expect(Object.keys(NOTIFICATION_STATUS_LABELS).sort()).toEqual(
+      Object.values(NotificationStatus).sort(),
+    );
+  });
+
   // A copy-paste slip (e.g. two keys sharing one label, or a label left as
   // an empty string) wouldn't be caught by the key-coverage checks above.
   it.each([
@@ -66,6 +98,10 @@ describe("label maps stay in sync with their Prisma enums", () => {
     ["INVESTMENT_TYPE_LABELS", INVESTMENT_TYPE_LABELS],
     ["LOAN_TYPE_LABELS", LOAN_TYPE_LABELS],
     ["PROPERTY_TYPE_LABELS", PROPERTY_TYPE_LABELS],
+    ["POLICY_TYPE_LABELS", POLICY_TYPE_LABELS],
+    ["POLICY_STATUS_LABELS", POLICY_STATUS_LABELS],
+    ["EVENT_CATEGORY_LABELS", EVENT_CATEGORY_LABELS],
+    ["NOTIFICATION_STATUS_LABELS", NOTIFICATION_STATUS_LABELS],
   ] as const)("%s has no blank or duplicate label values", (_name, map) => {
     const values = Object.values(map);
     for (const value of values) {

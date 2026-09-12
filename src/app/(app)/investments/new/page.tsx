@@ -33,6 +33,7 @@ export default async function NewInvestmentPage() {
 
       <form
         action={createInvestment}
+        data-gtm-event="investment_created"
         className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

@@ -3,7 +3,7 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
-import { createInvestment, updateInvestment } from "./investments";
+import { createInvestment, deleteInvestment, updateInvestment } from "./investments";
 
 jest.mock("~/server/db");
 jest.mock("~/server/better-auth/server", () => ({
@@ -213,6 +213,55 @@ describe("updateInvestment", () => {
         name: "Updated Fund",
         capitalDeployed: 60000,
       }),
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/investments");
+  });
+});
+
+describe("deleteInvestment", () => {
+  it("redirects to / when there is no session", async () => {
+    getSessionMock.mockResolvedValue(null);
+
+    await expect(deleteInvestment("inv-1")).rejects.toThrow("REDIRECT:/");
+  });
+
+  it("throws when the investment doesn't belong to this owner", async () => {
+    dbMock.investment.findFirst.mockResolvedValue(null);
+
+    await expect(deleteInvestment("inv-1")).rejects.toThrow(
+      "Investment not found",
+    );
+    expect(dbMock.investment.update).not.toHaveBeenCalled();
+  });
+
+  it("refuses to delete an investment that has bills on record", async () => {
+    dbMock.investment.findFirst.mockResolvedValue({
+      id: "inv-1",
+      ownerId: "user-1",
+    } as never);
+    dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
+
+    await expect(deleteInvestment("inv-1")).rejects.toThrow(
+      "Cannot delete an investment that has bills on record",
+    );
+    expect(dbMock.investment.update).not.toHaveBeenCalled();
+  });
+
+  it("soft-deletes the investment, then redirects", async () => {
+    dbMock.investment.findFirst.mockResolvedValue({
+      id: "inv-1",
+      ownerId: "user-1",
+    } as never);
+    dbMock.bill.findFirst.mockResolvedValue(null);
+    dbMock.investment.update.mockResolvedValue({ id: "inv-1" } as never);
+
+    await expect(deleteInvestment("inv-1")).rejects.toThrow(
+      "REDIRECT:/investments",
+    );
+
+    expect(dbMock.investment.update).toHaveBeenCalledWith({
+      where: { id: "inv-1" },
+      data: { deletedAt: expect.any(Date) },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/investments");
   });

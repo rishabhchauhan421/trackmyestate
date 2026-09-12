@@ -78,7 +78,11 @@ export default async function LoginPage({
         </p>
       )}
 
-      <form action={signInWithEmail} className="mt-8 grid grid-cols-1 gap-y-6">
+      <form
+        action={signInWithEmail}
+        data-gtm-event="sign_in_email"
+        className="mt-8 grid grid-cols-1 gap-y-6"
+      >
         <TextField
           label="Email address"
           name="email"
@@ -104,7 +108,11 @@ export default async function LoginPage({
         <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
       </div>
 
-      <form action={signInWithGoogle} className="mt-6">
+      <form
+        action={signInWithGoogle}
+        data-gtm-event="sign_in_google"
+        className="mt-6"
+      >
         <button
           type="submit"
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"

@@ -7,8 +7,12 @@
 import type {
   BillRecurrence,
   BillType,
+  EventCategory,
   InvestmentType,
   LoanType,
+  NotificationStatus,
+  PolicyStatus,
+  PolicyType,
   PremiumFrequency,
   PropertyType,
 } from "../../generated/prisma";
@@ -72,4 +76,46 @@ export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
   RENTED: "Rented",
   UNDER_CONSTRUCTION: "Under construction",
   INVESTMENT: "Investment",
+};
+
+/** Display label for each `PolicyType`. */
+export const POLICY_TYPE_LABELS: Record<PolicyType, string> = {
+  TERM_LIFE: "Term life",
+  ENDOWMENT: "Endowment",
+  MONEY_BACK: "Money back",
+  ULIP: "ULIP",
+  HEALTH: "Health",
+  VEHICLE: "Vehicle",
+  HOME: "Home",
+};
+
+/** Display label for each `PolicyStatus`. */
+export const POLICY_STATUS_LABELS: Record<PolicyStatus, string> = {
+  ACTIVE: "Active",
+  LAPSED: "Lapsed",
+  MATURED: "Matured",
+  CLAIMED: "Claimed",
+  CANCELLED: "Cancelled",
+};
+
+/** Display label for each `EventCategory` (what kind of bill/financial event a `Bill` row represents). */
+export const EVENT_CATEGORY_LABELS: Record<EventCategory, string> = {
+  RENT: "Rent",
+  UTILITY_BILL: "Utility bill",
+  PREMIUM: "Premium",
+  EMI: "EMI",
+  INVESTMENT_RETURN: "Investment return",
+  PAYOUT: "Payout",
+  CLAIM_SETTLEMENT: "Claim settlement",
+  CUSTOM: "Custom",
+};
+
+/** Display label for each `NotificationStatus` (used on the admin overview's notification-engine health tiles). */
+export const NOTIFICATION_STATUS_LABELS: Record<NotificationStatus, string> = {
+  SCHEDULED: "Scheduled",
+  PROCESSING: "Processing",
+  SENT: "Sent",
+  FAILED: "Failed",
+  CANCELLED: "Cancelled",
+  SKIPPED: "Skipped",
 };

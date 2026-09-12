@@ -61,6 +61,7 @@ export default async function UtilityBillPage({
         {isOpen ? (
           <form
             action={markBillPaid.bind(null, bill.id)}
+            data-gtm-event="bill_marked_paid"
             className="space-y-4 border-t border-slate-100 pt-4 dark:border-slate-800"
           >
             <div>

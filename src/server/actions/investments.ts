@@ -121,3 +121,29 @@ export async function updateInvestment(
   revalidatePath("/investments");
   redirect("/investments");
 }
+
+/**
+ * Soft-deletes an investment — refused if any `Bill` (payout or return) has
+ * ever been generated for it, since that history needs the investment
+ * record to stay meaningful. Same rationale as `deleteLease`.
+ */
+export async function deleteInvestment(investmentId: string) {
+  const session = await requireSession();
+  await requireOwnedInvestment(investmentId, session.user.id);
+
+  const existingBill = await db.bill.findFirst({
+    where: { investmentId },
+    select: { id: true },
+  });
+  if (existingBill) {
+    throw new Error("Cannot delete an investment that has bills on record");
+  }
+
+  await db.investment.update({
+    where: { id: investmentId },
+    data: { deletedAt: new Date() },
+  });
+
+  revalidatePath("/investments");
+  redirect("/investments");
+}
