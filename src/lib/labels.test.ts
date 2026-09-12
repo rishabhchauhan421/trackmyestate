@@ -5,9 +5,11 @@ import {
   InvestmentType,
   LoanType,
   NotificationStatus,
+  OwnershipType,
   PolicyStatus,
   PolicyType,
   PremiumFrequency,
+  PropertyCategory,
   PropertyType,
 } from "../../generated/prisma";
 import {
@@ -17,8 +19,10 @@ import {
   INVESTMENT_TYPE_LABELS,
   LOAN_TYPE_LABELS,
   NOTIFICATION_STATUS_LABELS,
+  OWNERSHIP_TYPE_LABELS,
   POLICY_STATUS_LABELS,
   POLICY_TYPE_LABELS,
+  PROPERTY_CATEGORY_LABELS,
   PROPERTY_TYPE_LABELS,
   UTILITY_RECURRENCE_LABELS,
 } from "./labels";
@@ -65,6 +69,18 @@ describe("label maps stay in sync with their Prisma enums", () => {
     );
   });
 
+  it("PROPERTY_CATEGORY_LABELS covers every PropertyCategory value", () => {
+    expect(Object.keys(PROPERTY_CATEGORY_LABELS).sort()).toEqual(
+      Object.values(PropertyCategory).sort(),
+    );
+  });
+
+  it("OWNERSHIP_TYPE_LABELS covers every OwnershipType value", () => {
+    expect(Object.keys(OWNERSHIP_TYPE_LABELS).sort()).toEqual(
+      Object.values(OwnershipType).sort(),
+    );
+  });
+
   it("POLICY_TYPE_LABELS covers every PolicyType value", () => {
     expect(Object.keys(POLICY_TYPE_LABELS).sort()).toEqual(
       Object.values(PolicyType).sort(),
@@ -98,6 +114,8 @@ describe("label maps stay in sync with their Prisma enums", () => {
     ["INVESTMENT_TYPE_LABELS", INVESTMENT_TYPE_LABELS],
     ["LOAN_TYPE_LABELS", LOAN_TYPE_LABELS],
     ["PROPERTY_TYPE_LABELS", PROPERTY_TYPE_LABELS],
+    ["PROPERTY_CATEGORY_LABELS", PROPERTY_CATEGORY_LABELS],
+    ["OWNERSHIP_TYPE_LABELS", OWNERSHIP_TYPE_LABELS],
     ["POLICY_TYPE_LABELS", POLICY_TYPE_LABELS],
     ["POLICY_STATUS_LABELS", POLICY_STATUS_LABELS],
     ["EVENT_CATEGORY_LABELS", EVENT_CATEGORY_LABELS],

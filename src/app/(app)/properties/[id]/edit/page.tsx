@@ -4,7 +4,11 @@ import { notFound, redirect } from "next/navigation";
 import { Button } from "~/app/_components/button";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
-import { PROPERTY_TYPE_LABELS } from "~/lib/labels";
+import {
+  OWNERSHIP_TYPE_LABELS,
+  PROPERTY_CATEGORY_LABELS,
+  PROPERTY_TYPE_LABELS,
+} from "~/lib/labels";
 import { deleteProperty, updateProperty } from "~/server/actions/properties";
 import { getSession } from "~/server/better-auth/server";
 import {
@@ -73,6 +77,54 @@ export default async function EditPropertyPage({
               className={inputClass}
             >
               {Object.entries(PROPERTY_TYPE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>
+                  {label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Unique Property ID (optional)</label>
+            <input
+              type="text"
+              name="uniquePropertyId"
+              placeholder="e.g. municipal / survey number"
+              defaultValue={property.uniquePropertyId ?? ""}
+              className={inputClass}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div>
+            <label className={labelClass}>Property category (optional)</label>
+            <select
+              name="propertyCategory"
+              defaultValue={property.propertyCategory ?? ""}
+              className={inputClass}
+            >
+              <option value="">Select category</option>
+              {Object.entries(PROPERTY_CATEGORY_LABELS).map(
+                ([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ),
+              )}
+            </select>
+          </div>
+          <div>
+            <label className={labelClass}>Ownership type (optional)</label>
+            <select
+              name="ownershipType"
+              defaultValue={property.ownershipType ?? ""}
+              className={inputClass}
+            >
+              <option value="">Select ownership type</option>
+              {Object.entries(OWNERSHIP_TYPE_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}
                 </option>

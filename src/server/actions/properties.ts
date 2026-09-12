@@ -15,7 +15,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type { PropertyType } from "../../../generated/prisma";
+import type {
+  OwnershipType,
+  PropertyCategory,
+  PropertyType,
+} from "../../../generated/prisma";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 import { hasDependentRecordsForProperty } from "~/server/queries/properties";
@@ -39,6 +43,18 @@ async function requireOwnedProperty(propertyId: string, ownerId: string) {
 function parsePropertyFields(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const type = String(formData.get("type")) as PropertyType;
+  const uniquePropertyId =
+    String(formData.get("uniquePropertyId") ?? "").trim() || null;
+  const propertyCategoryRaw = String(
+    formData.get("propertyCategory") ?? "",
+  ).trim();
+  const propertyCategory = propertyCategoryRaw
+    ? (propertyCategoryRaw as PropertyCategory)
+    : null;
+  const ownershipTypeRaw = String(formData.get("ownershipType") ?? "").trim();
+  const ownershipType = ownershipTypeRaw
+    ? (ownershipTypeRaw as OwnershipType)
+    : null;
   const addressLine1 = String(formData.get("addressLine1") ?? "").trim();
   const addressLine2 =
     String(formData.get("addressLine2") ?? "").trim() || null;
@@ -78,6 +94,9 @@ function parsePropertyFields(formData: FormData) {
   return {
     name,
     type,
+    uniquePropertyId,
+    propertyCategory,
+    ownershipType,
     addressLine1,
     addressLine2,
     city,

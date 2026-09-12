@@ -11,9 +11,11 @@ import type {
   InvestmentType,
   LoanType,
   NotificationStatus,
+  OwnershipType,
   PolicyStatus,
   PolicyType,
   PremiumFrequency,
+  PropertyCategory,
   PropertyType,
 } from "../../generated/prisma";
 
@@ -76,6 +78,27 @@ export const PROPERTY_TYPE_LABELS: Record<PropertyType, string> = {
   RENTED: "Rented",
   UNDER_CONSTRUCTION: "Under construction",
   INVESTMENT: "Investment",
+};
+
+/** Display label for each `PropertyCategory`. */
+export const PROPERTY_CATEGORY_LABELS: Record<PropertyCategory, string> = {
+  APARTMENT: "Apartment",
+  SINGLE_FAMILY_HOUSE: "Single-family house",
+  OFFICE: "Office",
+  SHOP: "Shop",
+  CONDOMINIUM: "Condominium",
+  TOWN_HOUSE: "Town house",
+  MULTI_FAMILY_HOUSE: "Multi-family house",
+  FACTORY: "Factory",
+  WAREHOUSE: "Warehouse",
+  PLOT: "Plot",
+  OTHERS: "Others",
+};
+
+/** Display label for each `OwnershipType`. */
+export const OWNERSHIP_TYPE_LABELS: Record<OwnershipType, string> = {
+  FREEHOLD: "Freehold",
+  LEASEHOLD: "Leasehold",
 };
 
 /** Display label for each `PolicyType`. */

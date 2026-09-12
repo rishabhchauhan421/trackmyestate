@@ -137,6 +137,31 @@ export const PropertyType: {
 export type PropertyType = (typeof PropertyType)[keyof typeof PropertyType]
 
 
+export const PropertyCategory: {
+  APARTMENT: 'APARTMENT',
+  SINGLE_FAMILY_HOUSE: 'SINGLE_FAMILY_HOUSE',
+  OFFICE: 'OFFICE',
+  SHOP: 'SHOP',
+  CONDOMINIUM: 'CONDOMINIUM',
+  TOWN_HOUSE: 'TOWN_HOUSE',
+  MULTI_FAMILY_HOUSE: 'MULTI_FAMILY_HOUSE',
+  FACTORY: 'FACTORY',
+  WAREHOUSE: 'WAREHOUSE',
+  PLOT: 'PLOT',
+  OTHERS: 'OTHERS'
+};
+
+export type PropertyCategory = (typeof PropertyCategory)[keyof typeof PropertyCategory]
+
+
+export const OwnershipType: {
+  FREEHOLD: 'FREEHOLD',
+  LEASEHOLD: 'LEASEHOLD'
+};
+
+export type OwnershipType = (typeof OwnershipType)[keyof typeof OwnershipType]
+
+
 export const BillType: {
   ELECTRICITY: 'ELECTRICITY',
   WATER: 'WATER',
@@ -330,6 +355,14 @@ export const Currency: typeof $Enums.Currency
 export type PropertyType = $Enums.PropertyType
 
 export const PropertyType: typeof $Enums.PropertyType
+
+export type PropertyCategory = $Enums.PropertyCategory
+
+export const PropertyCategory: typeof $Enums.PropertyCategory
+
+export type OwnershipType = $Enums.OwnershipType
+
+export const OwnershipType: typeof $Enums.OwnershipType
 
 export type BillType = $Enums.BillType
 
@@ -2799,6 +2832,7 @@ export namespace Prisma {
   export type PropertyCountOutputType = {
     rooms: number
     leases: number
+    policies: number
     billSchedules: number
     bills: number
     loans: number
@@ -2811,6 +2845,7 @@ export namespace Prisma {
   export type PropertyCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     rooms?: boolean | PropertyCountOutputTypeCountRoomsArgs
     leases?: boolean | PropertyCountOutputTypeCountLeasesArgs
+    policies?: boolean | PropertyCountOutputTypeCountPoliciesArgs
     billSchedules?: boolean | PropertyCountOutputTypeCountBillSchedulesArgs
     bills?: boolean | PropertyCountOutputTypeCountBillsArgs
     loans?: boolean | PropertyCountOutputTypeCountLoansArgs
@@ -2843,6 +2878,13 @@ export namespace Prisma {
    */
   export type PropertyCountOutputTypeCountLeasesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: LeaseWhereInput
+  }
+
+  /**
+   * PropertyCountOutputType without action
+   */
+  export type PropertyCountOutputTypeCountPoliciesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PolicyWhereInput
   }
 
   /**
@@ -8968,6 +9010,9 @@ export namespace Prisma {
     ownerId: string | null
     name: string | null
     type: $Enums.PropertyType | null
+    uniquePropertyId: string | null
+    propertyCategory: $Enums.PropertyCategory | null
+    ownershipType: $Enums.OwnershipType | null
     addressLine1: string | null
     addressLine2: string | null
     city: string | null
@@ -8988,6 +9033,9 @@ export namespace Prisma {
     ownerId: string | null
     name: string | null
     type: $Enums.PropertyType | null
+    uniquePropertyId: string | null
+    propertyCategory: $Enums.PropertyCategory | null
+    ownershipType: $Enums.OwnershipType | null
     addressLine1: string | null
     addressLine2: string | null
     city: string | null
@@ -9008,6 +9056,9 @@ export namespace Prisma {
     ownerId: number
     name: number
     type: number
+    uniquePropertyId: number
+    propertyCategory: number
+    ownershipType: number
     addressLine1: number
     addressLine2: number
     city: number
@@ -9041,6 +9092,9 @@ export namespace Prisma {
     ownerId?: true
     name?: true
     type?: true
+    uniquePropertyId?: true
+    propertyCategory?: true
+    ownershipType?: true
     addressLine1?: true
     addressLine2?: true
     city?: true
@@ -9061,6 +9115,9 @@ export namespace Prisma {
     ownerId?: true
     name?: true
     type?: true
+    uniquePropertyId?: true
+    propertyCategory?: true
+    ownershipType?: true
     addressLine1?: true
     addressLine2?: true
     city?: true
@@ -9081,6 +9138,9 @@ export namespace Prisma {
     ownerId?: true
     name?: true
     type?: true
+    uniquePropertyId?: true
+    propertyCategory?: true
+    ownershipType?: true
     addressLine1?: true
     addressLine2?: true
     city?: true
@@ -9189,6 +9249,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId: string | null
+    propertyCategory: $Enums.PropertyCategory | null
+    ownershipType: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2: string | null
     city: string
@@ -9229,6 +9292,9 @@ export namespace Prisma {
     ownerId?: boolean
     name?: boolean
     type?: boolean
+    uniquePropertyId?: boolean
+    propertyCategory?: boolean
+    ownershipType?: boolean
     addressLine1?: boolean
     addressLine2?: boolean
     city?: boolean
@@ -9246,6 +9312,7 @@ export namespace Prisma {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     rooms?: boolean | Property$roomsArgs<ExtArgs>
     leases?: boolean | Property$leasesArgs<ExtArgs>
+    policies?: boolean | Property$policiesArgs<ExtArgs>
     billSchedules?: boolean | Property$billSchedulesArgs<ExtArgs>
     bills?: boolean | Property$billsArgs<ExtArgs>
     loans?: boolean | Property$loansArgs<ExtArgs>
@@ -9263,6 +9330,9 @@ export namespace Prisma {
     ownerId?: boolean
     name?: boolean
     type?: boolean
+    uniquePropertyId?: boolean
+    propertyCategory?: boolean
+    ownershipType?: boolean
     addressLine1?: boolean
     addressLine2?: boolean
     city?: boolean
@@ -9279,11 +9349,12 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PropertyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "name" | "type" | "addressLine1" | "addressLine2" | "city" | "state" | "pinCode" | "country" | "currency" | "purchasePrice" | "currentEstimatedValue" | "purchaseDate" | "photos" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["property"]>
+  export type PropertyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "name" | "type" | "uniquePropertyId" | "propertyCategory" | "ownershipType" | "addressLine1" | "addressLine2" | "city" | "state" | "pinCode" | "country" | "currency" | "purchasePrice" | "currentEstimatedValue" | "purchaseDate" | "photos" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["property"]>
   export type PropertyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     rooms?: boolean | Property$roomsArgs<ExtArgs>
     leases?: boolean | Property$leasesArgs<ExtArgs>
+    policies?: boolean | Property$policiesArgs<ExtArgs>
     billSchedules?: boolean | Property$billSchedulesArgs<ExtArgs>
     bills?: boolean | Property$billsArgs<ExtArgs>
     loans?: boolean | Property$loansArgs<ExtArgs>
@@ -9300,6 +9371,7 @@ export namespace Prisma {
       owner: Prisma.$UserPayload<ExtArgs>
       rooms: Prisma.$RoomPayload<ExtArgs>[]
       leases: Prisma.$LeasePayload<ExtArgs>[]
+      policies: Prisma.$PolicyPayload<ExtArgs>[]
       billSchedules: Prisma.$BillSchedulePayload<ExtArgs>[]
       bills: Prisma.$BillPayload<ExtArgs>[]
       loans: Prisma.$LoanPayload<ExtArgs>[]
@@ -9313,6 +9385,9 @@ export namespace Prisma {
       ownerId: string
       name: string
       type: $Enums.PropertyType
+      uniquePropertyId: string | null
+      propertyCategory: $Enums.PropertyCategory | null
+      ownershipType: $Enums.OwnershipType | null
       addressLine1: string
       addressLine2: string | null
       city: string
@@ -9693,6 +9768,7 @@ export namespace Prisma {
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     rooms<T extends Property$roomsArgs<ExtArgs> = {}>(args?: Subset<T, Property$roomsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     leases<T extends Property$leasesArgs<ExtArgs> = {}>(args?: Subset<T, Property$leasesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    policies<T extends Property$policiesArgs<ExtArgs> = {}>(args?: Subset<T, Property$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     billSchedules<T extends Property$billSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Property$billSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bills<T extends Property$billsArgs<ExtArgs> = {}>(args?: Subset<T, Property$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     loans<T extends Property$loansArgs<ExtArgs> = {}>(args?: Subset<T, Property$loansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -9733,6 +9809,9 @@ export namespace Prisma {
     readonly ownerId: FieldRef<"Property", 'String'>
     readonly name: FieldRef<"Property", 'String'>
     readonly type: FieldRef<"Property", 'PropertyType'>
+    readonly uniquePropertyId: FieldRef<"Property", 'String'>
+    readonly propertyCategory: FieldRef<"Property", 'PropertyCategory'>
+    readonly ownershipType: FieldRef<"Property", 'OwnershipType'>
     readonly addressLine1: FieldRef<"Property", 'String'>
     readonly addressLine2: FieldRef<"Property", 'String'>
     readonly city: FieldRef<"Property", 'String'>
@@ -10162,6 +10241,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: LeaseScalarFieldEnum | LeaseScalarFieldEnum[]
+  }
+
+  /**
+   * Property.policies
+   */
+  export type Property$policiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Policy
+     */
+    select?: PolicySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Policy
+     */
+    omit?: PolicyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PolicyInclude<ExtArgs> | null
+    where?: PolicyWhereInput
+    orderBy?: PolicyOrderByWithRelationInput | PolicyOrderByWithRelationInput[]
+    cursor?: PolicyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PolicyScalarFieldEnum | PolicyScalarFieldEnum[]
   }
 
   /**
@@ -15926,6 +16029,7 @@ export namespace Prisma {
     roomRentLimit: number | null
     coPayPercent: number | null
     waitingPeriodMonths: number | null
+    propertyId: string | null
     deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -15946,6 +16050,7 @@ export namespace Prisma {
     roomRentLimit: number | null
     coPayPercent: number | null
     waitingPeriodMonths: number | null
+    propertyId: string | null
     deletedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -15968,6 +16073,7 @@ export namespace Prisma {
     coPayPercent: number
     waitingPeriodMonths: number
     networkHospitals: number
+    propertyId: number
     deletedAt: number
     createdAt: number
     updatedAt: number
@@ -16006,6 +16112,7 @@ export namespace Prisma {
     roomRentLimit?: true
     coPayPercent?: true
     waitingPeriodMonths?: true
+    propertyId?: true
     deletedAt?: true
     createdAt?: true
     updatedAt?: true
@@ -16026,6 +16133,7 @@ export namespace Prisma {
     roomRentLimit?: true
     coPayPercent?: true
     waitingPeriodMonths?: true
+    propertyId?: true
     deletedAt?: true
     createdAt?: true
     updatedAt?: true
@@ -16048,6 +16156,7 @@ export namespace Prisma {
     coPayPercent?: true
     waitingPeriodMonths?: true
     networkHospitals?: true
+    propertyId?: true
     deletedAt?: true
     createdAt?: true
     updatedAt?: true
@@ -16157,6 +16266,7 @@ export namespace Prisma {
     coPayPercent: number | null
     waitingPeriodMonths: number | null
     networkHospitals: string[]
+    propertyId: string | null
     deletedAt: Date | null
     createdAt: Date
     updatedAt: Date
@@ -16198,10 +16308,12 @@ export namespace Prisma {
     coPayPercent?: boolean
     waitingPeriodMonths?: boolean
     networkHospitals?: boolean
+    propertyId?: boolean
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    property?: boolean | Policy$propertyArgs<ExtArgs>
     billSchedules?: boolean | Policy$billSchedulesArgs<ExtArgs>
     bills?: boolean | Policy$billsArgs<ExtArgs>
     loans?: boolean | Policy$loansArgs<ExtArgs>
@@ -16231,14 +16343,16 @@ export namespace Prisma {
     coPayPercent?: boolean
     waitingPeriodMonths?: boolean
     networkHospitals?: boolean
+    propertyId?: boolean
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PolicyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "type" | "insurer" | "policyNumber" | "holderName" | "nominees" | "startDate" | "tenureYears" | "status" | "sumAssured" | "currency" | "roomRentLimit" | "coPayPercent" | "waitingPeriodMonths" | "networkHospitals" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["policy"]>
+  export type PolicyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "type" | "insurer" | "policyNumber" | "holderName" | "nominees" | "startDate" | "tenureYears" | "status" | "sumAssured" | "currency" | "roomRentLimit" | "coPayPercent" | "waitingPeriodMonths" | "networkHospitals" | "propertyId" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["policy"]>
   export type PolicyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    property?: boolean | Policy$propertyArgs<ExtArgs>
     billSchedules?: boolean | Policy$billSchedulesArgs<ExtArgs>
     bills?: boolean | Policy$billsArgs<ExtArgs>
     loans?: boolean | Policy$loansArgs<ExtArgs>
@@ -16253,6 +16367,7 @@ export namespace Prisma {
     name: "Policy"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      property: Prisma.$PropertyPayload<ExtArgs> | null
       billSchedules: Prisma.$BillSchedulePayload<ExtArgs>[]
       bills: Prisma.$BillPayload<ExtArgs>[]
       loans: Prisma.$LoanPayload<ExtArgs>[]
@@ -16278,6 +16393,7 @@ export namespace Prisma {
       coPayPercent: number | null
       waitingPeriodMonths: number | null
       networkHospitals: string[]
+      propertyId: string | null
       deletedAt: Date | null
       createdAt: Date
       updatedAt: Date
@@ -16645,6 +16761,7 @@ export namespace Prisma {
   export interface Prisma__PolicyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    property<T extends Policy$propertyArgs<ExtArgs> = {}>(args?: Subset<T, Policy$propertyArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     billSchedules<T extends Policy$billSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Policy$billSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bills<T extends Policy$billsArgs<ExtArgs> = {}>(args?: Subset<T, Policy$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     loans<T extends Policy$loansArgs<ExtArgs> = {}>(args?: Subset<T, Policy$loansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -16697,6 +16814,7 @@ export namespace Prisma {
     readonly coPayPercent: FieldRef<"Policy", 'Float'>
     readonly waitingPeriodMonths: FieldRef<"Policy", 'Int'>
     readonly networkHospitals: FieldRef<"Policy", 'String[]'>
+    readonly propertyId: FieldRef<"Policy", 'String'>
     readonly deletedAt: FieldRef<"Policy", 'DateTime'>
     readonly createdAt: FieldRef<"Policy", 'DateTime'>
     readonly updatedAt: FieldRef<"Policy", 'DateTime'>
@@ -17067,6 +17185,25 @@ export namespace Prisma {
      * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
      */
     options?: InputJsonValue
+  }
+
+  /**
+   * Policy.property
+   */
+  export type Policy$propertyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Property
+     */
+    select?: PropertySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyInclude<ExtArgs> | null
+    where?: PropertyWhereInput
   }
 
   /**
@@ -26385,6 +26522,9 @@ export namespace Prisma {
     ownerId: 'ownerId',
     name: 'name',
     type: 'type',
+    uniquePropertyId: 'uniquePropertyId',
+    propertyCategory: 'propertyCategory',
+    ownershipType: 'ownershipType',
     addressLine1: 'addressLine1',
     addressLine2: 'addressLine2',
     city: 'city',
@@ -26528,6 +26668,7 @@ export namespace Prisma {
     coPayPercent: 'coPayPercent',
     waitingPeriodMonths: 'waitingPeriodMonths',
     networkHospitals: 'networkHospitals',
+    propertyId: 'propertyId',
     deletedAt: 'deletedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -26773,6 +26914,34 @@ export namespace Prisma {
    * Reference to a field of type 'PropertyType[]'
    */
   export type ListEnumPropertyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyType[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'PropertyCategory'
+   */
+  export type EnumPropertyCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyCategory'>
+    
+
+
+  /**
+   * Reference to a field of type 'PropertyCategory[]'
+   */
+  export type ListEnumPropertyCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyCategory[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'OwnershipType'
+   */
+  export type EnumOwnershipTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipType'>
+    
+
+
+  /**
+   * Reference to a field of type 'OwnershipType[]'
+   */
+  export type ListEnumOwnershipTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipType[]'>
     
 
 
@@ -27457,6 +27626,9 @@ export namespace Prisma {
     ownerId?: StringFilter<"Property"> | string
     name?: StringFilter<"Property"> | string
     type?: EnumPropertyTypeFilter<"Property"> | $Enums.PropertyType
+    uniquePropertyId?: StringNullableFilter<"Property"> | string | null
+    propertyCategory?: EnumPropertyCategoryNullableFilter<"Property"> | $Enums.PropertyCategory | null
+    ownershipType?: EnumOwnershipTypeNullableFilter<"Property"> | $Enums.OwnershipType | null
     addressLine1?: StringFilter<"Property"> | string
     addressLine2?: StringNullableFilter<"Property"> | string | null
     city?: StringFilter<"Property"> | string
@@ -27474,6 +27646,7 @@ export namespace Prisma {
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     rooms?: RoomListRelationFilter
     leases?: LeaseListRelationFilter
+    policies?: PolicyListRelationFilter
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
     loans?: LoanListRelationFilter
@@ -27488,6 +27661,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     name?: SortOrder
     type?: SortOrder
+    uniquePropertyId?: SortOrder
+    propertyCategory?: SortOrder
+    ownershipType?: SortOrder
     addressLine1?: SortOrder
     addressLine2?: SortOrder
     city?: SortOrder
@@ -27505,6 +27681,7 @@ export namespace Prisma {
     owner?: UserOrderByWithRelationInput
     rooms?: RoomOrderByRelationAggregateInput
     leases?: LeaseOrderByRelationAggregateInput
+    policies?: PolicyOrderByRelationAggregateInput
     billSchedules?: BillScheduleOrderByRelationAggregateInput
     bills?: BillOrderByRelationAggregateInput
     loans?: LoanOrderByRelationAggregateInput
@@ -27522,6 +27699,9 @@ export namespace Prisma {
     ownerId?: StringFilter<"Property"> | string
     name?: StringFilter<"Property"> | string
     type?: EnumPropertyTypeFilter<"Property"> | $Enums.PropertyType
+    uniquePropertyId?: StringNullableFilter<"Property"> | string | null
+    propertyCategory?: EnumPropertyCategoryNullableFilter<"Property"> | $Enums.PropertyCategory | null
+    ownershipType?: EnumOwnershipTypeNullableFilter<"Property"> | $Enums.OwnershipType | null
     addressLine1?: StringFilter<"Property"> | string
     addressLine2?: StringNullableFilter<"Property"> | string | null
     city?: StringFilter<"Property"> | string
@@ -27539,6 +27719,7 @@ export namespace Prisma {
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     rooms?: RoomListRelationFilter
     leases?: LeaseListRelationFilter
+    policies?: PolicyListRelationFilter
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
     loans?: LoanListRelationFilter
@@ -27553,6 +27734,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     name?: SortOrder
     type?: SortOrder
+    uniquePropertyId?: SortOrder
+    propertyCategory?: SortOrder
+    ownershipType?: SortOrder
     addressLine1?: SortOrder
     addressLine2?: SortOrder
     city?: SortOrder
@@ -27582,6 +27766,9 @@ export namespace Prisma {
     ownerId?: StringWithAggregatesFilter<"Property"> | string
     name?: StringWithAggregatesFilter<"Property"> | string
     type?: EnumPropertyTypeWithAggregatesFilter<"Property"> | $Enums.PropertyType
+    uniquePropertyId?: StringNullableWithAggregatesFilter<"Property"> | string | null
+    propertyCategory?: EnumPropertyCategoryNullableWithAggregatesFilter<"Property"> | $Enums.PropertyCategory | null
+    ownershipType?: EnumOwnershipTypeNullableWithAggregatesFilter<"Property"> | $Enums.OwnershipType | null
     addressLine1?: StringWithAggregatesFilter<"Property"> | string
     addressLine2?: StringNullableWithAggregatesFilter<"Property"> | string | null
     city?: StringWithAggregatesFilter<"Property"> | string
@@ -28248,10 +28435,12 @@ export namespace Prisma {
     coPayPercent?: FloatNullableFilter<"Policy"> | number | null
     waitingPeriodMonths?: IntNullableFilter<"Policy"> | number | null
     networkHospitals?: StringNullableListFilter<"Policy">
+    propertyId?: StringNullableFilter<"Policy"> | string | null
     deletedAt?: DateTimeNullableFilter<"Policy"> | Date | string | null
     createdAt?: DateTimeFilter<"Policy"> | Date | string
     updatedAt?: DateTimeFilter<"Policy"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
     loans?: LoanListRelationFilter
@@ -28278,10 +28467,12 @@ export namespace Prisma {
     coPayPercent?: SortOrder
     waitingPeriodMonths?: SortOrder
     networkHospitals?: SortOrder
+    propertyId?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    property?: PropertyOrderByWithRelationInput
     billSchedules?: BillScheduleOrderByRelationAggregateInput
     bills?: BillOrderByRelationAggregateInput
     loans?: LoanOrderByRelationAggregateInput
@@ -28311,10 +28502,12 @@ export namespace Prisma {
     coPayPercent?: FloatNullableFilter<"Policy"> | number | null
     waitingPeriodMonths?: IntNullableFilter<"Policy"> | number | null
     networkHospitals?: StringNullableListFilter<"Policy">
+    propertyId?: StringNullableFilter<"Policy"> | string | null
     deletedAt?: DateTimeNullableFilter<"Policy"> | Date | string | null
     createdAt?: DateTimeFilter<"Policy"> | Date | string
     updatedAt?: DateTimeFilter<"Policy"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
     loans?: LoanListRelationFilter
@@ -28341,6 +28534,7 @@ export namespace Prisma {
     coPayPercent?: SortOrder
     waitingPeriodMonths?: SortOrder
     networkHospitals?: SortOrder
+    propertyId?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -28371,6 +28565,7 @@ export namespace Prisma {
     coPayPercent?: FloatNullableWithAggregatesFilter<"Policy"> | number | null
     waitingPeriodMonths?: IntNullableWithAggregatesFilter<"Policy"> | number | null
     networkHospitals?: StringNullableListFilter<"Policy">
+    propertyId?: StringNullableWithAggregatesFilter<"Policy"> | string | null
     deletedAt?: DateTimeNullableWithAggregatesFilter<"Policy"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Policy"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Policy"> | Date | string
@@ -29761,6 +29956,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -29778,6 +29976,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -29792,6 +29991,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -29808,6 +30010,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -29820,6 +30023,9 @@ export namespace Prisma {
   export type PropertyUpdateInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -29837,6 +30043,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -29850,6 +30057,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -29866,6 +30076,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -29880,6 +30091,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -29899,6 +30113,9 @@ export namespace Prisma {
   export type PropertyUpdateManyMutationInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -29919,6 +30136,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -30659,6 +30879,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -30685,6 +30906,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30716,6 +30938,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -30741,6 +30964,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -30770,6 +30994,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -30811,6 +31036,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32247,6 +32473,22 @@ export namespace Prisma {
     not?: NestedEnumPropertyTypeFilter<$PrismaModel> | $Enums.PropertyType
   }
 
+  export type EnumPropertyCategoryNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCategory | EnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyCategoryNullableFilter<$PrismaModel> | $Enums.PropertyCategory | null
+    isSet?: boolean
+  }
+
+  export type EnumOwnershipTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel> | $Enums.OwnershipType | null
+    isSet?: boolean
+  }
+
   export type EnumCurrencyNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Currency | EnumCurrencyFieldRefInput<$PrismaModel> | null
     in?: $Enums.Currency[] | ListEnumCurrencyFieldRefInput<$PrismaModel> | null
@@ -32300,6 +32542,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     name?: SortOrder
     type?: SortOrder
+    uniquePropertyId?: SortOrder
+    propertyCategory?: SortOrder
+    ownershipType?: SortOrder
     addressLine1?: SortOrder
     addressLine2?: SortOrder
     city?: SortOrder
@@ -32326,6 +32571,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     name?: SortOrder
     type?: SortOrder
+    uniquePropertyId?: SortOrder
+    propertyCategory?: SortOrder
+    ownershipType?: SortOrder
     addressLine1?: SortOrder
     addressLine2?: SortOrder
     city?: SortOrder
@@ -32346,6 +32594,9 @@ export namespace Prisma {
     ownerId?: SortOrder
     name?: SortOrder
     type?: SortOrder
+    uniquePropertyId?: SortOrder
+    propertyCategory?: SortOrder
+    ownershipType?: SortOrder
     addressLine1?: SortOrder
     addressLine2?: SortOrder
     city?: SortOrder
@@ -32374,6 +32625,28 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPropertyTypeFilter<$PrismaModel>
     _max?: NestedEnumPropertyTypeFilter<$PrismaModel>
+  }
+
+  export type EnumPropertyCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCategory | EnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.PropertyCategory | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPropertyCategoryNullableFilter<$PrismaModel>
+    _max?: NestedEnumPropertyCategoryNullableFilter<$PrismaModel>
+    isSet?: boolean
+  }
+
+  export type EnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.OwnershipType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+    isSet?: boolean
   }
 
   export type EnumCurrencyNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33066,6 +33339,7 @@ export namespace Prisma {
     coPayPercent?: SortOrder
     waitingPeriodMonths?: SortOrder
     networkHospitals?: SortOrder
+    propertyId?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -33094,6 +33368,7 @@ export namespace Prisma {
     roomRentLimit?: SortOrder
     coPayPercent?: SortOrder
     waitingPeriodMonths?: SortOrder
+    propertyId?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -33114,6 +33389,7 @@ export namespace Prisma {
     roomRentLimit?: SortOrder
     coPayPercent?: SortOrder
     waitingPeriodMonths?: SortOrder
+    propertyId?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -34429,6 +34705,13 @@ export namespace Prisma {
     connect?: LeaseWhereUniqueInput | LeaseWhereUniqueInput[]
   }
 
+  export type PolicyCreateNestedManyWithoutPropertyInput = {
+    create?: XOR<PolicyCreateWithoutPropertyInput, PolicyUncheckedCreateWithoutPropertyInput> | PolicyCreateWithoutPropertyInput[] | PolicyUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutPropertyInput | PolicyCreateOrConnectWithoutPropertyInput[]
+    createMany?: PolicyCreateManyPropertyInputEnvelope
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+  }
+
   export type BillScheduleCreateNestedManyWithoutPropertyInput = {
     create?: XOR<BillScheduleCreateWithoutPropertyInput, BillScheduleUncheckedCreateWithoutPropertyInput> | BillScheduleCreateWithoutPropertyInput[] | BillScheduleUncheckedCreateWithoutPropertyInput[]
     connectOrCreate?: BillScheduleCreateOrConnectWithoutPropertyInput | BillScheduleCreateOrConnectWithoutPropertyInput[]
@@ -34492,6 +34775,13 @@ export namespace Prisma {
     connect?: LeaseWhereUniqueInput | LeaseWhereUniqueInput[]
   }
 
+  export type PolicyUncheckedCreateNestedManyWithoutPropertyInput = {
+    create?: XOR<PolicyCreateWithoutPropertyInput, PolicyUncheckedCreateWithoutPropertyInput> | PolicyCreateWithoutPropertyInput[] | PolicyUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutPropertyInput | PolicyCreateOrConnectWithoutPropertyInput[]
+    createMany?: PolicyCreateManyPropertyInputEnvelope
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+  }
+
   export type BillScheduleUncheckedCreateNestedManyWithoutPropertyInput = {
     create?: XOR<BillScheduleCreateWithoutPropertyInput, BillScheduleUncheckedCreateWithoutPropertyInput> | BillScheduleCreateWithoutPropertyInput[] | BillScheduleUncheckedCreateWithoutPropertyInput[]
     connectOrCreate?: BillScheduleCreateOrConnectWithoutPropertyInput | BillScheduleCreateOrConnectWithoutPropertyInput[]
@@ -34543,6 +34833,16 @@ export namespace Prisma {
 
   export type EnumPropertyTypeFieldUpdateOperationsInput = {
     set?: $Enums.PropertyType
+  }
+
+  export type NullableEnumPropertyCategoryFieldUpdateOperationsInput = {
+    set?: $Enums.PropertyCategory | null
+    unset?: boolean
+  }
+
+  export type NullableEnumOwnershipTypeFieldUpdateOperationsInput = {
+    set?: $Enums.OwnershipType | null
+    unset?: boolean
   }
 
   export type NullableEnumCurrencyFieldUpdateOperationsInput = {
@@ -34598,6 +34898,20 @@ export namespace Prisma {
     update?: LeaseUpdateWithWhereUniqueWithoutPropertyInput | LeaseUpdateWithWhereUniqueWithoutPropertyInput[]
     updateMany?: LeaseUpdateManyWithWhereWithoutPropertyInput | LeaseUpdateManyWithWhereWithoutPropertyInput[]
     deleteMany?: LeaseScalarWhereInput | LeaseScalarWhereInput[]
+  }
+
+  export type PolicyUpdateManyWithoutPropertyNestedInput = {
+    create?: XOR<PolicyCreateWithoutPropertyInput, PolicyUncheckedCreateWithoutPropertyInput> | PolicyCreateWithoutPropertyInput[] | PolicyUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutPropertyInput | PolicyCreateOrConnectWithoutPropertyInput[]
+    upsert?: PolicyUpsertWithWhereUniqueWithoutPropertyInput | PolicyUpsertWithWhereUniqueWithoutPropertyInput[]
+    createMany?: PolicyCreateManyPropertyInputEnvelope
+    set?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    disconnect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    delete?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    update?: PolicyUpdateWithWhereUniqueWithoutPropertyInput | PolicyUpdateWithWhereUniqueWithoutPropertyInput[]
+    updateMany?: PolicyUpdateManyWithWhereWithoutPropertyInput | PolicyUpdateManyWithWhereWithoutPropertyInput[]
+    deleteMany?: PolicyScalarWhereInput | PolicyScalarWhereInput[]
   }
 
   export type BillScheduleUpdateManyWithoutPropertyNestedInput = {
@@ -34724,6 +35038,20 @@ export namespace Prisma {
     update?: LeaseUpdateWithWhereUniqueWithoutPropertyInput | LeaseUpdateWithWhereUniqueWithoutPropertyInput[]
     updateMany?: LeaseUpdateManyWithWhereWithoutPropertyInput | LeaseUpdateManyWithWhereWithoutPropertyInput[]
     deleteMany?: LeaseScalarWhereInput | LeaseScalarWhereInput[]
+  }
+
+  export type PolicyUncheckedUpdateManyWithoutPropertyNestedInput = {
+    create?: XOR<PolicyCreateWithoutPropertyInput, PolicyUncheckedCreateWithoutPropertyInput> | PolicyCreateWithoutPropertyInput[] | PolicyUncheckedCreateWithoutPropertyInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutPropertyInput | PolicyCreateOrConnectWithoutPropertyInput[]
+    upsert?: PolicyUpsertWithWhereUniqueWithoutPropertyInput | PolicyUpsertWithWhereUniqueWithoutPropertyInput[]
+    createMany?: PolicyCreateManyPropertyInputEnvelope
+    set?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    disconnect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    delete?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    update?: PolicyUpdateWithWhereUniqueWithoutPropertyInput | PolicyUpdateWithWhereUniqueWithoutPropertyInput[]
+    updateMany?: PolicyUpdateManyWithWhereWithoutPropertyInput | PolicyUpdateManyWithWhereWithoutPropertyInput[]
+    deleteMany?: PolicyScalarWhereInput | PolicyScalarWhereInput[]
   }
 
   export type BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput = {
@@ -35838,6 +36166,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type PropertyCreateNestedOneWithoutPoliciesInput = {
+    create?: XOR<PropertyCreateWithoutPoliciesInput, PropertyUncheckedCreateWithoutPoliciesInput>
+    connectOrCreate?: PropertyCreateOrConnectWithoutPoliciesInput
+    connect?: PropertyWhereUniqueInput
+  }
+
   export type BillScheduleCreateNestedManyWithoutPolicyInput = {
     create?: XOR<BillScheduleCreateWithoutPolicyInput, BillScheduleUncheckedCreateWithoutPolicyInput> | BillScheduleCreateWithoutPolicyInput[] | BillScheduleUncheckedCreateWithoutPolicyInput[]
     connectOrCreate?: BillScheduleCreateOrConnectWithoutPolicyInput | BillScheduleCreateOrConnectWithoutPolicyInput[]
@@ -35960,6 +36294,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPoliciesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPoliciesInput, UserUpdateWithoutPoliciesInput>, UserUncheckedUpdateWithoutPoliciesInput>
+  }
+
+  export type PropertyUpdateOneWithoutPoliciesNestedInput = {
+    create?: XOR<PropertyCreateWithoutPoliciesInput, PropertyUncheckedCreateWithoutPoliciesInput>
+    connectOrCreate?: PropertyCreateOrConnectWithoutPoliciesInput
+    upsert?: PropertyUpsertWithoutPoliciesInput
+    disconnect?: boolean
+    delete?: PropertyWhereInput | boolean
+    connect?: PropertyWhereUniqueInput
+    update?: XOR<XOR<PropertyUpdateToOneWithWhereWithoutPoliciesInput, PropertyUpdateWithoutPoliciesInput>, PropertyUncheckedUpdateWithoutPoliciesInput>
   }
 
   export type BillScheduleUpdateManyWithoutPolicyNestedInput = {
@@ -37591,6 +37935,22 @@ export namespace Prisma {
     not?: NestedEnumPropertyTypeFilter<$PrismaModel> | $Enums.PropertyType
   }
 
+  export type NestedEnumPropertyCategoryNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCategory | EnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyCategoryNullableFilter<$PrismaModel> | $Enums.PropertyCategory | null
+    isSet?: boolean
+  }
+
+  export type NestedEnumOwnershipTypeNullableFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel> | $Enums.OwnershipType | null
+    isSet?: boolean
+  }
+
   export type NestedEnumCurrencyNullableFilter<$PrismaModel = never> = {
     equals?: $Enums.Currency | EnumCurrencyFieldRefInput<$PrismaModel> | null
     in?: $Enums.Currency[] | ListEnumCurrencyFieldRefInput<$PrismaModel> | null
@@ -37619,6 +37979,28 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumPropertyTypeFilter<$PrismaModel>
     _max?: NestedEnumPropertyTypeFilter<$PrismaModel>
+  }
+
+  export type NestedEnumPropertyCategoryNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.PropertyCategory | EnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    in?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.PropertyCategory[] | ListEnumPropertyCategoryFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumPropertyCategoryNullableWithAggregatesFilter<$PrismaModel> | $Enums.PropertyCategory | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumPropertyCategoryNullableFilter<$PrismaModel>
+    _max?: NestedEnumPropertyCategoryNullableFilter<$PrismaModel>
+    isSet?: boolean
+  }
+
+  export type NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OwnershipType | EnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    in?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    notIn?: $Enums.OwnershipType[] | ListEnumOwnershipTypeFieldRefInput<$PrismaModel> | null
+    not?: NestedEnumOwnershipTypeNullableWithAggregatesFilter<$PrismaModel> | $Enums.OwnershipType | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+    _max?: NestedEnumOwnershipTypeNullableFilter<$PrismaModel>
+    isSet?: boolean
   }
 
   export type NestedEnumCurrencyNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -38235,6 +38617,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -38251,6 +38636,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -38264,6 +38650,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -38280,6 +38669,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -38317,6 +38707,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -38342,6 +38733,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -38989,6 +39381,9 @@ export namespace Prisma {
     ownerId?: StringFilter<"Property"> | string
     name?: StringFilter<"Property"> | string
     type?: EnumPropertyTypeFilter<"Property"> | $Enums.PropertyType
+    uniquePropertyId?: StringNullableFilter<"Property"> | string | null
+    propertyCategory?: EnumPropertyCategoryNullableFilter<"Property"> | $Enums.PropertyCategory | null
+    ownershipType?: EnumOwnershipTypeNullableFilter<"Property"> | $Enums.OwnershipType | null
     addressLine1?: StringFilter<"Property"> | string
     addressLine2?: StringNullableFilter<"Property"> | string | null
     city?: StringFilter<"Property"> | string
@@ -39041,6 +39436,7 @@ export namespace Prisma {
     coPayPercent?: FloatNullableFilter<"Policy"> | number | null
     waitingPeriodMonths?: IntNullableFilter<"Policy"> | number | null
     networkHospitals?: StringNullableListFilter<"Policy">
+    propertyId?: StringNullableFilter<"Policy"> | string | null
     deletedAt?: DateTimeNullableFilter<"Policy"> | Date | string | null
     createdAt?: DateTimeFilter<"Policy"> | Date | string
     updatedAt?: DateTimeFilter<"Policy"> | Date | string
@@ -39820,6 +40216,73 @@ export namespace Prisma {
     data: LeaseCreateManyPropertyInput | LeaseCreateManyPropertyInput[]
   }
 
+  export type PolicyCreateWithoutPropertyInput = {
+    id?: string
+    type: $Enums.PolicyType
+    insurer: string
+    policyNumber: string
+    holderName: string
+    nominees?: PolicyCreatenomineesInput | string[]
+    startDate: Date | string
+    tenureYears?: number | null
+    status?: $Enums.PolicyStatus
+    sumAssured?: number | null
+    currency?: $Enums.Currency | null
+    roomRentLimit?: number | null
+    coPayPercent?: number | null
+    waitingPeriodMonths?: number | null
+    networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutPoliciesInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
+    bills?: BillCreateNestedManyWithoutPolicyInput
+    loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
+    documents?: DocumentCreateNestedManyWithoutPolicyInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutPolicyInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutPolicyInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutPolicyInput
+  }
+
+  export type PolicyUncheckedCreateWithoutPropertyInput = {
+    id?: string
+    ownerId: string
+    type: $Enums.PolicyType
+    insurer: string
+    policyNumber: string
+    holderName: string
+    nominees?: PolicyCreatenomineesInput | string[]
+    startDate: Date | string
+    tenureYears?: number | null
+    status?: $Enums.PolicyStatus
+    sumAssured?: number | null
+    currency?: $Enums.Currency | null
+    roomRentLimit?: number | null
+    coPayPercent?: number | null
+    waitingPeriodMonths?: number | null
+    networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPolicyInput
+    bills?: BillUncheckedCreateNestedManyWithoutPolicyInput
+    loans?: LoanUncheckedCreateNestedManyWithoutLinkedPolicyInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutPolicyInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutPolicyInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutPolicyInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutPolicyInput
+  }
+
+  export type PolicyCreateOrConnectWithoutPropertyInput = {
+    where: PolicyWhereUniqueInput
+    create: XOR<PolicyCreateWithoutPropertyInput, PolicyUncheckedCreateWithoutPropertyInput>
+  }
+
+  export type PolicyCreateManyPropertyInputEnvelope = {
+    data: PolicyCreateManyPropertyInput | PolicyCreateManyPropertyInput[]
+  }
+
   export type BillScheduleCreateWithoutPropertyInput = {
     id?: string
     category: $Enums.EventCategory
@@ -40376,6 +40839,22 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Lease"> | Date | string
   }
 
+  export type PolicyUpsertWithWhereUniqueWithoutPropertyInput = {
+    where: PolicyWhereUniqueInput
+    update: XOR<PolicyUpdateWithoutPropertyInput, PolicyUncheckedUpdateWithoutPropertyInput>
+    create: XOR<PolicyCreateWithoutPropertyInput, PolicyUncheckedCreateWithoutPropertyInput>
+  }
+
+  export type PolicyUpdateWithWhereUniqueWithoutPropertyInput = {
+    where: PolicyWhereUniqueInput
+    data: XOR<PolicyUpdateWithoutPropertyInput, PolicyUncheckedUpdateWithoutPropertyInput>
+  }
+
+  export type PolicyUpdateManyWithWhereWithoutPropertyInput = {
+    where: PolicyScalarWhereInput
+    data: XOR<PolicyUpdateManyMutationInput, PolicyUncheckedUpdateManyWithoutPropertyInput>
+  }
+
   export type BillScheduleUpsertWithWhereUniqueWithoutPropertyInput = {
     where: BillScheduleWhereUniqueInput
     update: XOR<BillScheduleUpdateWithoutPropertyInput, BillScheduleUncheckedUpdateWithoutPropertyInput>
@@ -40492,6 +40971,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -40508,6 +40990,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -40522,6 +41005,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -40537,6 +41023,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -40665,6 +41152,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutRoomsInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -40681,6 +41171,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -40694,6 +41185,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -40709,6 +41203,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -40754,6 +41249,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -40770,6 +41268,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -40784,6 +41283,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -40799,6 +41301,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -41224,6 +41727,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutLeasesInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -41240,6 +41746,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -41253,6 +41760,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -41268,6 +41778,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -41471,6 +41982,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -41488,6 +42002,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
     documents?: DocumentCreateNestedManyWithoutPropertyInput
@@ -41501,6 +42016,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -41517,6 +42035,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
     documents?: DocumentUncheckedCreateNestedManyWithoutPropertyInput
@@ -41654,6 +42173,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
     documents?: DocumentCreateNestedManyWithoutPolicyInput
@@ -41679,6 +42199,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -42082,6 +42603,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutBillSchedulesInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -42099,6 +42623,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
     documents?: DocumentUpdateManyWithoutPropertyNestedInput
@@ -42111,6 +42636,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -42127,6 +42655,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutPropertyNestedInput
@@ -42277,6 +42806,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
     documents?: DocumentUpdateManyWithoutPolicyNestedInput
@@ -42301,6 +42831,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -42567,6 +43098,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -42584,6 +43118,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
     documents?: DocumentCreateNestedManyWithoutPropertyInput
@@ -42597,6 +43132,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -42613,6 +43151,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
     documents?: DocumentUncheckedCreateNestedManyWithoutPropertyInput
@@ -42750,6 +43289,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
     documents?: DocumentCreateNestedManyWithoutPolicyInput
@@ -42775,6 +43315,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -43202,6 +43743,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutBillsInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -43219,6 +43763,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
     documents?: DocumentUpdateManyWithoutPropertyNestedInput
@@ -43231,6 +43776,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -43247,6 +43795,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutPropertyNestedInput
@@ -43397,6 +43946,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
     documents?: DocumentUpdateManyWithoutPolicyNestedInput
@@ -43421,6 +43971,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -43612,6 +44163,77 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutPoliciesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutPoliciesInput, UserUncheckedCreateWithoutPoliciesInput>
+  }
+
+  export type PropertyCreateWithoutPoliciesInput = {
+    id?: string
+    name: string
+    type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
+    addressLine1: string
+    addressLine2?: string | null
+    city: string
+    state: string
+    pinCode: string
+    country?: string
+    currency?: $Enums.Currency | null
+    purchasePrice?: number | null
+    currentEstimatedValue?: number | null
+    purchaseDate?: Date | string | null
+    photos?: PropertyCreatephotosInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutPropertiesInput
+    rooms?: RoomCreateNestedManyWithoutPropertyInput
+    leases?: LeaseCreateNestedManyWithoutPropertyInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
+    bills?: BillCreateNestedManyWithoutPropertyInput
+    loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
+    documents?: DocumentCreateNestedManyWithoutPropertyInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutPropertyInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutPropertyInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutPropertyInput
+  }
+
+  export type PropertyUncheckedCreateWithoutPoliciesInput = {
+    id?: string
+    ownerId: string
+    name: string
+    type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
+    addressLine1: string
+    addressLine2?: string | null
+    city: string
+    state: string
+    pinCode: string
+    country?: string
+    currency?: $Enums.Currency | null
+    purchasePrice?: number | null
+    currentEstimatedValue?: number | null
+    purchaseDate?: Date | string | null
+    photos?: PropertyCreatephotosInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
+    leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
+    bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
+    loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutPropertyInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutPropertyInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutPropertyInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutPropertyInput
+  }
+
+  export type PropertyCreateOrConnectWithoutPoliciesInput = {
+    where: PropertyWhereUniqueInput
+    create: XOR<PropertyCreateWithoutPoliciesInput, PropertyUncheckedCreateWithoutPoliciesInput>
   }
 
   export type BillScheduleCreateWithoutPolicyInput = {
@@ -44100,6 +44722,81 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type PropertyUpsertWithoutPoliciesInput = {
+    update: XOR<PropertyUpdateWithoutPoliciesInput, PropertyUncheckedUpdateWithoutPoliciesInput>
+    create: XOR<PropertyCreateWithoutPoliciesInput, PropertyUncheckedCreateWithoutPoliciesInput>
+    where?: PropertyWhereInput
+  }
+
+  export type PropertyUpdateToOneWithWhereWithoutPoliciesInput = {
+    where?: PropertyWhereInput
+    data: XOR<PropertyUpdateWithoutPoliciesInput, PropertyUncheckedUpdateWithoutPoliciesInput>
+  }
+
+  export type PropertyUpdateWithoutPoliciesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    addressLine1?: StringFieldUpdateOperationsInput | string
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    pinCode?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    purchasePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    purchaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    photos?: PropertyUpdatephotosInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    rooms?: RoomUpdateManyWithoutPropertyNestedInput
+    leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
+    bills?: BillUpdateManyWithoutPropertyNestedInput
+    loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
+    documents?: DocumentUpdateManyWithoutPropertyNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutPropertyNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutPropertyNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutPropertyNestedInput
+  }
+
+  export type PropertyUncheckedUpdateWithoutPoliciesInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    addressLine1?: StringFieldUpdateOperationsInput | string
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    pinCode?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    purchasePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    purchaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    photos?: PropertyUpdatephotosInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
+    leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
+    bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutPropertyNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutPropertyNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutPropertyNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutPropertyNestedInput
   }
 
   export type BillScheduleUpsertWithWhereUniqueWithoutPolicyInput = {
@@ -44940,6 +45637,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -44957,6 +45657,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     documents?: DocumentCreateNestedManyWithoutPropertyInput
@@ -44970,6 +45671,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -44986,6 +45690,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     documents?: DocumentUncheckedCreateNestedManyWithoutPropertyInput
@@ -45019,6 +45724,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     documents?: DocumentCreateNestedManyWithoutPolicyInput
@@ -45044,6 +45750,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -45560,6 +46267,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutLoansInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -45577,6 +46287,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     documents?: DocumentUpdateManyWithoutPropertyNestedInput
@@ -45589,6 +46300,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -45605,6 +46319,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutPropertyNestedInput
@@ -45643,6 +46358,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     documents?: DocumentUpdateManyWithoutPolicyNestedInput
@@ -45667,6 +46383,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -45981,6 +46698,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -45998,6 +46718,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -46011,6 +46732,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -46027,6 +46751,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -46164,6 +46889,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -46189,6 +46915,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -46426,6 +47153,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutTransactionsInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -46443,6 +47173,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -46455,6 +47186,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -46471,6 +47205,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -46621,6 +47356,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -46645,6 +47381,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -47058,6 +47795,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -47075,6 +47815,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -47088,6 +47829,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -47104,6 +47848,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -47241,6 +47986,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -47266,6 +48012,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -47639,6 +48386,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutNotificationRulesInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -47656,6 +48406,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -47668,6 +48419,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -47684,6 +48438,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -47834,6 +48589,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -47858,6 +48614,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -48208,6 +48965,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -48225,6 +48985,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -48238,6 +48999,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -48254,6 +49018,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -48391,6 +49156,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -48416,6 +49182,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -48777,6 +49544,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutNotificationJobsInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -48794,6 +49564,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -48806,6 +49577,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -48822,6 +49596,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -48972,6 +49747,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -48996,6 +49772,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -49129,6 +49906,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -49146,6 +49926,7 @@ export namespace Prisma {
     owner: UserCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
     bills?: BillCreateNestedManyWithoutPropertyInput
     loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
@@ -49159,6 +49940,9 @@ export namespace Prisma {
     ownerId: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -49175,6 +49959,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
     leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
     bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
     loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
@@ -49290,6 +50075,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -49315,6 +50101,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -49668,6 +50455,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutDocumentsInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -49685,6 +50475,7 @@ export namespace Prisma {
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -49697,6 +50488,9 @@ export namespace Prisma {
     ownerId?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -49713,6 +50507,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -49841,6 +50636,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -49865,6 +50661,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50187,6 +50984,9 @@ export namespace Prisma {
     id?: string
     name: string
     type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
     addressLine1: string
     addressLine2?: string | null
     city: string
@@ -50219,6 +51019,7 @@ export namespace Prisma {
     coPayPercent?: number | null
     waitingPeriodMonths?: number | null
     networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -50509,6 +51310,9 @@ export namespace Prisma {
   export type PropertyUpdateWithoutOwnerInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -50525,6 +51329,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
     bills?: BillUpdateManyWithoutPropertyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
@@ -50537,6 +51342,9 @@ export namespace Prisma {
   export type PropertyUncheckedUpdateWithoutOwnerInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -50553,6 +51361,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
     bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
     loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
@@ -50565,6 +51374,9 @@ export namespace Prisma {
   export type PropertyUncheckedUpdateManyWithoutOwnerInput = {
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
     addressLine1?: StringFieldUpdateOperationsInput | string
     addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
     city?: StringFieldUpdateOperationsInput | string
@@ -50599,6 +51411,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -50623,6 +51436,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -50650,6 +51464,7 @@ export namespace Prisma {
     coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
     waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
     networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51276,6 +52091,28 @@ export namespace Prisma {
     updatedAt?: Date | string
   }
 
+  export type PolicyCreateManyPropertyInput = {
+    id?: string
+    ownerId: string
+    type: $Enums.PolicyType
+    insurer: string
+    policyNumber: string
+    holderName: string
+    nominees?: PolicyCreatenomineesInput | string[]
+    startDate: Date | string
+    tenureYears?: number | null
+    status?: $Enums.PolicyStatus
+    sumAssured?: number | null
+    currency?: $Enums.Currency | null
+    roomRentLimit?: number | null
+    coPayPercent?: number | null
+    waitingPeriodMonths?: number | null
+    networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
   export type BillScheduleCreateManyPropertyInput = {
     id?: string
     ownerId: string
@@ -51530,6 +52367,83 @@ export namespace Prisma {
     depositAmount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     active?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PolicyUpdateWithoutPropertyInput = {
+    type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
+    insurer?: StringFieldUpdateOperationsInput | string
+    policyNumber?: StringFieldUpdateOperationsInput | string
+    holderName?: StringFieldUpdateOperationsInput | string
+    nominees?: PolicyUpdatenomineesInput | string[]
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenureYears?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumPolicyStatusFieldUpdateOperationsInput | $Enums.PolicyStatus
+    sumAssured?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    roomRentLimit?: NullableFloatFieldUpdateOperationsInput | number | null
+    coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
+    bills?: BillUpdateManyWithoutPolicyNestedInput
+    loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
+    documents?: DocumentUpdateManyWithoutPolicyNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutPolicyNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutPolicyNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutPolicyNestedInput
+  }
+
+  export type PolicyUncheckedUpdateWithoutPropertyInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
+    insurer?: StringFieldUpdateOperationsInput | string
+    policyNumber?: StringFieldUpdateOperationsInput | string
+    holderName?: StringFieldUpdateOperationsInput | string
+    nominees?: PolicyUpdatenomineesInput | string[]
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenureYears?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumPolicyStatusFieldUpdateOperationsInput | $Enums.PolicyStatus
+    sumAssured?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    roomRentLimit?: NullableFloatFieldUpdateOperationsInput | number | null
+    coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutPolicyNestedInput
+    bills?: BillUncheckedUpdateManyWithoutPolicyNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutLinkedPolicyNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutPolicyNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutPolicyNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutPolicyNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutPolicyNestedInput
+  }
+
+  export type PolicyUncheckedUpdateManyWithoutPropertyInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
+    insurer?: StringFieldUpdateOperationsInput | string
+    policyNumber?: StringFieldUpdateOperationsInput | string
+    holderName?: StringFieldUpdateOperationsInput | string
+    nominees?: PolicyUpdatenomineesInput | string[]
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenureYears?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumPolicyStatusFieldUpdateOperationsInput | $Enums.PolicyStatus
+    sumAssured?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    roomRentLimit?: NullableFloatFieldUpdateOperationsInput | number | null
+    coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

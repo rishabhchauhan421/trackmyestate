@@ -12,7 +12,12 @@ import {
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
-import { EVENT_CATEGORY_LABELS, PROPERTY_TYPE_LABELS } from "~/lib/labels";
+import {
+  EVENT_CATEGORY_LABELS,
+  OWNERSHIP_TYPE_LABELS,
+  PROPERTY_CATEGORY_LABELS,
+  PROPERTY_TYPE_LABELS,
+} from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
 import { getAllBillsForProperty } from "~/server/queries/bills";
 import { getPropertyForOwner } from "~/server/queries/properties";
@@ -113,6 +118,43 @@ export default async function PropertyDetailPage({
           </p>
         </div>
       </div>
+
+      {(property.uniquePropertyId ??
+        property.propertyCategory ??
+        property.ownershipType) && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {property.uniquePropertyId && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                Unique Property ID
+              </p>
+              <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                {property.uniquePropertyId}
+              </p>
+            </div>
+          )}
+          {property.propertyCategory && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                Category
+              </p>
+              <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                {PROPERTY_CATEGORY_LABELS[property.propertyCategory]}
+              </p>
+            </div>
+          )}
+          {property.ownershipType && (
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900">
+              <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                Ownership type
+              </p>
+              <p className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                {OWNERSHIP_TYPE_LABELS[property.ownershipType]}
+              </p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div>
         <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">

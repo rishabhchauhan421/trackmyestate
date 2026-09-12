@@ -179,6 +179,9 @@ exports.Prisma.PropertyScalarFieldEnum = {
   ownerId: 'ownerId',
   name: 'name',
   type: 'type',
+  uniquePropertyId: 'uniquePropertyId',
+  propertyCategory: 'propertyCategory',
+  ownershipType: 'ownershipType',
   addressLine1: 'addressLine1',
   addressLine2: 'addressLine2',
   city: 'city',
@@ -307,6 +310,7 @@ exports.Prisma.PolicyScalarFieldEnum = {
   coPayPercent: 'coPayPercent',
   waitingPeriodMonths: 'waitingPeriodMonths',
   networkHospitals: 'networkHospitals',
+  propertyId: 'propertyId',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -472,6 +476,25 @@ exports.PropertyType = exports.$Enums.PropertyType = {
   RENTED: 'RENTED',
   UNDER_CONSTRUCTION: 'UNDER_CONSTRUCTION',
   INVESTMENT: 'INVESTMENT'
+};
+
+exports.PropertyCategory = exports.$Enums.PropertyCategory = {
+  APARTMENT: 'APARTMENT',
+  SINGLE_FAMILY_HOUSE: 'SINGLE_FAMILY_HOUSE',
+  OFFICE: 'OFFICE',
+  SHOP: 'SHOP',
+  CONDOMINIUM: 'CONDOMINIUM',
+  TOWN_HOUSE: 'TOWN_HOUSE',
+  MULTI_FAMILY_HOUSE: 'MULTI_FAMILY_HOUSE',
+  FACTORY: 'FACTORY',
+  WAREHOUSE: 'WAREHOUSE',
+  PLOT: 'PLOT',
+  OTHERS: 'OTHERS'
+};
+
+exports.OwnershipType = exports.$Enums.OwnershipType = {
+  FREEHOLD: 'FREEHOLD',
+  LEASEHOLD: 'LEASEHOLD'
 };
 
 exports.EventCategory = exports.$Enums.EventCategory = {

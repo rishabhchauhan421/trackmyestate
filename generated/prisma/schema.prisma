@@ -150,6 +150,25 @@ enum PropertyType {
   INVESTMENT
 }
 
+enum PropertyCategory {
+  APARTMENT
+  SINGLE_FAMILY_HOUSE
+  OFFICE
+  SHOP
+  CONDOMINIUM
+  TOWN_HOUSE
+  MULTI_FAMILY_HOUSE
+  FACTORY
+  WAREHOUSE
+  PLOT
+  OTHERS
+}
+
+enum OwnershipType {
+  FREEHOLD
+  LEASEHOLD
+}
+
 enum BillType {
   ELECTRICITY
   WATER
@@ -292,17 +311,20 @@ enum NotificationStatus {
 // ---------------------------------------------------------------------------
 
 model Property {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId      String       @db.ObjectId
-  owner        User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  name         String
-  type         PropertyType
-  addressLine1 String
-  addressLine2 String?
-  city         String
-  state        String
-  pinCode      String
-  country      String       @default("India")
+  id               String            @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId          String            @db.ObjectId
+  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name             String
+  type             PropertyType
+  uniquePropertyId String?
+  propertyCategory PropertyCategory?
+  ownershipType    OwnershipType?
+  addressLine1     String
+  addressLine2     String?
+  city             String
+  state            String
+  pinCode          String
+  country          String            @default("India")
 
   currency              Currency?
   purchasePrice         Float?
@@ -316,6 +338,7 @@ model Property {
 
   rooms             Room[]
   leases            Lease[]
+  policies          Policy[] // Insurance policies covering this property
   billSchedules     BillSchedule[]
   bills             Bill[]
   loans             Loan[] // If property is linked to a loan
@@ -522,6 +545,10 @@ model Policy {
   waitingPeriodMonths Int?
   networkHospitals    String[]
 
+  // Optional link — e.g. a HOME policy insuring a specific property
+  propertyId String?   @db.ObjectId
+  property   Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -535,6 +562,7 @@ model Policy {
   notificationJobs  NotificationJob[]
 
   @@index([ownerId, deletedAt])
+  @@index([propertyId])
 }
 
 model Investment {

@@ -162,9 +162,16 @@ const modules = [
 const planFeatures = [
   "Unlimited properties, leases and rental units",
   "Insurance policies, investments and loans",
-  "Encrypted document vault",
-  "Push, email and WhatsApp reminders",
-  "One unified timeline of every rupee",
+  "Email reminders",
+  "One unified timeline of every cent",
+];
+
+const proPlanFeatures = [
+  "Everything in Free",
+  "WhatsApp reminders",
+  "Send reminders to guests",
+  "Priority support",
+  "Pay bills directly from our portal",
 ];
 
 export default async function Home() {
@@ -351,27 +358,59 @@ export default async function Home() {
               </p>
             </div>
 
-            <div className="mx-auto mt-16 max-w-sm rounded-3xl bg-blue-600 px-6 py-8 sm:px-8">
-              <h3 className="font-display text-lg text-white">
-                Free, forever
-              </h3>
-              <p className="mt-2 text-base text-white">
-                Every feature, no catches.
-              </p>
-              <p className="mt-6 font-display text-5xl font-light tracking-tight text-white">
-                ₹0
-              </p>
-              <ul className="mt-10 flex flex-col gap-y-3 text-sm text-white">
-                {planFeatures.map((feature) => (
-                  <li key={feature} className="flex">
-                    <CheckIcon className="h-6 w-6 flex-none text-white" />
-                    <span className="ml-3">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button href="/login" pill color="white" className="mt-8 w-full">
-                Get started for free
-              </Button>
+            <div className="mx-auto mt-16 grid max-w-3xl grid-cols-1 gap-8 sm:grid-cols-2">
+              <div className="rounded-3xl bg-slate-800/60 px-6 py-8 ring-1 ring-slate-700 sm:px-8">
+                <h3 className="font-display text-lg text-white">
+                  Free, forever
+                </h3>
+                <p className="mt-2 text-base text-slate-300">
+                  Every core feature, no catches.
+                </p>
+                <p className="mt-6 font-display text-5xl font-light tracking-tight text-white">
+                  $0
+                </p>
+                <ul className="mt-10 flex flex-col gap-y-3 text-sm text-slate-200">
+                  {planFeatures.map((feature) => (
+                    <li key={feature} className="flex">
+                      <CheckIcon className="h-6 w-6 flex-none text-slate-400" />
+                      <span className="ml-3">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  href="/login"
+                  pill
+                  variant="outline"
+                  color="slate"
+                  className="mt-8 w-full border-slate-600 text-slate-100 hover:bg-slate-700"
+                >
+                  Get started for free
+                </Button>
+              </div>
+
+              <div className="rounded-3xl bg-blue-600 px-6 py-8 sm:px-8">
+                <h3 className="font-display text-lg text-white">Pro</h3>
+                <p className="mt-2 text-base text-white">
+                  For power users who want priority support and early access.
+                </p>
+                <p className="mt-6 font-display text-5xl font-light tracking-tight text-white">
+                  $20
+                  <span className="text-lg font-normal text-white/80">
+                    /month
+                  </span>
+                </p>
+                <ul className="mt-10 flex flex-col gap-y-3 text-sm text-white">
+                  {proPlanFeatures.map((feature) => (
+                    <li key={feature} className="flex">
+                      <CheckIcon className="h-6 w-6 flex-none text-white" />
+                      <span className="ml-3">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button href="/login" pill color="white" className="mt-8 w-full">
+                  Upgrade to Pro
+                </Button>
+              </div>
             </div>
           </div>
         </section>
