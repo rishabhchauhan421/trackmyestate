@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
@@ -13,11 +14,11 @@ import {
   removeUtilityRecipient,
 } from "~/server/actions/utilities";
 import { getSession } from "~/server/better-auth/server";
+import { getPropertyForOwner } from "~/server/queries/properties";
 import {
   getActiveUtilitiesForProperty,
-  getPropertyForOwner,
   getUtilityBillsForProperty,
-} from "~/server/queries";
+} from "~/server/queries/utilities";
 
 export default async function PropertyUtilitiesPage({
   params,
@@ -26,7 +27,7 @@ export default async function PropertyUtilitiesPage({
 }) {
   const { id } = await params;
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const property = await getPropertyForOwner(id, session.user.id);
   if (!property) {
     notFound();
@@ -52,12 +53,7 @@ export default async function PropertyUtilitiesPage({
         title={`${property.name} — Utilities`}
         description="Recurring bill schedules and who gets notified when they're due. Bills themselves are generated automatically."
         action={
-          <Link
-            href={`/properties/${id}/utilities/new`}
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
-          >
-            Add utility
-          </Link>
+          <Button href={`/properties/${id}/utilities/new`}>Add utility</Button>
         }
       />
 
@@ -121,7 +117,7 @@ export default async function PropertyUtilitiesPage({
                         <ul className="mt-1.5 space-y-1">
                           {utility.recipients.map((recipient) => (
                             <li
-                              key={recipient.id}
+                              key={recipient.email}
                               className="flex items-center justify-between gap-2 text-xs text-slate-600 dark:text-slate-300"
                             >
                               <span className="truncate">
@@ -131,7 +127,8 @@ export default async function PropertyUtilitiesPage({
                                 <button
                                   formAction={removeUtilityRecipient.bind(
                                     null,
-                                    recipient.id,
+                                    utility.id,
+                                    recipient.email,
                                   )}
                                   className="shrink-0 text-slate-400 hover:text-red-600 dark:text-slate-500 dark:hover:text-red-400"
                                   title="Remove"
@@ -153,14 +150,14 @@ export default async function PropertyUtilitiesPage({
                           name="name"
                           required
                           placeholder="Name"
-                          className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-800 focus:border-emerald-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                          className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <input
                           type="email"
                           name="email"
                           required
                           placeholder="email@example.com"
-                          className="min-w-0 flex-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-800 focus:border-emerald-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                          className="min-w-0 flex-2 rounded-lg border border-slate-200 px-3 py-1.5 text-xs text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                         />
                         <input type="hidden" name="notifyOnDue" value="on" />
                         <button

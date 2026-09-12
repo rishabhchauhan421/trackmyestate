@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatINR } from "~/lib/format";
 import { PROPERTY_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
-import { getProperties } from "~/server/queries";
+import { getProperties } from "~/server/queries/properties";
 
 export default async function PropertiesPage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const properties = await getProperties(session.user.id);
 
   return (
@@ -20,14 +21,9 @@ export default async function PropertiesPage() {
         title="Properties"
         description="Every home, rental and investment property — with its rent, bills, tenants and paper trail."
         action={
-          <button
-            type="button"
-            disabled
-            title="Coming soon"
-            className="cursor-not-allowed rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white opacity-40"
-          >
+          <Button type="button" disabled title="Coming soon">
             Add property
-          </button>
+          </Button>
         }
       />
 
@@ -41,7 +37,7 @@ export default async function PropertiesPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {properties.map((property) => {
-            const tenant = property.tenants[0];
+            const lease = property.leases[0];
             const overdueAmount = property.openBills.reduce(
               (sum, bill) => sum + bill.amount,
               0,
@@ -74,13 +70,13 @@ export default async function PropertiesPage() {
                   Current estimated value
                 </p>
 
-                {tenant && (
+                {lease && (
                   <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
                     Rented to{" "}
                     <span className="font-medium text-slate-700 dark:text-slate-200">
-                      {tenant.name}
+                      {lease.tenantName}
                     </span>{" "}
-                    · {formatINR(tenant.rentAmount)}/mo
+                    · {formatINR(lease.rentAmount)}/mo
                   </p>
                 )}
                 {overdueAmount > 0 && (
@@ -92,13 +88,13 @@ export default async function PropertiesPage() {
                 <div className="mt-4 flex items-center gap-4">
                   <Link
                     href={`/properties/${property.id}`}
-                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                    className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Details →
                   </Link>
                   <Link
                     href={`/properties/${property.id}/utilities`}
-                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                    className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Utilities →
                   </Link>

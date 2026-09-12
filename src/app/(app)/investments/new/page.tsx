@@ -1,18 +1,19 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { PageHeader } from "~/app/_components/page-header";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
 import { createInvestment } from "~/server/actions/investments";
 import { getSession } from "~/server/better-auth/server";
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
+  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
 const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function NewInvestmentPage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
 
   return (
     <>
@@ -135,12 +136,7 @@ export default async function NewInvestmentPage() {
         </div>
 
         <div className="flex items-center gap-3 pt-2">
-          <button
-            type="submit"
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
-          >
-            Save investment
-          </button>
+          <Button type="submit">Save investment</Button>
           <Link
             href="/investments"
             className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"

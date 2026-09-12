@@ -37,16 +37,15 @@ beforeEach(() => {
 });
 
 describe("generateBill", () => {
-  it("creates the bill and a matching financial event, reusing category/direction on both", async () => {
+  it("creates the bill with its category/direction and asset-specific foreign key", async () => {
     dbMock.bill.create.mockResolvedValue({ id: "bill-1" } as never);
-    dbMock.financialEvent.create.mockResolvedValue({ id: "event-1" } as never);
 
     const dueDate = new Date(2026, 6, 10);
     await generateBill({
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       direction: "OUTFLOW",
-      sourceId: "utility-1",
+      billScheduleId: "utility-1",
       propertyId: "prop-1",
       amount: 1500,
       dueDate,
@@ -56,39 +55,31 @@ describe("generateBill", () => {
     expect(dbMock.bill.create).toHaveBeenCalledWith({
       data: {
         ownerId: "user-1",
-        category: "BILL",
+        category: "UTILITY_BILL",
         direction: "OUTFLOW",
-        sourceId: "utility-1",
+        billScheduleId: "utility-1",
         propertyId: "prop-1",
+        leaseId: undefined,
+        loanId: undefined,
+        policyId: undefined,
+        investmentId: undefined,
         dueDate,
         amount: 1500,
-        status: "DUE",
-      },
-    });
-    expect(dbMock.financialEvent.create).toHaveBeenCalledWith({
-      data: {
-        ownerId: "user-1",
-        type: "OUTFLOW",
-        source: "BILL",
-        sourceId: "bill-1",
-        amount: 1500,
-        dueDate,
         status: "DUE",
         description: "BESCOM (Electricity) - Test Flat",
       },
     });
   });
 
-  it("works for an inflow category with no property (e.g. an EMI, or a rent/premium bill)", async () => {
+  it("works for a loan-linked category with no property (e.g. an EMI)", async () => {
     dbMock.bill.create.mockResolvedValue({ id: "bill-2" } as never);
-    dbMock.financialEvent.create.mockResolvedValue({ id: "event-2" } as never);
 
     const dueDate = new Date(2026, 8, 5);
     await generateBill({
       ownerId: "user-1",
       category: "EMI",
       direction: "OUTFLOW",
-      sourceId: "loan-1",
+      loanId: "loan-1",
       amount: 71_250,
       dueDate,
       description: "Home loan EMI - SBI",
@@ -98,7 +89,7 @@ describe("generateBill", () => {
       data: expect.objectContaining({
         category: "EMI",
         direction: "OUTFLOW",
-        sourceId: "loan-1",
+        loanId: "loan-1",
         propertyId: undefined,
       }),
     });
@@ -107,13 +98,12 @@ describe("generateBill", () => {
   it("returns the created bill", async () => {
     const created = { id: "bill-1" };
     dbMock.bill.create.mockResolvedValue(created as never);
-    dbMock.financialEvent.create.mockResolvedValue({ id: "event-1" } as never);
 
     const result = await generateBill({
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       direction: "OUTFLOW",
-      sourceId: "utility-1",
+      billScheduleId: "utility-1",
       propertyId: "prop-1",
       amount: 1500,
       dueDate: new Date(2026, 6, 10),
@@ -152,7 +142,7 @@ describe("markBillPaid", () => {
     dbMock.bill.findFirst.mockResolvedValue({
       id: "bill-1",
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       propertyId: "prop-1",
       amount: 1500,
     } as never);
@@ -167,7 +157,7 @@ describe("markBillPaid", () => {
     dbMock.bill.findFirst.mockResolvedValue({
       id: "bill-1",
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       propertyId: "prop-1",
       amount: 1500,
     } as never);
@@ -182,7 +172,7 @@ describe("markBillPaid", () => {
     dbMock.bill.findFirst.mockResolvedValue({
       id: "bill-1",
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       propertyId: "prop-1",
       amount: 1500,
     } as never);
@@ -193,11 +183,11 @@ describe("markBillPaid", () => {
     expect(dbMock.bill.update).not.toHaveBeenCalled();
   });
 
-  it("marks a property-scoped bill paid, syncs its financial event by category, and redirects back to the utilities page", async () => {
+  it("marks a property-scoped bill paid and redirects back to the utilities page", async () => {
     dbMock.bill.findFirst.mockResolvedValue({
       id: "bill-1",
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       propertyId: "prop-1",
       amount: 1500,
     } as never);
@@ -214,28 +204,7 @@ describe("markBillPaid", () => {
         paidDate: new Date("2026-06-15"),
       }),
     });
-    expect(dbMock.financialEvent.updateMany).toHaveBeenCalledWith({
-      where: { source: "BILL", sourceId: "bill-1" },
-      data: { status: "PAID" },
-    });
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/utilities");
-  });
-
-  it("syncs the financial event using the bill's own category, not a hardcoded one", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-2",
-      ownerId: "user-1",
-      category: "EMI",
-      propertyId: null,
-      amount: 71_250,
-    } as never);
-
-    await markBillPaid("bill-2", buildPaidForm());
-
-    expect(dbMock.financialEvent.updateMany).toHaveBeenCalledWith({
-      where: { source: "EMI", sourceId: "bill-2" },
-      data: { status: "PAID" },
-    });
   });
 
   it("does not redirect for a bill with no propertyId (no dedicated page exists yet)", async () => {
@@ -257,7 +226,7 @@ describe("markBillPaid", () => {
     dbMock.bill.findFirst.mockResolvedValue({
       id: "bill-1",
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       propertyId: "prop-1",
       amount: 0,
     } as never);
@@ -276,7 +245,7 @@ describe("markBillPaid", () => {
     dbMock.bill.findFirst.mockResolvedValue({
       id: "bill-1",
       ownerId: "user-1",
-      category: "BILL",
+      category: "UTILITY_BILL",
       propertyId: "prop-1",
       amount: 1500,
       status: "PAID",

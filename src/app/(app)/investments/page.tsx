@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { InvestmentsIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatINR } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
-import { getInvestments } from "~/server/queries";
+import { getInvestments } from "~/server/queries/investments";
 
 export default async function InvestmentsPage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const investments = await getInvestments(session.user.id);
 
   return (
@@ -20,12 +21,7 @@ export default async function InvestmentsPage() {
         title="Investments"
         description="FDs, mutual funds, stocks, gold and more — capital deployed alongside current value."
         action={
-          <Link
-            href="/investments/new"
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
-          >
-            Add investment
-          </Link>
+          <Button href="/investments/new">Add investment</Button>
         }
       />
 
@@ -81,7 +77,7 @@ export default async function InvestmentsPage() {
                 </p>
                 <Link
                   href={`/investments/${investment.id}/edit`}
-                  className="mt-4 inline-block text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                  className="mt-4 inline-block text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                 >
                   Edit →
                 </Link>

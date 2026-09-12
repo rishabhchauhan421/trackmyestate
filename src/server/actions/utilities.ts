@@ -3,12 +3,12 @@
 /**
  * Server Actions for the property Utilities feature.
  *
- * Model recap: a utility is a `BillSchedule` row (category `"BILL"`) — an
- * immutable template (type, provider, recurrence, amount, reminder lead
- * time) that can only be deactivated, not edited or deleted, once created.
- * `BillSchedule` is shared across every recurring-bill category (see the
- * model comment in `prisma/schema.prisma`); this file only ever touches
- * `category: "BILL"` rows. Its generated bill instances are `Bill` rows —
+ * Model recap: a utility is a `BillSchedule` row (category `"UTILITY_BILL"`)
+ * — an immutable template (type, provider, recurrence, amount, reminder
+ * lead time) that can only be deactivated, not edited or deleted, once
+ * created. `BillSchedule` is shared across every recurring-bill category
+ * (see the model comment in `prisma/schema.prisma`); this file only ever
+ * touches `category: "UTILITY_BILL"` rows. Its generated bill instances are `Bill` rows —
  * see `~/server/actions/bills` for `generateBill`/`markBillPaid`, shared
  * across every bill category. Every mutation below re-checks ownership
  * itself rather than trusting the caller, since these are invoked directly
@@ -44,7 +44,7 @@ async function requireOwnedProperty(propertyId: string) {
 /** Same as `requireOwnedProperty`, but for a utility `BillSchedule` row. */
 async function requireOwnedUtility(utilityId: string, ownerId: string) {
   const utility = await db.billSchedule.findFirst({
-    where: { id: utilityId, category: "BILL", ownerId },
+    where: { id: utilityId, category: "UTILITY_BILL", ownerId },
   });
   if (!utility) throw new Error("Utility not found");
   return utility;
@@ -83,7 +83,7 @@ export async function createUtility(formData: FormData) {
   await db.billSchedule.create({
     data: {
       ownerId: session.user.id,
-      category: "BILL",
+      category: "UTILITY_BILL",
       propertyId,
       billType,
       provider,
@@ -139,39 +139,33 @@ export async function addUtilityRecipient(utilityId: string, formData: FormData)
   if (!name) throw new Error("Enter a name");
   if (!email.includes("@")) throw new Error("Enter a valid email");
 
-  await db.billScheduleRecipient.create({
+  await db.billSchedule.update({
+    where: { id: utility.id },
     data: {
-      billScheduleId: utility.id,
-      name,
-      email,
-      phone,
-      notifyOnDue,
-      notifyOnPaid,
-      deletedAt: null,
+      recipients: {
+        push: { name, email, phone, notifyOnDue, notifyOnPaid },
+      },
     },
   });
 
   revalidatePath(`/properties/${utility.propertyId}/utilities`);
 }
 
-/** Soft-deletes a notification recipient (sets `deletedAt`, doesn't hard-delete). */
-export async function removeUtilityRecipient(recipientId: string) {
+/**
+ * Removes a person from a utility's notification recipients. Recipients are
+ * an embedded array on `BillSchedule` (no independent id), so they're
+ * identified by email — unique within one utility's recipient list.
+ */
+export async function removeUtilityRecipient(utilityId: string, email: string) {
   const session = await getSession();
   if (!session) redirect("/");
 
-  const recipient = await db.billScheduleRecipient.findFirst({
-    where: {
-      id: recipientId,
-      billSchedule: { ownerId: session.user.id },
-    },
-    include: { billSchedule: { select: { propertyId: true } } },
-  });
-  if (!recipient) throw new Error("Recipient not found");
+  const utility = await requireOwnedUtility(utilityId, session.user.id);
 
-  await db.billScheduleRecipient.update({
-    where: { id: recipientId },
-    data: { deletedAt: new Date() },
+  await db.billSchedule.update({
+    where: { id: utility.id },
+    data: { recipients: { deleteMany: { where: { email } } } },
   });
 
-  revalidatePath(`/properties/${recipient.billSchedule.propertyId}/utilities`);
+  revalidatePath(`/properties/${utility.propertyId}/utilities`);
 }

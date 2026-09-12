@@ -114,7 +114,7 @@ describe("createUtility", () => {
     expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         ownerId: "user-1",
-        category: "BILL",
+        category: "UTILITY_BILL",
         propertyId: "prop-1",
         billType: "ELECTRICITY",
         provider: "BESCOM",
@@ -134,7 +134,7 @@ describe("createUtility", () => {
   // Bills are never spawned by the owner-facing create flow — only the
   // (not-yet-built) background job creates them, via `generateBill` in
   // `~/server/actions/bills`.
-  it("does not create a bill or financial event", async () => {
+  it("does not create a bill", async () => {
     dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
     dbMock.billSchedule.create.mockResolvedValue({
       id: "utility-1",
@@ -147,7 +147,6 @@ describe("createUtility", () => {
     );
 
     expect(dbMock.bill.create).not.toHaveBeenCalled();
-    expect(dbMock.financialEvent.create).not.toHaveBeenCalled();
   });
 
   it("records dueMonth for a YEARLY recurrence, taken from the first due date", async () => {
@@ -338,7 +337,7 @@ describe("addUtilityRecipient", () => {
     await expect(
       addUtilityRecipient("utility-1", formData),
     ).rejects.toThrow("Utility not found");
-    expect(dbMock.billScheduleRecipient.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
   it("rejects a missing name or invalid email", async () => {
@@ -360,10 +359,10 @@ describe("addUtilityRecipient", () => {
       addUtilityRecipient("utility-1", badEmail),
     ).rejects.toThrow("Enter a valid email");
 
-    expect(dbMock.billScheduleRecipient.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
-  it("creates the recipient and revalidates the utilities page", async () => {
+  it("pushes the recipient onto the embedded array and revalidates the utilities page", async () => {
     dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
@@ -376,15 +375,18 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
+      where: { id: "utility-1" },
       data: {
-        billScheduleId: "utility-1",
-        name: "Spouse",
-        email: "spouse@example.com",
-        phone: null,
-        notifyOnDue: true,
-        notifyOnPaid: false,
-        deletedAt: null,
+        recipients: {
+          push: {
+            name: "Spouse",
+            email: "spouse@example.com",
+            phone: null,
+            notifyOnDue: true,
+            notifyOnPaid: false,
+          },
+        },
       },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/utilities");
@@ -402,11 +404,16 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        name: "Spouse",
-        email: "spouse@example.com",
-      }),
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
+      where: { id: "utility-1" },
+      data: {
+        recipients: {
+          push: expect.objectContaining({
+            name: "Spouse",
+            email: "spouse@example.com",
+          }) as unknown,
+        },
+      },
     });
   });
 
@@ -423,7 +430,7 @@ describe("addUtilityRecipient", () => {
     await expect(
       addUtilityRecipient("utility-1", formData),
     ).rejects.toThrow("Enter a name");
-    expect(dbMock.billScheduleRecipient.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
   it("defaults phone to null and both notify flags to false when the form omits them (unchecked checkboxes)", async () => {
@@ -441,12 +448,17 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        phone: null,
-        notifyOnDue: false,
-        notifyOnPaid: false,
-      }),
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
+      where: { id: "utility-1" },
+      data: {
+        recipients: {
+          push: expect.objectContaining({
+            phone: null,
+            notifyOnDue: false,
+            notifyOnPaid: false,
+          }) as unknown,
+        },
+      },
     });
   });
 
@@ -464,33 +476,42 @@ describe("addUtilityRecipient", () => {
 
     await addUtilityRecipient("utility-1", formData);
 
-    expect(dbMock.billScheduleRecipient.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ email: "not@@really-an-email" }),
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
+      where: { id: "utility-1" },
+      data: {
+        recipients: {
+          push: expect.objectContaining({
+            email: "not@@really-an-email",
+          }) as unknown,
+        },
+      },
     });
   });
 });
 
 describe("removeUtilityRecipient", () => {
-  it("throws when the recipient doesn't belong to this owner", async () => {
-    dbMock.billScheduleRecipient.findFirst.mockResolvedValue(null);
+  it("throws when the utility doesn't belong to this owner", async () => {
+    dbMock.billSchedule.findFirst.mockResolvedValue(null);
 
-    await expect(removeUtilityRecipient("recipient-1")).rejects.toThrow(
-      "Recipient not found",
-    );
-    expect(dbMock.billScheduleRecipient.update).not.toHaveBeenCalled();
+    await expect(
+      removeUtilityRecipient("utility-1", "spouse@example.com"),
+    ).rejects.toThrow("Utility not found");
+    expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
-  it("soft-deletes the recipient and revalidates the utilities page", async () => {
-    dbMock.billScheduleRecipient.findFirst.mockResolvedValue({
-      id: "recipient-1",
-      billSchedule: { propertyId: "prop-1" },
+  it("removes the recipient by email and revalidates the utilities page", async () => {
+    dbMock.billSchedule.findFirst.mockResolvedValue({
+      id: "utility-1",
+      propertyId: "prop-1",
     } as never);
 
-    await removeUtilityRecipient("recipient-1");
+    await removeUtilityRecipient("utility-1", "spouse@example.com");
 
-    expect(dbMock.billScheduleRecipient.update).toHaveBeenCalledWith({
-      where: { id: "recipient-1" },
-      data: { deletedAt: expect.any(Date) as Date },
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
+      where: { id: "utility-1" },
+      data: {
+        recipients: { deleteMany: { where: { email: "spouse@example.com" } } },
+      },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/utilities");
   });

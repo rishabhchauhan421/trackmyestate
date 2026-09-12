@@ -1,12 +1,13 @@
 import { redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { InsuranceIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
 import { getSession } from "~/server/better-auth/server";
-import { getPolicies } from "~/server/queries";
+import { getPolicies } from "~/server/queries/policies";
 
 const TYPE_LABELS: Record<string, string> = {
   TERM_LIFE: "Term life",
@@ -20,7 +21,7 @@ const TYPE_LABELS: Record<string, string> = {
 
 export default async function InsurancePage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const policies = await getPolicies(session.user.id);
 
   return (
@@ -29,14 +30,9 @@ export default async function InsurancePage() {
         title="Insurance"
         description="Life, health, vehicle and home policies — premiums, coverage, maturity and claims."
         action={
-          <button
-            type="button"
-            disabled
-            title="Coming soon"
-            className="cursor-not-allowed rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white opacity-40"
-          >
+          <Button type="button" disabled title="Coming soon">
             Add policy
-          </button>
+          </Button>
         }
       />
 

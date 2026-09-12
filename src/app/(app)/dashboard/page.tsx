@@ -6,23 +6,24 @@ import { navItems } from "~/app/_components/nav";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatDate, formatINR } from "~/lib/format";
 import { getSession } from "~/server/better-auth/server";
-import { getDashboardData } from "~/server/queries";
+import { getDashboardData } from "~/server/queries/dashboard";
 
 const quickLinks = navItems.filter((item) => item.href !== "/dashboard");
 
-const SOURCE_LABELS: Record<string, string> = {
+const CATEGORY_LABELS: Record<string, string> = {
   RENT: "Rent",
-  BILL: "Bill",
+  UTILITY_BILL: "Bill",
   PREMIUM: "Premium",
   PAYOUT: "Payout",
   EMI: "EMI",
-  RETURN: "Return",
+  INVESTMENT_RETURN: "Return",
   CLAIM_SETTLEMENT: "Claim settlement",
+  CUSTOM: "Custom",
 };
 
 export default async function DashboardPage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const {
     netWorth,
     totalCoverage,
@@ -101,7 +102,7 @@ export default async function DashboardPage() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                    {item.description ?? SOURCE_LABELS[item.source]}
+                    {item.description ?? CATEGORY_LABELS[item.category]}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
                     {item.status === "OVERDUE" ? "Overdue" : "Due"}{" "}
@@ -132,7 +133,7 @@ export default async function DashboardPage() {
             <Link
               key={href}
               href={href}
-              className="group flex items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-5 transition-colors hover:border-emerald-300 hover:bg-emerald-50/40 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-emerald-800 dark:hover:bg-emerald-500/5"
+              className="group flex items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-5 transition-colors hover:border-blue-300 hover:bg-blue-50/40 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-800 dark:hover:bg-blue-500/5"
             >
               <div className="flex items-start gap-3">
                 <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
@@ -147,7 +148,7 @@ export default async function DashboardPage() {
                   </p>
                 </div>
               </div>
-              <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-emerald-600 dark:text-slate-600" />
+              <ArrowRightIcon className="mt-1 h-4 w-4 shrink-0 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-blue-600 dark:text-slate-600" />
             </Link>
           ))}
         </div>

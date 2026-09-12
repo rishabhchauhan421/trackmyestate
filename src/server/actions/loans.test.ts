@@ -162,7 +162,7 @@ describe("createLoan", () => {
   // The EMI schedule (tenure, EMI amount, due day) lives on its own
   // `BillSchedule` row, not on `Loan` — see the model comment in
   // `prisma/schema.prisma`.
-  it("also creates the loan's EMI BillSchedule, linked by sourceId", async () => {
+  it("also creates the loan's EMI BillSchedule, linked by loanId", async () => {
     dbMock.loan.create.mockResolvedValue({ id: "loan-1" } as never);
 
     await expect(createLoan(buildLoanForm())).rejects.toThrow("REDIRECT:");
@@ -171,7 +171,7 @@ describe("createLoan", () => {
       data: {
         ownerId: "user-1",
         category: "EMI",
-        sourceId: "loan-1",
+        loanId: "loan-1",
         recurrence: "MONTHLY",
         dueDay: 5,
         defaultAmount: 43000,
@@ -233,8 +233,7 @@ describe("updateLoan", () => {
   });
 
   // The EMI schedule lives on a separate `BillSchedule` row, found by
-  // `sourceId`/`category` rather than a fetched id (same pattern
-  // `markBillPaid` uses to sync `FinancialEvent`).
+  // `loanId`/`category` rather than a fetched id.
   it("also updates the loan's EMI BillSchedule fields", async () => {
     dbMock.loan.findFirst.mockResolvedValue({
       id: "loan-1",
@@ -250,7 +249,7 @@ describe("updateLoan", () => {
     ).rejects.toThrow("REDIRECT:");
 
     expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
-      where: { category: "EMI", sourceId: "loan-1" },
+      where: { category: "EMI", loanId: "loan-1" },
       data: { dueDay: 10, defaultAmount: 44000, tenureMonths: 180 },
     });
   });

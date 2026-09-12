@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { LoansIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatDate, formatINR } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
-import { getLoans } from "~/server/queries";
+import { getLoans } from "~/server/queries/loans";
 
 export default async function LoansPage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const loans = await getLoans(session.user.id);
 
   return (
@@ -20,12 +21,7 @@ export default async function LoansPage() {
         title="Loans"
         description="Home loans, personal loans and more — EMI, amortization and outstanding balance."
         action={
-          <Link
-            href="/loans/new"
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
-          >
-            Add loan
-          </Link>
+          <Button href="/loans/new">Add loan</Button>
         }
       />
 
@@ -76,7 +72,7 @@ export default async function LoansPage() {
                   )}
                   <Link
                     href={`/loans/${loan.id}/edit`}
-                    className="shrink-0 text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                    className="shrink-0 text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Edit →
                   </Link>

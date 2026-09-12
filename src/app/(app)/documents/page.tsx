@@ -1,25 +1,27 @@
 import { redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { DocumentsIcon } from "~/app/_components/icons";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatDate } from "~/lib/format";
 import { getSession } from "~/server/better-auth/server";
-import { getDocuments } from "~/server/queries";
+import { getDocuments } from "~/server/queries/documents";
 
 const OWNER_TYPE_LABELS: Record<string, string> = {
   PROPERTY: "Property",
   ROOM: "Room",
-  TENANT: "Tenant",
+  LEASE: "Lease",
   POLICY: "Policy",
-  CLAIM: "Claim",
   INVESTMENT: "Investment",
   LOAN: "Loan",
+  BILL_SCHEDULE: "Bill schedule",
+  BILL: "Bill",
 };
 
 export default async function DocumentsPage() {
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const documents = await getDocuments(session.user.id);
 
   return (
@@ -28,14 +30,9 @@ export default async function DocumentsPage() {
         title="Documents"
         description="Policy PDFs, loan statements, property papers, receipts and KYC — encrypted, attached to the asset they belong to."
         action={
-          <button
-            type="button"
-            disabled
-            title="Coming soon"
-            className="cursor-not-allowed rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white opacity-40"
-          >
+          <Button type="button" disabled title="Coming soon">
             Upload document
-          </button>
+          </Button>
         }
       />
 

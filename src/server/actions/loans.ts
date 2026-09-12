@@ -7,7 +7,7 @@
  * is meant to be kept up to date by the owner over time.
  *
  * A loan's EMI schedule (tenure, due day, EMI amount) lives on its own
- * `BillSchedule` row (category `"EMI"`, `sourceId` = the Loan's id) rather
+ * `BillSchedule` row (category `"EMI"`, `loanId` = the Loan's id) rather
  * than on `Loan` itself — see the `BillSchedule` model comment in
  * `prisma/schema.prisma`. `createLoan`/`updateLoan` write both records;
  * the form itself is unchanged.
@@ -109,7 +109,7 @@ export async function createLoan(formData: FormData) {
     data: {
       ownerId: session.user.id,
       category: "EMI",
-      sourceId: loan.id,
+      loanId: loan.id,
       recurrence: "MONTHLY",
       dueDay: fields.emiDueDay,
       defaultAmount: fields.emiAmount,
@@ -140,7 +140,7 @@ export async function updateLoan(loanId: string, formData: FormData) {
   });
 
   await db.billSchedule.updateMany({
-    where: { category: "EMI", sourceId: loanId },
+    where: { category: "EMI", loanId },
     data: {
       dueDay: fields.emiDueDay,
       defaultAmount: fields.emiAmount,

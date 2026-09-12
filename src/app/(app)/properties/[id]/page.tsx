@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
 import { PROPERTY_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
-import { getPropertyForOwner, getTenantsForProperty } from "~/server/queries";
+import { getLeasesForProperty } from "~/server/queries/leases";
+import { getPropertyForOwner } from "~/server/queries/properties";
 
 export default async function PropertyDetailPage({
   params,
@@ -15,16 +17,16 @@ export default async function PropertyDetailPage({
 }) {
   const { id } = await params;
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
 
   const property = await getPropertyForOwner(id, session.user.id);
   if (!property) {
     notFound();
   }
 
-  const tenants = await getTenantsForProperty(id);
-  const currentTenants = tenants.filter((tenant) => tenant.active);
-  const pastTenants = tenants.filter((tenant) => !tenant.active);
+  const leases = await getLeasesForProperty(id);
+  const currentLeases = leases.filter((lease) => lease.active);
+  const pastLeases = leases.filter((lease) => !lease.active);
   const isSelfOccupied = property.type === "SELF_OCCUPIED";
 
   const address = [
@@ -54,34 +56,22 @@ export default async function PropertyDetailPage({
         description={address}
         action={
           <div className="flex flex-wrap items-center gap-3">
-            <Link
-              href={`/properties/${id}/utilities`}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
+            <Button href={`/properties/${id}/utilities`} variant="outline">
               Utilities →
-            </Link>
-            <Link
-              href={`/properties/${id}/rentals`}
-              className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
+            </Button>
+            <Button href={`/properties/${id}/rentals`} variant="outline">
               Rental units →
-            </Link>
+            </Button>
             {isSelfOccupied ? (
-              <button
+              <Button
                 type="button"
                 disabled
-                title="Self-occupied properties can't have tenants"
-                className="cursor-not-allowed rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white opacity-40"
+                title="Self-occupied properties can't have leases"
               >
-                Add tenant
-              </button>
+                Add lease
+              </Button>
             ) : (
-              <Link
-                href={`/properties/${id}/tenants/new`}
-                className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
-              >
-                Add tenant
-              </Link>
+              <Button href={`/properties/${id}/leases/new`}>Add lease</Button>
             )}
           </div>
         }
@@ -121,44 +111,47 @@ export default async function PropertyDetailPage({
 
       <div>
         <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          Current tenants
+          Current leases
         </h2>
-        {currentTenants.length === 0 ? (
+        {currentLeases.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">
             {isSelfOccupied
-              ? "This property is self-occupied, so it can't have tenants."
-              : "No active tenant — this property is currently vacant."}
+              ? "This property is self-occupied, so it can't have leases."
+              : "No active lease — this property is currently vacant."}
           </p>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-              {currentTenants.map((tenant) => (
+              {currentLeases.map((lease) => (
                 <li
-                  key={tenant.id}
+                  key={lease.id}
                   className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                      {tenant.name}
+                      {lease.tenantName}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                      {tenant.phone}
-                      {tenant.email && <> · {tenant.email}</>}
-                      {tenant.room && <> · {tenant.room.label}</>}
+                      {lease.tenantPhone}
+                      {lease.tenantEmail && <> · {lease.tenantEmail}</>}
+                      {lease.room && <> · {lease.room.label}</>}
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                      {formatINR(tenant.rentAmount)}/mo
+                      {formatINR(lease.rentAmount)}/mo
                     </p>
                     <p className="text-xs text-slate-400 dark:text-slate-500">
-                      since {formatDate(tenant.leaseStart)}
+                      since {formatDate(lease.leaseStart)}
+                      {lease.rentDueDay != null && (
+                        <> · due day {lease.rentDueDay}</>
+                      )}
                     </p>
                   </div>
                   <StatusBadge status="ACTIVE" />
                   <Link
-                    href={`/properties/${id}/tenants/${tenant.id}/edit`}
-                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                    href={`/properties/${id}/leases/${lease.id}/edit`}
+                    className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Edit →
                   </Link>
@@ -171,37 +164,37 @@ export default async function PropertyDetailPage({
 
       <div>
         <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-100">
-          Past tenants
+          Past leases
         </h2>
-        {pastTenants.length === 0 ? (
+        {pastLeases.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            No past tenants on record.
+            No past leases on record.
           </p>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <ul className="divide-y divide-slate-100 dark:divide-slate-800">
-              {pastTenants.map((tenant) => (
+              {pastLeases.map((lease) => (
                 <li
-                  key={tenant.id}
+                  key={lease.id}
                   className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                      {tenant.name}
+                      {lease.tenantName}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                      {formatDate(tenant.leaseStart)} –{" "}
-                      {tenant.leaseEnd ? formatDate(tenant.leaseEnd) : "—"}
-                      {tenant.room && <> · {tenant.room.label}</>}
+                      {formatDate(lease.leaseStart)} –{" "}
+                      {lease.leaseEnd ? formatDate(lease.leaseEnd) : "—"}
+                      {lease.room && <> · {lease.room.label}</>}
                     </p>
                   </div>
                   <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                    {formatINR(tenant.rentAmount)}/mo
+                    {formatINR(lease.rentAmount)}/mo
                   </p>
                   <StatusBadge status="PAST" />
                   <Link
-                    href={`/properties/${id}/tenants/${tenant.id}/edit`}
-                    className="text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                    href={`/properties/${id}/leases/${lease.id}/edit`}
+                    className="text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     Edit →
                   </Link>

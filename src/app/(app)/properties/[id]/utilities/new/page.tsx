@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { PageHeader } from "~/app/_components/page-header";
 import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
 import { createUtility } from "~/server/actions/utilities";
 import { getSession } from "~/server/better-auth/server";
-import { getPropertyForOwner } from "~/server/queries";
+import { getPropertyForOwner } from "~/server/queries/properties";
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
+  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
 const labelClass =
   "text-xs font-medium text-slate-600 dark:text-slate-300";
 
@@ -19,7 +20,7 @@ export default async function NewUtilityPage({
 }) {
   const { id } = await params;
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const property = await getPropertyForOwner(id, session.user.id);
   if (!property) {
     notFound();
@@ -144,12 +145,7 @@ export default async function NewUtilityPage({
         </div>
 
         <div className="flex items-center gap-3 pt-2">
-          <button
-            type="submit"
-            className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
-          >
-            Save utility
-          </button>
+          <Button type="submit">Save utility</Button>
           <Link
             href={`/properties/${id}/utilities`}
             className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"

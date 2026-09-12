@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { getSession } from "~/server/better-auth/server";
-import { getPropertyForOwner, getRoomsForProperty } from "~/server/queries";
+import { getPropertyForOwner } from "~/server/queries/properties";
+import { getRoomsForProperty } from "~/server/queries/rentals";
 
 export default async function PropertyRentalsPage({
   params,
@@ -15,7 +17,7 @@ export default async function PropertyRentalsPage({
 }) {
   const { id } = await params;
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const property = await getPropertyForOwner(id, session.user.id);
   if (!property) {
     notFound();
@@ -37,24 +39,20 @@ export default async function PropertyRentalsPage({
 
       <PageHeader
         title={`${property.name} — Rental units`}
-        description="Subdivisions of this property that get rented out individually — add one per room, unit or floor before assigning tenants."
+        description="Subdivisions of this property that get rented out individually — add one per room, unit or floor before creating a lease for it."
         action={
           isSelfOccupied ? (
-            <button
+            <Button
               type="button"
               disabled
               title="Self-occupied properties can't have rental units"
-              className="cursor-not-allowed rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white opacity-40"
             >
               Add rental unit
-            </button>
+            </Button>
           ) : (
-            <Link
-              href={`/properties/${id}/rentals/new`}
-              className="rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500"
-            >
+            <Button href={`/properties/${id}/rentals/new`}>
               Add rental unit
-            </Link>
+            </Button>
           )
         }
       />
@@ -62,13 +60,13 @@ export default async function PropertyRentalsPage({
       {isSelfOccupied ? (
         <p className="text-sm text-slate-500 dark:text-slate-400">
           This property is marked self-occupied, so it can&apos;t have rental
-          units or tenants.
+          units or leases.
         </p>
       ) : rooms.length === 0 ? (
         <EmptyState
           Icon={PropertiesIcon}
           title="No rental units yet"
-          description="Add a rental unit for each room, floor or unit you rent out separately, then assign a tenant to it."
+          description="Add a rental unit for each room, floor or unit you rent out separately, then create a lease for it."
           actionLabel="Add your first rental unit"
           actionHref={`/properties/${id}/rentals/new`}
         />
@@ -94,10 +92,10 @@ export default async function PropertyRentalsPage({
                 <StatusBadge status={room.occupancyStatus} />
               </div>
               <Link
-                href={`/properties/${id}/tenants/new?roomId=${room.id}`}
-                className="mt-4 inline-block text-xs font-medium text-emerald-700 hover:text-emerald-800 dark:text-emerald-400 dark:hover:text-emerald-300"
+                href={`/properties/${id}/leases/new?roomId=${room.id}`}
+                className="mt-4 inline-block text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
               >
-                Add tenant →
+                Add lease →
               </Link>
             </div>
           ))}

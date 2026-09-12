@@ -7,10 +7,10 @@ import { formatDate, formatINR } from "~/lib/format";
 import { BILL_TYPE_LABELS } from "~/lib/labels";
 import { markBillPaid } from "~/server/actions/bills";
 import { getSession } from "~/server/better-auth/server";
-import { getUtilityBillForOwner } from "~/server/queries";
+import { getUtilityBillForOwner } from "~/server/queries/utilities";
 
 const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
+  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
 const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function UtilityBillPage({
@@ -20,7 +20,7 @@ export default async function UtilityBillPage({
 }) {
   const { id, billId } = await params;
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
 
   const bill = await getUtilityBillForOwner(billId, session.user.id);
   if (!bill || bill.propertyId !== id) {

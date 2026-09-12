@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Inter, Lexend } from "next/font/google";
 
 import { env } from "~/env";
 import { TRPCReactProvider } from "~/trpc/react";
@@ -47,16 +47,23 @@ export const metadata: Metadata = {
   },
 };
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const lexend = Lexend({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-lexend",
 });
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" className={`${inter.variable} ${lexend.variable}`}>
       <body>
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>

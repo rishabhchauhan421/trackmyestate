@@ -11,7 +11,7 @@ export default async function AppLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const session = await getSession();
   if (!session) {
-    redirect("/");
+    redirect("/login");
   }
   const name = session.user?.name ?? session.user?.email ?? "Your account";
   const initial = name.charAt(0).toUpperCase();
@@ -20,7 +20,7 @@ export default async function AppLayout({
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 lg:flex">
       <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-slate-200 lg:bg-white dark:lg:border-slate-800 dark:lg:bg-slate-900">
         <Link href="/" className="flex items-center gap-2 px-6 py-5">
-          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-600 text-sm font-bold text-white">
+          <span className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-sm font-bold text-white">
             T
           </span>
           <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">
@@ -76,7 +76,7 @@ export default async function AppLayout({
         <header className="sticky top-0 z-10 border-b border-slate-200 bg-white/90 backdrop-blur lg:hidden dark:border-slate-800 dark:bg-slate-900/90">
           <div className="flex items-center justify-between gap-2 px-4 py-3">
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-emerald-600 text-sm font-bold text-white">
+              <span className="flex h-7 w-7 items-center justify-center rounded-md bg-blue-600 text-sm font-bold text-white">
                 T
               </span>
               <span className="text-sm font-semibold text-slate-900 dark:text-slate-50">

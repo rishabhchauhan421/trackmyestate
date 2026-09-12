@@ -6,7 +6,7 @@
  * rent, and so on; see `prisma/schema.prisma`'s `Bill` model comment).
  * Owners never create a bill directly — that's the job of a (not-yet-built)
  * background job per `BillSchedule` template (a utility, a loan's EMI
- * schedule, a policy premium, a tenant's rent) that calls `generateBill` on
+ * schedule, a policy premium, a lease's rent) that calls `generateBill` on
  * the date of each cycle's first notification, or once for a one-time event
  * (a payout, a claim, a return).
  * `markBillPaid` is the one mutation an owner does trigger directly, from a
@@ -17,7 +17,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import type {
-  FinancialEventSource,
+  EventCategory,
   FinancialEventType,
 } from "../../../generated/prisma";
 import { getSession } from "~/server/better-auth/server";
@@ -30,19 +30,25 @@ async function requireOwnedBill(billId: string, ownerId: string) {
 }
 
 /**
- * Creates one `Bill` and its matching `FinancialEvent`. `category` and
- * `direction` reuse `FinancialEventSource`/`FinancialEventType` — the same
- * enums `FinancialEvent` already uses — so the two rows always agree on
- * what kind of bill this is and which way the money moves. `description`
- * is caller-built, since how you'd label a bill (utility type + provider,
- * "Home loan EMI - SBI", an annual premium, ...) is domain-specific.
+ * Creates one `Bill`. `category`/`direction` say what kind of bill this is
+ * and which way the money moves; exactly one of `propertyId`/`leaseId`/
+ * `loanId`/`policyId`/`investmentId` should be set, matching `category`
+ * (see the `Bill` model comment in `schema.prisma`), and `billScheduleId`
+ * is set only when a recurring `BillSchedule` generated this instance.
+ * `description` is caller-built, since how you'd label a bill (utility type
+ * + provider, "Home loan EMI - SBI", an annual premium, ...) is
+ * domain-specific.
  */
 export async function generateBill(args: {
   ownerId: string;
-  category: FinancialEventSource;
+  category: EventCategory;
   direction: FinancialEventType;
-  sourceId: string;
+  billScheduleId?: string;
   propertyId?: string;
+  leaseId?: string;
+  loanId?: string;
+  policyId?: string;
+  investmentId?: string;
   amount: number;
   dueDate: Date;
   description: string;
@@ -51,47 +57,41 @@ export async function generateBill(args: {
     ownerId,
     category,
     direction,
-    sourceId,
+    billScheduleId,
     propertyId,
+    leaseId,
+    loanId,
+    policyId,
+    investmentId,
     amount,
     dueDate,
     description,
   } = args;
 
-  const bill = await db.bill.create({
+  return db.bill.create({
     data: {
       ownerId,
       category,
       direction,
-      sourceId,
+      billScheduleId,
       propertyId,
+      leaseId,
+      loanId,
+      policyId,
+      investmentId,
       dueDate,
       amount,
-      status: "DUE",
-    },
-  });
-
-  await db.financialEvent.create({
-    data: {
-      ownerId,
-      type: direction,
-      source: category,
-      sourceId: bill.id,
-      amount,
-      dueDate,
       status: "DUE",
       description,
     },
   });
-
-  return bill;
 }
 
 /**
- * Marks a bill paid and syncs its `FinancialEvent` to match. Called from
- * the bill's own edit page, where `paidOn` is a required date input — the
- * bill was actually paid on that date, not necessarily today. Idempotent:
- * marking an already-PAID bill paid again just re-applies the same update.
+ * Marks a bill paid. Called from the bill's own edit page, where `paidOn`
+ * is a required date input — the bill was actually paid on that date, not
+ * necessarily today. Idempotent: marking an already-PAID bill paid again
+ * just re-applies the same update.
  */
 export async function markBillPaid(billId: string, formData: FormData) {
   const session = await getSession();
@@ -111,13 +111,8 @@ export async function markBillPaid(billId: string, formData: FormData) {
     data: { status: "PAID", paidDate, paidAmount: bill.amount },
   });
 
-  await db.financialEvent.updateMany({
-    where: { source: bill.category, sourceId: billId },
-    data: { status: "PAID" },
-  });
-
   // Only property-scoped categories (utility bills, rent) have a bills list
-  // page to bounce back to today — other categories just get their ledger
+  // page to bounce back to today — other categories just get their status
   // synced above until their own page exists.
   if (bill.propertyId) {
     revalidatePath(`/properties/${bill.propertyId}/utilities`);

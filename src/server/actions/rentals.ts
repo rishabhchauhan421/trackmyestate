@@ -3,7 +3,7 @@
 /**
  * Server Actions for a property's rental units (`Room` rows) — the
  * subdivisions of a property that get rented out individually, distinct
- * from a whole-property `Tenant` lease (see `~/server/actions/tenants`).
+ * from a whole-property `Lease` (see `~/server/actions/leases`).
  * A self-occupied property can't have rental units at all, so every
  * mutation here re-checks that itself, the same as ownership — the "Add
  * rental unit" UI is disabled for that case, but a direct form submission

@@ -11,7 +11,7 @@ import {
   getTimelineEvents,
   type TimelineFilter,
   type TimelineRange,
-} from "~/server/queries";
+} from "~/server/queries/timeline";
 
 const RANGE_TABS: { value: TimelineRange; label: string }[] = [
   { value: "month", label: "Month" },
@@ -25,14 +25,15 @@ const FILTER_TABS: { value: TimelineFilter; label: string }[] = [
   { value: "outflow", label: "Outflows" },
 ];
 
-const SOURCE_LABELS: Record<string, string> = {
+const CATEGORY_LABELS: Record<string, string> = {
   RENT: "Rent",
-  BILL: "Bill",
+  UTILITY_BILL: "Bill",
   PREMIUM: "Premium",
   PAYOUT: "Payout",
   EMI: "EMI",
-  RETURN: "Return",
+  INVESTMENT_RETURN: "Return",
   CLAIM_SETTLEMENT: "Claim settlement",
+  CUSTOM: "Custom",
 };
 
 function isRange(value: string | undefined): value is TimelineRange {
@@ -63,7 +64,7 @@ export default async function TimelinePage({
     : "all";
 
   const session = await getSession();
-  if (!session) redirect("/");
+  if (!session) redirect("/login");
   const events = await getTimelineEvents(session.user.id, range, filter);
 
   return (
@@ -96,7 +97,7 @@ export default async function TimelinePage({
               href={`/timeline?range=${range}&filter=${tab.value}`}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
                 tab.value === filter
-                  ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300"
                   : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
               }`}
             >
@@ -123,22 +124,22 @@ export default async function TimelinePage({
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
-                    {event.description ?? SOURCE_LABELS[event.source]}
+                    {event.description ?? CATEGORY_LABELS[event.category]}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                    {formatDate(event.dueDate)} · {SOURCE_LABELS[event.source]}
+                    {formatDate(event.dueDate)} · {CATEGORY_LABELS[event.category]}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
                   <StatusBadge status={event.status} />
                   <span
                     className={`w-28 text-right text-sm font-semibold ${
-                      event.type === "INFLOW"
+                      event.direction === "INFLOW"
                         ? "text-emerald-600 dark:text-emerald-400"
                         : "text-slate-800 dark:text-slate-100"
                     }`}
                   >
-                    {event.type === "INFLOW" ? "+" : "-"}
+                    {event.direction === "INFLOW" ? "+" : "-"}
                     {formatINR(event.amount)}
                   </span>
                 </div>
