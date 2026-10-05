@@ -20,9 +20,7 @@ export default async function LoansPage() {
       <PageHeader
         title="Loans"
         description="Home loans, personal loans and more — EMI, amortization and outstanding balance."
-        action={
-          <Button href="/loans/new">Add loan</Button>
-        }
+        action={<Button href="/loans/new">Add loan</Button>}
       />
 
       {loans.length === 0 ? (
@@ -48,8 +46,8 @@ export default async function LoansPage() {
                       {loan.lender}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                      {LOAN_TYPE_LABELS[loan.type]} ·{" "}
-                      {loan.interestRatePercent}% p.a.
+                      {LOAN_TYPE_LABELS[loan.type]} · {loan.interestRatePercent}
+                      % p.a.
                       {loan.linkedPropertyName && (
                         <> · linked to {loan.linkedPropertyName}</>
                       )}

@@ -58,7 +58,9 @@ export default async function AdminUsersPage() {
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
                     {formatDate(user.createdAt)}
                   </p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">joined</p>
+                  <p className="text-xs text-slate-400 dark:text-slate-500">
+                    joined
+                  </p>
                 </div>
               </div>
             </li>

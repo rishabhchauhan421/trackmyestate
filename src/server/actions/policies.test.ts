@@ -20,12 +20,12 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock("next/navigation") as {
+const { redirect } = jest.requireMock<{
   redirect: jest.Mock;
-};
-const { revalidatePath } = jest.requireMock("next/cache") as {
+}>("next/navigation");
+const { revalidatePath } = jest.requireMock<{
   revalidatePath: jest.Mock;
-};
+}>("next/cache");
 
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
@@ -63,9 +63,7 @@ describe("createPolicy", () => {
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 
-    await expect(createPolicy(buildPolicyForm())).rejects.toThrow(
-      "REDIRECT:/",
-    );
+    await expect(createPolicy(buildPolicyForm())).rejects.toThrow("REDIRECT:/");
   });
 
   it("rejects a missing insurer", async () => {
@@ -106,9 +104,7 @@ describe("createPolicy", () => {
   it("splits the comma-separated nominees field into a trimmed list", async () => {
     dbMock.policy.create.mockResolvedValue({ id: "policy-1" } as never);
 
-    await expect(createPolicy(buildPolicyForm())).rejects.toThrow(
-      "REDIRECT:",
-    );
+    await expect(createPolicy(buildPolicyForm())).rejects.toThrow("REDIRECT:");
 
     expect(dbMock.policy.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
@@ -170,17 +166,17 @@ describe("updatePolicy", () => {
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 
-    await expect(
-      updatePolicy("policy-1", buildPolicyForm()),
-    ).rejects.toThrow("REDIRECT:/");
+    await expect(updatePolicy("policy-1", buildPolicyForm())).rejects.toThrow(
+      "REDIRECT:/",
+    );
   });
 
   it("throws when the policy doesn't belong to this owner", async () => {
     dbMock.policy.findFirst.mockResolvedValue(null);
 
-    await expect(
-      updatePolicy("policy-1", buildPolicyForm()),
-    ).rejects.toThrow("Policy not found");
+    await expect(updatePolicy("policy-1", buildPolicyForm())).rejects.toThrow(
+      "Policy not found",
+    );
     expect(dbMock.policy.update).not.toHaveBeenCalled();
   });
 
@@ -219,9 +215,7 @@ describe("deletePolicy", () => {
   it("throws when the policy doesn't belong to this owner", async () => {
     dbMock.policy.findFirst.mockResolvedValue(null);
 
-    await expect(deletePolicy("policy-1")).rejects.toThrow(
-      "Policy not found",
-    );
+    await expect(deletePolicy("policy-1")).rejects.toThrow("Policy not found");
     expect(dbMock.policy.update).not.toHaveBeenCalled();
   });
 

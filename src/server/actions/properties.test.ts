@@ -20,12 +20,12 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock("next/navigation") as {
+const { redirect } = jest.requireMock<{
   redirect: jest.Mock;
-};
-const { revalidatePath } = jest.requireMock("next/cache") as {
+}>("next/navigation");
+const { revalidatePath } = jest.requireMock<{
   revalidatePath: jest.Mock;
-};
+}>("next/cache");
 
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
@@ -162,17 +162,17 @@ describe("updateProperty", () => {
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 
-    await expect(
-      updateProperty("prop-1", buildPropertyForm()),
-    ).rejects.toThrow("REDIRECT:/");
+    await expect(updateProperty("prop-1", buildPropertyForm())).rejects.toThrow(
+      "REDIRECT:/",
+    );
   });
 
   it("throws when the property doesn't belong to this owner", async () => {
     dbMock.property.findFirst.mockResolvedValue(null);
 
-    await expect(
-      updateProperty("prop-1", buildPropertyForm()),
-    ).rejects.toThrow("Property not found");
+    await expect(updateProperty("prop-1", buildPropertyForm())).rejects.toThrow(
+      "Property not found",
+    );
     expect(dbMock.property.update).not.toHaveBeenCalled();
   });
 

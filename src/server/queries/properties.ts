@@ -1,7 +1,10 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import { NOT_SOFT_DELETED, OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
+import {
+  NOT_SOFT_DELETED,
+  OPEN_PAYMENT_STATUSES,
+} from "~/server/queries/shared";
 
 /**
  * Properties for the Properties list page, each with its active lease (if

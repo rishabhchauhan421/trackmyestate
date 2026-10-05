@@ -14,11 +14,7 @@ import type { NotificationJobWithMetadata } from "./types";
 export const MAX_SEND_ATTEMPTS = 3;
 
 export type DispatchOutcome =
-  | "SENT"
-  | "SKIPPED"
-  | "RETRY_SCHEDULED"
-  | "FAILED"
-  | "ALREADY_CLAIMED";
+  "SENT" | "SKIPPED" | "RETRY_SCHEDULED" | "FAILED" | "ALREADY_CLAIMED";
 
 /**
  * Claims `job` (SCHEDULED -> PROCESSING, so two overlapping cron runs can't

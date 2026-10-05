@@ -8,11 +8,22 @@ import React, { forwardRef, useId } from "react";
 import { Link } from "./link";
 import { TouchTarget } from "./touch-target";
 
-export function Navbar({ className, ...props }: React.ComponentPropsWithoutRef<"nav">) {
-  return <nav {...props} className={clsx(className, "flex flex-1 items-center gap-4 py-2.5")} />;
+export function Navbar({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"nav">) {
+  return (
+    <nav
+      {...props}
+      className={clsx(className, "flex flex-1 items-center gap-4 py-2.5")}
+    />
+  );
 }
 
-export function NavbarSection({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
+export function NavbarSection({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
   const id = useId();
 
   return (
@@ -22,8 +33,17 @@ export function NavbarSection({ className, ...props }: React.ComponentPropsWitho
   );
 }
 
-export function NavbarSpacer({ className, ...props }: React.ComponentPropsWithoutRef<"div">) {
-  return <div aria-hidden="true" {...props} className={clsx(className, "-ml-4 flex-1")} />;
+export function NavbarSpacer({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<"div">) {
+  return (
+    <div
+      aria-hidden="true"
+      {...props}
+      className={clsx(className, "-ml-4 flex-1")}
+    />
+  );
 }
 
 export const NavbarItem = forwardRef(function NavbarItem(
@@ -34,7 +54,10 @@ export const NavbarItem = forwardRef(function NavbarItem(
     ...props
   }: { current?: boolean; className?: string; children: React.ReactNode } & (
     | ({ href?: never } & Omit<Headless.ButtonProps, "as" | "className">)
-    | ({ href: string } & Omit<React.ComponentPropsWithoutRef<typeof Link>, "className">)
+    | ({ href: string } & Omit<
+        React.ComponentPropsWithoutRef<typeof Link>,
+        "className"
+      >)
   ),
   ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>,
 ) {

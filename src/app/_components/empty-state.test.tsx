@@ -25,7 +25,12 @@ describe("EmptyState", () => {
 
   it("renders empty strings without crashing", () => {
     const { container } = render(
-      <EmptyState Icon={PropertiesIcon} title="" description="" actionLabel="" />,
+      <EmptyState
+        Icon={PropertiesIcon}
+        title=""
+        description=""
+        actionLabel=""
+      />,
     );
     expect(container.querySelector("h3")?.textContent).toBe("");
     expect(container.querySelector("button")).toBeDisabled();

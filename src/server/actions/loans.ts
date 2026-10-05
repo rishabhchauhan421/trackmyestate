@@ -24,7 +24,18 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type { LoanType } from "../../../generated/prisma";
+import { z } from "zod";
+
+import { LoanType } from "../../../generated/prisma";
+import {
+  date,
+  enumValue,
+  number,
+  optionalNumber,
+  optionalText,
+  parseFormData,
+  text,
+} from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 
@@ -40,61 +51,36 @@ async function requireOwnedLoan(loanId: string, ownerId: string) {
   return loan;
 }
 
-/** Parses and validates the fields shared by create and update, from the Loan form. */
-function parseLoanFields(formData: FormData) {
-  const lender = String(formData.get("lender") ?? "").trim();
-  const type = String(formData.get("type")) as LoanType;
-  const principal = Number(formData.get("principal"));
-  const interestRatePercent = Number(formData.get("interestRatePercent"));
-  const tenureMonths = Number(formData.get("tenureMonths"));
-  const emiAmount = Number(formData.get("emiAmount"));
-  const emiDueDay = Number(formData.get("emiDueDay"));
-  const startDate = new Date(String(formData.get("startDate")));
-  const outstandingBalanceRaw = String(
-    formData.get("outstandingBalance") ?? "",
-  ).trim();
-  const outstandingBalance = outstandingBalanceRaw
-    ? Number(outstandingBalanceRaw)
-    : principal;
-  const linkedPropertyId =
-    String(formData.get("linkedPropertyId") ?? "").trim() || null;
-
-  if (!lender) throw new Error("Enter a lender");
-  if (!Number.isFinite(principal) || principal <= 0) {
-    throw new Error("Enter a valid principal amount");
-  }
-  if (!Number.isFinite(interestRatePercent) || interestRatePercent < 0) {
-    throw new Error("Enter a valid interest rate");
-  }
-  if (!Number.isInteger(tenureMonths) || tenureMonths <= 0) {
-    throw new Error("Enter a valid tenure in months");
-  }
-  if (!Number.isFinite(emiAmount) || emiAmount <= 0) {
-    throw new Error("Enter a valid EMI amount");
-  }
-  if (!Number.isInteger(emiDueDay) || emiDueDay < 1 || emiDueDay > 31) {
-    throw new Error("Enter a valid EMI due day (1-31)");
-  }
-  if (Number.isNaN(startDate.getTime())) {
-    throw new Error("Enter a valid start date");
-  }
-  if (!Number.isFinite(outstandingBalance) || outstandingBalance < 0) {
-    throw new Error("Enter a valid outstanding balance");
-  }
-
-  return {
-    lender,
-    type,
-    principal,
-    interestRatePercent,
-    tenureMonths,
-    emiAmount,
-    emiDueDay,
-    startDate,
-    outstandingBalance,
-    linkedPropertyId,
-  };
-}
+/**
+ * The fields shared by create and update, from the Loan form. A blank
+ * outstanding balance defaults to the full principal (a brand-new loan).
+ */
+const loanFieldsSchema = z
+  .object({
+    lender: text("Enter a lender"),
+    type: enumValue(LoanType, "Choose a loan type"),
+    principal: number("Enter a valid principal amount", { positive: true }),
+    interestRatePercent: number("Enter a valid interest rate", { min: 0 }),
+    tenureMonths: number("Enter a valid tenure in months", {
+      int: true,
+      positive: true,
+    }),
+    emiAmount: number("Enter a valid EMI amount", { positive: true }),
+    emiDueDay: number("Enter a valid EMI due day (1-31)", {
+      int: true,
+      min: 1,
+      max: 31,
+    }),
+    startDate: date("Enter a valid start date"),
+    outstandingBalance: optionalNumber("Enter a valid outstanding balance", {
+      min: 0,
+    }),
+    linkedPropertyId: optionalText(),
+  })
+  .transform((fields) => ({
+    ...fields,
+    outstandingBalance: fields.outstandingBalance ?? fields.principal,
+  }));
 
 /**
  * Confirms a `linkedPropertyId` (if given) actually belongs to the owner,
@@ -116,7 +102,7 @@ async function requireOwnedLinkedProperty(
 /** Creates a new `Loan` and its EMI `BillSchedule` for the signed-in owner. */
 export async function createLoan(formData: FormData) {
   const session = await requireSession();
-  const fields = parseLoanFields(formData);
+  const fields = parseFormData(loanFieldsSchema, formData);
   const linkedPropertyId = await requireOwnedLinkedProperty(
     fields.linkedPropertyId,
     session.user.id,
@@ -156,7 +142,7 @@ export async function createLoan(formData: FormData) {
 export async function updateLoan(loanId: string, formData: FormData) {
   const session = await requireSession();
   const existingLoan = await requireOwnedLoan(loanId, session.user.id);
-  const fields = parseLoanFields(formData);
+  const fields = parseFormData(loanFieldsSchema, formData);
   const linkedPropertyId = await requireOwnedLinkedProperty(
     fields.linkedPropertyId,
     session.user.id,
@@ -219,6 +205,7 @@ export async function deleteLoan(loanId: string) {
   });
 
   revalidatePath("/loans");
-  if (loan.linkedPropertyId) revalidatePath(`/properties/${loan.linkedPropertyId}`);
+  if (loan.linkedPropertyId)
+    revalidatePath(`/properties/${loan.linkedPropertyId}`);
   redirect("/loans");
 }

@@ -25,12 +25,12 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock("next/navigation") as {
+const { redirect } = jest.requireMock<{
   redirect: jest.Mock;
-};
-const { revalidatePath } = jest.requireMock("next/cache") as {
+}>("next/navigation");
+const { revalidatePath } = jest.requireMock<{
   revalidatePath: jest.Mock;
-};
+}>("next/cache");
 
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 const PROPERTY = { id: "prop-1", ownerId: "user-1", name: "Test Flat" };
@@ -284,9 +284,7 @@ describe("deactivateUtility", () => {
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 
-    await expect(deactivateUtility("utility-1")).rejects.toThrow(
-      "REDIRECT:/",
-    );
+    await expect(deactivateUtility("utility-1")).rejects.toThrow("REDIRECT:/");
   });
 
   it("throws when the utility doesn't belong to this owner", async () => {
@@ -334,9 +332,9 @@ describe("addUtilityRecipient", () => {
     formData.set("name", "Spouse");
     formData.set("email", "spouse@example.com");
 
-    await expect(
-      addUtilityRecipient("utility-1", formData),
-    ).rejects.toThrow("Utility not found");
+    await expect(addUtilityRecipient("utility-1", formData)).rejects.toThrow(
+      "Utility not found",
+    );
     expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
@@ -355,9 +353,9 @@ describe("addUtilityRecipient", () => {
     const badEmail = new FormData();
     badEmail.set("name", "Spouse");
     badEmail.set("email", "not-an-email");
-    await expect(
-      addUtilityRecipient("utility-1", badEmail),
-    ).rejects.toThrow("Enter a valid email");
+    await expect(addUtilityRecipient("utility-1", badEmail)).rejects.toThrow(
+      "Enter a valid email",
+    );
 
     expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
@@ -427,9 +425,9 @@ describe("addUtilityRecipient", () => {
     formData.set("name", "   ");
     formData.set("email", "spouse@example.com");
 
-    await expect(
-      addUtilityRecipient("utility-1", formData),
-    ).rejects.toThrow("Enter a name");
+    await expect(addUtilityRecipient("utility-1", formData)).rejects.toThrow(
+      "Enter a name",
+    );
     expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
@@ -464,7 +462,7 @@ describe("addUtilityRecipient", () => {
 
   // Documents the current (shallow) validation: any string containing "@"
   // passes, even one that isn't a real email address.
-  it("accepts any string containing '@', not just well-formed emails", async () => {
+  it("rejects a malformed email even if it contains '@'", async () => {
     dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
@@ -474,18 +472,10 @@ describe("addUtilityRecipient", () => {
     formData.set("name", "Spouse");
     formData.set("email", "not@@really-an-email");
 
-    await addUtilityRecipient("utility-1", formData);
-
-    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
-      where: { id: "utility-1" },
-      data: {
-        recipients: {
-          push: expect.objectContaining({
-            email: "not@@really-an-email",
-          }) as unknown,
-        },
-      },
-    });
+    await expect(addUtilityRecipient("utility-1", formData)).rejects.toThrow(
+      "Enter a valid email",
+    );
+    expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 });
 

@@ -181,8 +181,8 @@ export default async function PropertyUtilitiesPage({
             </h2>
             {bills.length === 0 ? (
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                No bills generated yet — they appear here automatically on
-                the date of each cycle&apos;s first reminder.
+                No bills generated yet — they appear here automatically on the
+                date of each cycle&apos;s first reminder.
               </p>
             ) : (
               <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">

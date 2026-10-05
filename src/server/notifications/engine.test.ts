@@ -90,9 +90,7 @@ describe("dispatchNotificationJob", () => {
       reason: "Temporary provider outage",
     });
 
-    const outcome = await dispatchNotificationJob(
-      buildJob({ retryCount: 0 }),
-    );
+    const outcome = await dispatchNotificationJob(buildJob({ retryCount: 0 }));
 
     expect(outcome).toBe("RETRY_SCHEDULED");
     expect(dbMock.notificationJob.update).toHaveBeenCalledWith({
@@ -132,9 +130,7 @@ describe("dispatchNotificationJob", () => {
       reason: "Invalid recipient address",
     });
 
-    const outcome = await dispatchNotificationJob(
-      buildJob({ retryCount: 0 }),
-    );
+    const outcome = await dispatchNotificationJob(buildJob({ retryCount: 0 }));
 
     expect(outcome).toBe("FAILED");
   });
@@ -143,9 +139,7 @@ describe("dispatchNotificationJob", () => {
     dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
     sendEmailMock.mockRejectedValue(new Error("network blip"));
 
-    const outcome = await dispatchNotificationJob(
-      buildJob({ retryCount: 0 }),
-    );
+    const outcome = await dispatchNotificationJob(buildJob({ retryCount: 0 }));
 
     expect(outcome).toBe("RETRY_SCHEDULED");
     expect(dbMock.notificationJob.update).toHaveBeenCalledWith({

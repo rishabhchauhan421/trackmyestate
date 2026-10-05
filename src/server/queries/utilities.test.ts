@@ -97,7 +97,12 @@ describe("getUtilityBillsForProperty", () => {
       { id: "bill-1", billScheduleId: "utility-1" },
     ] as never);
     dbMock.billSchedule.findMany.mockResolvedValue([
-      { id: "utility-1", billType: "ELECTRICITY", provider: "BESCOM", active: true },
+      {
+        id: "utility-1",
+        billType: "ELECTRICITY",
+        provider: "BESCOM",
+        active: true,
+      },
     ] as never);
 
     const result = await getUtilityBillsForProperty("prop-1");
@@ -131,7 +136,12 @@ describe("getUtilityBillsForProperty", () => {
       { id: "bill-1", billScheduleId: "utility-1" },
     ] as never);
     dbMock.billSchedule.findMany.mockResolvedValue([
-      { id: "utility-1", billType: "ELECTRICITY", provider: "BESCOM", active: false },
+      {
+        id: "utility-1",
+        billType: "ELECTRICITY",
+        provider: "BESCOM",
+        active: false,
+      },
     ] as never);
 
     const result = await getUtilityBillsForProperty("prop-1");

@@ -7,7 +7,10 @@ import { toDateInputValue } from "~/lib/format";
 import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from "~/lib/labels";
 import { deletePolicy, updatePolicy } from "~/server/actions/policies";
 import { getSession } from "~/server/better-auth/server";
-import { getPolicyForOwner, hasBillsForPolicy } from "~/server/queries/policies";
+import {
+  getPolicyForOwner,
+  hasBillsForPolicy,
+} from "~/server/queries/policies";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
@@ -142,7 +145,9 @@ export default async function EditPolicyPage({
             />
           </div>
           <div>
-            <label className={labelClass}>Nominees (comma-separated, optional)</label>
+            <label className={labelClass}>
+              Nominees (comma-separated, optional)
+            </label>
             <input
               type="text"
               name="nominees"
@@ -190,7 +195,9 @@ export default async function EditPolicyPage({
             />
           </div>
           <div>
-            <label className={labelClass}>Waiting period (months, optional)</label>
+            <label className={labelClass}>
+              Waiting period (months, optional)
+            </label>
             <input
               type="number"
               name="waitingPeriodMonths"

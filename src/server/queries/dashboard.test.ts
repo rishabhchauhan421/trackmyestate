@@ -59,9 +59,7 @@ describe("getDashboardData", () => {
     dbMock.policy.aggregate.mockResolvedValue(
       aggregateResult({ sumAssured: null }),
     );
-    dbMock.bill.aggregate.mockResolvedValue(
-      aggregateResult({ amount: null }),
-    );
+    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: null }));
     dbMock.bill.findMany.mockResolvedValue([]);
 
     const result = await getDashboardData(OWNER_ID);
@@ -82,10 +80,10 @@ describe("getDashboardData", () => {
     dbMock.loan.aggregate.mockResolvedValue(
       aggregateResult({ outstandingBalance: 2_000_000 }),
     );
-    dbMock.policy.aggregate.mockResolvedValue(aggregateResult({ sumAssured: 0 }));
-    dbMock.bill.aggregate.mockResolvedValue(
-      aggregateResult({ amount: 0 }),
+    dbMock.policy.aggregate.mockResolvedValue(
+      aggregateResult({ sumAssured: 0 }),
     );
+    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
     dbMock.bill.findMany.mockResolvedValue([]);
 
     const result = await getDashboardData(OWNER_ID);
@@ -104,10 +102,10 @@ describe("getDashboardData", () => {
     dbMock.loan.aggregate.mockResolvedValue(
       aggregateResult({ outstandingBalance: 0 }),
     );
-    dbMock.policy.aggregate.mockResolvedValue(aggregateResult({ sumAssured: 0 }));
-    dbMock.bill.aggregate.mockResolvedValue(
-      aggregateResult({ amount: 0 }),
+    dbMock.policy.aggregate.mockResolvedValue(
+      aggregateResult({ sumAssured: 0 }),
     );
+    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
     dbMock.bill.findMany.mockResolvedValue([]);
 
     await getDashboardData(OWNER_ID);
@@ -132,10 +130,10 @@ describe("getDashboardData", () => {
     dbMock.loan.aggregate.mockResolvedValue(
       aggregateResult({ outstandingBalance: 0 }),
     );
-    dbMock.policy.aggregate.mockResolvedValue(aggregateResult({ sumAssured: 0 }));
-    dbMock.bill.aggregate.mockResolvedValue(
-      aggregateResult({ amount: 0 }),
+    dbMock.policy.aggregate.mockResolvedValue(
+      aggregateResult({ sumAssured: 0 }),
     );
+    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
     const items = [
       { id: "e1", status: "OVERDUE" },
       { id: "e2", status: "DUE" },
@@ -157,10 +155,10 @@ describe("getDashboardData", () => {
     dbMock.loan.aggregate.mockResolvedValue(
       aggregateResult({ outstandingBalance: 0 }),
     );
-    dbMock.policy.aggregate.mockResolvedValue(aggregateResult({ sumAssured: 0 }));
-    dbMock.bill.aggregate.mockResolvedValue(
-      aggregateResult({ amount: 0 }),
+    dbMock.policy.aggregate.mockResolvedValue(
+      aggregateResult({ sumAssured: 0 }),
     );
+    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
     dbMock.bill.findMany.mockResolvedValue([]);
 
     await getDashboardData(OWNER_ID);

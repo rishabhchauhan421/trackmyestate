@@ -2,7 +2,6 @@ import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { Button } from "~/app/_components/button";
 import {
   Dropdown,
   DropdownButton,
@@ -70,9 +69,7 @@ export default async function PropertyDetailPage({
               <ChevronDownIcon className="size-4" />
             </DropdownButton>
             <DropdownMenu anchor="bottom end">
-              <DropdownItem href={`/properties/${id}/edit`}>
-                Edit
-              </DropdownItem>
+              <DropdownItem href={`/properties/${id}/edit`}>Edit</DropdownItem>
               <DropdownItem href={`/properties/${id}/utilities`}>
                 Utilities
               </DropdownItem>
@@ -162,8 +159,8 @@ export default async function PropertyDetailPage({
         </h2>
         {bills.length === 0 ? (
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            No bills on record for this property yet — utility bills, rent
-            and EMIs from a linked loan will all show up here.
+            No bills on record for this property yet — utility bills, rent and
+            EMIs from a linked loan will all show up here.
           </p>
         ) : (
           <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">

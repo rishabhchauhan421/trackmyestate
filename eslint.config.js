@@ -1,15 +1,18 @@
-import { FlatCompat } from "@eslint/eslintrc";
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
 import tseslint from "typescript-eslint";
 
-const compat = new FlatCompat({
-  baseDirectory: import.meta.dirname,
-});
-
-export default tseslint.config(
-  {
-    ignores: [".next"],
-  },
-  ...compat.extends("next/core-web-vitals"),
+export default defineConfig([
+  ...nextVitals,
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    // Prisma client output (see `prisma/schema.prisma`).
+    "generated/**",
+  ]),
   {
     files: ["**/*.ts", "**/*.tsx"],
     extends: [
@@ -36,6 +39,16 @@ export default tseslint.config(
     },
   },
   {
+    // Jest idioms the type-aware rules misread: `expect(db.x.create)`
+    // passes a mocked method unbound, and asymmetric matchers like
+    // `expect.any(Date)` are typed `any`.
+    files: ["**/*.test.ts", "**/*.test.tsx"],
+    rules: {
+      "@typescript-eslint/unbound-method": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+    },
+  },
+  {
     linterOptions: {
       reportUnusedDisableDirectives: true,
     },
@@ -45,4 +58,4 @@ export default tseslint.config(
       },
     },
   },
-);
+]);

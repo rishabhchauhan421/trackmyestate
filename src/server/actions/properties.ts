@@ -15,11 +15,22 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type {
+import { z } from "zod";
+
+import {
   OwnershipType,
   PropertyCategory,
   PropertyType,
 } from "../../../generated/prisma";
+import {
+  enumValue,
+  optionalDate,
+  optionalEnumValue,
+  optionalNumber,
+  optionalText,
+  parseFormData,
+  text,
+} from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 import { hasDependentRecordsForProperty } from "~/server/queries/properties";
@@ -39,80 +50,36 @@ async function requireOwnedProperty(propertyId: string, ownerId: string) {
   return property;
 }
 
-/** Parses and validates the fields shared by create and update, from the Property form. */
-function parsePropertyFields(formData: FormData) {
-  const name = String(formData.get("name") ?? "").trim();
-  const type = String(formData.get("type")) as PropertyType;
-  const uniquePropertyId =
-    String(formData.get("uniquePropertyId") ?? "").trim() || null;
-  const propertyCategoryRaw = String(
-    formData.get("propertyCategory") ?? "",
-  ).trim();
-  const propertyCategory = propertyCategoryRaw
-    ? (propertyCategoryRaw as PropertyCategory)
-    : null;
-  const ownershipTypeRaw = String(formData.get("ownershipType") ?? "").trim();
-  const ownershipType = ownershipTypeRaw
-    ? (ownershipTypeRaw as OwnershipType)
-    : null;
-  const addressLine1 = String(formData.get("addressLine1") ?? "").trim();
-  const addressLine2 =
-    String(formData.get("addressLine2") ?? "").trim() || null;
-  const city = String(formData.get("city") ?? "").trim();
-  const state = String(formData.get("state") ?? "").trim();
-  const pinCode = String(formData.get("pinCode") ?? "").trim();
-  const country = String(formData.get("country") ?? "").trim() || "India";
-  const purchasePriceRaw = String(formData.get("purchasePrice") ?? "").trim();
-  const purchasePrice = purchasePriceRaw ? Number(purchasePriceRaw) : null;
-  const currentEstimatedValueRaw = String(
-    formData.get("currentEstimatedValue") ?? "",
-  ).trim();
-  const currentEstimatedValue = currentEstimatedValueRaw
-    ? Number(currentEstimatedValueRaw)
-    : null;
-  const purchaseDateRaw = String(formData.get("purchaseDate") ?? "").trim();
-  const purchaseDate = purchaseDateRaw ? new Date(purchaseDateRaw) : null;
-
-  if (!name) throw new Error("Enter a name");
-  if (!addressLine1) throw new Error("Enter the address");
-  if (!city) throw new Error("Enter the city");
-  if (!state) throw new Error("Enter the state");
-  if (!pinCode) throw new Error("Enter the PIN code");
-  if (purchasePrice != null && !Number.isFinite(purchasePrice)) {
-    throw new Error("Enter a valid purchase price");
-  }
-  if (
-    currentEstimatedValue != null &&
-    !Number.isFinite(currentEstimatedValue)
-  ) {
-    throw new Error("Enter a valid current estimated value");
-  }
-  if (purchaseDate && Number.isNaN(purchaseDate.getTime())) {
-    throw new Error("Enter a valid purchase date");
-  }
-
-  return {
-    name,
-    type,
-    uniquePropertyId,
-    propertyCategory,
-    ownershipType,
-    addressLine1,
-    addressLine2,
-    city,
-    state,
-    pinCode,
-    country,
-    purchasePrice,
-    currentEstimatedValue,
-    purchaseDate,
-  };
-}
+/** The fields shared by create and update, from the Property form. */
+const propertyFieldsSchema = z.object({
+  name: text("Enter a name"),
+  type: enumValue(PropertyType, "Choose a property type"),
+  uniquePropertyId: optionalText(),
+  propertyCategory: optionalEnumValue(
+    PropertyCategory,
+    "Choose a valid property category",
+  ),
+  ownershipType: optionalEnumValue(
+    OwnershipType,
+    "Choose a valid ownership type",
+  ),
+  addressLine1: text("Enter the address"),
+  addressLine2: optionalText(),
+  city: text("Enter the city"),
+  state: text("Enter the state"),
+  pinCode: text("Enter the PIN code"),
+  country: optionalText().transform((country) => country ?? "India"),
+  purchasePrice: optionalNumber("Enter a valid purchase price"),
+  currentEstimatedValue: optionalNumber(
+    "Enter a valid current estimated value",
+  ),
+  purchaseDate: optionalDate("Enter a valid purchase date"),
+});
 
 /** Creates a new `Property` for the signed-in owner. */
 export async function createProperty(formData: FormData) {
   const session = await requireSession();
-  const fields = parsePropertyFields(formData);
+  const fields = parseFormData(propertyFieldsSchema, formData);
 
   await db.property.create({
     data: { ownerId: session.user.id, ...fields },
@@ -126,7 +93,7 @@ export async function createProperty(formData: FormData) {
 export async function updateProperty(propertyId: string, formData: FormData) {
   const session = await requireSession();
   await requireOwnedProperty(propertyId, session.user.id);
-  const fields = parsePropertyFields(formData);
+  const fields = parseFormData(propertyFieldsSchema, formData);
 
   await db.property.update({
     where: { id: propertyId },

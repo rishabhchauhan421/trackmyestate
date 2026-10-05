@@ -20,12 +20,12 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock("next/navigation") as {
+const { redirect } = jest.requireMock<{
   redirect: jest.Mock;
-};
-const { revalidatePath } = jest.requireMock("next/cache") as {
+}>("next/navigation");
+const { revalidatePath } = jest.requireMock<{
   revalidatePath: jest.Mock;
-};
+}>("next/cache");
 
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
@@ -65,16 +65,16 @@ describe("createLoan", () => {
   });
 
   it("rejects a missing lender", async () => {
-    await expect(
-      createLoan(buildLoanForm({ lender: "   " })),
-    ).rejects.toThrow("Enter a lender");
+    await expect(createLoan(buildLoanForm({ lender: "   " }))).rejects.toThrow(
+      "Enter a lender",
+    );
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
   it("rejects a non-positive principal", async () => {
-    await expect(
-      createLoan(buildLoanForm({ principal: "0" })),
-    ).rejects.toThrow("Enter a valid principal amount");
+    await expect(createLoan(buildLoanForm({ principal: "0" }))).rejects.toThrow(
+      "Enter a valid principal amount",
+    );
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
@@ -93,9 +93,9 @@ describe("createLoan", () => {
   });
 
   it("rejects a non-positive EMI amount", async () => {
-    await expect(
-      createLoan(buildLoanForm({ emiAmount: "0" })),
-    ).rejects.toThrow("Enter a valid EMI amount");
+    await expect(createLoan(buildLoanForm({ emiAmount: "0" }))).rejects.toThrow(
+      "Enter a valid EMI amount",
+    );
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
@@ -103,16 +103,16 @@ describe("createLoan", () => {
     await expect(
       createLoan(buildLoanForm({ emiDueDay: "32" })),
     ).rejects.toThrow("Enter a valid EMI due day (1-31)");
-    await expect(
-      createLoan(buildLoanForm({ emiDueDay: "0" })),
-    ).rejects.toThrow("Enter a valid EMI due day (1-31)");
+    await expect(createLoan(buildLoanForm({ emiDueDay: "0" }))).rejects.toThrow(
+      "Enter a valid EMI due day (1-31)",
+    );
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
   it("rejects an unparseable start date", async () => {
-    await expect(
-      createLoan(buildLoanForm({ startDate: "" })),
-    ).rejects.toThrow("Enter a valid start date");
+    await expect(createLoan(buildLoanForm({ startDate: "" }))).rejects.toThrow(
+      "Enter a valid start date",
+    );
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
@@ -246,10 +246,7 @@ describe("updateLoan", () => {
     dbMock.loan.update.mockResolvedValue({ id: "loan-1" } as never);
 
     await expect(
-      updateLoan(
-        "loan-1",
-        buildLoanForm({ outstandingBalance: "4700000" }),
-      ),
+      updateLoan("loan-1", buildLoanForm({ outstandingBalance: "4700000" })),
     ).rejects.toThrow("REDIRECT:/loans");
 
     expect(dbMock.loan.update).toHaveBeenCalledWith({
@@ -271,7 +268,11 @@ describe("updateLoan", () => {
     await expect(
       updateLoan(
         "loan-1",
-        buildLoanForm({ emiAmount: "44000", emiDueDay: "10", tenureMonths: "180" }),
+        buildLoanForm({
+          emiAmount: "44000",
+          emiDueDay: "10",
+          tenureMonths: "180",
+        }),
       ),
     ).rejects.toThrow("REDIRECT:");
 

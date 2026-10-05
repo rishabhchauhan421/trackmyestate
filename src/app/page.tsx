@@ -243,9 +243,9 @@ export default async function Home() {
                 How TrackMyEstate helps
               </h2>
               <p className="mt-4 text-lg text-blue-100">
-                Every asset reduces to dated money in, money out, and the
-                dates that matter. Build that once, and it powers the
-                timeline, the dashboard and every reminder.
+                Every asset reduces to dated money in, money out, and the dates
+                that matter. Build that once, and it powers the timeline, the
+                dashboard and every reminder.
               </p>
             </div>
             <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -276,8 +276,8 @@ export default async function Home() {
                 Everything you own, one shared spine
               </h2>
               <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-                Homes, policies, investments and loans — all reduce to the
-                same dated money in, money out.
+                Homes, policies, investments and loans — all reduce to the same
+                dated money in, money out.
               </p>
             </div>
             <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
@@ -316,8 +316,8 @@ export default async function Home() {
               Get started today
             </h2>
             <p className="mt-4 text-lg text-white/90">
-              Free to use, forever. Add your first property, policy or loan
-              in minutes, and never miss a date again.
+              Free to use, forever. Add your first property, policy or loan in
+              minutes, and never miss a date again.
             </p>
             <Button
               href="/login"
@@ -353,8 +353,8 @@ export default async function Home() {
                 for every net worth.
               </h2>
               <p className="mt-4 text-lg text-slate-400">
-                No tiers, no seat limits, no card on file — the whole point
-                is that you actually keep using it.
+                No tiers, no seat limits, no card on file — the whole point is
+                that you actually keep using it.
               </p>
             </div>
 
@@ -407,7 +407,12 @@ export default async function Home() {
                     </li>
                   ))}
                 </ul>
-                <Button href="/login" pill color="white" className="mt-8 w-full">
+                <Button
+                  href="/login"
+                  pill
+                  color="white"
+                  className="mt-8 w-full"
+                >
                   Upgrade to Pro
                 </Button>
               </div>

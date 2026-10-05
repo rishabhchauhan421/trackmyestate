@@ -56,9 +56,7 @@ export function Button({
   ...props
 }: ButtonProps) {
   const variant = props.variant ?? "solid";
-  const color =
-    props.color ??
-    ((variant === "outline" ? "slate" : "blue") as SolidColor & OutlineColor);
+  const color = props.color ?? (variant === "outline" ? "slate" : "blue");
 
   const classes = [
     baseStyles,

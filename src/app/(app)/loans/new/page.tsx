@@ -131,12 +131,19 @@ export default async function NewLoanPage() {
           </div>
           <div>
             <label className={labelClass}>Start date</label>
-            <input type="date" name="startDate" required className={inputClass} />
+            <input
+              type="date"
+              name="startDate"
+              required
+              className={inputClass}
+            />
           </div>
         </div>
 
         <div>
-          <label className={labelClass}>Outstanding balance (₹, optional)</label>
+          <label className={labelClass}>
+            Outstanding balance (₹, optional)
+          </label>
           <input
             type="number"
             name="outstandingBalance"

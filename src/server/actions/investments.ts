@@ -12,7 +12,19 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type { InvestmentType } from "../../../generated/prisma";
+import { z } from "zod";
+
+import { InvestmentType } from "../../../generated/prisma";
+import {
+  date,
+  enumValue,
+  number,
+  optionalDate,
+  optionalNumber,
+  optionalText,
+  parseFormData,
+  text,
+} from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 
@@ -30,71 +42,27 @@ async function requireOwnedInvestment(investmentId: string, ownerId: string) {
   return investment;
 }
 
-/** Parses and validates the fields shared by create and update, from the Investment form. */
-function parseInvestmentFields(formData: FormData) {
-  const name = String(formData.get("name") ?? "").trim();
-  const type = String(formData.get("type")) as InvestmentType;
-  const institution = String(formData.get("institution") ?? "").trim() || null;
-  const investedDate = new Date(String(formData.get("investedDate")));
-  const capitalDeployed = Number(formData.get("capitalDeployed"));
-  const expectedReturnType =
-    String(formData.get("expectedReturnType") ?? "").trim() || null;
-  const expectedReturnDateRaw = String(
-    formData.get("expectedReturnDate") ?? "",
-  ).trim();
-  const expectedReturnDate = expectedReturnDateRaw
-    ? new Date(expectedReturnDateRaw)
-    : null;
-  const targetRoiPercentRaw = String(
-    formData.get("targetRoiPercent") ?? "",
-  ).trim();
-  const targetRoiPercent = targetRoiPercentRaw
-    ? Number(targetRoiPercentRaw)
-    : null;
-  const currentEstimatedValueRaw = String(
-    formData.get("currentEstimatedValue") ?? "",
-  ).trim();
-  const currentEstimatedValue = currentEstimatedValueRaw
-    ? Number(currentEstimatedValueRaw)
-    : null;
-
-  if (!name) throw new Error("Enter a name");
-  if (!Number.isFinite(capitalDeployed) || capitalDeployed <= 0) {
-    throw new Error("Enter a valid capital deployed amount");
-  }
-  if (Number.isNaN(investedDate.getTime())) {
-    throw new Error("Enter a valid invested date");
-  }
-  if (expectedReturnDate && Number.isNaN(expectedReturnDate.getTime())) {
-    throw new Error("Enter a valid expected return date");
-  }
-  if (targetRoiPercent != null && !Number.isFinite(targetRoiPercent)) {
-    throw new Error("Enter a valid target ROI");
-  }
-  if (
-    currentEstimatedValue != null &&
-    !Number.isFinite(currentEstimatedValue)
-  ) {
-    throw new Error("Enter a valid current estimated value");
-  }
-
-  return {
-    name,
-    type,
-    institution,
-    investedDate,
-    capitalDeployed,
-    expectedReturnType,
-    expectedReturnDate,
-    targetRoiPercent,
-    currentEstimatedValue,
-  };
-}
+/** The fields shared by create and update, from the Investment form. */
+const investmentFieldsSchema = z.object({
+  name: text("Enter a name"),
+  type: enumValue(InvestmentType, "Choose an investment type"),
+  institution: optionalText(),
+  investedDate: date("Enter a valid invested date"),
+  capitalDeployed: number("Enter a valid capital deployed amount", {
+    positive: true,
+  }),
+  expectedReturnType: optionalText(),
+  expectedReturnDate: optionalDate("Enter a valid expected return date"),
+  targetRoiPercent: optionalNumber("Enter a valid target ROI"),
+  currentEstimatedValue: optionalNumber(
+    "Enter a valid current estimated value",
+  ),
+});
 
 /** Creates a new `Investment` for the signed-in owner. */
 export async function createInvestment(formData: FormData) {
   const session = await requireSession();
-  const fields = parseInvestmentFields(formData);
+  const fields = parseFormData(investmentFieldsSchema, formData);
 
   await db.investment.create({
     data: { ownerId: session.user.id, ...fields },
@@ -111,7 +79,7 @@ export async function updateInvestment(
 ) {
   const session = await requireSession();
   await requireOwnedInvestment(investmentId, session.user.id);
-  const fields = parseInvestmentFields(formData);
+  const fields = parseFormData(investmentFieldsSchema, formData);
 
   await db.investment.update({
     where: { id: investmentId },

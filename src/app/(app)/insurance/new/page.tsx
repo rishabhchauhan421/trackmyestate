@@ -108,7 +108,9 @@ export default async function NewPolicyPage() {
         </div>
 
         <div>
-          <label className={labelClass}>Nominees (comma-separated, optional)</label>
+          <label className={labelClass}>
+            Nominees (comma-separated, optional)
+          </label>
           <input
             type="text"
             name="nominees"
@@ -152,7 +154,9 @@ export default async function NewPolicyPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>Waiting period (months, optional)</label>
+            <label className={labelClass}>
+              Waiting period (months, optional)
+            </label>
             <input
               type="number"
               name="waitingPeriodMonths"

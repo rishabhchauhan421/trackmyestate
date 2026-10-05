@@ -13,7 +13,17 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type { PolicyStatus, PolicyType } from "../../../generated/prisma";
+import { z } from "zod";
+
+import { PolicyStatus, PolicyType } from "../../../generated/prisma";
+import {
+  date,
+  enumValue,
+  optionalNumber,
+  optionalText,
+  parseFormData,
+  text,
+} from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
@@ -32,88 +42,42 @@ async function requireOwnedPolicy(policyId: string, ownerId: string) {
   return policy;
 }
 
-/** Parses the optional comma-separated "nominees" field into a string list. */
-function parseNominees(formData: FormData) {
-  const raw = String(formData.get("nominees") ?? "").trim();
-  if (!raw) return [];
-  return raw
-    .split(",")
-    .map((nominee) => nominee.trim())
-    .filter(Boolean);
-}
+/** The fields shared by create and update, from the Policy form. */
+const policyFieldsSchema = z.object({
+  type: enumValue(PolicyType, "Choose a policy type"),
+  insurer: text("Enter the insurer"),
+  policyNumber: text("Enter the policy number"),
+  holderName: text("Enter the policyholder's name"),
+  startDate: date("Enter a valid start date"),
+  // Optional comma-separated list of names.
+  nominees: optionalText().transform((raw) =>
+    (raw ?? "")
+      .split(",")
+      .map((nominee) => nominee.trim())
+      .filter(Boolean),
+  ),
+  tenureYears: optionalNumber("Enter a valid tenure in years", {
+    int: true,
+    positive: true,
+  }),
+  sumAssured: optionalNumber("Enter a valid sum assured"),
+  roomRentLimit: optionalNumber("Enter a valid room rent limit"),
+  coPayPercent: optionalNumber("Enter a valid co-pay percent"),
+  waitingPeriodMonths: optionalNumber("Enter a valid waiting period", {
+    int: true,
+    min: 0,
+  }),
+});
 
-/** Parses and validates the fields shared by create and update, from the Policy form. */
-function parsePolicyFields(formData: FormData) {
-  const type = String(formData.get("type")) as PolicyType;
-  const insurer = String(formData.get("insurer") ?? "").trim();
-  const policyNumber = String(formData.get("policyNumber") ?? "").trim();
-  const holderName = String(formData.get("holderName") ?? "").trim();
-  const startDate = new Date(String(formData.get("startDate")));
-  const nominees = parseNominees(formData);
-  const tenureYearsRaw = String(formData.get("tenureYears") ?? "").trim();
-  const tenureYears = tenureYearsRaw ? Number(tenureYearsRaw) : null;
-  const sumAssuredRaw = String(formData.get("sumAssured") ?? "").trim();
-  const sumAssured = sumAssuredRaw ? Number(sumAssuredRaw) : null;
-  const roomRentLimitRaw = String(
-    formData.get("roomRentLimit") ?? "",
-  ).trim();
-  const roomRentLimit = roomRentLimitRaw ? Number(roomRentLimitRaw) : null;
-  const coPayPercentRaw = String(formData.get("coPayPercent") ?? "").trim();
-  const coPayPercent = coPayPercentRaw ? Number(coPayPercentRaw) : null;
-  const waitingPeriodMonthsRaw = String(
-    formData.get("waitingPeriodMonths") ?? "",
-  ).trim();
-  const waitingPeriodMonths = waitingPeriodMonthsRaw
-    ? Number(waitingPeriodMonthsRaw)
-    : null;
-
-  if (!insurer) throw new Error("Enter the insurer");
-  if (!policyNumber) throw new Error("Enter the policy number");
-  if (!holderName) throw new Error("Enter the policyholder's name");
-  if (Number.isNaN(startDate.getTime())) {
-    throw new Error("Enter a valid start date");
-  }
-  if (
-    tenureYears != null &&
-    (!Number.isInteger(tenureYears) || tenureYears <= 0)
-  ) {
-    throw new Error("Enter a valid tenure in years");
-  }
-  if (sumAssured != null && !Number.isFinite(sumAssured)) {
-    throw new Error("Enter a valid sum assured");
-  }
-  if (roomRentLimit != null && !Number.isFinite(roomRentLimit)) {
-    throw new Error("Enter a valid room rent limit");
-  }
-  if (coPayPercent != null && !Number.isFinite(coPayPercent)) {
-    throw new Error("Enter a valid co-pay percent");
-  }
-  if (
-    waitingPeriodMonths != null &&
-    (!Number.isInteger(waitingPeriodMonths) || waitingPeriodMonths < 0)
-  ) {
-    throw new Error("Enter a valid waiting period");
-  }
-
-  return {
-    type,
-    insurer,
-    policyNumber,
-    holderName,
-    startDate,
-    nominees,
-    tenureYears,
-    sumAssured,
-    roomRentLimit,
-    coPayPercent,
-    waitingPeriodMonths,
-  };
-}
+/** The Policy edit form, which also sets the policy's status. */
+const policyUpdateSchema = policyFieldsSchema.extend({
+  status: enumValue(PolicyStatus, "Choose a policy status"),
+});
 
 /** Creates a new `Policy` for the signed-in owner, defaulting `status` to `ACTIVE`. */
 export async function createPolicy(formData: FormData) {
   const session = await requireSession();
-  const fields = parsePolicyFields(formData);
+  const fields = parseFormData(policyFieldsSchema, formData);
 
   await db.policy.create({
     data: { ownerId: session.user.id, ...fields },
@@ -130,12 +94,11 @@ export async function createPolicy(formData: FormData) {
 export async function updatePolicy(policyId: string, formData: FormData) {
   const session = await requireSession();
   await requireOwnedPolicy(policyId, session.user.id);
-  const fields = parsePolicyFields(formData);
-  const status = String(formData.get("status")) as PolicyStatus;
+  const fields = parseFormData(policyUpdateSchema, formData);
 
   await db.policy.update({
     where: { id: policyId },
-    data: { ...fields, status },
+    data: fields,
   });
 
   revalidatePath("/insurance");

@@ -16,7 +16,9 @@ describe("renderNotificationEmail", () => {
     expect(rendered.html).toContain("Rent due in 3 days");
     expect(rendered.html).toContain("properties/prop-1");
     expect(rendered.text).toContain("₹25,000 rent is due on 15 Sep.");
-    expect(rendered.text).toContain("https://trackmyestate.app/properties/prop-1");
+    expect(rendered.text).toContain(
+      "https://trackmyestate.app/properties/prop-1",
+    );
   });
 
   it("falls back to the site URL when the job has no actionUrl", () => {

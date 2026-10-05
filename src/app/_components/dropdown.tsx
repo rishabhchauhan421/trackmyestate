@@ -22,10 +22,7 @@ export function DropdownMenu({
   anchor = "bottom",
   className,
   ...props
-}: { className?: string } & Omit<
-  Headless.MenuItemsProps,
-  "as" | "className"
->) {
+}: { className?: string } & Omit<Headless.MenuItemsProps, "as" | "className">) {
   return (
     <Headless.MenuItems
       {...props}
@@ -80,7 +77,12 @@ export function DropdownItem({
   return typeof props.href === "string" ? (
     <Headless.MenuItem as={Link} {...props} className={classes} />
   ) : (
-    <Headless.MenuItem as="button" type="button" {...props} className={classes} />
+    <Headless.MenuItem
+      as="button"
+      type="button"
+      {...props}
+      className={classes}
+    />
   );
 }
 
@@ -89,7 +91,10 @@ export function DropdownHeader({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   return (
-    <div {...props} className={clsx(className, "col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3")} />
+    <div
+      {...props}
+      className={clsx(className, "col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3")}
+    />
   );
 }
 

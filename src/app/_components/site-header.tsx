@@ -29,7 +29,11 @@ export function SiteHeader({
   return (
     <header className="py-6">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6">
-        <Link href="/" className="flex items-center gap-2" aria-label="TrackMyEstate home">
+        <Link
+          href="/"
+          className="flex items-center gap-2"
+          aria-label="TrackMyEstate home"
+        >
           <span className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-sm font-bold text-white">
             T
           </span>
@@ -84,7 +88,7 @@ export function SiteHeader({
             >
               <MenuIcon className="h-5 w-5" />
             </summary>
-            <div className="absolute right-0 top-full z-50 mt-3 w-48 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-800 dark:bg-slate-900">
+            <div className="absolute top-full right-0 z-50 mt-3 w-48 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-800 dark:bg-slate-900">
               <nav className="flex flex-col gap-1">
                 {navItems.map((item) => (
                   <NavLink key={item.href} href={item.href}>

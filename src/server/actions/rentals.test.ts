@@ -20,12 +20,12 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock("next/navigation") as {
+const { redirect } = jest.requireMock<{
   redirect: jest.Mock;
-};
-const { revalidatePath } = jest.requireMock("next/cache") as {
+}>("next/navigation");
+const { revalidatePath } = jest.requireMock<{
   revalidatePath: jest.Mock;
-};
+}>("next/cache");
 
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 const RENTED_PROPERTY = {
@@ -66,9 +66,7 @@ describe("createRental", () => {
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 
-    await expect(createRental(buildRentalForm())).rejects.toThrow(
-      "REDIRECT:/",
-    );
+    await expect(createRental(buildRentalForm())).rejects.toThrow("REDIRECT:/");
   });
 
   it("refuses to create a rental unit for a property the user doesn't own", async () => {

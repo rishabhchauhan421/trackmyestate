@@ -98,7 +98,9 @@ export default async function NewInvestmentPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>Current estimated value (₹, optional)</label>
+            <label className={labelClass}>
+              Current estimated value (₹, optional)
+            </label>
             <input
               type="number"
               name="currentEstimatedValue"
@@ -111,7 +113,9 @@ export default async function NewInvestmentPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className={labelClass}>Expected return type (optional)</label>
+            <label className={labelClass}>
+              Expected return type (optional)
+            </label>
             <input
               type="text"
               name="expectedReturnType"
@@ -120,8 +124,14 @@ export default async function NewInvestmentPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>Expected return date (optional)</label>
-            <input type="date" name="expectedReturnDate" className={inputClass} />
+            <label className={labelClass}>
+              Expected return date (optional)
+            </label>
+            <input
+              type="date"
+              name="expectedReturnDate"
+              className={inputClass}
+            />
           </div>
         </div>
 

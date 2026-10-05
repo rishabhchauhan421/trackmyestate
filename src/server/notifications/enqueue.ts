@@ -41,9 +41,7 @@ export interface EnqueueNotificationJobArgs {
   idempotencyKey?: string;
 }
 
-export async function enqueueNotificationJob(
-  args: EnqueueNotificationJobArgs,
-) {
+export async function enqueueNotificationJob(args: EnqueueNotificationJobArgs) {
   const { idempotencyKey, metadata, ...rest } = args;
 
   const data = {

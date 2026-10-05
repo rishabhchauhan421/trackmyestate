@@ -53,7 +53,10 @@ export function SidebarLayout({
   navbar,
   sidebar,
   children,
-}: React.PropsWithChildren<{ navbar: React.ReactNode; sidebar: React.ReactNode }>) {
+}: React.PropsWithChildren<{
+  navbar: React.ReactNode;
+  sidebar: React.ReactNode;
+}>) {
   const [showSidebar, setShowSidebar] = useState(false);
 
   return (
@@ -69,7 +72,10 @@ export function SidebarLayout({
       {/* Navbar on mobile */}
       <header className="flex items-center px-4 lg:hidden">
         <div className="py-2.5">
-          <NavbarItem onClick={() => setShowSidebar(true)} aria-label="Open navigation">
+          <NavbarItem
+            onClick={() => setShowSidebar(true)}
+            aria-label="Open navigation"
+          >
             <OpenMenuIcon />
           </NavbarItem>
         </div>

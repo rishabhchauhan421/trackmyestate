@@ -2,7 +2,10 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
-import { getAllBillsForProperty, getBillsForProperty } from "~/server/queries/bills";
+import {
+  getAllBillsForProperty,
+  getBillsForProperty,
+} from "~/server/queries/bills";
 
 jest.mock("~/server/db");
 
@@ -19,7 +22,10 @@ describe("getBillsForProperty", () => {
     await getBillsForProperty("prop-1", "UTILITY_BILL");
 
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
-    expect(call?.where).toEqual({ propertyId: "prop-1", category: "UTILITY_BILL" });
+    expect(call?.where).toEqual({
+      propertyId: "prop-1",
+      category: "UTILITY_BILL",
+    });
     expect(call?.orderBy).toEqual({ dueDate: "desc" });
   });
 });

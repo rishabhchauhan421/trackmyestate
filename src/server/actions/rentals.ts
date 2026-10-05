@@ -13,8 +13,19 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { z } from "zod";
+
+import { optionalNumber, optionalText, parseFormData, text } from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+
+/** The "Add rental unit" form. */
+const rentalSchema = z.object({
+  propertyId: text("Property not found"),
+  label: text("Enter a label for this rental unit"),
+  floor: optionalText(),
+  areaSqft: optionalNumber("Enter a valid area", { positive: true }),
+});
 
 /**
  * Loads a property, throwing if it doesn't exist, isn't owned by the
@@ -36,18 +47,11 @@ async function requireRentableProperty(propertyId: string) {
 
 /** Creates a new rental unit (`Room`) for a property, from the "Add rental unit" form. */
 export async function createRental(formData: FormData) {
-  const propertyId = String(formData.get("propertyId"));
+  const { propertyId, label, floor, areaSqft } = parseFormData(
+    rentalSchema,
+    formData,
+  );
   await requireRentableProperty(propertyId);
-
-  const label = String(formData.get("label") ?? "").trim();
-  const floor = String(formData.get("floor") ?? "").trim() || null;
-  const areaSqftRaw = String(formData.get("areaSqft") ?? "").trim();
-  const areaSqft = areaSqftRaw ? Number(areaSqftRaw) : null;
-
-  if (!label) throw new Error("Enter a label for this rental unit");
-  if (areaSqft != null && (!Number.isFinite(areaSqft) || areaSqft <= 0)) {
-    throw new Error("Enter a valid area");
-  }
 
   await db.room.create({
     data: {

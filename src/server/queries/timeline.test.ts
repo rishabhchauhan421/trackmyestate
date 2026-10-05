@@ -90,18 +90,18 @@ describe("getTimelineEvents", () => {
     dbMock.bill.findMany.mockResolvedValue([]);
 
     await getTimelineEvents(OWNER_ID, "month", "inflow");
-    expect(
-      dbMock.bill.findMany.mock.calls[0]?.[0]?.where,
-    ).toMatchObject({ direction: "INFLOW" });
+    expect(dbMock.bill.findMany.mock.calls[0]?.[0]?.where).toMatchObject({
+      direction: "INFLOW",
+    });
 
     await getTimelineEvents(OWNER_ID, "month", "outflow");
-    expect(
-      dbMock.bill.findMany.mock.calls[1]?.[0]?.where,
-    ).toMatchObject({ direction: "OUTFLOW" });
+    expect(dbMock.bill.findMany.mock.calls[1]?.[0]?.where).toMatchObject({
+      direction: "OUTFLOW",
+    });
 
     await getTimelineEvents(OWNER_ID, "month", "all");
-    expect(
-      dbMock.bill.findMany.mock.calls[2]?.[0]?.where,
-    ).not.toHaveProperty("direction");
+    expect(dbMock.bill.findMany.mock.calls[2]?.[0]?.where).not.toHaveProperty(
+      "direction",
+    );
   });
 });

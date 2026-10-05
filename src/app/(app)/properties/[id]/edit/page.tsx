@@ -210,7 +210,9 @@ export default async function EditPropertyPage({
             />
           </div>
           <div>
-            <label className={labelClass}>Current estimated value (₹, optional)</label>
+            <label className={labelClass}>
+              Current estimated value (₹, optional)
+            </label>
             <input
               type="number"
               name="currentEstimatedValue"
@@ -267,7 +269,11 @@ export default async function EditPropertyPage({
             variant="outline"
             color="red"
             disabled={hasDependents}
-            title={hasDependents ? "Dependent records exist for this property" : undefined}
+            title={
+              hasDependents
+                ? "Dependent records exist for this property"
+                : undefined
+            }
           >
             Delete property
           </Button>

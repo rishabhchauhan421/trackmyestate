@@ -10,8 +10,7 @@ import { getPropertyForOwner } from "~/server/queries/properties";
 
 const inputClass =
   "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
-const labelClass =
-  "text-xs font-medium text-slate-600 dark:text-slate-300";
+const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function NewUtilityPage({
   params,
@@ -52,7 +51,12 @@ export default async function NewUtilityPage({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className={labelClass}>Type</label>
-            <select name="type" required defaultValue="ELECTRICITY" className={inputClass}>
+            <select
+              name="type"
+              required
+              defaultValue="ELECTRICITY"
+              className={inputClass}
+            >
               {Object.entries(BILL_TYPE_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>
                   {label}

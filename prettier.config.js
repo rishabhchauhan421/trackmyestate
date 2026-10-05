@@ -1,7 +1,7 @@
-/** @type {import('prettier').Options} */
-module.exports = {
-  singleQuote: true,
-  semi: false,
+/** @type {import('prettier').Config & import('prettier-plugin-tailwindcss').PluginOptions} */
+const config = {
   plugins: ["prettier-plugin-tailwindcss"],
-  tailwindStylesheet: "./src/styles/tailwind.css",
+  tailwindStylesheet: "./src/styles/globals.css",
 };
+
+export default config;

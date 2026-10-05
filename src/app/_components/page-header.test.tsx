@@ -33,7 +33,11 @@ describe("PageHeader", () => {
 
   it("renders nothing extra when action is explicitly null", () => {
     const { container } = render(
-      <PageHeader title="Properties" description="Your portfolio" action={null} />,
+      <PageHeader
+        title="Properties"
+        description="Your portfolio"
+        action={null}
+      />,
     );
     // React renders `null` as nothing, but a falsy-but-not-null action
     // (like `0` or `false`) is a classic React footgun that prints "0" to
@@ -49,12 +53,7 @@ describe("PageHeader", () => {
   });
 
   it("renders dynamic title/description text literally, not as markup", () => {
-    render(
-      <PageHeader
-        title="<b>bold</b>"
-        description="<i>italic</i>"
-      />,
-    );
+    render(<PageHeader title="<b>bold</b>" description="<i>italic</i>" />);
     expect(screen.getByText("<b>bold</b>")).toBeInTheDocument();
     expect(screen.getByText("<i>italic</i>")).toBeInTheDocument();
     expect(document.querySelector("b")).toBeNull();

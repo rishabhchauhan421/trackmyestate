@@ -2,10 +2,12 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { APIError } from "better-auth";
+import { z } from "zod";
 
 import { Button } from "~/app/_components/button";
 import { SlimLayout } from "~/app/_components/slim-layout";
 import { TextField } from "~/app/_components/text-field";
+import { email, parseFormData } from "~/lib/form";
 import { auth } from "~/server/better-auth";
 import { getSession } from "~/server/better-auth/server";
 
@@ -13,17 +15,30 @@ export const metadata: Metadata = {
   title: "Sign in",
 };
 
+const signInSchema = z.object({
+  email: email("Enter a valid email"),
+  // Not trimmed: spaces can be part of a password.
+  password: z.string({ message: "Enter your password" }).min(1, {
+    message: "Enter your password",
+  }),
+});
+
 async function signInWithEmail(formData: FormData) {
   "use server";
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
+  let credentials: z.output<typeof signInSchema>;
+  try {
+    credentials = parseFormData(signInSchema, formData);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Invalid input";
+    redirect(`/login?error=${encodeURIComponent(message)}`);
+  }
 
   try {
-    await auth.api.signInEmail({ body: { email, password } });
+    await auth.api.signInEmail({ body: credentials });
   } catch (err) {
     const message =
       err instanceof APIError
-        ? err.body?.message ?? "Invalid email or password"
+        ? (err.body?.message ?? "Invalid email or password")
         : "Invalid email or password";
     redirect(`/login?error=${encodeURIComponent(message)}`);
   }

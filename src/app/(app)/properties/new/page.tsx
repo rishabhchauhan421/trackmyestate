@@ -100,11 +100,7 @@ export default async function NewPropertyPage() {
           </div>
           <div>
             <label className={labelClass}>Ownership type (optional)</label>
-            <select
-              name="ownershipType"
-              defaultValue=""
-              className={inputClass}
-            >
+            <select name="ownershipType" defaultValue="" className={inputClass}>
               <option value="">Select ownership type</option>
               {Object.entries(OWNERSHIP_TYPE_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>
@@ -141,12 +137,7 @@ export default async function NewPropertyPage() {
           </div>
           <div>
             <label className={labelClass}>PIN code</label>
-            <input
-              type="text"
-              name="pinCode"
-              required
-              className={inputClass}
-            />
+            <input type="text" name="pinCode" required className={inputClass} />
           </div>
         </div>
 
@@ -172,7 +163,9 @@ export default async function NewPropertyPage() {
             />
           </div>
           <div>
-            <label className={labelClass}>Current estimated value (₹, optional)</label>
+            <label className={labelClass}>
+              Current estimated value (₹, optional)
+            </label>
             <input
               type="number"
               name="currentEstimatedValue"

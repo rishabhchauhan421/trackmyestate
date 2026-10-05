@@ -20,8 +20,16 @@ import type {
   EventCategory,
   FinancialEventType,
 } from "../../../generated/prisma";
+import { z } from "zod";
+
+import { date, parseFormData } from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+
+/** The "mark paid" form on a bill's edit page. */
+const markBillPaidSchema = z.object({
+  paidOn: date("Enter a valid paid date", "Enter the date the bill was paid"),
+});
 
 async function requireOwnedBill(billId: string, ownerId: string) {
   const bill = await db.bill.findFirst({ where: { id: billId, ownerId } });
@@ -99,12 +107,7 @@ export async function markBillPaid(billId: string, formData: FormData) {
 
   const bill = await requireOwnedBill(billId, session.user.id);
 
-  const paidOn = String(formData.get("paidOn") ?? "").trim();
-  if (!paidOn) throw new Error("Enter the date the bill was paid");
-  const paidDate = new Date(paidOn);
-  if (Number.isNaN(paidDate.getTime())) {
-    throw new Error("Enter a valid paid date");
-  }
+  const { paidOn: paidDate } = parseFormData(markBillPaidSchema, formData);
 
   await db.bill.update({
     where: { id: billId },

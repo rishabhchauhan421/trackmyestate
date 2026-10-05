@@ -17,7 +17,10 @@ export async function getActiveUtilitiesForProperty(propertyId: string) {
 
   // Exposed as `type` (its old field name, back when this was `Utility`),
   // so callers don't need to know about the generic `BillSchedule` shape.
-  return schedules.map((schedule) => ({ ...schedule, type: schedule.billType! }));
+  return schedules.map((schedule) => ({
+    ...schedule,
+    type: schedule.billType!,
+  }));
 }
 
 /**
@@ -33,9 +36,7 @@ export async function getActiveUtilitiesForProperty(propertyId: string) {
 export async function getUtilityBillsForProperty(propertyId: string) {
   const bills = await getBillsForProperty(propertyId, "UTILITY_BILL");
 
-  const utilityIds = [
-    ...new Set(bills.map((bill) => bill.billScheduleId!)),
-  ];
+  const utilityIds = [...new Set(bills.map((bill) => bill.billScheduleId!))];
   const utilities = utilityIds.length
     ? await db.billSchedule.findMany({
         where: { id: { in: utilityIds } },
@@ -45,7 +46,11 @@ export async function getUtilityBillsForProperty(propertyId: string) {
   const utilityById = new Map(
     utilities.map((utility) => [
       utility.id,
-      { type: utility.billType!, provider: utility.provider, active: utility.active },
+      {
+        type: utility.billType!,
+        provider: utility.provider,
+        active: utility.active,
+      },
     ]),
   );
 

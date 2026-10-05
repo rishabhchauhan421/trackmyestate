@@ -1,7 +1,10 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import { NOT_SOFT_DELETED, OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
+import {
+  NOT_SOFT_DELETED,
+  OPEN_PAYMENT_STATUSES,
+} from "~/server/queries/shared";
 
 /**
  * Policies for the Insurance page, each with its next open premium `Bill`,

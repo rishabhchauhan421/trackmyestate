@@ -41,9 +41,7 @@ describe("formatINR", () => {
 
 describe("formatDate", () => {
   it("formats a date as day, short month, year", () => {
-    expect(formatDate(new Date(Date.UTC(2026, 2, 5)))).toMatch(
-      /5 Mar 2026/,
-    );
+    expect(formatDate(new Date(Date.UTC(2026, 2, 5)))).toMatch(/5 Mar 2026/);
   });
 
   it("formats single-digit days without a leading zero", () => {
@@ -51,18 +49,12 @@ describe("formatDate", () => {
   });
 
   it("formats a leap-day date", () => {
-    expect(formatDate(new Date(Date.UTC(2028, 1, 29)))).toMatch(
-      /29 Feb 2028/,
-    );
+    expect(formatDate(new Date(Date.UTC(2028, 1, 29)))).toMatch(/29 Feb 2028/);
   });
 
   it("formats the last day of the year distinctly from the first", () => {
-    expect(formatDate(new Date(Date.UTC(2025, 11, 31)))).toMatch(
-      /31 Dec 2025/,
-    );
-    expect(formatDate(new Date(Date.UTC(2026, 0, 1)))).toMatch(
-      /1 Jan 2026/,
-    );
+    expect(formatDate(new Date(Date.UTC(2025, 11, 31)))).toMatch(/31 Dec 2025/);
+    expect(formatDate(new Date(Date.UTC(2026, 0, 1)))).toMatch(/1 Jan 2026/);
   });
 
   it("throws on an invalid Date rather than rendering garbage", () => {

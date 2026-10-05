@@ -52,10 +52,6 @@ and email/password both enabled.
      add it yourself, or startup fails.
    - `BETTER_AUTH_GOOGLE_CLIENT_ID` / `BETTER_AUTH_GOOGLE_CLIENT_SECRET` — from a
      Google Cloud OAuth client. Needed for the "Sign in with Google" button.
-   - `BETTER_AUTH_GITHUB_CLIENT_ID` / `BETTER_AUTH_GITHUB_CLIENT_SECRET` — required
-     by the env schema but **not wired to any provider** in
-     `src/server/better-auth/config.ts` (no GitHub login exists). Any non-empty
-     placeholder value works.
 3. Push the schema (MongoDB has no migrations — `db push` syncs indexes/collections
    directly):
    ```bash

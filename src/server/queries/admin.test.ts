@@ -146,7 +146,9 @@ describe("listUsers", () => {
     expect(dbMock.user.findMany).toHaveBeenCalledWith({
       orderBy: { createdAt: "desc" },
       include: {
-        _count: { select: { properties: true, investments: true, loans: true } },
+        _count: {
+          select: { properties: true, investments: true, loans: true },
+        },
       },
     });
   });

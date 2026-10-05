@@ -1,7 +1,10 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import { NOT_SOFT_DELETED, OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
+import {
+  NOT_SOFT_DELETED,
+  OPEN_PAYMENT_STATUSES,
+} from "~/server/queries/shared";
 
 /**
  * Loans for the Loans page, each with its next open EMI `Bill`, if any.

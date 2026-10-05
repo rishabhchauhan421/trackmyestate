@@ -30,7 +30,7 @@ export default async function EditLeasePage({
   }
 
   const lease = await getLeaseForOwner(leaseId, session.user.id);
-  if (!lease || lease.propertyId !== id) {
+  if (lease?.propertyId !== id) {
     notFound();
   }
 
@@ -155,7 +155,10 @@ export default async function EditLeasePage({
               : "This lease has already ended."}
           </p>
         </div>
-        <form action={endLease.bind(null, lease.id)} data-gtm-event="lease_ended">
+        <form
+          action={endLease.bind(null, lease.id)}
+          data-gtm-event="lease_ended"
+        >
           <Button
             type="submit"
             variant="outline"
@@ -179,7 +182,10 @@ export default async function EditLeasePage({
               : "This lease has bills on record, so it can't be deleted — end the lease instead."}
           </p>
         </div>
-        <form action={deleteLease.bind(null, lease.id)} data-gtm-event="lease_deleted">
+        <form
+          action={deleteLease.bind(null, lease.id)}
+          data-gtm-event="lease_deleted"
+        >
           <Button
             type="submit"
             variant="outline"

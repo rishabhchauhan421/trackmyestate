@@ -156,7 +156,7 @@ async function seedAnanyaPortfolio(ownerId: string) {
   // Rent history: a few paid months, current month due, and one overdue.
   // Rent is a `Bill` (category RENT, an inflow) linked to the Lease it was
   // collected from.
-  const rentBills = await Promise.all(
+  await Promise.all(
     [-2, -1, 0].map((offset) =>
       db.bill.create({
         data: {
@@ -838,7 +838,7 @@ async function seedVikramPortfolio(ownerId: string) {
       ownerId,
       category: "INVESTMENT_RETURN",
       direction: "INFLOW",
-      investmentId: fd!.id,
+      investmentId: fd.id,
       dueDate: daysFromNow(400),
       amount: 75_000,
       label: "Maturity payout (expected)",

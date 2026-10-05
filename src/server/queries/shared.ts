@@ -2,7 +2,11 @@
 import "server-only";
 
 /** Payment/bill statuses that still represent money owed (not yet settled). */
-export const OPEN_PAYMENT_STATUSES = ["DUE", "OVERDUE", "PARTIALLY_PAID"] as const;
+export const OPEN_PAYMENT_STATUSES = [
+  "DUE",
+  "OVERDUE",
+  "PARTIALLY_PAID",
+] as const;
 
 // Records created before `deletedAt` existed on a model (or created without
 // explicitly setting it) simply lack the key in MongoDB rather than storing

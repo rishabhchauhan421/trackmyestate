@@ -18,13 +18,55 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type {
+import { z } from "zod";
+
+import {
   BillingType,
   BillRecurrence,
   BillType,
 } from "../../../generated/prisma";
+import {
+  checkbox,
+  date,
+  email,
+  enumValue,
+  number,
+  optionalEnumValue,
+  optionalNumber,
+  optionalText,
+  parseFormData,
+  text,
+} from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+
+/** The "Add utility" form. */
+const utilitySchema = z.object({
+  propertyId: text("Property not found"),
+  type: enumValue(BillType, "Choose a utility type"),
+  provider: optionalText(),
+  accountNumber: optionalText(),
+  billingType: optionalEnumValue(
+    BillingType,
+    "Choose a billing type",
+  ).transform((billingType) => billingType ?? BillingType.VARIABLE),
+  recurrence: enumValue(BillRecurrence, "Choose how often the bill recurs"),
+  defaultAmount: number("Enter a valid amount", { positive: true }),
+  firstDueDate: date("Enter a valid first due date"),
+  reminderLeadDays: optionalNumber("Enter a valid reminder lead time", {
+    int: true,
+    min: 0,
+  }).transform((days) => days ?? 7),
+});
+
+/** The "Add recipient" form on a utility. */
+const utilityRecipientSchema = z.object({
+  name: text("Enter a name"),
+  email: email("Enter a valid email"),
+  phone: optionalText(),
+  notifyOnDue: checkbox(),
+  notifyOnPaid: checkbox(),
+});
 
 /**
  * Loads a property, throwing if it doesn't exist or isn't owned by the
@@ -58,27 +100,18 @@ async function requireOwnedUtility(utilityId: string, ownerId: string) {
  * `deactivateUtility`.
  */
 export async function createUtility(formData: FormData) {
-  const propertyId = String(formData.get("propertyId"));
-  const { session, property } = await requireOwnedProperty(propertyId);
-
-  const billType = String(formData.get("type")) as BillType;
-  const provider = String(formData.get("provider") ?? "").trim() || null;
-  const accountNumber =
-    String(formData.get("accountNumber") ?? "").trim() || null;
-  const billingType = String(
-    formData.get("billingType") ?? "VARIABLE",
-  ) as BillingType;
-  const recurrence = String(formData.get("recurrence")) as BillRecurrence;
-  const defaultAmount = Number(formData.get("defaultAmount"));
-  const firstDueDate = new Date(String(formData.get("firstDueDate")));
-  const reminderLeadDays = Number(formData.get("reminderLeadDays") ?? 7);
-
-  if (!Number.isFinite(defaultAmount) || defaultAmount <= 0) {
-    throw new Error("Enter a valid amount");
-  }
-  if (Number.isNaN(firstDueDate.getTime())) {
-    throw new Error("Enter a valid first due date");
-  }
+  const {
+    propertyId,
+    type: billType,
+    provider,
+    accountNumber,
+    billingType,
+    recurrence,
+    defaultAmount,
+    firstDueDate,
+    reminderLeadDays,
+  } = parseFormData(utilitySchema, formData);
+  const { session } = await requireOwnedProperty(propertyId);
 
   await db.billSchedule.create({
     data: {
@@ -120,24 +153,22 @@ export async function deactivateUtility(utilityId: string) {
 }
 
 /**
- * Adds a person to notify when a utility's bill is due/paid. Email
- * validation is intentionally shallow (just requires an `@`) — this isn't a
- * verified-delivery guarantee, just a basic input check.
+ * Adds a person to notify when a utility's bill is due/paid. The email is
+ * only format-checked — this isn't a verified-delivery guarantee.
  */
-export async function addUtilityRecipient(utilityId: string, formData: FormData) {
+export async function addUtilityRecipient(
+  utilityId: string,
+  formData: FormData,
+) {
   const session = await getSession();
   if (!session) redirect("/");
 
   const utility = await requireOwnedUtility(utilityId, session.user.id);
 
-  const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim() || null;
-  const notifyOnDue = formData.get("notifyOnDue") === "on";
-  const notifyOnPaid = formData.get("notifyOnPaid") === "on";
-
-  if (!name) throw new Error("Enter a name");
-  if (!email.includes("@")) throw new Error("Enter a valid email");
+  const { name, email, phone, notifyOnDue, notifyOnPaid } = parseFormData(
+    utilityRecipientSchema,
+    formData,
+  );
 
   await db.billSchedule.update({
     where: { id: utility.id },

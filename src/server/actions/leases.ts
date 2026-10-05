@@ -18,6 +18,17 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { z } from "zod";
+
+import {
+  date,
+  number,
+  optionalDate,
+  optionalNumber,
+  optionalText,
+  parseFormData,
+  text,
+} from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 
@@ -53,55 +64,49 @@ async function requireOwnedLease(leaseId: string, ownerId: string) {
   return lease;
 }
 
-/**
- * Parses and validates the optional "rent due day" field, shared by create
- * and update. Display-only — day of month (1-31) rent is due; not wired to
- * any `BillSchedule` or generated `Bill`.
- */
-function parseRentDueDay(formData: FormData) {
-  const raw = String(formData.get("rentDueDay") ?? "").trim();
-  if (!raw) return null;
-  const rentDueDay = Number(raw);
-  if (!Number.isInteger(rentDueDay) || rentDueDay < 1 || rentDueDay > 31) {
-    throw new Error("Enter a valid rent due day (1-31)");
-  }
-  return rentDueDay;
-}
+/** The lease terms shared by the "Add lease" and "Change lease" forms. */
+const leaseTermsSchema = z.object({
+  roomId: optionalText(),
+  leaseEnd: optionalDate("Enter a valid lease end date"),
+  rentAmount: number("Enter a valid rent amount", { positive: true }),
+  depositAmount: number("Enter a valid deposit amount", { min: 0 }),
+  // Display-only — day of month (1-31) rent is due; not wired to any
+  // `BillSchedule` or generated `Bill`.
+  rentDueDay: optionalNumber("Enter a valid rent due day (1-31)", {
+    int: true,
+    min: 1,
+    max: 31,
+  }),
+});
+
+/** The "Add lease" form: the terms plus who the tenant is. */
+const createLeaseSchema = leaseTermsSchema.extend({
+  propertyId: text("Property not found"),
+  tenantName: text("Enter the tenant's name"),
+  tenantPhone: text("Enter the tenant's phone number"),
+  tenantEmail: optionalText(),
+  leaseStart: date("Enter a valid lease start date"),
+});
 
 /** Creates a new active `Lease` for a property, from the "Add lease" form. */
 export async function createLease(formData: FormData) {
-  const propertyId = String(formData.get("propertyId"));
+  const {
+    propertyId,
+    roomId,
+    tenantName,
+    tenantPhone,
+    tenantEmail,
+    leaseStart,
+    leaseEnd,
+    rentAmount,
+    depositAmount,
+    rentDueDay,
+  } = parseFormData(createLeaseSchema, formData);
   const { property } = await requireRentableProperty(propertyId);
 
-  const roomId = String(formData.get("roomId") ?? "").trim() || null;
   if (roomId) {
     const room = await db.room.findFirst({ where: { id: roomId, propertyId } });
     if (!room) throw new Error("Rental unit not found");
-  }
-
-  const tenantName = String(formData.get("tenantName") ?? "").trim();
-  const tenantPhone = String(formData.get("tenantPhone") ?? "").trim();
-  const tenantEmail = String(formData.get("tenantEmail") ?? "").trim() || null;
-  const leaseStart = new Date(String(formData.get("leaseStart")));
-  const leaseEndRaw = String(formData.get("leaseEnd") ?? "").trim();
-  const leaseEnd = leaseEndRaw ? new Date(leaseEndRaw) : null;
-  const rentAmount = Number(formData.get("rentAmount"));
-  const depositAmount = Number(formData.get("depositAmount"));
-  const rentDueDay = parseRentDueDay(formData);
-
-  if (!tenantName) throw new Error("Enter the tenant's name");
-  if (!tenantPhone) throw new Error("Enter the tenant's phone number");
-  if (Number.isNaN(leaseStart.getTime())) {
-    throw new Error("Enter a valid lease start date");
-  }
-  if (leaseEnd && Number.isNaN(leaseEnd.getTime())) {
-    throw new Error("Enter a valid lease end date");
-  }
-  if (!Number.isFinite(rentAmount) || rentAmount <= 0) {
-    throw new Error("Enter a valid rent amount");
-  }
-  if (!Number.isFinite(depositAmount) || depositAmount < 0) {
-    throw new Error("Enter a valid deposit amount");
   }
 
   await db.lease.create({
@@ -134,29 +139,14 @@ export async function updateLease(leaseId: string, formData: FormData) {
   const session = await getSession();
   if (!session) redirect("/");
   const lease = await requireOwnedLease(leaseId, session.user.id);
+  const { roomId, rentAmount, depositAmount, leaseEnd, rentDueDay } =
+    parseFormData(leaseTermsSchema, formData);
 
-  const roomId = String(formData.get("roomId") ?? "").trim() || null;
   if (roomId) {
     const room = await db.room.findFirst({
       where: { id: roomId, propertyId: lease.propertyId },
     });
     if (!room) throw new Error("Rental unit not found");
-  }
-
-  const rentAmount = Number(formData.get("rentAmount"));
-  const depositAmount = Number(formData.get("depositAmount"));
-  const leaseEndRaw = String(formData.get("leaseEnd") ?? "").trim();
-  const leaseEnd = leaseEndRaw ? new Date(leaseEndRaw) : null;
-  const rentDueDay = parseRentDueDay(formData);
-
-  if (!Number.isFinite(rentAmount) || rentAmount <= 0) {
-    throw new Error("Enter a valid rent amount");
-  }
-  if (!Number.isFinite(depositAmount) || depositAmount < 0) {
-    throw new Error("Enter a valid deposit amount");
-  }
-  if (leaseEnd && Number.isNaN(leaseEnd.getTime())) {
-    throw new Error("Enter a valid lease end date");
   }
 
   await db.lease.update({

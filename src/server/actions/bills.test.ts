@@ -20,12 +20,12 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock("next/navigation") as {
+const { redirect } = jest.requireMock<{
   redirect: jest.Mock;
-};
-const { revalidatePath } = jest.requireMock("next/cache") as {
+}>("next/navigation");
+const { revalidatePath } = jest.requireMock<{
   revalidatePath: jest.Mock;
-};
+}>("next/cache");
 
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
@@ -147,9 +147,9 @@ describe("markBillPaid", () => {
       amount: 1500,
     } as never);
 
-    await expect(
-      markBillPaid("bill-1", buildPaidForm(null)),
-    ).rejects.toThrow("Enter the date the bill was paid");
+    await expect(markBillPaid("bill-1", buildPaidForm(null))).rejects.toThrow(
+      "Enter the date the bill was paid",
+    );
     expect(dbMock.bill.update).not.toHaveBeenCalled();
   });
 
@@ -162,9 +162,9 @@ describe("markBillPaid", () => {
       amount: 1500,
     } as never);
 
-    await expect(
-      markBillPaid("bill-1", buildPaidForm("   ")),
-    ).rejects.toThrow("Enter the date the bill was paid");
+    await expect(markBillPaid("bill-1", buildPaidForm("   "))).rejects.toThrow(
+      "Enter the date the bill was paid",
+    );
     expect(dbMock.bill.update).not.toHaveBeenCalled();
   });
 
@@ -231,9 +231,9 @@ describe("markBillPaid", () => {
       amount: 0,
     } as never);
 
-    await expect(
-      markBillPaid("bill-1", buildPaidForm()),
-    ).rejects.toThrow("REDIRECT:");
+    await expect(markBillPaid("bill-1", buildPaidForm())).rejects.toThrow(
+      "REDIRECT:",
+    );
 
     expect(dbMock.bill.update).toHaveBeenCalledWith({
       where: { id: "bill-1" },
@@ -251,9 +251,9 @@ describe("markBillPaid", () => {
       status: "PAID",
     } as never);
 
-    await expect(
-      markBillPaid("bill-1", buildPaidForm()),
-    ).rejects.toThrow("REDIRECT:");
+    await expect(markBillPaid("bill-1", buildPaidForm())).rejects.toThrow(
+      "REDIRECT:",
+    );
 
     expect(dbMock.bill.update).toHaveBeenCalledWith({
       where: { id: "bill-1" },

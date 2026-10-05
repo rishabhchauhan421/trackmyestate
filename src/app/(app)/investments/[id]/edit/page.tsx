@@ -5,7 +5,10 @@ import { Button } from "~/app/_components/button";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
-import { deleteInvestment, updateInvestment } from "~/server/actions/investments";
+import {
+  deleteInvestment,
+  updateInvestment,
+} from "~/server/actions/investments";
 import { getSession } from "~/server/better-auth/server";
 import {
   getInvestmentForOwner,
@@ -116,7 +119,9 @@ export default async function EditInvestmentPage({
             />
           </div>
           <div>
-            <label className={labelClass}>Current estimated value (₹, optional)</label>
+            <label className={labelClass}>
+              Current estimated value (₹, optional)
+            </label>
             <input
               type="number"
               name="currentEstimatedValue"
@@ -130,7 +135,9 @@ export default async function EditInvestmentPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className={labelClass}>Expected return type (optional)</label>
+            <label className={labelClass}>
+              Expected return type (optional)
+            </label>
             <input
               type="text"
               name="expectedReturnType"
@@ -139,7 +146,9 @@ export default async function EditInvestmentPage({
             />
           </div>
           <div>
-            <label className={labelClass}>Expected return date (optional)</label>
+            <label className={labelClass}>
+              Expected return date (optional)
+            </label>
             <input
               type="date"
               name="expectedReturnDate"

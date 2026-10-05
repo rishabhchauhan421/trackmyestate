@@ -20,9 +20,7 @@ export default async function InvestmentsPage() {
       <PageHeader
         title="Investments"
         description="FDs, mutual funds, stocks, gold and more — capital deployed alongside current value."
-        action={
-          <Button href="/investments/new">Add investment</Button>
-        }
+        action={<Button href="/investments/new">Add investment</Button>}
       />
 
       {investments.length === 0 ? (
@@ -38,8 +36,7 @@ export default async function InvestmentsPage() {
           {investments.map((investment) => {
             const gain =
               investment.currentEstimatedValue != null
-                ? investment.currentEstimatedValue -
-                  investment.capitalDeployed
+                ? investment.currentEstimatedValue - investment.capitalDeployed
                 : null;
             return (
               <div
@@ -65,8 +62,8 @@ export default async function InvestmentsPage() {
                     <span
                       className={
                         gain >= 0
-                          ? " text-emerald-600 dark:text-emerald-400"
-                          : " text-red-600 dark:text-red-400"
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-red-600 dark:text-red-400"
                       }
                     >
                       {" "}

@@ -23,7 +23,7 @@ export default async function UtilityBillPage({
   if (!session) redirect("/login");
 
   const bill = await getUtilityBillForOwner(billId, session.user.id);
-  if (!bill || bill.propertyId !== id) {
+  if (bill?.propertyId !== id) {
     notFound();
   }
 

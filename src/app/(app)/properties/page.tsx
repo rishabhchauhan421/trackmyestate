@@ -109,7 +109,9 @@ export default async function PropertiesPage() {
                       <DropdownItem href={`/properties/${property.id}/edit`}>
                         Edit
                       </DropdownItem>
-                      <DropdownItem href={`/properties/${property.id}/utilities`}>
+                      <DropdownItem
+                        href={`/properties/${property.id}/utilities`}
+                      >
                         Utilities
                       </DropdownItem>
                       <DropdownItem href={`/properties/${property.id}/rentals`}>

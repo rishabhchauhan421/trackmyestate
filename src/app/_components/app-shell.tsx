@@ -81,7 +81,9 @@ function AccountMenu({
 }
 
 function DropdownHeader({ children }: { children: React.ReactNode }) {
-  return <div className="col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3">{children}</div>;
+  return (
+    <div className="col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3">{children}</div>
+  );
 }
 
 export function AppShell({
@@ -121,14 +123,20 @@ export function AppShell({
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-600 text-xs font-bold text-white">
                 T
               </span>
-              <SidebarLabel className="font-semibold">TrackMyEstate</SidebarLabel>
+              <SidebarLabel className="font-semibold">
+                TrackMyEstate
+              </SidebarLabel>
             </SidebarItem>
           </SidebarHeader>
 
           <SidebarBody>
             <SidebarSection>
               {navItems.map(({ label, href, Icon }) => (
-                <SidebarItem key={href} href={href} current={isActive(pathname, href)}>
+                <SidebarItem
+                  key={href}
+                  href={href}
+                  current={isActive(pathname, href)}
+                >
                   <Icon data-slot="icon" />
                   <SidebarLabel>{label}</SidebarLabel>
                 </SidebarItem>
@@ -144,7 +152,11 @@ export function AppShell({
                     href={href}
                     // "/admin" would otherwise also match "/admin/users" etc.
                     // under the shared prefix rule `isActive` uses elsewhere.
-                    current={href === "/admin" ? pathname === "/admin" : isActive(pathname, href)}
+                    current={
+                      href === "/admin"
+                        ? pathname === "/admin"
+                        : isActive(pathname, href)
+                    }
                   >
                     <Icon data-slot="icon" />
                     <SidebarLabel>{label}</SidebarLabel>

@@ -3,7 +3,11 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
-import { createInvestment, deleteInvestment, updateInvestment } from "./investments";
+import {
+  createInvestment,
+  deleteInvestment,
+  updateInvestment,
+} from "./investments";
 
 jest.mock("~/server/db");
 jest.mock("~/server/better-auth/server", () => ({
@@ -20,12 +24,12 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock("next/navigation") as {
+const { redirect } = jest.requireMock<{
   redirect: jest.Mock;
-};
-const { revalidatePath } = jest.requireMock("next/cache") as {
+}>("next/navigation");
+const { revalidatePath } = jest.requireMock<{
   revalidatePath: jest.Mock;
-};
+}>("next/cache");
 
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
@@ -105,9 +109,7 @@ describe("createInvestment", () => {
 
   it("rejects a non-numeric current estimated value", async () => {
     await expect(
-      createInvestment(
-        buildInvestmentForm({ currentEstimatedValue: "abc" }),
-      ),
+      createInvestment(buildInvestmentForm({ currentEstimatedValue: "abc" })),
     ).rejects.toThrow("Enter a valid current estimated value");
     expect(dbMock.investment.create).not.toHaveBeenCalled();
   });
@@ -185,10 +187,7 @@ describe("updateInvestment", () => {
     } as never);
 
     await expect(
-      updateInvestment(
-        "inv-1",
-        buildInvestmentForm({ capitalDeployed: "-5" }),
-      ),
+      updateInvestment("inv-1", buildInvestmentForm({ capitalDeployed: "-5" })),
     ).rejects.toThrow("Enter a valid capital deployed amount");
     expect(dbMock.investment.update).not.toHaveBeenCalled();
   });

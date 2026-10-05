@@ -67,7 +67,12 @@ export async function getAdminOverview() {
     (loanOutstanding._sum.outstandingBalance ?? 0);
 
   return {
-    users: { total: totalUsers, new7d: newUsers7d, new30d: newUsers30d, banned: bannedUsers },
+    users: {
+      total: totalUsers,
+      new7d: newUsers7d,
+      new30d: newUsers30d,
+      banned: bannedUsers,
+    },
     trackedValue,
     assetCounts: {
       properties: propertyCount,
@@ -78,7 +83,10 @@ export async function getAdminOverview() {
     },
     activeNotificationRules,
     notificationsByStatus: Object.fromEntries(
-      NOTIFICATION_STATUSES.map((status, i) => [status, notificationStatusCounts[i]]),
+      NOTIFICATION_STATUSES.map((status, i) => [
+        status,
+        notificationStatusCounts[i],
+      ]),
     ) as Record<NotificationStatus, number>,
   };
 }

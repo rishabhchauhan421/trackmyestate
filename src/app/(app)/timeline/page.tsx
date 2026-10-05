@@ -52,14 +52,10 @@ export default async function TimelinePage({
   const params = await searchParams;
   const rawRange = params.range;
   const rawFilter = params.filter;
-  const range = isRange(
-    typeof rawRange === "string" ? rawRange : undefined,
-  )
+  const range = isRange(typeof rawRange === "string" ? rawRange : undefined)
     ? (rawRange as TimelineRange)
     : "month";
-  const filter = isFilter(
-    typeof rawFilter === "string" ? rawFilter : undefined,
-  )
+  const filter = isFilter(typeof rawFilter === "string" ? rawFilter : undefined)
     ? (rawFilter as TimelineFilter)
     : "all";
 
@@ -127,7 +123,8 @@ export default async function TimelinePage({
                     {event.description ?? CATEGORY_LABELS[event.category]}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                    {formatDate(event.dueDate)} · {CATEGORY_LABELS[event.category]}
+                    {formatDate(event.dueDate)} ·{" "}
+                    {CATEGORY_LABELS[event.category]}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
