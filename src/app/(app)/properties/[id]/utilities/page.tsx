@@ -3,6 +3,9 @@ import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
+import { NextDue } from "~/app/_components/next-due";
+import { nextBillFor } from "~/lib/schedule";
+import { todayInTimeZone } from "~/lib/time-zone";
 import { PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
@@ -14,6 +17,7 @@ import {
   removeUtilityRecipient,
 } from "~/server/actions/utilities";
 import { getSession } from "~/server/better-auth/server";
+import { getUserTimeZone } from "~/server/queries/settings";
 import { getPropertyForOwner } from "~/server/queries/properties";
 import {
   getActiveUtilitiesForProperty,
@@ -33,10 +37,13 @@ export default async function PropertyUtilitiesPage({
     notFound();
   }
 
-  const [utilities, bills] = await Promise.all([
+  const [utilities, bills, timeZone] = await Promise.all([
     getActiveUtilitiesForProperty(id),
     getUtilityBillsForProperty(id),
+    getUserTimeZone(session.user.id),
   ]);
+  const today = todayInTimeZone(timeZone);
+  const OPEN = ["DUE", "OVERDUE", "PARTIALLY_PAID"];
 
   return (
     <>
@@ -95,6 +102,26 @@ export default async function PropertyUtilitiesPage({
                             <> · A/C {utility.accountNumber}</>
                           )}
                         </p>
+                        {(() => {
+                          const next = nextBillFor(
+                            utility,
+                            bills.filter(
+                              (bill) =>
+                                bill.billScheduleId === utility.id &&
+                                OPEN.includes(bill.status),
+                            ),
+                            today,
+                          );
+                          return next ? (
+                            <NextDue
+                              className="mt-2.5"
+                              dueDate={next.dueDate}
+                              amount={next.amount}
+                              approx={utility.billingType === "VARIABLE"}
+                              timeZone={timeZone}
+                            />
+                          ) : null;
+                        })()}
                       </div>
                       <form data-gtm-event="utility_deactivated">
                         <button

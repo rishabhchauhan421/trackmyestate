@@ -22,6 +22,7 @@ import {
   PROPERTY_TYPE_LABELS,
 } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
+import { getUserTimeZone } from "~/server/queries/settings";
 import { getAllBillsForProperty } from "~/server/queries/bills";
 import { getLeasesForProperty } from "~/server/queries/leases";
 import { getPropertyForOwner } from "~/server/queries/properties";
@@ -43,9 +44,10 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
-  const [bills, leases] = await Promise.all([
+  const [bills, leases, timeZone] = await Promise.all([
     getAllBillsForProperty(id),
     getLeasesForProperty(id),
+    getUserTimeZone(session.user.id),
   ]);
 
   const activeLeases = leases.filter((lease) => lease.active);
@@ -188,10 +190,12 @@ export default async function PropertyDetailPage({
               <span
                 className={clsx(
                   "font-semibold",
-                  daysUntil(nextOpen.dueDate) < 0 ? "text-danger" : "text-warn",
+                  daysUntil(nextOpen.dueDate, new Date(), timeZone) < 0
+                    ? "text-danger"
+                    : "text-warn",
                 )}
               >
-                Next: {formatDueIn(nextOpen.dueDate)}
+                Next: {formatDueIn(nextOpen.dueDate, new Date(), timeZone)}
               </span>
             ) : (
               "Nothing outstanding"

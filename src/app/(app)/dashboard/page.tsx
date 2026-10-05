@@ -19,6 +19,7 @@ import {
   formatShortDate,
 } from "~/lib/format";
 import { getSession } from "~/server/better-auth/server";
+import { getUserTimeZone } from "~/server/queries/settings";
 import { getDashboardData } from "~/server/queries/dashboard";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -47,10 +48,14 @@ const TONE_STYLES: Record<Tone, { chip: string; icon: string }> = {
   plain: { chip: "bg-sunken-2 text-ink-2", icon: "bg-sunken-2 text-ink-2" },
 };
 
-function toneFor(bill: { status: string; direction: string; dueDate: Date }) {
-  if (bill.status === "OVERDUE" || daysUntil(bill.dueDate) < 0) return "danger";
+function toneFor(
+  bill: { status: string; direction: string; dueDate: Date },
+  timeZone: string,
+) {
+  const days = daysUntil(bill.dueDate, new Date(), timeZone);
+  if (bill.status === "OVERDUE" || days < 0) return "danger";
   if (bill.direction === "INFLOW") return "in";
-  if (daysUntil(bill.dueDate) <= 7) return "warn";
+  if (days <= 7) return "warn";
   return "plain";
 }
 
@@ -67,6 +72,7 @@ function plural(count: number, word: string) {
 export default async function DashboardPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  const timeZone = await getUserTimeZone(session.user.id);
   const {
     netWorth,
     propertyValue,
@@ -77,11 +83,11 @@ export default async function DashboardPage() {
     expectedInflows,
     attentionItems,
     upcoming,
-  } = await getDashboardData(session.user.id);
+  } = await getDashboardData(session.user.id, timeZone);
 
   const firstName = session.user.name?.split(" ")[0];
   const overdueCount = attentionItems.filter(
-    (item) => toneFor(item) === "danger",
+    (item) => toneFor(item, timeZone) === "danger",
   ).length;
   const dueSoonCount = attentionItems.length - overdueCount;
   const summary =
@@ -164,7 +170,7 @@ export default async function DashboardPage() {
           ) : (
             <ul className="divide-y divide-line-soft">
               {attentionItems.map((item) => {
-                const tone = TONE_STYLES[toneFor(item)];
+                const tone = TONE_STYLES[toneFor(item, timeZone)];
                 const Icon =
                   item.direction === "INFLOW" ? InflowIcon : OutflowIcon;
                 return (
@@ -194,7 +200,7 @@ export default async function DashboardPage() {
                         tone.chip,
                       )}
                     >
-                      {formatDueIn(item.dueDate)}
+                      {formatDueIn(item.dueDate, new Date(), timeZone)}
                     </span>
                     <span
                       className={clsx(
@@ -293,7 +299,7 @@ export default async function DashboardPage() {
           </div>
           <ol className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
             {upcoming.map((bill) => {
-              const days = daysUntil(bill.dueDate);
+              const days = daysUntil(bill.dueDate, new Date(), timeZone);
               return (
                 <li
                   key={bill.id}

@@ -7,6 +7,7 @@ import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
 import { getSession } from "~/server/better-auth/server";
+import { getUserTimeZone } from "~/server/queries/settings";
 import {
   getTimelineEvents,
   type TimelineFilter,
@@ -61,7 +62,13 @@ export default async function TimelinePage({
 
   const session = await getSession();
   if (!session) redirect("/login");
-  const events = await getTimelineEvents(session.user.id, range, filter);
+  const timeZone = await getUserTimeZone(session.user.id);
+  const events = await getTimelineEvents(
+    session.user.id,
+    range,
+    filter,
+    timeZone,
+  );
 
   return (
     <>

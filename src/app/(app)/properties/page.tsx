@@ -9,6 +9,7 @@ import { PageHeader } from "~/app/_components/page-header";
 import { daysUntil, formatINR, formatShortDate } from "~/lib/format";
 import { PROPERTY_CATEGORY_LABELS, PROPERTY_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
+import { getUserTimeZone } from "~/server/queries/settings";
 import { getProperties } from "~/server/queries/properties";
 
 type PropertyType = keyof typeof PROPERTY_TYPE_LABELS;
@@ -33,10 +34,12 @@ export default async function PropertiesPage({
   const session = await getSession();
   if (!session) redirect("/login");
 
-  const [properties, { type }] = await Promise.all([
+  const [properties, timeZone, { type }] = await Promise.all([
     getProperties(session.user.id),
+    getUserTimeZone(session.user.id),
     searchParams,
   ]);
+  const isPast = (date: Date) => daysUntil(date, new Date(), timeZone) < 0;
   const activeType = isPropertyType(type) ? type : undefined;
   const shown = activeType
     ? properties.filter((property) => property.type === activeType)
@@ -61,7 +64,7 @@ export default async function PropertiesPage({
     (sum, p) =>
       sum +
       p.openBills
-        .filter((bill) => daysUntil(bill.dueDate) < 0)
+        .filter((bill) => isPast(bill.dueDate))
         .reduce((s, bill) => s + bill.amount, 0),
     0,
   );
@@ -148,7 +151,11 @@ export default async function PropertiesPage({
             className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
           >
             {shown.map((property) => (
-              <PropertyCard key={property.id} property={property} />
+              <PropertyCard
+                key={property.id}
+                property={property}
+                timeZone={timeZone}
+              />
             ))}
             <Link
               href="/properties/new"
@@ -197,15 +204,17 @@ function Total({
 
 function PropertyCard({
   property,
+  timeZone,
 }: {
   property: Awaited<ReturnType<typeof getProperties>>[number];
+  timeZone: string;
 }) {
   const lease = property.leases[0];
   const overdue = property.openBills.filter(
-    (bill) => daysUntil(bill.dueDate) < 0,
+    (bill) => daysUntil(bill.dueDate, new Date(), timeZone) < 0,
   );
   const nextBill = property.openBills.find(
-    (bill) => daysUntil(bill.dueDate) >= 0,
+    (bill) => daysUntil(bill.dueDate, new Date(), timeZone) >= 0,
   );
   const openTotal = property.openBills.reduce((s, b) => s + b.amount, 0);
   const gainPercent =

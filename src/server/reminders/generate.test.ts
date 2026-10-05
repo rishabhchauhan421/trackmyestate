@@ -7,7 +7,10 @@ import { BATCH_SIZE, generateReminders } from "./generate";
 
 jest.mock("~/server/db");
 jest.mock("~/env", () => ({
-  env: { NEXT_PUBLIC_SITE_URL: "https://trackmyestate.app" },
+  env: {
+    NEXT_PUBLIC_SITE_URL: "https://trackmyestate.app",
+    BETTER_AUTH_SECRET: "test-secret",
+  },
 }));
 jest.mock("~/server/notifications/enqueue", () => ({
   enqueueNotificationJob: jest.fn(),
@@ -32,7 +35,7 @@ function bill(overrides: Record<string, unknown> = {}) {
     policyId: null,
     investmentId: null,
     // Due 8 Oct in India: 3 days away — matches the utility default of -3.
-    dueDate: new Date("2026-10-07T18:30:00Z"),
+    dueDate: new Date("2026-10-08"),
     amount: 4120,
     status: "DUE",
     description: "BESCOM electricity",
@@ -42,11 +45,18 @@ function bill(overrides: Record<string, unknown> = {}) {
 
 beforeEach(() => {
   mockReset(dbMock);
-  enqueueMock.mockReset();
+  enqueueMock.mockReset().mockResolvedValue({ created: true });
   dbMock.user.findMany.mockResolvedValue([
-    { id: "user-1", email: "owner@example.com", timezone: "Asia/Kolkata" },
+    {
+      id: "user-1",
+      name: "Ananya Rao",
+      email: "owner@example.com",
+      timezone: "Asia/Kolkata",
+      reminderHour: null,
+    },
   ] as never);
   dbMock.notificationRule.findMany.mockResolvedValue([]);
+  dbMock.guest.findMany.mockResolvedValue([]);
   dbMock.billSchedule.findMany.mockResolvedValue([
     {
       id: "sched-1",
@@ -98,7 +108,7 @@ describe("generateReminders", () => {
   it("queues nothing on a day no reminder falls on", async () => {
     // Due in 5 days — not one of the utility defaults (-3, 0, +3).
     dbMock.bill.findMany.mockResolvedValueOnce([
-      bill({ dueDate: new Date("2026-10-09T18:30:00Z") }),
+      bill({ dueDate: new Date("2026-10-10") }),
     ] as never);
 
     const summary = await generateReminders(now);
@@ -129,13 +139,13 @@ describe("generateReminders", () => {
     // 20:00 UTC on 5 Oct: already 6 Oct in India, still 5 Oct in New York.
     const evening = new Date("2026-10-05T20:00:00Z");
     // Due 9 Oct in both zones: 3 days away in India, 4 in New York.
-    const dueDate = new Date("2026-10-09T12:00:00Z");
+    const dueDate = new Date("2026-10-09");
     dbMock.bill.findMany.mockResolvedValue([bill({ dueDate })] as never);
 
     await generateReminders(evening);
     expect(enqueueMock).toHaveBeenCalled();
 
-    enqueueMock.mockReset();
+    enqueueMock.mockReset().mockResolvedValue({ created: true });
     dbMock.user.findMany.mockResolvedValue([
       {
         id: "user-1",
@@ -155,7 +165,7 @@ describe("generateReminders", () => {
         description: "Rent · Whitefield",
         amount: 32000,
         // Due today in India.
-        dueDate: new Date("2026-10-04T18:30:00Z"),
+        dueDate: new Date("2026-10-05"),
       }),
     ] as never);
 
@@ -187,5 +197,124 @@ describe("generateReminders", () => {
     expect(first?.take).toBe(BATCH_SIZE);
     expect(second?.cursor).toEqual({ id: `bill-${BATCH_SIZE - 1}` });
     expect(second?.skip).toBe(1);
+  });
+});
+
+describe("generateReminders — owner preferences and guests", () => {
+  function guest(overrides: Record<string, unknown> = {}) {
+    return {
+      id: "guest-1",
+      ownerId: "user-1",
+      name: "Radha Rao",
+      email: "radha@example.com",
+      phone: null,
+      channels: ["EMAIL"],
+      categories: ["UTILITY_BILL"],
+      propertyIds: [],
+      dueDayOnly: false,
+      ...overrides,
+    };
+  }
+
+  function guestJobs() {
+    return enqueueMock.mock.calls
+      .map(([job]) => job as Record<string, unknown>)
+      .filter((job) => String(job.idempotencyKey).includes(":guest:"));
+  }
+
+  it("sends at the owner's chosen hour", async () => {
+    dbMock.user.findMany.mockResolvedValue([
+      {
+        id: "user-1",
+        name: "Ananya Rao",
+        email: "owner@example.com",
+        timezone: "Asia/Kolkata",
+        reminderHour: 18,
+      },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValueOnce([bill()] as never);
+
+    await generateReminders(now);
+
+    expect(enqueueMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        // 18:00 in India on 5 Oct.
+        scheduledFor: new Date("2026-10-05T12:30:00Z"),
+      }),
+    );
+  });
+
+  it("emails a matching guest in the owner's name, with a stop link", async () => {
+    dbMock.guest.findMany.mockResolvedValue([guest()] as never);
+    dbMock.bill.findMany.mockResolvedValueOnce([bill()] as never);
+
+    await generateReminders(now);
+
+    const [job] = guestJobs();
+    expect(job).toMatchObject({
+      recipient: "radha@example.com",
+      title: "BESCOM electricity: ₹4,120 due in 3 days",
+      idempotencyKey: "reminder:bill-1:DUE_DATE:-3:EMAIL:guest:guest-1",
+      metadata: { actionLabel: "Stop these reminders" },
+    });
+    expect(String(job?.body)).toContain("From Ananya Rao");
+    expect(
+      String((job?.metadata as { actionUrl: string }).actionUrl),
+    ).toContain("/reminders/stop?guest=guest-1");
+  });
+
+  it("only asks for guests who aren't paused or opted out", async () => {
+    dbMock.bill.findMany.mockResolvedValueOnce([bill()] as never);
+
+    await generateReminders(now);
+
+    const where = dbMock.guest.findMany.mock.calls[0]?.[0]?.where;
+    expect(JSON.stringify(where)).toContain("pausedAt");
+    expect(JSON.stringify(where)).toContain("optedOutAt");
+  });
+
+  it("skips guests for other kinds or other properties", async () => {
+    dbMock.guest.findMany.mockResolvedValue([
+      guest({ id: "g-kind", categories: ["RENT"] }),
+      guest({ id: "g-prop", propertyIds: ["other-prop"] }),
+      guest({ id: "g-ok", propertyIds: ["prop-1"] }),
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValueOnce([bill()] as never);
+
+    await generateReminders(now);
+
+    expect(guestJobs().map((job) => job.idempotencyKey)).toEqual([
+      "reminder:bill-1:DUE_DATE:-3:EMAIL:guest:g-ok",
+    ]);
+  });
+
+  it("reminds a due-day-only guest only on the due day", async () => {
+    dbMock.guest.findMany.mockResolvedValue([
+      guest({ dueDayOnly: true }),
+    ] as never);
+
+    // 3 days before: the owner is reminded, the guest isn't.
+    dbMock.bill.findMany.mockResolvedValueOnce([bill()] as never);
+    await generateReminders(now);
+    expect(guestJobs()).toHaveLength(0);
+
+    // On the due day: the guest is reminded.
+    enqueueMock.mockReset().mockResolvedValue({ created: true });
+    dbMock.bill.findMany.mockResolvedValueOnce([
+      bill({ dueDate: new Date("2026-10-05") }),
+    ] as never);
+    await generateReminders(now);
+    expect(guestJobs()).toHaveLength(1);
+  });
+
+  it("doesn't email a guest who has no email address", async () => {
+    dbMock.guest.findMany.mockResolvedValue([
+      guest({ email: null, channels: ["WHATSAPP"], phone: "+919876543210" }),
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValueOnce([bill()] as never);
+
+    await generateReminders(now);
+
+    expect(guestJobs()).toHaveLength(0);
   });
 });

@@ -3,17 +3,20 @@ import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
+import { NextDue } from "~/app/_components/next-due";
 import { LoansIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
-import { formatDate, formatINR } from "~/lib/format";
+import { formatINR } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { getSession } from "~/server/better-auth/server";
+import { getUserTimeZone } from "~/server/queries/settings";
 import { getLoans } from "~/server/queries/loans";
 
 export default async function LoansPage() {
   const session = await getSession();
   if (!session) redirect("/login");
-  const loans = await getLoans(session.user.id);
+  const timeZone = await getUserTimeZone(session.user.id);
+  const loans = await getLoans(session.user.id, timeZone);
 
   return (
     <>
@@ -60,14 +63,12 @@ export default async function LoansPage() {
                     <p className="text-xs text-muted">outstanding</p>
                   </div>
                   {nextEmi && (
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-ink-2">
-                        {formatINR(nextEmi.amount)}
-                      </p>
-                      <p className="text-xs text-muted">
-                        EMI due {formatDate(nextEmi.dueDate)}
-                      </p>
-                    </div>
+                    <NextDue
+                      label="Next EMI"
+                      dueDate={nextEmi.dueDate}
+                      amount={nextEmi.amount}
+                      timeZone={timeZone}
+                    />
                   )}
                   <Link
                     href={`/loans/${loan.id}/edit`}

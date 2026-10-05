@@ -1,11 +1,15 @@
 import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 
 import type { PrismaClient } from "../../../generated/prisma";
+import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
 import { createLoan, deleteLoan, updateLoan } from "./loans";
 
 jest.mock("~/server/db");
+jest.mock("~/server/bills/generate", () => ({
+  generateBillsForSchedule: jest.fn(),
+}));
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -31,6 +35,7 @@ const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
   revalidatePath.mockClear();
@@ -163,6 +168,14 @@ describe("createLoan", () => {
   // The EMI schedule (tenure, EMI amount, due day) lives on its own
   // `BillSchedule` row, not on `Loan` — see the model comment in
   // `prisma/schema.prisma`.
+  it("generates the new loan's first EMI bills straight away", async () => {
+    dbMock.loan.create.mockResolvedValue({ id: "loan-1" } as never);
+
+    await expect(createLoan(buildLoanForm())).rejects.toThrow("REDIRECT:");
+
+    expect(generateBillsForSchedule).toHaveBeenCalledWith("sched-1");
+  });
+
   it("also creates the loan's EMI BillSchedule, linked by loanId", async () => {
     dbMock.loan.create.mockResolvedValue({ id: "loan-1" } as never);
 
@@ -174,6 +187,9 @@ describe("createLoan", () => {
         category: "EMI",
         loanId: "loan-1",
         recurrence: "MONTHLY",
+        // Loan starts 5 Apr 2024 with EMIs on the 5th: the first is a month
+        // later, stored as a date-only value.
+        startDate: new Date("2024-05-05"),
         dueDay: 5,
         defaultAmount: 43000,
         tenureMonths: 240,
@@ -278,7 +294,13 @@ describe("updateLoan", () => {
 
     expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
       where: { category: "EMI", loanId: "loan-1" },
-      data: { dueDay: 10, defaultAmount: 44000, tenureMonths: 180 },
+      data: {
+        // Still starts 5 Apr 2024; EMIs moved to the 10th → first on 10 Apr.
+        startDate: new Date("2024-04-10"),
+        dueDay: 10,
+        defaultAmount: 44000,
+        tenureMonths: 180,
+      },
     });
   });
 

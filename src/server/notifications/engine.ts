@@ -72,6 +72,32 @@ export async function dispatchNotificationJob(
     }
   }
 
+  // A guest who stopped reminders, was paused or was removed since the job
+  // was queued doesn't get it.
+  const guestId = job.metadata?.guestId;
+  if (typeof guestId === "string") {
+    const guest = await db.guest.findUnique({
+      where: { id: guestId },
+      select: { pausedAt: true, optedOutAt: true, deletedAt: true },
+    });
+    const reason = !guest
+      ? "Guest no longer exists"
+      : guest.optedOutAt
+        ? "Guest stopped reminders"
+        : guest.deletedAt
+          ? "Guest was removed"
+          : guest.pausedAt
+            ? "Guest is paused"
+            : null;
+    if (reason) {
+      await db.notificationJob.update({
+        where: { id: job.id },
+        data: { status: "CANCELLED", failedReason: reason },
+      });
+      return "CANCELLED";
+    }
+  }
+
   try {
     const result = await CHANNEL_SENDERS[job.channel](job);
 

@@ -23,6 +23,7 @@ import type {
 import { z } from "zod";
 
 import { date, parseFormData } from "~/lib/form";
+import { dateOnly, type CalendarDay } from "~/lib/calendar-day";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 
@@ -58,8 +59,15 @@ export async function generateBill(args: {
   policyId?: string;
   investmentId?: string;
   amount: number;
-  dueDate: Date;
+  /**
+   * The due date as a calendar day, "YYYY-MM-DD" — not a `Date`, so a
+   * caller can't hand over an instant that lands on a different day in
+   * some time zone. Stored as midnight UTC (see `~/lib/calendar-day`).
+   */
+  dueDay: CalendarDay;
   description: string;
+  /** For instalment schedules (EMIs): 1 for the first, and so on. */
+  installmentNumber?: number;
 }) {
   const {
     ownerId,
@@ -72,8 +80,9 @@ export async function generateBill(args: {
     policyId,
     investmentId,
     amount,
-    dueDate,
+    dueDay,
     description,
+    installmentNumber,
   } = args;
 
   return db.bill.create({
@@ -87,10 +96,11 @@ export async function generateBill(args: {
       loanId,
       policyId,
       investmentId,
-      dueDate,
+      dueDate: dateOnly(dueDay),
       amount,
       status: "DUE",
       description,
+      installmentNumber,
     },
   });
 }

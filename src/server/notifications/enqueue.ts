@@ -1,13 +1,15 @@
 /**
  * Write side of the engine: schedules a `NotificationJob` for later
- * delivery. Callers are things like a `NotificationRule` evaluator or a
- * one-off "payment received" hook — none of which exist yet — so this is
- * the seam they'll call into once built.
+ * delivery. The reminder generator (`~/server/reminders/generate`) is the
+ * main caller.
  */
 import "server-only";
 
+import { randomUUID } from "node:crypto";
+
 import type {
   EventCategory,
+  NotificationJob,
   Prisma,
   ReminderChannel,
 } from "../../../generated/prisma";
@@ -41,26 +43,57 @@ export interface EnqueueNotificationJobArgs {
   idempotencyKey?: string;
 }
 
-export async function enqueueNotificationJob(args: EnqueueNotificationJobArgs) {
+export interface EnqueueResult {
+  job: NotificationJob;
+  /** False when a job with the same idempotency key already existed. */
+  created: boolean;
+}
+
+function isUniqueConstraintError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    (error as { code?: unknown }).code === "P2002"
+  );
+}
+
+export async function enqueueNotificationJob(
+  args: EnqueueNotificationJobArgs,
+): Promise<EnqueueResult> {
   const { idempotencyKey, metadata, ...rest } = args;
 
   const data = {
     ...rest,
     status: "SCHEDULED" as const,
     metadata: metadata as Prisma.InputJsonValue | undefined,
-    idempotencyKey,
+    // Every job gets a key: MongoDB's unique index on `idempotencyKey`
+    // treats a missing key as null and admits only one such document.
+    idempotencyKey: idempotencyKey ?? `job:${randomUUID()}`,
   };
 
-  if (!idempotencyKey) {
-    return db.notificationJob.create({ data });
+  // A job that already exists for this key keeps whatever the engine has
+  // done with it — re-enqueuing must never resurrect or resend a job that's
+  // SENT/FAILED/SKIPPED/CANCELLED.
+  if (idempotencyKey) {
+    const existing = await db.notificationJob.findUnique({
+      where: { idempotencyKey },
+    });
+    if (existing) return { job: existing, created: false };
   }
 
-  return db.notificationJob.upsert({
-    where: { idempotencyKey },
-    create: data,
-    // A job that already exists for this key keeps whatever the engine has
-    // already done with it — re-enqueuing must never resurrect or resend
-    // a job that's SENT/FAILED/SKIPPED.
-    update: {},
-  });
+  try {
+    return {
+      job: await db.notificationJob.create({ data }),
+      created: true,
+    };
+  } catch (error) {
+    // Lost a race with a concurrent run enqueueing the same key.
+    if (idempotencyKey && isUniqueConstraintError(error)) {
+      const existing = await db.notificationJob.findUnique({
+        where: { idempotencyKey },
+      });
+      if (existing) return { job: existing, created: false };
+    }
+    throw error;
+  }
 }

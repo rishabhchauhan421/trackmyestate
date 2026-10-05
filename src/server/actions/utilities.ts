@@ -38,6 +38,7 @@ import {
 } from "~/lib/form";
 import { todayInTimeZone } from "~/lib/time-zone";
 import { getSession } from "~/server/better-auth/server";
+import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { getUserTimeZone } from "~/server/queries/settings";
 
@@ -119,7 +120,7 @@ export async function createUtility(formData: FormData) {
     throw new Error("The first due date can't be in the past");
   }
 
-  await db.billSchedule.create({
+  const schedule = await db.billSchedule.create({
     data: {
       ownerId: session.user.id,
       category: "UTILITY_BILL",
@@ -129,11 +130,14 @@ export async function createUtility(formData: FormData) {
       accountNumber,
       billingType,
       recurrence,
-      dueDay: firstDueDate.getDate(),
-      dueMonth: recurrence === "YEARLY" ? firstDueDate.getMonth() + 1 : null,
+      startDate: firstDueDate,
+      dueDay: firstDueDate.getUTCDate(),
+      dueMonth: recurrence === "YEARLY" ? firstDueDate.getUTCMonth() + 1 : null,
       defaultAmount,
     },
   });
+  // Create its first bills now, so the next one shows up straight away.
+  await generateBillsForSchedule(schedule.id);
 
   revalidatePath(`/properties/${propertyId}/utilities`);
   redirect(`/properties/${propertyId}/utilities`);

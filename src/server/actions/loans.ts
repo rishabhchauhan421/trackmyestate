@@ -37,6 +37,9 @@ import {
   text,
 } from "~/lib/form";
 import { getSession } from "~/server/better-auth/server";
+import { calendarDayOf, dateOnly } from "~/lib/calendar-day";
+import { firstDueDayAfter } from "~/lib/schedule";
+import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 
 async function requireSession() {
@@ -99,6 +102,11 @@ async function requireOwnedLinkedProperty(
   return linkedPropertyId;
 }
 
+/** The first EMI: the first EMI due day after the loan starts. */
+function firstEmiDate(loanStart: Date, emiDueDay: number) {
+  return dateOnly(firstDueDayAfter(calendarDayOf(loanStart), emiDueDay));
+}
+
 /** Creates a new `Loan` and its EMI `BillSchedule` for the signed-in owner. */
 export async function createLoan(formData: FormData) {
   const session = await requireSession();
@@ -121,17 +129,20 @@ export async function createLoan(formData: FormData) {
     },
   });
 
-  await db.billSchedule.create({
+  const schedule = await db.billSchedule.create({
     data: {
       ownerId: session.user.id,
       category: "EMI",
       loanId: loan.id,
       recurrence: "MONTHLY",
+      startDate: firstEmiDate(fields.startDate, fields.emiDueDay),
       dueDay: fields.emiDueDay,
       defaultAmount: fields.emiAmount,
       tenureMonths: fields.tenureMonths,
     },
   });
+  // Create its first EMI bills now, so the next one shows up straight away.
+  await generateBillsForSchedule(schedule.id);
 
   revalidatePath("/loans");
   if (linkedPropertyId) revalidatePath(`/properties/${linkedPropertyId}`);
@@ -164,6 +175,7 @@ export async function updateLoan(loanId: string, formData: FormData) {
   await db.billSchedule.updateMany({
     where: { category: "EMI", loanId },
     data: {
+      startDate: firstEmiDate(fields.startDate, fields.emiDueDay),
       dueDay: fields.emiDueDay,
       defaultAmount: fields.emiAmount,
       tenureMonths: fields.tenureMonths,

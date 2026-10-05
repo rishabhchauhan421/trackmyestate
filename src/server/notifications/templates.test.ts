@@ -42,3 +42,41 @@ describe("renderNotificationEmail", () => {
     expect(rendered.html).toContain("&lt;script&gt;");
   });
 });
+
+describe("renderNotificationEmail button label", () => {
+  it("uses metadata.actionLabel when given (e.g. a guest's stop link)", () => {
+    const email = renderNotificationEmail({
+      title: "Bill due",
+      body: "Electricity — ₹4,120",
+      metadata: {
+        actionUrl: "https://trackmyestate.app/reminders/stop?guest=g",
+        actionLabel: "Stop these reminders",
+      },
+    });
+    expect(email.html).toContain(">Stop these reminders</a>");
+    expect(email.html).not.toContain("View in TrackMyEstate");
+  });
+});
+
+describe("renderNotificationEmail without a button", () => {
+  it("renders no link when actionUrl is null", () => {
+    const email = renderNotificationEmail({
+      title: "Bill due",
+      body: "From Ananya Rao, via TrackMyEstate.",
+      metadata: { actionUrl: null },
+    });
+    expect(email.html).not.toContain("<a ");
+    expect(email.text).toBe("Bill due\n\nFrom Ananya Rao, via TrackMyEstate.");
+  });
+
+  it("labels the link in the plain-text version", () => {
+    const email = renderNotificationEmail({
+      title: "Bill due",
+      body: "Body",
+      metadata: { actionUrl: "https://trackmyestate.app/timeline" },
+    });
+    expect(email.text).toBe(
+      "Bill due\n\nBody\n\nView in TrackMyEstate: https://trackmyestate.app/timeline",
+    );
+  });
+});

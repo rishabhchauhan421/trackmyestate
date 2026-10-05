@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin users</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif; font-variant-numeric: tabular-nums">
+  <dc-import name="AppSidebar" current="adminUsers" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+
+      <header style="display: flex; flex-direction: column; gap: 6px">
+        <nav aria-label="Breadcrumb" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #5A6762">
+          <a href="AdminOverview.dc.html">Admin</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page" style="color: #12201C">Users</span>
+        </nav>
+        <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Users</h1>
+        <p style="margin: 0; font-size: 15px; color: #5A6762">1,284 signed-up users, newest first.</p>
+      </header>
+
+      <section aria-label="All users" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; overflow: hidden">
+        <ul style="list-style: none; margin: 0; padding: 0">
+          <sc-for list="{{users}}" as="user" hint-placeholder-count="10">
+            <li style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 16px 20px; border-top: {{user.divider}}">
+              <div style="display: flex; align-items: center; gap: 12px; min-width: 0">
+                <span aria-hidden="true" style="width: 36px; height: 36px; flex-shrink: 0; border-radius: 999px; background: #0F6E5D; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600">{{user.initial}}</span>
+                <div style="min-width: 0; display: flex; flex-direction: column; gap: 2px">
+                  <span style="display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 500">
+                    {{user.name}}
+                    <sc-if value="{{user.admin}}" hint-placeholder-val="{{false}}">
+                      <span style="display: inline-flex; align-items: center; border-radius: 999px; background: #E3F1EC; color: #0A5446; padding: 2px 8px; font-size: 12px; font-weight: 500">Admin</span>
+                    </sc-if>
+                    <sc-if value="{{user.banned}}" hint-placeholder-val="{{false}}">
+                      <span style="display: inline-flex; align-items: center; border-radius: 999px; background: #FDECEA; color: #B42318; padding: 2px 8px; font-size: 12px; font-weight: 500">Banned</span>
+                    </sc-if>
+                  </span>
+                  <span style="font-size: 12px; color: #5A6762; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{user.email}}</span>
+                </div>
+              </div>
+              <div style="display: flex; align-items: center; gap: 24px; flex-shrink: 0; text-align: right">
+                <div style="display: flex; flex-direction: column; gap: 2px">
+                  <span style="font-size: 14px; font-weight: 500">{{user.assets}}</span>
+                  <span style="font-size: 12px; color: #5A6762">assets tracked</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 2px; min-width: 96px">
+                  <span style="font-size: 14px; font-weight: 500">{{user.joined}}</span>
+                  <span style="font-size: 12px; color: #5A6762">joined</span>
+                </div>
+              </div>
+            </li>
+          </sc-for>
+        </ul>
+      </section>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var rows = [
+      ['Kabir Malhotra', 'kabir.malhotra@gmail.com', 0, '5 Oct 2026', false, false],
+      ['Meera Iyer', 'meera.iyer@outlook.com', 4, '4 Oct 2026', false, false],
+      ['Rohan Desai', 'rohan.d@yahoo.in', 2, '3 Oct 2026', false, false],
+      ['Spam Account', 'deals4u@mailinator.com', 0, '2 Oct 2026', false, true],
+      ['Farah Qureshi', 'farah.q@gmail.com', 7, '29 Sept 2026', false, false],
+      ['Vikram Nair', 'vikram.nair@proton.me', 3, '27 Sept 2026', false, false],
+      ['Sneha Kulkarni', 'sneha.k@gmail.com', 11, '20 Sept 2026', false, false],
+      ['Arjun Mehta', 'arjun@trackmyestate.in', 5, '2 Sept 2026', true, false],
+      ['Ananya Rao', 'ananya.rao@gmail.com', 6, '14 Aug 2026', false, false],
+      ['Priya Sharma', 'priya@trackmyestate.in', 9, '1 Jul 2026', true, false]
+    ];
+    return {
+      users: rows.map(function (r, i) {
+        return {
+          name: r[0],
+          email: r[1],
+          assets: r[2],
+          joined: r[3],
+          admin: r[4],
+          banned: r[5],
+          initial: r[0].charAt(0).toUpperCase(),
+          divider: i === 0 ? 'none' : '1px solid #EEF1ED'
+        };
+      })
+    };
+  }
+}
+</script>
+</body>
+</html>

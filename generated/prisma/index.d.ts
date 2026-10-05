@@ -108,6 +108,11 @@ export type NotificationJob = $Result.DefaultSelection<Prisma.$NotificationJobPa
  * 
  */
 export type Document = $Result.DefaultSelection<Prisma.$DocumentPayload>
+/**
+ * Model Guest
+ * 
+ */
+export type Guest = $Result.DefaultSelection<Prisma.$GuestPayload>
 
 /**
  * Enums
@@ -689,6 +694,16 @@ export class PrismaClient<
     * ```
     */
   get document(): Prisma.DocumentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.guest`: Exposes CRUD operations for the **Guest** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Guests
+    * const guests = await prisma.guest.findMany()
+    * ```
+    */
+  get guest(): Prisma.GuestDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1147,7 +1162,8 @@ export namespace Prisma {
     AuditLog: 'AuditLog',
     NotificationRule: 'NotificationRule',
     NotificationJob: 'NotificationJob',
-    Document: 'Document'
+    Document: 'Document',
+    Guest: 'Guest'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1166,7 +1182,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "post" | "user" | "session" | "account" | "verification" | "property" | "room" | "lease" | "billSchedule" | "bill" | "policy" | "investment" | "loan" | "paymentTransaction" | "auditLog" | "notificationRule" | "notificationJob" | "document"
+      modelProps: "post" | "user" | "session" | "account" | "verification" | "property" | "room" | "lease" | "billSchedule" | "bill" | "policy" | "investment" | "loan" | "paymentTransaction" | "auditLog" | "notificationRule" | "notificationJob" | "document" | "guest"
       txIsolationLevel: never
     }
     model: {
@@ -2502,6 +2518,80 @@ export namespace Prisma {
           }
         }
       }
+      Guest: {
+        payload: Prisma.$GuestPayload<ExtArgs>
+        fields: Prisma.GuestFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GuestFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GuestFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload>
+          }
+          findFirst: {
+            args: Prisma.GuestFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GuestFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload>
+          }
+          findMany: {
+            args: Prisma.GuestFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload>[]
+          }
+          create: {
+            args: Prisma.GuestCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload>
+          }
+          createMany: {
+            args: Prisma.GuestCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.GuestDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload>
+          }
+          update: {
+            args: Prisma.GuestUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload>
+          }
+          deleteMany: {
+            args: Prisma.GuestDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GuestUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.GuestUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuestPayload>
+          }
+          aggregate: {
+            args: Prisma.GuestAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGuest>
+          }
+          groupBy: {
+            args: Prisma.GuestGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GuestGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.GuestFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.GuestAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.GuestCountArgs<ExtArgs>
+            result: $Utils.Optional<GuestCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2599,6 +2689,7 @@ export namespace Prisma {
     notificationRule?: NotificationRuleOmit
     notificationJob?: NotificationJobOmit
     document?: DocumentOmit
+    guest?: GuestOmit
   }
 
   /* Types for Logging */
@@ -2682,6 +2773,7 @@ export namespace Prisma {
     sessions: number
     accounts: number
     posts: number
+    guests: number
     properties: number
     policies: number
     investments: number
@@ -2699,6 +2791,7 @@ export namespace Prisma {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     posts?: boolean | UserCountOutputTypeCountPostsArgs
+    guests?: boolean | UserCountOutputTypeCountGuestsArgs
     properties?: boolean | UserCountOutputTypeCountPropertiesArgs
     policies?: boolean | UserCountOutputTypeCountPoliciesArgs
     investments?: boolean | UserCountOutputTypeCountInvestmentsArgs
@@ -2742,6 +2835,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PostWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountGuestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuestWhereInput
   }
 
   /**
@@ -4507,8 +4607,18 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    reminderHour: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    reminderHour: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -4519,6 +4629,8 @@ export namespace Prisma {
     image: string | null
     currency: $Enums.Currency | null
     timezone: string | null
+    phone: string | null
+    reminderHour: number | null
     role: string | null
     banned: boolean | null
     banReason: string | null
@@ -4535,6 +4647,8 @@ export namespace Prisma {
     image: string | null
     currency: $Enums.Currency | null
     timezone: string | null
+    phone: string | null
+    reminderHour: number | null
     role: string | null
     banned: boolean | null
     banReason: string | null
@@ -4551,6 +4665,8 @@ export namespace Prisma {
     image: number
     currency: number
     timezone: number
+    phone: number
+    reminderHour: number
     role: number
     banned: number
     banReason: number
@@ -4561,6 +4677,14 @@ export namespace Prisma {
   }
 
 
+  export type UserAvgAggregateInputType = {
+    reminderHour?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    reminderHour?: true
+  }
+
   export type UserMinAggregateInputType = {
     id?: true
     name?: true
@@ -4569,6 +4693,8 @@ export namespace Prisma {
     image?: true
     currency?: true
     timezone?: true
+    phone?: true
+    reminderHour?: true
     role?: true
     banned?: true
     banReason?: true
@@ -4585,6 +4711,8 @@ export namespace Prisma {
     image?: true
     currency?: true
     timezone?: true
+    phone?: true
+    reminderHour?: true
     role?: true
     banned?: true
     banReason?: true
@@ -4601,6 +4729,8 @@ export namespace Prisma {
     image?: true
     currency?: true
     timezone?: true
+    phone?: true
+    reminderHour?: true
     role?: true
     banned?: true
     banReason?: true
@@ -4648,6 +4778,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -4678,6 +4820,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
@@ -4690,6 +4834,8 @@ export namespace Prisma {
     image: string | null
     currency: $Enums.Currency
     timezone: string | null
+    phone: string | null
+    reminderHour: number | null
     role: string | null
     banned: boolean | null
     banReason: string | null
@@ -4697,6 +4843,8 @@ export namespace Prisma {
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -4723,6 +4871,8 @@ export namespace Prisma {
     image?: boolean
     currency?: boolean
     timezone?: boolean
+    phone?: boolean
+    reminderHour?: boolean
     role?: boolean
     banned?: boolean
     banReason?: boolean
@@ -4732,6 +4882,7 @@ export namespace Prisma {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     posts?: boolean | User$postsArgs<ExtArgs>
+    guests?: boolean | User$guestsArgs<ExtArgs>
     properties?: boolean | User$propertiesArgs<ExtArgs>
     policies?: boolean | User$policiesArgs<ExtArgs>
     investments?: boolean | User$investmentsArgs<ExtArgs>
@@ -4756,6 +4907,8 @@ export namespace Prisma {
     image?: boolean
     currency?: boolean
     timezone?: boolean
+    phone?: boolean
+    reminderHour?: boolean
     role?: boolean
     banned?: boolean
     banReason?: boolean
@@ -4764,11 +4917,12 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "currency" | "timezone" | "role" | "banned" | "banReason" | "banExpires" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "currency" | "timezone" | "phone" | "reminderHour" | "role" | "banned" | "banReason" | "banExpires" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     posts?: boolean | User$postsArgs<ExtArgs>
+    guests?: boolean | User$guestsArgs<ExtArgs>
     properties?: boolean | User$propertiesArgs<ExtArgs>
     policies?: boolean | User$policiesArgs<ExtArgs>
     investments?: boolean | User$investmentsArgs<ExtArgs>
@@ -4789,6 +4943,7 @@ export namespace Prisma {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       posts: Prisma.$PostPayload<ExtArgs>[]
+      guests: Prisma.$GuestPayload<ExtArgs>[]
       properties: Prisma.$PropertyPayload<ExtArgs>[]
       policies: Prisma.$PolicyPayload<ExtArgs>[]
       investments: Prisma.$InvestmentPayload<ExtArgs>[]
@@ -4809,6 +4964,8 @@ export namespace Prisma {
       image: string | null
       currency: $Enums.Currency
       timezone: string | null
+      phone: string | null
+      reminderHour: number | null
       role: string | null
       banned: boolean | null
       banReason: string | null
@@ -5181,6 +5338,7 @@ export namespace Prisma {
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     posts<T extends User$postsArgs<ExtArgs> = {}>(args?: Subset<T, User$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    guests<T extends User$guestsArgs<ExtArgs> = {}>(args?: Subset<T, User$guestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     properties<T extends User$propertiesArgs<ExtArgs> = {}>(args?: Subset<T, User$propertiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     policies<T extends User$policiesArgs<ExtArgs> = {}>(args?: Subset<T, User$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     investments<T extends User$investmentsArgs<ExtArgs> = {}>(args?: Subset<T, User$investmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5228,6 +5386,8 @@ export namespace Prisma {
     readonly image: FieldRef<"User", 'String'>
     readonly currency: FieldRef<"User", 'Currency'>
     readonly timezone: FieldRef<"User", 'String'>
+    readonly phone: FieldRef<"User", 'String'>
+    readonly reminderHour: FieldRef<"User", 'Int'>
     readonly role: FieldRef<"User", 'String'>
     readonly banned: FieldRef<"User", 'Boolean'>
     readonly banReason: FieldRef<"User", 'String'>
@@ -5673,6 +5833,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
+  }
+
+  /**
+   * User.guests
+   */
+  export type User$guestsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    where?: GuestWhereInput
+    orderBy?: GuestOrderByWithRelationInput | GuestOrderByWithRelationInput[]
+    cursor?: GuestWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: GuestScalarFieldEnum | GuestScalarFieldEnum[]
   }
 
   /**
@@ -12943,6 +13127,7 @@ export namespace Prisma {
     billingType: $Enums.BillingType | null
     autoGenerateBill: boolean | null
     recurrence: $Enums.BillRecurrence | null
+    startDate: Date | null
     dueDay: number | null
     dueMonth: number | null
     defaultAmount: number | null
@@ -12970,6 +13155,7 @@ export namespace Prisma {
     billingType: $Enums.BillingType | null
     autoGenerateBill: boolean | null
     recurrence: $Enums.BillRecurrence | null
+    startDate: Date | null
     dueDay: number | null
     dueMonth: number | null
     defaultAmount: number | null
@@ -12997,6 +13183,7 @@ export namespace Prisma {
     billingType: number
     autoGenerateBill: number
     recurrence: number
+    startDate: number
     dueDay: number
     dueMonth: number
     defaultAmount: number
@@ -13040,6 +13227,7 @@ export namespace Prisma {
     billingType?: true
     autoGenerateBill?: true
     recurrence?: true
+    startDate?: true
     dueDay?: true
     dueMonth?: true
     defaultAmount?: true
@@ -13067,6 +13255,7 @@ export namespace Prisma {
     billingType?: true
     autoGenerateBill?: true
     recurrence?: true
+    startDate?: true
     dueDay?: true
     dueMonth?: true
     defaultAmount?: true
@@ -13094,6 +13283,7 @@ export namespace Prisma {
     billingType?: true
     autoGenerateBill?: true
     recurrence?: true
+    startDate?: true
     dueDay?: true
     dueMonth?: true
     defaultAmount?: true
@@ -13208,6 +13398,7 @@ export namespace Prisma {
     billingType: $Enums.BillingType | null
     autoGenerateBill: boolean | null
     recurrence: $Enums.BillRecurrence
+    startDate: Date | null
     dueDay: number
     dueMonth: number | null
     defaultAmount: number | null
@@ -13254,6 +13445,7 @@ export namespace Prisma {
     billingType?: boolean
     autoGenerateBill?: boolean
     recurrence?: boolean
+    startDate?: boolean
     dueDay?: boolean
     dueMonth?: boolean
     defaultAmount?: boolean
@@ -13295,6 +13487,7 @@ export namespace Prisma {
     billingType?: boolean
     autoGenerateBill?: boolean
     recurrence?: boolean
+    startDate?: boolean
     dueDay?: boolean
     dueMonth?: boolean
     defaultAmount?: boolean
@@ -13306,7 +13499,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "dueDay" | "dueMonth" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
+  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "startDate" | "dueDay" | "dueMonth" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
   export type BillScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     property?: boolean | BillSchedule$propertyArgs<ExtArgs>
@@ -13351,6 +13544,7 @@ export namespace Prisma {
       billingType: $Enums.BillingType | null
       autoGenerateBill: boolean | null
       recurrence: $Enums.BillRecurrence
+      startDate: Date | null
       dueDay: number
       dueMonth: number | null
       defaultAmount: number | null
@@ -13779,6 +13973,7 @@ export namespace Prisma {
     readonly billingType: FieldRef<"BillSchedule", 'BillingType'>
     readonly autoGenerateBill: FieldRef<"BillSchedule", 'Boolean'>
     readonly recurrence: FieldRef<"BillSchedule", 'BillRecurrence'>
+    readonly startDate: FieldRef<"BillSchedule", 'DateTime'>
     readonly dueDay: FieldRef<"BillSchedule", 'Int'>
     readonly dueMonth: FieldRef<"BillSchedule", 'Int'>
     readonly defaultAmount: FieldRef<"BillSchedule", 'Float'>
@@ -26425,6 +26620,1083 @@ export namespace Prisma {
 
 
   /**
+   * Model Guest
+   */
+
+  export type AggregateGuest = {
+    _count: GuestCountAggregateOutputType | null
+    _min: GuestMinAggregateOutputType | null
+    _max: GuestMaxAggregateOutputType | null
+  }
+
+  export type GuestMinAggregateOutputType = {
+    id: string | null
+    ownerId: string | null
+    name: string | null
+    relationship: string | null
+    email: string | null
+    phone: string | null
+    dueDayOnly: boolean | null
+    pausedAt: Date | null
+    optedOutAt: Date | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GuestMaxAggregateOutputType = {
+    id: string | null
+    ownerId: string | null
+    name: string | null
+    relationship: string | null
+    email: string | null
+    phone: string | null
+    dueDayOnly: boolean | null
+    pausedAt: Date | null
+    optedOutAt: Date | null
+    deletedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type GuestCountAggregateOutputType = {
+    id: number
+    ownerId: number
+    name: number
+    relationship: number
+    email: number
+    phone: number
+    channels: number
+    categories: number
+    propertyIds: number
+    dueDayOnly: number
+    pausedAt: number
+    optedOutAt: number
+    deletedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type GuestMinAggregateInputType = {
+    id?: true
+    ownerId?: true
+    name?: true
+    relationship?: true
+    email?: true
+    phone?: true
+    dueDayOnly?: true
+    pausedAt?: true
+    optedOutAt?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GuestMaxAggregateInputType = {
+    id?: true
+    ownerId?: true
+    name?: true
+    relationship?: true
+    email?: true
+    phone?: true
+    dueDayOnly?: true
+    pausedAt?: true
+    optedOutAt?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type GuestCountAggregateInputType = {
+    id?: true
+    ownerId?: true
+    name?: true
+    relationship?: true
+    email?: true
+    phone?: true
+    channels?: true
+    categories?: true
+    propertyIds?: true
+    dueDayOnly?: true
+    pausedAt?: true
+    optedOutAt?: true
+    deletedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type GuestAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Guest to aggregate.
+     */
+    where?: GuestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Guests to fetch.
+     */
+    orderBy?: GuestOrderByWithRelationInput | GuestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GuestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Guests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Guests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Guests
+    **/
+    _count?: true | GuestCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GuestMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GuestMaxAggregateInputType
+  }
+
+  export type GetGuestAggregateType<T extends GuestAggregateArgs> = {
+        [P in keyof T & keyof AggregateGuest]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGuest[P]>
+      : GetScalarType<T[P], AggregateGuest[P]>
+  }
+
+
+
+
+  export type GuestGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuestWhereInput
+    orderBy?: GuestOrderByWithAggregationInput | GuestOrderByWithAggregationInput[]
+    by: GuestScalarFieldEnum[] | GuestScalarFieldEnum
+    having?: GuestScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GuestCountAggregateInputType | true
+    _min?: GuestMinAggregateInputType
+    _max?: GuestMaxAggregateInputType
+  }
+
+  export type GuestGroupByOutputType = {
+    id: string
+    ownerId: string
+    name: string
+    relationship: string | null
+    email: string | null
+    phone: string | null
+    channels: $Enums.ReminderChannel[]
+    categories: $Enums.EventCategory[]
+    propertyIds: string[]
+    dueDayOnly: boolean
+    pausedAt: Date | null
+    optedOutAt: Date | null
+    deletedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: GuestCountAggregateOutputType | null
+    _min: GuestMinAggregateOutputType | null
+    _max: GuestMaxAggregateOutputType | null
+  }
+
+  type GetGuestGroupByPayload<T extends GuestGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GuestGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GuestGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GuestGroupByOutputType[P]>
+            : GetScalarType<T[P], GuestGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GuestSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    ownerId?: boolean
+    name?: boolean
+    relationship?: boolean
+    email?: boolean
+    phone?: boolean
+    channels?: boolean
+    categories?: boolean
+    propertyIds?: boolean
+    dueDayOnly?: boolean
+    pausedAt?: boolean
+    optedOutAt?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["guest"]>
+
+
+
+  export type GuestSelectScalar = {
+    id?: boolean
+    ownerId?: boolean
+    name?: boolean
+    relationship?: boolean
+    email?: boolean
+    phone?: boolean
+    channels?: boolean
+    categories?: boolean
+    propertyIds?: boolean
+    dueDayOnly?: boolean
+    pausedAt?: boolean
+    optedOutAt?: boolean
+    deletedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type GuestOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "name" | "relationship" | "email" | "phone" | "channels" | "categories" | "propertyIds" | "dueDayOnly" | "pausedAt" | "optedOutAt" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["guest"]>
+  export type GuestInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    owner?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $GuestPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Guest"
+    objects: {
+      owner: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      ownerId: string
+      name: string
+      relationship: string | null
+      email: string | null
+      phone: string | null
+      channels: $Enums.ReminderChannel[]
+      categories: $Enums.EventCategory[]
+      propertyIds: string[]
+      dueDayOnly: boolean
+      pausedAt: Date | null
+      optedOutAt: Date | null
+      deletedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["guest"]>
+    composites: {}
+  }
+
+  type GuestGetPayload<S extends boolean | null | undefined | GuestDefaultArgs> = $Result.GetResult<Prisma.$GuestPayload, S>
+
+  type GuestCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GuestFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GuestCountAggregateInputType | true
+    }
+
+  export interface GuestDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Guest'], meta: { name: 'Guest' } }
+    /**
+     * Find zero or one Guest that matches the filter.
+     * @param {GuestFindUniqueArgs} args - Arguments to find a Guest
+     * @example
+     * // Get one Guest
+     * const guest = await prisma.guest.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GuestFindUniqueArgs>(args: SelectSubset<T, GuestFindUniqueArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Guest that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GuestFindUniqueOrThrowArgs} args - Arguments to find a Guest
+     * @example
+     * // Get one Guest
+     * const guest = await prisma.guest.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GuestFindUniqueOrThrowArgs>(args: SelectSubset<T, GuestFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Guest that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestFindFirstArgs} args - Arguments to find a Guest
+     * @example
+     * // Get one Guest
+     * const guest = await prisma.guest.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GuestFindFirstArgs>(args?: SelectSubset<T, GuestFindFirstArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Guest that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestFindFirstOrThrowArgs} args - Arguments to find a Guest
+     * @example
+     * // Get one Guest
+     * const guest = await prisma.guest.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GuestFindFirstOrThrowArgs>(args?: SelectSubset<T, GuestFindFirstOrThrowArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Guests that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Guests
+     * const guests = await prisma.guest.findMany()
+     * 
+     * // Get first 10 Guests
+     * const guests = await prisma.guest.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const guestWithIdOnly = await prisma.guest.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends GuestFindManyArgs>(args?: SelectSubset<T, GuestFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Guest.
+     * @param {GuestCreateArgs} args - Arguments to create a Guest.
+     * @example
+     * // Create one Guest
+     * const Guest = await prisma.guest.create({
+     *   data: {
+     *     // ... data to create a Guest
+     *   }
+     * })
+     * 
+     */
+    create<T extends GuestCreateArgs>(args: SelectSubset<T, GuestCreateArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Guests.
+     * @param {GuestCreateManyArgs} args - Arguments to create many Guests.
+     * @example
+     * // Create many Guests
+     * const guest = await prisma.guest.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GuestCreateManyArgs>(args?: SelectSubset<T, GuestCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Guest.
+     * @param {GuestDeleteArgs} args - Arguments to delete one Guest.
+     * @example
+     * // Delete one Guest
+     * const Guest = await prisma.guest.delete({
+     *   where: {
+     *     // ... filter to delete one Guest
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GuestDeleteArgs>(args: SelectSubset<T, GuestDeleteArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Guest.
+     * @param {GuestUpdateArgs} args - Arguments to update one Guest.
+     * @example
+     * // Update one Guest
+     * const guest = await prisma.guest.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GuestUpdateArgs>(args: SelectSubset<T, GuestUpdateArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Guests.
+     * @param {GuestDeleteManyArgs} args - Arguments to filter Guests to delete.
+     * @example
+     * // Delete a few Guests
+     * const { count } = await prisma.guest.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GuestDeleteManyArgs>(args?: SelectSubset<T, GuestDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Guests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Guests
+     * const guest = await prisma.guest.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GuestUpdateManyArgs>(args: SelectSubset<T, GuestUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Guest.
+     * @param {GuestUpsertArgs} args - Arguments to update or create a Guest.
+     * @example
+     * // Update or create a Guest
+     * const guest = await prisma.guest.upsert({
+     *   create: {
+     *     // ... data to create a Guest
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Guest we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GuestUpsertArgs>(args: SelectSubset<T, GuestUpsertArgs<ExtArgs>>): Prisma__GuestClient<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Guests that matches the filter.
+     * @param {GuestFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const guest = await prisma.guest.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: GuestFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a Guest.
+     * @param {GuestAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const guest = await prisma.guest.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: GuestAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of Guests.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestCountArgs} args - Arguments to filter Guests to count.
+     * @example
+     * // Count the number of Guests
+     * const count = await prisma.guest.count({
+     *   where: {
+     *     // ... the filter for the Guests we want to count
+     *   }
+     * })
+    **/
+    count<T extends GuestCountArgs>(
+      args?: Subset<T, GuestCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GuestCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Guest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GuestAggregateArgs>(args: Subset<T, GuestAggregateArgs>): Prisma.PrismaPromise<GetGuestAggregateType<T>>
+
+    /**
+     * Group by Guest.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuestGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GuestGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GuestGroupByArgs['orderBy'] }
+        : { orderBy?: GuestGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GuestGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGuestGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Guest model
+   */
+  readonly fields: GuestFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Guest.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GuestClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Guest model
+   */
+  interface GuestFieldRefs {
+    readonly id: FieldRef<"Guest", 'String'>
+    readonly ownerId: FieldRef<"Guest", 'String'>
+    readonly name: FieldRef<"Guest", 'String'>
+    readonly relationship: FieldRef<"Guest", 'String'>
+    readonly email: FieldRef<"Guest", 'String'>
+    readonly phone: FieldRef<"Guest", 'String'>
+    readonly channels: FieldRef<"Guest", 'ReminderChannel[]'>
+    readonly categories: FieldRef<"Guest", 'EventCategory[]'>
+    readonly propertyIds: FieldRef<"Guest", 'String[]'>
+    readonly dueDayOnly: FieldRef<"Guest", 'Boolean'>
+    readonly pausedAt: FieldRef<"Guest", 'DateTime'>
+    readonly optedOutAt: FieldRef<"Guest", 'DateTime'>
+    readonly deletedAt: FieldRef<"Guest", 'DateTime'>
+    readonly createdAt: FieldRef<"Guest", 'DateTime'>
+    readonly updatedAt: FieldRef<"Guest", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Guest findUnique
+   */
+  export type GuestFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * Filter, which Guest to fetch.
+     */
+    where: GuestWhereUniqueInput
+  }
+
+  /**
+   * Guest findUniqueOrThrow
+   */
+  export type GuestFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * Filter, which Guest to fetch.
+     */
+    where: GuestWhereUniqueInput
+  }
+
+  /**
+   * Guest findFirst
+   */
+  export type GuestFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * Filter, which Guest to fetch.
+     */
+    where?: GuestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Guests to fetch.
+     */
+    orderBy?: GuestOrderByWithRelationInput | GuestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Guests.
+     */
+    cursor?: GuestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Guests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Guests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Guests.
+     */
+    distinct?: GuestScalarFieldEnum | GuestScalarFieldEnum[]
+  }
+
+  /**
+   * Guest findFirstOrThrow
+   */
+  export type GuestFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * Filter, which Guest to fetch.
+     */
+    where?: GuestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Guests to fetch.
+     */
+    orderBy?: GuestOrderByWithRelationInput | GuestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Guests.
+     */
+    cursor?: GuestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Guests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Guests.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Guests.
+     */
+    distinct?: GuestScalarFieldEnum | GuestScalarFieldEnum[]
+  }
+
+  /**
+   * Guest findMany
+   */
+  export type GuestFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * Filter, which Guests to fetch.
+     */
+    where?: GuestWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Guests to fetch.
+     */
+    orderBy?: GuestOrderByWithRelationInput | GuestOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Guests.
+     */
+    cursor?: GuestWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Guests from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Guests.
+     */
+    skip?: number
+    distinct?: GuestScalarFieldEnum | GuestScalarFieldEnum[]
+  }
+
+  /**
+   * Guest create
+   */
+  export type GuestCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Guest.
+     */
+    data: XOR<GuestCreateInput, GuestUncheckedCreateInput>
+  }
+
+  /**
+   * Guest createMany
+   */
+  export type GuestCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Guests.
+     */
+    data: GuestCreateManyInput | GuestCreateManyInput[]
+  }
+
+  /**
+   * Guest update
+   */
+  export type GuestUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Guest.
+     */
+    data: XOR<GuestUpdateInput, GuestUncheckedUpdateInput>
+    /**
+     * Choose, which Guest to update.
+     */
+    where: GuestWhereUniqueInput
+  }
+
+  /**
+   * Guest updateMany
+   */
+  export type GuestUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Guests.
+     */
+    data: XOR<GuestUpdateManyMutationInput, GuestUncheckedUpdateManyInput>
+    /**
+     * Filter which Guests to update
+     */
+    where?: GuestWhereInput
+    /**
+     * Limit how many Guests to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Guest upsert
+   */
+  export type GuestUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Guest to update in case it exists.
+     */
+    where: GuestWhereUniqueInput
+    /**
+     * In case the Guest found by the `where` argument doesn't exist, create a new Guest with this data.
+     */
+    create: XOR<GuestCreateInput, GuestUncheckedCreateInput>
+    /**
+     * In case the Guest was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GuestUpdateInput, GuestUncheckedUpdateInput>
+  }
+
+  /**
+   * Guest delete
+   */
+  export type GuestDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+    /**
+     * Filter which Guest to delete.
+     */
+    where: GuestWhereUniqueInput
+  }
+
+  /**
+   * Guest deleteMany
+   */
+  export type GuestDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Guests to delete
+     */
+    where?: GuestWhereInput
+    /**
+     * Limit how many Guests to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Guest findRaw
+   */
+  export type GuestFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * Guest aggregateRaw
+   */
+  export type GuestAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * Guest without action
+   */
+  export type GuestDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Guest
+     */
+    select?: GuestSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Guest
+     */
+    omit?: GuestOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: GuestInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -26447,6 +27719,8 @@ export namespace Prisma {
     image: 'image',
     currency: 'currency',
     timezone: 'timezone',
+    phone: 'phone',
+    reminderHour: 'reminderHour',
     role: 'role',
     banned: 'banned',
     banReason: 'banReason',
@@ -26583,6 +27857,7 @@ export namespace Prisma {
     billingType: 'billingType',
     autoGenerateBill: 'autoGenerateBill',
     recurrence: 'recurrence',
+    startDate: 'startDate',
     dueDay: 'dueDay',
     dueMonth: 'dueMonth',
     defaultAmount: 'defaultAmount',
@@ -26818,6 +28093,27 @@ export namespace Prisma {
   export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
 
 
+  export const GuestScalarFieldEnum: {
+    id: 'id',
+    ownerId: 'ownerId',
+    name: 'name',
+    relationship: 'relationship',
+    email: 'email',
+    phone: 'phone',
+    channels: 'channels',
+    categories: 'categories',
+    propertyIds: 'propertyIds',
+    dueDayOnly: 'dueDayOnly',
+    pausedAt: 'pausedAt',
+    optedOutAt: 'optedOutAt',
+    deletedAt: 'deletedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type GuestScalarFieldEnum = (typeof GuestScalarFieldEnum)[keyof typeof GuestScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -26889,6 +28185,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
    * Reference to a field of type 'PropertyType'
    */
   export type EnumPropertyTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PropertyType'>
@@ -26941,20 +28251,6 @@ export namespace Prisma {
    * Reference to a field of type 'Float[]'
    */
   export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -27258,6 +28554,8 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     currency?: EnumCurrencyFilter<"User"> | $Enums.Currency
     timezone?: StringNullableFilter<"User"> | string | null
+    phone?: StringNullableFilter<"User"> | string | null
+    reminderHour?: IntNullableFilter<"User"> | number | null
     role?: StringNullableFilter<"User"> | string | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
@@ -27267,6 +28565,7 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     posts?: PostListRelationFilter
+    guests?: GuestListRelationFilter
     properties?: PropertyListRelationFilter
     policies?: PolicyListRelationFilter
     investments?: InvestmentListRelationFilter
@@ -27288,6 +28587,8 @@ export namespace Prisma {
     image?: SortOrder
     currency?: SortOrder
     timezone?: SortOrder
+    phone?: SortOrder
+    reminderHour?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -27297,6 +28598,7 @@ export namespace Prisma {
     sessions?: SessionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     posts?: PostOrderByRelationAggregateInput
+    guests?: GuestOrderByRelationAggregateInput
     properties?: PropertyOrderByRelationAggregateInput
     policies?: PolicyOrderByRelationAggregateInput
     investments?: InvestmentOrderByRelationAggregateInput
@@ -27321,6 +28623,8 @@ export namespace Prisma {
     image?: StringNullableFilter<"User"> | string | null
     currency?: EnumCurrencyFilter<"User"> | $Enums.Currency
     timezone?: StringNullableFilter<"User"> | string | null
+    phone?: StringNullableFilter<"User"> | string | null
+    reminderHour?: IntNullableFilter<"User"> | number | null
     role?: StringNullableFilter<"User"> | string | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
@@ -27330,6 +28634,7 @@ export namespace Prisma {
     sessions?: SessionListRelationFilter
     accounts?: AccountListRelationFilter
     posts?: PostListRelationFilter
+    guests?: GuestListRelationFilter
     properties?: PropertyListRelationFilter
     policies?: PolicyListRelationFilter
     investments?: InvestmentListRelationFilter
@@ -27351,6 +28656,8 @@ export namespace Prisma {
     image?: SortOrder
     currency?: SortOrder
     timezone?: SortOrder
+    phone?: SortOrder
+    reminderHour?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -27358,8 +28665,10 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
@@ -27373,6 +28682,8 @@ export namespace Prisma {
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
     currency?: EnumCurrencyWithAggregatesFilter<"User"> | $Enums.Currency
     timezone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"User"> | string | null
+    reminderHour?: IntNullableWithAggregatesFilter<"User"> | number | null
     role?: StringNullableWithAggregatesFilter<"User"> | string | null
     banned?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
     banReason?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -28005,6 +29316,7 @@ export namespace Prisma {
     billingType?: EnumBillingTypeNullableFilter<"BillSchedule"> | $Enums.BillingType | null
     autoGenerateBill?: BoolNullableFilter<"BillSchedule"> | boolean | null
     recurrence?: EnumBillRecurrenceFilter<"BillSchedule"> | $Enums.BillRecurrence
+    startDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
@@ -28043,6 +29355,7 @@ export namespace Prisma {
     billingType?: SortOrder
     autoGenerateBill?: SortOrder
     recurrence?: SortOrder
+    startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
     defaultAmount?: SortOrder
@@ -28084,6 +29397,7 @@ export namespace Prisma {
     billingType?: EnumBillingTypeNullableFilter<"BillSchedule"> | $Enums.BillingType | null
     autoGenerateBill?: BoolNullableFilter<"BillSchedule"> | boolean | null
     recurrence?: EnumBillRecurrenceFilter<"BillSchedule"> | $Enums.BillRecurrence
+    startDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
@@ -28122,6 +29436,7 @@ export namespace Prisma {
     billingType?: SortOrder
     autoGenerateBill?: SortOrder
     recurrence?: SortOrder
+    startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
     defaultAmount?: SortOrder
@@ -28157,6 +29472,7 @@ export namespace Prisma {
     billingType?: EnumBillingTypeNullableWithAggregatesFilter<"BillSchedule"> | $Enums.BillingType | null
     autoGenerateBill?: BoolNullableWithAggregatesFilter<"BillSchedule"> | boolean | null
     recurrence?: EnumBillRecurrenceWithAggregatesFilter<"BillSchedule"> | $Enums.BillRecurrence
+    startDate?: DateTimeNullableWithAggregatesFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntWithAggregatesFilter<"BillSchedule"> | number
     dueMonth?: IntNullableWithAggregatesFilter<"BillSchedule"> | number | null
     defaultAmount?: FloatNullableWithAggregatesFilter<"BillSchedule"> | number | null
@@ -29479,6 +30795,111 @@ export namespace Prisma {
     uploadedAt?: DateTimeWithAggregatesFilter<"Document"> | Date | string
   }
 
+  export type GuestWhereInput = {
+    AND?: GuestWhereInput | GuestWhereInput[]
+    OR?: GuestWhereInput[]
+    NOT?: GuestWhereInput | GuestWhereInput[]
+    id?: StringFilter<"Guest"> | string
+    ownerId?: StringFilter<"Guest"> | string
+    name?: StringFilter<"Guest"> | string
+    relationship?: StringNullableFilter<"Guest"> | string | null
+    email?: StringNullableFilter<"Guest"> | string | null
+    phone?: StringNullableFilter<"Guest"> | string | null
+    channels?: EnumReminderChannelNullableListFilter<"Guest">
+    categories?: EnumEventCategoryNullableListFilter<"Guest">
+    propertyIds?: StringNullableListFilter<"Guest">
+    dueDayOnly?: BoolFilter<"Guest"> | boolean
+    pausedAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    optedOutAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    deletedAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    createdAt?: DateTimeFilter<"Guest"> | Date | string
+    updatedAt?: DateTimeFilter<"Guest"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type GuestOrderByWithRelationInput = {
+    id?: SortOrder
+    ownerId?: SortOrder
+    name?: SortOrder
+    relationship?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    channels?: SortOrder
+    categories?: SortOrder
+    propertyIds?: SortOrder
+    dueDayOnly?: SortOrder
+    pausedAt?: SortOrder
+    optedOutAt?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    owner?: UserOrderByWithRelationInput
+  }
+
+  export type GuestWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: GuestWhereInput | GuestWhereInput[]
+    OR?: GuestWhereInput[]
+    NOT?: GuestWhereInput | GuestWhereInput[]
+    ownerId?: StringFilter<"Guest"> | string
+    name?: StringFilter<"Guest"> | string
+    relationship?: StringNullableFilter<"Guest"> | string | null
+    email?: StringNullableFilter<"Guest"> | string | null
+    phone?: StringNullableFilter<"Guest"> | string | null
+    channels?: EnumReminderChannelNullableListFilter<"Guest">
+    categories?: EnumEventCategoryNullableListFilter<"Guest">
+    propertyIds?: StringNullableListFilter<"Guest">
+    dueDayOnly?: BoolFilter<"Guest"> | boolean
+    pausedAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    optedOutAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    deletedAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    createdAt?: DateTimeFilter<"Guest"> | Date | string
+    updatedAt?: DateTimeFilter<"Guest"> | Date | string
+    owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id">
+
+  export type GuestOrderByWithAggregationInput = {
+    id?: SortOrder
+    ownerId?: SortOrder
+    name?: SortOrder
+    relationship?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    channels?: SortOrder
+    categories?: SortOrder
+    propertyIds?: SortOrder
+    dueDayOnly?: SortOrder
+    pausedAt?: SortOrder
+    optedOutAt?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: GuestCountOrderByAggregateInput
+    _max?: GuestMaxOrderByAggregateInput
+    _min?: GuestMinOrderByAggregateInput
+  }
+
+  export type GuestScalarWhereWithAggregatesInput = {
+    AND?: GuestScalarWhereWithAggregatesInput | GuestScalarWhereWithAggregatesInput[]
+    OR?: GuestScalarWhereWithAggregatesInput[]
+    NOT?: GuestScalarWhereWithAggregatesInput | GuestScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Guest"> | string
+    ownerId?: StringWithAggregatesFilter<"Guest"> | string
+    name?: StringWithAggregatesFilter<"Guest"> | string
+    relationship?: StringNullableWithAggregatesFilter<"Guest"> | string | null
+    email?: StringNullableWithAggregatesFilter<"Guest"> | string | null
+    phone?: StringNullableWithAggregatesFilter<"Guest"> | string | null
+    channels?: EnumReminderChannelNullableListFilter<"Guest">
+    categories?: EnumEventCategoryNullableListFilter<"Guest">
+    propertyIds?: StringNullableListFilter<"Guest">
+    dueDayOnly?: BoolWithAggregatesFilter<"Guest"> | boolean
+    pausedAt?: DateTimeNullableWithAggregatesFilter<"Guest"> | Date | string | null
+    optedOutAt?: DateTimeNullableWithAggregatesFilter<"Guest"> | Date | string | null
+    deletedAt?: DateTimeNullableWithAggregatesFilter<"Guest"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Guest"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Guest"> | Date | string
+  }
+
   export type PostCreateInput = {
     id?: string
     name: string
@@ -29538,6 +30959,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -29547,6 +30970,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -29568,6 +30992,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -29577,6 +31003,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -29597,6 +31024,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29606,6 +31035,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -29626,6 +31056,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29635,6 +31067,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -29656,6 +31089,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -29671,6 +31106,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29686,6 +31123,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30383,6 +31822,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -30421,6 +31861,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -30446,6 +31887,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30483,6 +31925,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30515,6 +31958,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -30536,6 +31980,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -30563,6 +32008,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -31949,6 +33395,127 @@ export namespace Prisma {
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type GuestCreateInput = {
+    id?: string
+    name: string
+    relationship?: string | null
+    email?: string | null
+    phone?: string | null
+    channels?: GuestCreatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestCreatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestCreatepropertyIdsInput | string[]
+    dueDayOnly?: boolean
+    pausedAt?: Date | string | null
+    optedOutAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutGuestsInput
+  }
+
+  export type GuestUncheckedCreateInput = {
+    id?: string
+    ownerId: string
+    name: string
+    relationship?: string | null
+    email?: string | null
+    phone?: string | null
+    channels?: GuestCreatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestCreatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestCreatepropertyIdsInput | string[]
+    dueDayOnly?: boolean
+    pausedAt?: Date | string | null
+    optedOutAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GuestUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    relationship?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    channels?: GuestUpdatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestUpdatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestUpdatepropertyIdsInput | string[]
+    dueDayOnly?: BoolFieldUpdateOperationsInput | boolean
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    optedOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutGuestsNestedInput
+  }
+
+  export type GuestUncheckedUpdateInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    relationship?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    channels?: GuestUpdatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestUpdatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestUpdatepropertyIdsInput | string[]
+    dueDayOnly?: BoolFieldUpdateOperationsInput | boolean
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    optedOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuestCreateManyInput = {
+    id?: string
+    ownerId: string
+    name: string
+    relationship?: string | null
+    email?: string | null
+    phone?: string | null
+    channels?: GuestCreatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestCreatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestCreatepropertyIdsInput | string[]
+    dueDayOnly?: boolean
+    pausedAt?: Date | string | null
+    optedOutAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GuestUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    relationship?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    channels?: GuestUpdatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestUpdatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestUpdatepropertyIdsInput | string[]
+    dueDayOnly?: BoolFieldUpdateOperationsInput | boolean
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    optedOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuestUncheckedUpdateManyInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    relationship?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    channels?: GuestUpdatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestUpdatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestUpdatepropertyIdsInput | string[]
+    dueDayOnly?: BoolFieldUpdateOperationsInput | boolean
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    optedOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -32064,6 +33631,18 @@ export namespace Prisma {
     not?: NestedEnumCurrencyFilter<$PrismaModel> | $Enums.Currency
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+    isSet?: boolean
+  }
+
   export type BoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -32098,6 +33677,12 @@ export namespace Prisma {
     every?: PostWhereInput
     some?: PostWhereInput
     none?: PostWhereInput
+  }
+
+  export type GuestListRelationFilter = {
+    every?: GuestWhereInput
+    some?: GuestWhereInput
+    none?: GuestWhereInput
   }
 
   export type PropertyListRelationFilter = {
@@ -32178,6 +33763,10 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type GuestOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type PropertyOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -32230,12 +33819,18 @@ export namespace Prisma {
     image?: SortOrder
     currency?: SortOrder
     timezone?: SortOrder
+    phone?: SortOrder
+    reminderHour?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
     banExpires?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    reminderHour?: SortOrder
   }
 
   export type UserMaxOrderByAggregateInput = {
@@ -32246,6 +33841,8 @@ export namespace Prisma {
     image?: SortOrder
     currency?: SortOrder
     timezone?: SortOrder
+    phone?: SortOrder
+    reminderHour?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -32262,12 +33859,18 @@ export namespace Prisma {
     image?: SortOrder
     currency?: SortOrder
     timezone?: SortOrder
+    phone?: SortOrder
+    reminderHour?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
     banExpires?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    reminderHour?: SortOrder
   }
 
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -32305,6 +33908,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCurrencyFilter<$PrismaModel>
     _max?: NestedEnumCurrencyFilter<$PrismaModel>
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+    isSet?: boolean
   }
 
   export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -32710,18 +34330,6 @@ export namespace Prisma {
     not?: NestedFloatFilter<$PrismaModel> | number
   }
 
-  export type IntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-    isSet?: boolean
-  }
-
   export type RoomNullableScalarRelationFilter = {
     is?: RoomWhereInput | null
     isNot?: RoomWhereInput | null
@@ -32810,23 +34418,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-    isSet?: boolean
   }
 
   export type EnumEventCategoryFilter<$PrismaModel = never> = {
@@ -32932,6 +34523,7 @@ export namespace Prisma {
     billingType?: SortOrder
     autoGenerateBill?: SortOrder
     recurrence?: SortOrder
+    startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
     defaultAmount?: SortOrder
@@ -32966,6 +34558,7 @@ export namespace Prisma {
     billingType?: SortOrder
     autoGenerateBill?: SortOrder
     recurrence?: SortOrder
+    startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
     defaultAmount?: SortOrder
@@ -32993,6 +34586,7 @@ export namespace Prisma {
     billingType?: SortOrder
     autoGenerateBill?: SortOrder
     recurrence?: SortOrder
+    startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
     defaultAmount?: SortOrder
@@ -33990,6 +35584,62 @@ export namespace Prisma {
     uploadedAt?: SortOrder
   }
 
+  export type EnumEventCategoryNullableListFilter<$PrismaModel = never> = {
+    equals?: $Enums.EventCategory[] | ListEnumEventCategoryFieldRefInput<$PrismaModel> | null
+    has?: $Enums.EventCategory | EnumEventCategoryFieldRefInput<$PrismaModel> | null
+    hasEvery?: $Enums.EventCategory[] | ListEnumEventCategoryFieldRefInput<$PrismaModel>
+    hasSome?: $Enums.EventCategory[] | ListEnumEventCategoryFieldRefInput<$PrismaModel>
+    isEmpty?: boolean
+  }
+
+  export type GuestCountOrderByAggregateInput = {
+    id?: SortOrder
+    ownerId?: SortOrder
+    name?: SortOrder
+    relationship?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    channels?: SortOrder
+    categories?: SortOrder
+    propertyIds?: SortOrder
+    dueDayOnly?: SortOrder
+    pausedAt?: SortOrder
+    optedOutAt?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GuestMaxOrderByAggregateInput = {
+    id?: SortOrder
+    ownerId?: SortOrder
+    name?: SortOrder
+    relationship?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    dueDayOnly?: SortOrder
+    pausedAt?: SortOrder
+    optedOutAt?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type GuestMinOrderByAggregateInput = {
+    id?: SortOrder
+    ownerId?: SortOrder
+    name?: SortOrder
+    relationship?: SortOrder
+    email?: SortOrder
+    phone?: SortOrder
+    dueDayOnly?: SortOrder
+    pausedAt?: SortOrder
+    optedOutAt?: SortOrder
+    deletedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
   export type UserCreateNestedOneWithoutPostsInput = {
     create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
     connectOrCreate?: UserCreateOrConnectWithoutPostsInput
@@ -34031,6 +35681,13 @@ export namespace Prisma {
     connectOrCreate?: PostCreateOrConnectWithoutCreatedByInput | PostCreateOrConnectWithoutCreatedByInput[]
     createMany?: PostCreateManyCreatedByInputEnvelope
     connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
+  }
+
+  export type GuestCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<GuestCreateWithoutOwnerInput, GuestUncheckedCreateWithoutOwnerInput> | GuestCreateWithoutOwnerInput[] | GuestUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: GuestCreateOrConnectWithoutOwnerInput | GuestCreateOrConnectWithoutOwnerInput[]
+    createMany?: GuestCreateManyOwnerInputEnvelope
+    connect?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
   }
 
   export type PropertyCreateNestedManyWithoutOwnerInput = {
@@ -34131,6 +35788,13 @@ export namespace Prisma {
     connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
   }
 
+  export type GuestUncheckedCreateNestedManyWithoutOwnerInput = {
+    create?: XOR<GuestCreateWithoutOwnerInput, GuestUncheckedCreateWithoutOwnerInput> | GuestCreateWithoutOwnerInput[] | GuestUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: GuestCreateOrConnectWithoutOwnerInput | GuestCreateOrConnectWithoutOwnerInput[]
+    createMany?: GuestCreateManyOwnerInputEnvelope
+    connect?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+  }
+
   export type PropertyUncheckedCreateNestedManyWithoutOwnerInput = {
     create?: XOR<PropertyCreateWithoutOwnerInput, PropertyUncheckedCreateWithoutOwnerInput> | PropertyCreateWithoutOwnerInput[] | PropertyUncheckedCreateWithoutOwnerInput[]
     connectOrCreate?: PropertyCreateOrConnectWithoutOwnerInput | PropertyCreateOrConnectWithoutOwnerInput[]
@@ -34221,6 +35885,15 @@ export namespace Prisma {
     set?: $Enums.Currency
   }
 
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+    unset?: boolean
+  }
+
   export type NullableBoolFieldUpdateOperationsInput = {
     set?: boolean | null
     unset?: boolean
@@ -34271,6 +35944,20 @@ export namespace Prisma {
     update?: PostUpdateWithWhereUniqueWithoutCreatedByInput | PostUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: PostUpdateManyWithWhereWithoutCreatedByInput | PostUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type GuestUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<GuestCreateWithoutOwnerInput, GuestUncheckedCreateWithoutOwnerInput> | GuestCreateWithoutOwnerInput[] | GuestUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: GuestCreateOrConnectWithoutOwnerInput | GuestCreateOrConnectWithoutOwnerInput[]
+    upsert?: GuestUpsertWithWhereUniqueWithoutOwnerInput | GuestUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: GuestCreateManyOwnerInputEnvelope
+    set?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    disconnect?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    delete?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    connect?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    update?: GuestUpdateWithWhereUniqueWithoutOwnerInput | GuestUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: GuestUpdateManyWithWhereWithoutOwnerInput | GuestUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: GuestScalarWhereInput | GuestScalarWhereInput[]
   }
 
   export type PropertyUpdateManyWithoutOwnerNestedInput = {
@@ -34467,6 +36154,20 @@ export namespace Prisma {
     update?: PostUpdateWithWhereUniqueWithoutCreatedByInput | PostUpdateWithWhereUniqueWithoutCreatedByInput[]
     updateMany?: PostUpdateManyWithWhereWithoutCreatedByInput | PostUpdateManyWithWhereWithoutCreatedByInput[]
     deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
+  }
+
+  export type GuestUncheckedUpdateManyWithoutOwnerNestedInput = {
+    create?: XOR<GuestCreateWithoutOwnerInput, GuestUncheckedCreateWithoutOwnerInput> | GuestCreateWithoutOwnerInput[] | GuestUncheckedCreateWithoutOwnerInput[]
+    connectOrCreate?: GuestCreateOrConnectWithoutOwnerInput | GuestCreateOrConnectWithoutOwnerInput[]
+    upsert?: GuestUpsertWithWhereUniqueWithoutOwnerInput | GuestUpsertWithWhereUniqueWithoutOwnerInput[]
+    createMany?: GuestCreateManyOwnerInputEnvelope
+    set?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    disconnect?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    delete?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    connect?: GuestWhereUniqueInput | GuestWhereUniqueInput[]
+    update?: GuestUpdateWithWhereUniqueWithoutOwnerInput | GuestUpdateWithWhereUniqueWithoutOwnerInput[]
+    updateMany?: GuestUpdateManyWithWhereWithoutOwnerInput | GuestUpdateManyWithWhereWithoutOwnerInput[]
+    deleteMany?: GuestScalarWhereInput | GuestScalarWhereInput[]
   }
 
   export type PropertyUncheckedUpdateManyWithoutOwnerNestedInput = {
@@ -35322,15 +37023,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type NullableIntFieldUpdateOperationsInput = {
-    set?: number | null
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
-    unset?: boolean
   }
 
   export type PropertyUpdateOneRequiredWithoutLeasesNestedInput = {
@@ -37705,6 +39397,47 @@ export namespace Prisma {
     update?: XOR<XOR<BillUpdateToOneWithWhereWithoutDocumentsInput, BillUpdateWithoutDocumentsInput>, BillUncheckedUpdateWithoutDocumentsInput>
   }
 
+  export type GuestCreatechannelsInput = {
+    set: $Enums.ReminderChannel[]
+  }
+
+  export type GuestCreatecategoriesInput = {
+    set: $Enums.EventCategory[]
+  }
+
+  export type GuestCreatepropertyIdsInput = {
+    set: string[]
+  }
+
+  export type UserCreateNestedOneWithoutGuestsInput = {
+    create?: XOR<UserCreateWithoutGuestsInput, UserUncheckedCreateWithoutGuestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuestsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type GuestUpdatechannelsInput = {
+    set?: $Enums.ReminderChannel[]
+    push?: $Enums.ReminderChannel | $Enums.ReminderChannel[]
+  }
+
+  export type GuestUpdatecategoriesInput = {
+    set?: $Enums.EventCategory[]
+    push?: $Enums.EventCategory | $Enums.EventCategory[]
+  }
+
+  export type GuestUpdatepropertyIdsInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type UserUpdateOneRequiredWithoutGuestsNestedInput = {
+    create?: XOR<UserCreateWithoutGuestsInput, UserUncheckedCreateWithoutGuestsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutGuestsInput
+    upsert?: UserUpsertWithoutGuestsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGuestsInput, UserUpdateWithoutGuestsInput>, UserUncheckedUpdateWithoutGuestsInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -37799,6 +39532,18 @@ export namespace Prisma {
     not?: NestedEnumCurrencyFilter<$PrismaModel> | $Enums.Currency
   }
 
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+    isSet?: boolean
+  }
+
   export type NestedBoolNullableFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
     not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
@@ -37843,18 +39588,6 @@ export namespace Prisma {
     isSet?: boolean
   }
 
-  export type NestedIntNullableFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableFilter<$PrismaModel> | number | null
-    isSet?: boolean
-  }
-
   export type NestedEnumCurrencyWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.Currency | EnumCurrencyFieldRefInput<$PrismaModel>
     in?: $Enums.Currency[] | ListEnumCurrencyFieldRefInput<$PrismaModel>
@@ -37863,6 +39596,35 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCurrencyFilter<$PrismaModel>
     _max?: NestedEnumCurrencyFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+    isSet?: boolean
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+    isSet?: boolean
   }
 
   export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -37917,18 +39679,6 @@ export namespace Prisma {
     in?: $Enums.Currency[] | ListEnumCurrencyFieldRefInput<$PrismaModel> | null
     notIn?: $Enums.Currency[] | ListEnumCurrencyFieldRefInput<$PrismaModel> | null
     not?: NestedEnumCurrencyNullableFilter<$PrismaModel> | $Enums.Currency | null
-    isSet?: boolean
-  }
-
-  export type NestedFloatNullableFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
     isSet?: boolean
   }
 
@@ -38017,23 +39767,6 @@ export namespace Prisma {
     _sum?: NestedFloatFilter<$PrismaModel>
     _min?: NestedFloatFilter<$PrismaModel>
     _max?: NestedFloatFilter<$PrismaModel>
-  }
-
-  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel> | null
-    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _avg?: NestedFloatNullableFilter<$PrismaModel>
-    _sum?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedIntNullableFilter<$PrismaModel>
-    _max?: NestedIntNullableFilter<$PrismaModel>
-    isSet?: boolean
   }
 
   export type NestedEnumEventCategoryFilter<$PrismaModel = never> = {
@@ -38363,6 +40096,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -38371,6 +40106,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -38392,6 +40128,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -38400,6 +40138,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -38436,6 +40175,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38444,6 +40185,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -38464,6 +40206,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38472,6 +40216,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -38576,6 +40321,49 @@ export namespace Prisma {
 
   export type PostCreateManyCreatedByInputEnvelope = {
     data: PostCreateManyCreatedByInput | PostCreateManyCreatedByInput[]
+  }
+
+  export type GuestCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    relationship?: string | null
+    email?: string | null
+    phone?: string | null
+    channels?: GuestCreatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestCreatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestCreatepropertyIdsInput | string[]
+    dueDayOnly?: boolean
+    pausedAt?: Date | string | null
+    optedOutAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GuestUncheckedCreateWithoutOwnerInput = {
+    id?: string
+    name: string
+    relationship?: string | null
+    email?: string | null
+    phone?: string | null
+    channels?: GuestCreatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestCreatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestCreatepropertyIdsInput | string[]
+    dueDayOnly?: boolean
+    pausedAt?: Date | string | null
+    optedOutAt?: Date | string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GuestCreateOrConnectWithoutOwnerInput = {
+    where: GuestWhereUniqueInput
+    create: XOR<GuestCreateWithoutOwnerInput, GuestUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type GuestCreateManyOwnerInputEnvelope = {
+    data: GuestCreateManyOwnerInput | GuestCreateManyOwnerInput[]
   }
 
   export type PropertyCreateWithoutOwnerInput = {
@@ -38931,6 +40719,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -38967,6 +40756,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -39318,6 +41108,43 @@ export namespace Prisma {
     createdById?: StringFilter<"Post"> | string
   }
 
+  export type GuestUpsertWithWhereUniqueWithoutOwnerInput = {
+    where: GuestWhereUniqueInput
+    update: XOR<GuestUpdateWithoutOwnerInput, GuestUncheckedUpdateWithoutOwnerInput>
+    create: XOR<GuestCreateWithoutOwnerInput, GuestUncheckedCreateWithoutOwnerInput>
+  }
+
+  export type GuestUpdateWithWhereUniqueWithoutOwnerInput = {
+    where: GuestWhereUniqueInput
+    data: XOR<GuestUpdateWithoutOwnerInput, GuestUncheckedUpdateWithoutOwnerInput>
+  }
+
+  export type GuestUpdateManyWithWhereWithoutOwnerInput = {
+    where: GuestScalarWhereInput
+    data: XOR<GuestUpdateManyMutationInput, GuestUncheckedUpdateManyWithoutOwnerInput>
+  }
+
+  export type GuestScalarWhereInput = {
+    AND?: GuestScalarWhereInput | GuestScalarWhereInput[]
+    OR?: GuestScalarWhereInput[]
+    NOT?: GuestScalarWhereInput | GuestScalarWhereInput[]
+    id?: StringFilter<"Guest"> | string
+    ownerId?: StringFilter<"Guest"> | string
+    name?: StringFilter<"Guest"> | string
+    relationship?: StringNullableFilter<"Guest"> | string | null
+    email?: StringNullableFilter<"Guest"> | string | null
+    phone?: StringNullableFilter<"Guest"> | string | null
+    channels?: EnumReminderChannelNullableListFilter<"Guest">
+    categories?: EnumEventCategoryNullableListFilter<"Guest">
+    propertyIds?: StringNullableListFilter<"Guest">
+    dueDayOnly?: BoolFilter<"Guest"> | boolean
+    pausedAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    optedOutAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    deletedAt?: DateTimeNullableFilter<"Guest"> | Date | string | null
+    createdAt?: DateTimeFilter<"Guest"> | Date | string
+    updatedAt?: DateTimeFilter<"Guest"> | Date | string
+  }
+
   export type PropertyUpsertWithWhereUniqueWithoutOwnerInput = {
     where: PropertyWhereUniqueInput
     update: XOR<PropertyUpdateWithoutOwnerInput, PropertyUncheckedUpdateWithoutOwnerInput>
@@ -39568,6 +41395,7 @@ export namespace Prisma {
     billingType?: EnumBillingTypeNullableFilter<"BillSchedule"> | $Enums.BillingType | null
     autoGenerateBill?: BoolNullableFilter<"BillSchedule"> | boolean | null
     recurrence?: EnumBillRecurrenceFilter<"BillSchedule"> | $Enums.BillRecurrence
+    startDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
@@ -39780,6 +41608,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -39788,6 +41618,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -39809,6 +41640,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -39817,6 +41650,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -39853,6 +41687,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39861,6 +41697,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -39881,6 +41718,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39889,6 +41728,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -39910,6 +41750,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -39918,6 +41760,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -39939,6 +41782,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -39947,6 +41792,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -39983,6 +41829,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39991,6 +41839,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -40011,6 +41860,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40019,6 +41870,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -40040,6 +41892,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -40049,6 +41903,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
     loans?: LoanCreateNestedManyWithoutOwnerInput
@@ -40069,6 +41924,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -40078,6 +41935,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
     loans?: LoanUncheckedCreateNestedManyWithoutOwnerInput
@@ -40262,6 +42120,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -40298,6 +42157,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -40689,6 +42549,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40698,6 +42560,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
     loans?: LoanUpdateManyWithoutOwnerNestedInput
@@ -40717,6 +42580,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40726,6 +42591,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
     loans?: LoanUncheckedUpdateManyWithoutOwnerNestedInput
@@ -41322,6 +43188,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -41358,6 +43225,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -41888,6 +43756,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -41897,6 +43767,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -41917,6 +43788,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -41926,6 +43799,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -42505,6 +44379,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42514,6 +44390,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -42533,6 +44410,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42542,6 +44421,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -42937,6 +44817,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -42946,6 +44828,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -42966,6 +44849,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -42975,6 +44860,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -43002,6 +44888,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -43039,6 +44926,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -43572,6 +45460,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43581,6 +45471,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -43600,6 +45491,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43609,6 +45502,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -43641,6 +45535,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -43677,6 +45572,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -44075,6 +45971,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44084,6 +45982,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
     loans?: LoanCreateNestedManyWithoutOwnerInput
@@ -44104,6 +46003,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44113,6 +46014,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
     loans?: LoanUncheckedCreateNestedManyWithoutOwnerInput
@@ -44211,6 +46113,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -44247,6 +46150,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -44638,6 +46542,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44647,6 +46553,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
     loans?: LoanUpdateManyWithoutOwnerNestedInput
@@ -44666,6 +46573,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44675,6 +46584,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
     loans?: LoanUncheckedUpdateManyWithoutOwnerNestedInput
@@ -44882,6 +46792,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44891,6 +46803,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     loans?: LoanCreateNestedManyWithoutOwnerInput
@@ -44911,6 +46824,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44920,6 +46835,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     loans?: LoanUncheckedCreateNestedManyWithoutOwnerInput
@@ -44947,6 +46863,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -44983,6 +46900,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -45374,6 +47292,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45383,6 +47303,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     loans?: LoanUpdateManyWithoutOwnerNestedInput
@@ -45402,6 +47323,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45411,6 +47334,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     loans?: LoanUncheckedUpdateManyWithoutOwnerNestedInput
@@ -45543,6 +47467,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -45552,6 +47478,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -45572,6 +47499,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -45581,6 +47510,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -45795,6 +47725,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -45831,6 +47762,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -46167,6 +48099,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46176,6 +48110,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -46195,6 +48130,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46204,6 +48141,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -46519,6 +48457,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -46528,6 +48468,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -46548,6 +48489,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -46557,6 +48500,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -46968,6 +48912,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46977,6 +48923,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -46996,6 +48943,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47005,6 +48954,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -47425,6 +49375,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47434,6 +49386,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -47454,6 +49407,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47463,6 +49418,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -47498,6 +49454,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47507,6 +49465,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -47526,6 +49485,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47535,6 +49496,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -47555,6 +49517,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47564,6 +49528,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -47584,6 +49549,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47593,6 +49560,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -47620,6 +49588,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -47657,6 +49626,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -48134,6 +50104,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48143,6 +50115,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -48162,6 +50135,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48171,6 +50146,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -48203,6 +50179,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -48239,6 +50216,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -48723,6 +50701,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -48732,6 +50712,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -48752,6 +50733,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -48761,6 +50744,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -48788,6 +50772,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -48825,6 +50810,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -49288,6 +51274,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49297,6 +51285,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -49316,6 +51305,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49325,6 +51316,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -49357,6 +51349,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -49393,6 +51386,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -49816,6 +51810,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -49825,6 +51821,7 @@ export namespace Prisma {
     sessions?: SessionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     posts?: PostCreateNestedManyWithoutCreatedByInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -49845,6 +51842,8 @@ export namespace Prisma {
     image?: string | null
     currency?: $Enums.Currency
     timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -49854,6 +51853,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -50201,6 +52201,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -50238,6 +52239,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -50361,6 +52363,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50370,6 +52374,7 @@ export namespace Prisma {
     sessions?: SessionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     posts?: PostUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -50389,6 +52394,8 @@ export namespace Prisma {
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
     timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50398,6 +52405,7 @@ export namespace Prisma {
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -50774,6 +52782,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -50810,6 +52819,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -50914,6 +52924,148 @@ export namespace Prisma {
     notificationJobs?: NotificationJobUncheckedUpdateManyWithoutBillNestedInput
   }
 
+  export type UserCreateWithoutGuestsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    currency?: $Enums.Currency
+    timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutCreatedByInput
+    properties?: PropertyCreateNestedManyWithoutOwnerInput
+    policies?: PolicyCreateNestedManyWithoutOwnerInput
+    investments?: InvestmentCreateNestedManyWithoutOwnerInput
+    loans?: LoanCreateNestedManyWithoutOwnerInput
+    bills?: BillCreateNestedManyWithoutOwnerInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutOwnerInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutOwnerInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutOwnerInput
+    documents?: DocumentCreateNestedManyWithoutOwnerInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutGuestsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    currency?: $Enums.Currency
+    timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
+    loans?: LoanUncheckedCreateNestedManyWithoutOwnerInput
+    bills?: BillUncheckedCreateNestedManyWithoutOwnerInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutOwnerInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutOwnerInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutOwnerInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutOwnerInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutGuestsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutGuestsInput, UserUncheckedCreateWithoutGuestsInput>
+  }
+
+  export type UserUpsertWithoutGuestsInput = {
+    update: XOR<UserUpdateWithoutGuestsInput, UserUncheckedUpdateWithoutGuestsInput>
+    create: XOR<UserCreateWithoutGuestsInput, UserUncheckedCreateWithoutGuestsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutGuestsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutGuestsInput, UserUncheckedUpdateWithoutGuestsInput>
+  }
+
+  export type UserUpdateWithoutGuestsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutCreatedByNestedInput
+    properties?: PropertyUpdateManyWithoutOwnerNestedInput
+    policies?: PolicyUpdateManyWithoutOwnerNestedInput
+    investments?: InvestmentUpdateManyWithoutOwnerNestedInput
+    loans?: LoanUpdateManyWithoutOwnerNestedInput
+    bills?: BillUpdateManyWithoutOwnerNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutOwnerNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutOwnerNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUpdateManyWithoutOwnerNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutGuestsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutOwnerNestedInput
+    bills?: BillUncheckedUpdateManyWithoutOwnerNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutOwnerNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutOwnerNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
   export type SessionCreateManyUserInput = {
     id?: string
     expiresAt: Date | string
@@ -50943,6 +53095,23 @@ export namespace Prisma {
   export type PostCreateManyCreatedByInput = {
     id?: string
     name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type GuestCreateManyOwnerInput = {
+    id?: string
+    name: string
+    relationship?: string | null
+    email?: string | null
+    phone?: string | null
+    channels?: GuestCreatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestCreatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestCreatepropertyIdsInput | string[]
+    dueDayOnly?: boolean
+    pausedAt?: Date | string | null
+    optedOutAt?: Date | string | null
+    deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -51077,6 +53246,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -51268,6 +53438,54 @@ export namespace Prisma {
 
   export type PostUncheckedUpdateManyWithoutCreatedByInput = {
     name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuestUpdateWithoutOwnerInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    relationship?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    channels?: GuestUpdatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestUpdatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestUpdatepropertyIdsInput | string[]
+    dueDayOnly?: BoolFieldUpdateOperationsInput | boolean
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    optedOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuestUncheckedUpdateWithoutOwnerInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    relationship?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    channels?: GuestUpdatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestUpdatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestUpdatepropertyIdsInput | string[]
+    dueDayOnly?: BoolFieldUpdateOperationsInput | boolean
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    optedOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuestUncheckedUpdateManyWithoutOwnerInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    relationship?: NullableStringFieldUpdateOperationsInput | string | null
+    email?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    channels?: GuestUpdatechannelsInput | $Enums.ReminderChannel[]
+    categories?: GuestUpdatecategoriesInput | $Enums.EventCategory[]
+    propertyIds?: GuestUpdatepropertyIdsInput | string[]
+    dueDayOnly?: BoolFieldUpdateOperationsInput | boolean
+    pausedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    optedOutAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -51679,6 +53897,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -51714,6 +53933,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -51744,6 +53964,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -52087,6 +54308,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -52415,6 +54637,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -52450,6 +54673,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -52480,6 +54704,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -53065,6 +55290,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -53205,6 +55431,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -53240,6 +55467,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -53270,6 +55498,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -54373,6 +56602,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -54530,6 +56760,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -54565,6 +56796,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -54595,6 +56827,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -55034,6 +57267,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -55191,6 +57425,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -55226,6 +57461,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -55256,6 +57492,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -55695,6 +57932,7 @@ export namespace Prisma {
     billingType?: $Enums.BillingType | null
     autoGenerateBill?: boolean | null
     recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
     defaultAmount?: number | null
@@ -55835,6 +58073,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -55870,6 +58109,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
@@ -55900,6 +58140,7 @@ export namespace Prisma {
     billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
     autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null

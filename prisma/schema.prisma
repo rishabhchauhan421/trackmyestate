@@ -41,6 +41,15 @@ model User {
   // `DEFAULT_TIME_ZONE` in `src/lib/time-zone.ts`. Set from Settings.
   timezone      String?
 
+  // Mobile number for SMS/WhatsApp reminders, E.164 ("+919876543210").
+  // Saved from Settings › Channels; verification and delivery aren't
+  // built yet, so nothing is sent to it.
+  phone         String?
+
+  // Local hour (0-23) reminders are sent at; null = 9 am. See
+  // `src/server/reminders/generate.ts`.
+  reminderHour  Int?
+
   // better-auth `admin` plugin fields (see `src/server/better-auth/config.ts`).
   // All optional: existing users have none of these set and are treated as
   // ordinary, unbanned, non-admin users until explicitly promoted/banned —
@@ -58,6 +67,7 @@ model User {
   posts         Post[]
 
   // Domain relations
+  guests            Guest[]
   properties        Property[]
   policies          Policy[]
   investments       Investment[]
@@ -440,6 +450,11 @@ model BillSchedule {
   autoGenerateBill Boolean?
 
   recurrence       BillRecurrence @default(MONTHLY)
+  // The first due date (a date-only value — see src/lib/calendar-day.ts).
+  // Anchors every recurrence: which months a quarterly bill falls in,
+  // which weekday a weekly one does, and where an EMI's tenure starts.
+  // Older schedules without it are anchored on their creation date.
+  startDate        DateTime?
   dueDay           Int            
   dueMonth         Int?           
   defaultAmount    Float?
@@ -831,4 +846,41 @@ model Document {
   uploadedAt DateTime          @default(now())
 
   @@index([ownerId, deletedAt])
+}
+
+// Someone the owner wants reminded about some of their payments — a family
+// member, a tenant, an accountant. Guests have no account and never sign
+// in: they only receive reminders (and see just the item's name, amount
+// and due date). Edited in Settings › Guests.
+model Guest {
+  id           String            @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId      String            @db.ObjectId
+  owner        User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  name         String
+  relationship String?
+  // At least one of email / phone. Phone is E.164 ("+919876543210").
+  email        String?
+  phone        String?
+
+  // Which channels to use — only EMAIL can deliver today.
+  channels     ReminderChannel[]
+  // Which kinds of payment they're reminded about.
+  categories   EventCategory[]
+  // Optional: only bills on these properties (empty = all of them).
+  propertyIds  String[]          @db.ObjectId
+  // true = only on the due day; false = the owner's own schedule.
+  dueDayOnly   Boolean           @default(false)
+
+  // Paused by the owner (can be resumed).
+  pausedAt     DateTime?
+  // The guest used the "stop these reminders" link — final; the owner
+  // can't resume them.
+  optedOutAt   DateTime?
+
+  deletedAt    DateTime?
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([ownerId])
 }

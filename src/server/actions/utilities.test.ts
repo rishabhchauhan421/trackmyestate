@@ -1,6 +1,7 @@
 import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 
 import type { PrismaClient } from "../../../generated/prisma";
+import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
 import {
@@ -11,6 +12,9 @@ import {
 } from "./utilities";
 
 jest.mock("~/server/db");
+jest.mock("~/server/bills/generate", () => ({
+  generateBillsForSchedule: jest.fn(),
+}));
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -49,6 +53,7 @@ afterAll(() => {
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
   revalidatePath.mockClear();
@@ -105,6 +110,22 @@ describe("createUtility", () => {
     ).rejects.toThrow("REDIRECT:/properties/prop-1/utilities");
 
     jest.setSystemTime(new Date(2026, 0, 15, 10, 0));
+  });
+
+  it("anchors the schedule on the first due date and generates its bills", async () => {
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-1" } as never);
+
+    await expect(
+      createUtility(buildUtilityForm({ firstDueDate: "2026-02-20" })),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        startDate: new Date("2026-02-20"),
+        dueDay: 20,
+      }),
+    });
+    expect(generateBillsForSchedule).toHaveBeenCalledWith("sched-1");
   });
 
   it("accepts today as the first due date", async () => {

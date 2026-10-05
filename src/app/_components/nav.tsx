@@ -76,6 +76,12 @@ export const adminNavItems = [
     Icon: ShieldIcon,
   },
   {
+    label: "Jobs",
+    href: "/admin/jobs",
+    description: "Bill generation, reminders and sending — run them now",
+    Icon: TimelineIcon,
+  },
+  {
     label: "Users",
     href: "/admin/users",
     description: "Every signed-up user and their portfolio size",

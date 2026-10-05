@@ -2,6 +2,7 @@ import "server-only";
 
 import type { NotificationStatus } from "../../../generated/prisma";
 import { db } from "~/server/db";
+import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -127,4 +128,48 @@ export async function listUsers(): Promise<AdminUserRow[]> {
     investmentCount: user._count.investments,
     loanCount: user._count.loans,
   }));
+}
+
+/** Numbers for Admin › Jobs: what the background jobs are working on. */
+export async function getJobsOverview(now = new Date()) {
+  const inDays = (days: number) =>
+    new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
+  const [
+    activeSchedules,
+    upcomingBills,
+    scheduledJobs,
+    dueJobs,
+    processingJobs,
+    failedLast7d,
+    sentLast24h,
+  ] = await Promise.all([
+    db.billSchedule.count({ where: { active: true, ...NOT_SOFT_DELETED } }),
+    db.bill.count({
+      where: {
+        status: { in: ["DUE", "OVERDUE", "PARTIALLY_PAID"] },
+        dueDate: { gte: now, lte: inDays(35) },
+        ...NOT_SOFT_DELETED,
+      },
+    }),
+    db.notificationJob.count({ where: { status: "SCHEDULED" } }),
+    db.notificationJob.count({
+      where: { status: "SCHEDULED", scheduledFor: { lte: now } },
+    }),
+    db.notificationJob.count({ where: { status: "PROCESSING" } }),
+    db.notificationJob.count({
+      where: { status: "FAILED", updatedAt: { gte: inDays(-7) } },
+    }),
+    db.notificationJob.count({
+      where: { status: "SENT", sentAt: { gte: inDays(-1) } },
+    }),
+  ]);
+  return {
+    activeSchedules,
+    upcomingBills,
+    scheduledJobs,
+    dueJobs,
+    processingJobs,
+    failedLast7d,
+    sentLast24h,
+  };
 }

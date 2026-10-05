@@ -1,9 +1,9 @@
 import "server-only";
 
+import { addDays, dateOnly } from "~/lib/calendar-day";
+import { DEFAULT_TIME_ZONE, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
 import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
-
-const DAY_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Aggregates the numbers the Dashboard page renders: net worth (property +
@@ -11,10 +11,16 @@ const DAY_MS = 24 * 60 * 60 * 1000;
  * upcoming outflows/inflows due within 30 days, and a short "needs
  * attention" list (overdue, or due within 7 days).
  */
-export async function getDashboardData(ownerId: string) {
-  const now = new Date();
-  const in7Days = new Date(now.getTime() + 7 * DAY_MS);
-  const in30Days = new Date(now.getTime() + 30 * DAY_MS);
+export async function getDashboardData(
+  ownerId: string,
+  timeZone: string = DEFAULT_TIME_ZONE,
+  now: Date = new Date(),
+) {
+  // Due dates are date-only values, so the windows are calendar days
+  // counted from today where the user is.
+  const today = todayInTimeZone(timeZone, now);
+  const in7Days = dateOnly(addDays(today, 7));
+  const in30Days = dateOnly(addDays(today, 30));
 
   const [
     propertyValue,
@@ -77,7 +83,7 @@ export async function getDashboardData(ownerId: string) {
       where: {
         ownerId,
         status: { in: [...OPEN_PAYMENT_STATUSES] },
-        dueDate: { gte: startOfDay(now) },
+        dueDate: { gte: dateOnly(today) },
       },
       orderBy: { dueDate: "asc" },
       take: 6,
@@ -101,10 +107,4 @@ export async function getDashboardData(ownerId: string) {
     attentionItems,
     upcoming,
   };
-}
-
-function startOfDay(date: Date) {
-  const start = new Date(date);
-  start.setHours(0, 0, 0, 0);
-  return start;
 }

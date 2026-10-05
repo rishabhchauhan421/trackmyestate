@@ -16,7 +16,7 @@ beforeEach(() => {
 
 describe("getTimelineEvents", () => {
   beforeEach(() => {
-    jest.useFakeTimers().setSystemTime(new Date(2026, 5, 15)); // 15 Jun 2026
+    jest.useFakeTimers().setSystemTime(new Date("2026-06-15T06:30:00Z")); // 15 Jun, midday in India
   });
 
   afterEach(() => {
@@ -30,8 +30,8 @@ describe("getTimelineEvents", () => {
 
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
     expect(call?.where?.dueDate).toEqual({
-      gte: new Date(2026, 5, 1),
-      lt: new Date(2026, 6, 1),
+      gte: new Date("2026-06-01"),
+      lt: new Date("2026-07-01"),
     });
   });
 
@@ -43,8 +43,8 @@ describe("getTimelineEvents", () => {
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
     // June (month index 5) falls in Q2: Apr(3)-Jun(5)
     expect(call?.where?.dueDate).toEqual({
-      gte: new Date(2026, 3, 1),
-      lt: new Date(2026, 6, 1),
+      gte: new Date("2026-04-01"),
+      lt: new Date("2026-07-01"),
     });
   });
 
@@ -55,34 +55,54 @@ describe("getTimelineEvents", () => {
 
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
     expect(call?.where?.dueDate).toEqual({
-      gte: new Date(2026, 0, 1),
-      lt: new Date(2027, 0, 1),
+      gte: new Date("2026-01-01"),
+      lt: new Date("2027-01-01"),
     });
   });
 
   it("rolls a Q4 quarter over into January of the next year", async () => {
-    jest.setSystemTime(new Date(2026, 11, 20)); // 20 Dec 2026, Q4
+    jest.setSystemTime(new Date("2026-12-20T06:30:00Z")); // 20 Dec 2026, Q4
     dbMock.bill.findMany.mockResolvedValue([]);
 
     await getTimelineEvents(OWNER_ID, "quarter", "all");
 
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
     expect(call?.where?.dueDate).toEqual({
-      gte: new Date(2026, 9, 1), // 1 Oct 2026
-      lt: new Date(2027, 0, 1), // 1 Jan 2027, not month index 12
+      gte: new Date("2026-10-01"), // 1 Oct 2026
+      lt: new Date("2027-01-01"), // 1 Jan 2027, not month index 12
     });
   });
 
   it("rolls a December 'month' range over into January of the next year", async () => {
-    jest.setSystemTime(new Date(2026, 11, 31)); // 31 Dec 2026
+    jest.setSystemTime(new Date("2026-12-31T06:30:00Z")); // 31 Dec 2026
     dbMock.bill.findMany.mockResolvedValue([]);
 
     await getTimelineEvents(OWNER_ID, "month", "all");
 
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
     expect(call?.where?.dueDate).toEqual({
-      gte: new Date(2026, 11, 1),
-      lt: new Date(2027, 0, 1),
+      gte: new Date("2026-12-01"),
+      lt: new Date("2027-01-01"),
+    });
+  });
+
+  it("uses the user's calendar month: already July in India, still June in New York", async () => {
+    jest.setSystemTime(new Date("2026-06-30T20:00:00Z"));
+    dbMock.bill.findMany.mockResolvedValue([]);
+
+    await getTimelineEvents(OWNER_ID, "month", "all", "Asia/Kolkata");
+    await getTimelineEvents(OWNER_ID, "month", "all", "America/New_York");
+
+    const [india, newYork] = dbMock.bill.findMany.mock.calls.map(
+      ([arg]) => arg?.where?.dueDate,
+    );
+    expect(india).toEqual({
+      gte: new Date("2026-07-01"),
+      lt: new Date("2026-08-01"),
+    });
+    expect(newYork).toEqual({
+      gte: new Date("2026-06-01"),
+      lt: new Date("2026-07-01"),
     });
   });
 

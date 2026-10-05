@@ -1,5 +1,6 @@
 import {
   formatBillAmount,
+  daysUntil,
   formatDate,
   formatDueIn,
   formatINR,
@@ -71,39 +72,61 @@ describe("formatDate", () => {
   });
 });
 
-describe("toDateInputValue", () => {
-  it("formats a date as YYYY-MM-DD", () => {
-    expect(toDateInputValue(new Date(2026, 2, 5))).toBe("2026-03-05");
-  });
-
-  it("pads single-digit months and days", () => {
-    expect(toDateInputValue(new Date(2026, 0, 3))).toBe("2026-01-03");
-  });
-
-  it("uses local calendar fields, not a UTC shift", () => {
-    // Local midnight on the 5th must stay the 5th, even though its UTC
-    // instant could fall on the 4th at a negative UTC offset.
-    expect(toDateInputValue(new Date(2026, 2, 5, 0, 0))).toBe("2026-03-05");
+describe("formatDate for timestamps", () => {
+  it("shows the day an instant fell on in the given time zone", () => {
+    // 20:00 UTC on 5 Oct is already 6 Oct in India.
+    const instant = new Date("2026-10-05T20:00:00Z");
+    expect(formatDate(instant)).toMatch(/5 Oct 2026/);
+    expect(formatDate(instant, "Asia/Kolkata")).toMatch(/6 Oct 2026/);
   });
 });
 
-describe("formatDueIn", () => {
-  const now = new Date(2026, 9, 5, 15, 30);
+describe("toDateInputValue", () => {
+  it("gives a stored date-only value's calendar day", () => {
+    expect(toDateInputValue(new Date("2026-03-05"))).toBe("2026-03-05");
+    expect(toDateInputValue(new Date("2026-01-03"))).toBe("2026-01-03");
+  });
+
+  it("round-trips what a date input submitted", () => {
+    // A date input's "2026-03-05" is parsed by the server as midnight UTC;
+    // prefilling the edit form must show the same day back.
+    expect(toDateInputValue(new Date("2026-03-05"))).toBe("2026-03-05");
+  });
+});
+
+describe("daysUntil and formatDueIn", () => {
+  // 10:00 in India on 5 Oct.
+  const now = new Date("2026-10-05T04:30:00Z");
+  const day = (iso: string) => new Date(iso); // stored as midnight UTC
 
   it.each([
-    [new Date(2026, 9, 2), "Overdue 3 days"],
-    [new Date(2026, 9, 4, 23, 59), "Overdue 1 day"],
-    [new Date(2026, 9, 5, 0, 0), "Due today"],
-    [new Date(2026, 9, 6), "Tomorrow"],
-    [new Date(2026, 9, 10), "In 5 days"],
-  ])("formats %p as %p", (date, expected) => {
-    expect(formatDueIn(date, now)).toBe(expected);
+    ["2026-10-02", "Overdue 3 days"],
+    ["2026-10-04", "Overdue 1 day"],
+    ["2026-10-05", "Due today"],
+    ["2026-10-06", "Tomorrow"],
+    ["2026-10-10", "In 5 days"],
+  ])("formats a due date of %p as %p", (due, expected) => {
+    expect(formatDueIn(day(due), now)).toBe(expected);
+  });
+
+  it("only lets the user's time zone move 'today', never the due day", () => {
+    // 02:00 UTC on 6 Oct: already 6 Oct in India, still 5 Oct in New York.
+    const instant = new Date("2026-10-06T02:00:00Z");
+    const due = day("2026-10-08");
+    expect(daysUntil(due, instant, "Asia/Kolkata")).toBe(2);
+    expect(daysUntil(due, instant, "America/New_York")).toBe(3);
+    expect(daysUntil(due, instant, "Pacific/Kiritimati")).toBe(2);
+  });
+
+  it("defaults to the app's default time zone (India)", () => {
+    const instant = new Date("2026-10-05T20:00:00Z"); // 6 Oct in India
+    expect(daysUntil(day("2026-10-06"), instant)).toBe(0);
   });
 });
 
 describe("formatShortDate", () => {
   it("drops the year", () => {
-    expect(formatShortDate(new Date(2026, 9, 5))).toBe("5 Oct");
+    expect(formatShortDate(new Date("2026-10-05"))).toBe("5 Oct");
   });
 });
 

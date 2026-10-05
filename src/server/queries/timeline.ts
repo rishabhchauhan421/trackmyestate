@@ -1,36 +1,34 @@
 import "server-only";
 
+import { DEFAULT_TIME_ZONE, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
 
 export type TimelineRange = "month" | "quarter" | "year";
 export type TimelineFilter = "all" | "inflow" | "outflow";
 
 /**
- * Computes the `[start, end)` window for a timeline range, anchored to the
- * current calendar month/quarter/year. Quarter/year bounds intentionally
- * pass a month index of 12+ to `Date`'s constructor when the period crosses
- * a year boundary (e.g. Q4 -> month 12) — `Date` normalizes that into
- * January of the following year, which is the desired result.
+ * The `[start, end)` window of date-only values for a timeline range,
+ * anchored to the current calendar month/quarter/year where the user is.
+ * Month indexes past 11 (Q4's end) roll into January via `Date.UTC`.
  */
-function rangeBounds(range: TimelineRange): { start: Date; end: Date } {
-  const now = new Date();
+export function rangeBounds(
+  range: TimelineRange,
+  now: Date = new Date(),
+  timeZone: string = DEFAULT_TIME_ZONE,
+): { start: Date; end: Date } {
+  const [year, month] = todayInTimeZone(timeZone, now)
+    .split("-")
+    .map(Number) as [number, number];
+  const monthIndex = month - 1;
+  const at = (y: number, m: number) => new Date(Date.UTC(y, m, 1));
   if (range === "year") {
-    return {
-      start: new Date(now.getFullYear(), 0, 1),
-      end: new Date(now.getFullYear() + 1, 0, 1),
-    };
+    return { start: at(year, 0), end: at(year + 1, 0) };
   }
   if (range === "quarter") {
-    const quarterStartMonth = Math.floor(now.getMonth() / 3) * 3;
-    return {
-      start: new Date(now.getFullYear(), quarterStartMonth, 1),
-      end: new Date(now.getFullYear(), quarterStartMonth + 3, 1),
-    };
+    const quarterStart = Math.floor(monthIndex / 3) * 3;
+    return { start: at(year, quarterStart), end: at(year, quarterStart + 3) };
   }
-  return {
-    start: new Date(now.getFullYear(), now.getMonth(), 1),
-    end: new Date(now.getFullYear(), now.getMonth() + 1, 1),
-  };
+  return { start: at(year, monthIndex), end: at(year, monthIndex + 1) };
 }
 
 /**
@@ -41,8 +39,9 @@ export async function getTimelineEvents(
   ownerId: string,
   range: TimelineRange,
   filter: TimelineFilter,
+  timeZone: string = DEFAULT_TIME_ZONE,
 ) {
-  const { start, end } = rangeBounds(range);
+  const { start, end } = rangeBounds(range, new Date(), timeZone);
   return db.bill.findMany({
     where: {
       ownerId,

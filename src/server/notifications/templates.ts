@@ -27,17 +27,29 @@ function escapeHtml(value: string) {
 export function renderNotificationEmail(
   job: Pick<NotificationJobWithMetadata, "title" | "body" | "metadata">,
 ): RenderedEmail {
-  const actionUrl = job.metadata?.actionUrl ?? env.NEXT_PUBLIC_SITE_URL;
+  // `null` means "no button"; omitted means the app's home page.
+  const actionUrl =
+    job.metadata?.actionUrl === null
+      ? null
+      : (job.metadata?.actionUrl ?? env.NEXT_PUBLIC_SITE_URL);
+  const actionLabel =
+    typeof job.metadata?.actionLabel === "string"
+      ? job.metadata.actionLabel
+      : "View in TrackMyEstate";
 
   const html = `
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; color: #1f2937;">
   <p style="font-size: 13px; letter-spacing: 0.05em; text-transform: uppercase; color: #6b7280; margin: 0 0 16px;">TrackMyEstate</p>
   <h1 style="font-size: 20px; margin: 0 0 12px;">${escapeHtml(job.title)}</h1>
   <p style="font-size: 15px; line-height: 1.5; margin: 0 0 24px; white-space: pre-line;">${escapeHtml(job.body)}</p>
-  <a href="${escapeHtml(actionUrl)}" style="display: inline-block; background: #111827; color: #ffffff; text-decoration: none; padding: 10px 18px; border-radius: 6px; font-size: 14px;">View in TrackMyEstate</a>
+  ${actionUrl ? `<a href="${escapeHtml(actionUrl)}" style="display: inline-block; background: #0f6e5d; color: #ffffff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 14px;">${escapeHtml(actionLabel)}</a>` : ""}
 </div>`.trim();
 
-  const text = `${job.title}\n\n${job.body}\n\n${actionUrl}`;
+  const text = [
+    job.title,
+    job.body,
+    ...(actionUrl ? [`${actionLabel}: ${actionUrl}`] : []),
+  ].join("\n\n");
 
   return { subject: job.title, html, text };
 }

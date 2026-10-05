@@ -7,27 +7,44 @@
  * Run with: pnpm db:seed
  */
 import { PrismaClient } from "../generated/prisma";
+import {
+  addDays,
+  addMonths,
+  calendarDayOf,
+  dateOnly,
+} from "../src/lib/calendar-day";
+import { firstDueDayAfter } from "../src/lib/schedule";
+import { DEFAULT_TIME_ZONE, todayInTimeZone } from "../src/lib/time-zone";
 
 const db = new PrismaClient();
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+// Dates below are date-only values, stored the app's way: midnight UTC of
+// the calendar day (see `src/lib/calendar-day.ts`), counted from today in
+// India — never "now ± n days", which would carry the time of day along.
+const TODAY = todayInTimeZone(DEFAULT_TIME_ZONE);
 
 function daysFromNow(days: number): Date {
-  return new Date(Date.now() + days * DAY_MS);
+  return dateOnly(addDays(TODAY, days));
 }
 
+/** The `day`th of the month, `months` months ago (negative = ahead). */
 function monthsAgo(months: number, day = 1): Date {
-  const d = new Date();
-  d.setMonth(d.getMonth() - months, day);
-  d.setHours(0, 0, 0, 0);
-  return d;
+  return dateOnly(
+    addMonths(`${TODAY.slice(0, 8)}${String(day).padStart(2, "0")}`, -months),
+  );
 }
 
+/** A loan's first EMI: the first EMI due day after it starts. */
+function firstEmi(loanStart: Date, dueDay: number): Date {
+  return dateOnly(firstDueDayAfter(calendarDayOf(loanStart), dueDay));
+}
+
+/** `month` (0-11) / `day` of the year, `years` years ago. */
 function yearsAgo(years: number, month = 0, day = 1): Date {
-  const d = new Date();
-  d.setFullYear(d.getFullYear() - years, month, day);
-  d.setHours(0, 0, 0, 0);
-  return d;
+  const year = Number(TODAY.slice(0, 4)) - years;
+  return dateOnly(
+    `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+  );
 }
 
 async function resetDomainData() {
@@ -186,7 +203,8 @@ async function seedAnanyaPortfolio(ownerId: string) {
       provider: "Prestige Shantiniketan Owners' Association",
       recurrence: "MONTHLY",
       defaultAmount: 3_500,
-      dueDay: daysFromNow(5).getDate(),
+      startDate: daysFromNow(5),
+      dueDay: daysFromNow(5).getUTCDate(),
     },
   });
   await db.bill.create({
@@ -212,8 +230,9 @@ async function seedAnanyaPortfolio(ownerId: string) {
       provider: "BBMP",
       recurrence: "YEARLY",
       defaultAmount: 18_400,
-      dueDay: daysFromNow(40).getDate(),
-      dueMonth: daysFromNow(40).getMonth() + 1,
+      startDate: daysFromNow(40),
+      dueDay: daysFromNow(40).getUTCDate(),
+      dueMonth: daysFromNow(40).getUTCMonth() + 1,
     },
   });
   await db.bill.create({
@@ -240,7 +259,8 @@ async function seedAnanyaPortfolio(ownerId: string) {
       accountNumber: "BESCOM-448821",
       recurrence: "MONTHLY",
       defaultAmount: 4_120,
-      dueDay: daysFromNow(-3).getDate(),
+      startDate: daysFromNow(-3),
+      dueDay: daysFromNow(-3).getUTCDate(),
       recipients: [
         { name: "Radha Rao", email: "radha.rao@example.in", notifyOnDue: true },
       ],
@@ -279,6 +299,7 @@ async function seedAnanyaPortfolio(ownerId: string) {
       category: "EMI",
       loanId: homeLoan.id,
       recurrence: "MONTHLY",
+      startDate: firstEmi(homeLoan.startDate, 5),
       dueDay: 5,
       defaultAmount: 71_250,
       tenureMonths: 180,
@@ -546,7 +567,8 @@ async function seedVikramPortfolio(ownerId: string) {
       provider: "Hiranandani Gardens CHS",
       recurrence: "MONTHLY",
       defaultAmount: 9_800,
-      dueDay: daysFromNow(12).getDate(),
+      startDate: daysFromNow(12),
+      dueDay: daysFromNow(12).getUTCDate(),
     },
   });
   await db.bill.create({
@@ -572,7 +594,8 @@ async function seedVikramPortfolio(ownerId: string) {
       provider: "BMC Water Supply",
       recurrence: "MONTHLY",
       defaultAmount: 1_450,
-      dueDay: daysFromNow(-1).getDate(),
+      startDate: daysFromNow(-1),
+      dueDay: daysFromNow(-1).getUTCDate(),
       recipients: [
         {
           name: "Shalini Mehta",
@@ -614,6 +637,7 @@ async function seedVikramPortfolio(ownerId: string) {
       category: "EMI",
       loanId: homeLoan.id,
       recurrence: "MONTHLY",
+      startDate: firstEmi(homeLoan.startDate, 3),
       dueDay: 3,
       defaultAmount: 145_600,
       tenureMonths: 240,
@@ -653,6 +677,7 @@ async function seedVikramPortfolio(ownerId: string) {
       category: "EMI",
       loanId: carLoan.id,
       recurrence: "MONTHLY",
+      startDate: firstEmi(carLoan.startDate, 8),
       dueDay: 8,
       defaultAmount: 37_500,
       tenureMonths: 60,
@@ -945,7 +970,8 @@ async function seedRishabhPortfolio(ownerId: string) {
       provider: "Vipul World RWA",
       recurrence: "MONTHLY",
       defaultAmount: 4_200,
-      dueDay: daysFromNow(8).getDate(),
+      startDate: daysFromNow(8),
+      dueDay: daysFromNow(8).getUTCDate(),
     },
   });
   await db.bill.create({
@@ -971,8 +997,9 @@ async function seedRishabhPortfolio(ownerId: string) {
       provider: "Municipal Corporation of Gurugram",
       recurrence: "YEARLY",
       defaultAmount: 21_600,
-      dueDay: daysFromNow(-6).getDate(),
-      dueMonth: daysFromNow(-6).getMonth() + 1,
+      startDate: daysFromNow(-6),
+      dueDay: daysFromNow(-6).getUTCDate(),
+      dueMonth: daysFromNow(-6).getUTCMonth() + 1,
       recipients: [
         {
           name: "Priya Chauhan",
@@ -1008,7 +1035,8 @@ async function seedRishabhPortfolio(ownerId: string) {
       provider: "Indane Gas Agency",
       recurrence: "MONTHLY",
       defaultAmount: 900,
-      dueDay: monthsAgo(1, 12).getDate(),
+      startDate: monthsAgo(1, 12),
+      dueDay: monthsAgo(1, 12).getUTCDate(),
     },
   });
   await db.bill.create({
@@ -1036,7 +1064,8 @@ async function seedRishabhPortfolio(ownerId: string) {
       provider: "Airtel Xstream Fiber",
       recurrence: "MONTHLY",
       defaultAmount: 1_200,
-      dueDay: daysFromNow(-4).getDate(),
+      startDate: daysFromNow(-4),
+      dueDay: daysFromNow(-4).getUTCDate(),
     },
   });
   await db.bill.create({
@@ -1064,7 +1093,8 @@ async function seedRishabhPortfolio(ownerId: string) {
       provider: "Gurugram Jal Board",
       recurrence: "MONTHLY",
       defaultAmount: 650,
-      dueDay: monthsAgo(2, 15).getDate(),
+      startDate: monthsAgo(2, 15),
+      dueDay: monthsAgo(2, 15).getUTCDate(),
     },
   });
   await db.bill.create({
@@ -1121,6 +1151,7 @@ async function seedRishabhPortfolio(ownerId: string) {
       category: "EMI",
       loanId: homeLoan.id,
       recurrence: "MONTHLY",
+      startDate: firstEmi(homeLoan.startDate, 7),
       dueDay: 7,
       defaultAmount: 88_400,
       tenureMonths: 180,

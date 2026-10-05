@@ -1,5 +1,7 @@
 import "server-only";
 
+import { nextBillFor } from "~/lib/schedule";
+import { DEFAULT_TIME_ZONE, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
 import {
   NOT_SOFT_DELETED,
@@ -12,7 +14,10 @@ import {
  * `getProperties`. Deleted loans (see `deleteLoan` in
  * `~/server/actions/loans`) are excluded.
  */
-export async function getLoans(ownerId: string) {
+export async function getLoans(
+  ownerId: string,
+  timeZone: string = DEFAULT_TIME_ZONE,
+) {
   const loans = await db.loan.findMany({
     where: { ownerId, ...NOT_SOFT_DELETED },
     orderBy: { createdAt: "asc" },
@@ -29,6 +34,19 @@ export async function getLoans(ownerId: string) {
         orderBy: { dueDate: "asc" },
       })
     : [];
+
+  // EMI schedules, for the next EMI of a loan with no unpaid EMI bill yet.
+  const emiSchedules = loanIds.length
+    ? await db.billSchedule.findMany({
+        where: {
+          category: "EMI",
+          loanId: { in: loanIds },
+          active: true,
+          ...NOT_SOFT_DELETED,
+        },
+      })
+    : [];
+  const today = todayInTimeZone(timeZone);
 
   const nextEmiByLoan = new Map<string, (typeof openEmis)[number]>();
   for (const bill of openEmis) {
@@ -54,9 +72,16 @@ export async function getLoans(ownerId: string) {
     linkedProperties.map((property) => [property.id, property.name]),
   );
 
+  const nextEmiFor = (loanId: string) => {
+    const bill = nextEmiByLoan.get(loanId);
+    if (bill) return { dueDate: bill.dueDate, amount: bill.amount };
+    const schedule = emiSchedules.find((s) => s.loanId === loanId);
+    return schedule ? nextBillFor(schedule, [], today) : null;
+  };
+
   return loans.map((loan) => ({
     ...loan,
-    nextEmi: nextEmiByLoan.get(loan.id) ?? null,
+    nextEmi: nextEmiFor(loan.id),
     linkedPropertyName: loan.linkedPropertyId
       ? (propertyNameById.get(loan.linkedPropertyId) ?? null)
       : null,

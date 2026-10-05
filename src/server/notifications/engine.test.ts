@@ -214,3 +214,58 @@ describe("stop when paid", () => {
     expect(dbMock.bill.findUnique).not.toHaveBeenCalled();
   });
 });
+
+describe("guest reminders", () => {
+  beforeEach(() => {
+    dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
+    sendEmailMock.mockResolvedValue({ ok: true });
+  });
+
+  it.each([
+    [
+      { optedOutAt: new Date(), pausedAt: null, deletedAt: null },
+      "Guest stopped reminders",
+    ],
+    [
+      { optedOutAt: null, pausedAt: null, deletedAt: new Date() },
+      "Guest was removed",
+    ],
+    [
+      { optedOutAt: null, pausedAt: new Date(), deletedAt: null },
+      "Guest is paused",
+    ],
+    [null, "Guest no longer exists"],
+  ])("cancels when the guest is %p", async (guest, reason) => {
+    dbMock.guest.findUnique.mockResolvedValue(guest as never);
+
+    const outcome = await dispatchNotificationJob(
+      buildJob({ metadata: { guestId: "guest-1" } }),
+    );
+
+    expect(outcome).toBe("CANCELLED");
+    expect(sendEmailMock).not.toHaveBeenCalled();
+    expect(dbMock.notificationJob.update).toHaveBeenCalledWith({
+      where: { id: "job-1" },
+      data: { status: "CANCELLED", failedReason: reason },
+    });
+  });
+
+  it("sends to an active guest", async () => {
+    dbMock.guest.findUnique.mockResolvedValue({
+      optedOutAt: null,
+      pausedAt: null,
+      deletedAt: null,
+    } as never);
+
+    const outcome = await dispatchNotificationJob(
+      buildJob({ metadata: { guestId: "guest-1" } }),
+    );
+
+    expect(outcome).toBe("SENT");
+  });
+
+  it("doesn't look up a guest for an owner's reminder", async () => {
+    await dispatchNotificationJob(buildJob({ metadata: { actionUrl: "x" } }));
+    expect(dbMock.guest.findUnique).not.toHaveBeenCalled();
+  });
+});

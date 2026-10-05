@@ -130,6 +130,8 @@ exports.Prisma.UserScalarFieldEnum = {
   image: 'image',
   currency: 'currency',
   timezone: 'timezone',
+  phone: 'phone',
+  reminderHour: 'reminderHour',
   role: 'role',
   banned: 'banned',
   banReason: 'banReason',
@@ -245,6 +247,7 @@ exports.Prisma.BillScheduleScalarFieldEnum = {
   billingType: 'billingType',
   autoGenerateBill: 'autoGenerateBill',
   recurrence: 'recurrence',
+  startDate: 'startDate',
   dueDay: 'dueDay',
   dueMonth: 'dueMonth',
   defaultAmount: 'defaultAmount',
@@ -450,6 +453,24 @@ exports.Prisma.DocumentScalarFieldEnum = {
   uploadedAt: 'uploadedAt'
 };
 
+exports.Prisma.GuestScalarFieldEnum = {
+  id: 'id',
+  ownerId: 'ownerId',
+  name: 'name',
+  relationship: 'relationship',
+  email: 'email',
+  phone: 'phone',
+  channels: 'channels',
+  categories: 'categories',
+  propertyIds: 'propertyIds',
+  dueDayOnly: 'dueDayOnly',
+  pausedAt: 'pausedAt',
+  optedOutAt: 'optedOutAt',
+  deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -648,7 +669,8 @@ exports.Prisma.ModelName = {
   AuditLog: 'AuditLog',
   NotificationRule: 'NotificationRule',
   NotificationJob: 'NotificationJob',
-  Document: 'Document'
+  Document: 'Document',
+  Guest: 'Guest'
 };
 
 /**

@@ -1,5 +1,6 @@
 import { Avatar } from "~/app/_components/avatar";
 import { PageHeader } from "~/app/_components/page-header";
+import { DEFAULT_TIME_ZONE } from "~/lib/time-zone";
 import { formatDate } from "~/lib/format";
 import { listUsers } from "~/server/queries/admin";
 
@@ -52,7 +53,7 @@ export default async function AdminUsersPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-ink">
-                    {formatDate(user.createdAt)}
+                    {formatDate(user.createdAt, DEFAULT_TIME_ZONE)}
                   </p>
                   <p className="text-xs text-muted">joined</p>
                 </div>

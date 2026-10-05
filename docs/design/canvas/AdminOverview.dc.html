@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin overview</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif; font-variant-numeric: tabular-nums">
+  <dc-import name="AppSidebar" current="adminOverview" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 32px">
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Admin overview</h1>
+          <p style="margin: 0; font-size: 15px; color: #5A6762">Platform-wide numbers across every user — not just yours.</p>
+        </div>
+        <a href="AdminUsers.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D5DBD6; background: #FFFFFF; color: #12201C; font-size: 14px; font-weight: 500">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"></path><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.9.7 3.2 2.5 3.5 5.2"></path></svg>
+          View all users
+        </a>
+      </header>
+
+      <section aria-label="Platform summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); column-gap: 24px; row-gap: 32px">
+        <div style="border-top: 1px solid #E3E7E2; padding-top: 16px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 14px; font-weight: 500; color: #5A6762">Total users</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em">1,284</span>
+          <span style="font-size: 12px; color: #5A6762">37 new in the last 7 days</span>
+        </div>
+        <div style="border-top: 1px solid #E3E7E2; padding-top: 16px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 14px; font-weight: 500; color: #5A6762">New users</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em">142</span>
+          <span style="font-size: 12px; color: #5A6762">Last 30 days</span>
+        </div>
+        <div style="border-top: 1px solid #E3E7E2; padding-top: 16px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 14px; font-weight: 500; color: #5A6762">Tracked portfolio value</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em">₹4,12,60,00,000</span>
+          <span style="font-size: 12px; color: #5A6762">Property + investments, minus loans — every user</span>
+        </div>
+        <div style="border-top: 1px solid #E3E7E2; padding-top: 16px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 14px; font-weight: 500; color: #5A6762">Active notification rules</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; line-height: 1.1; font-weight: 600; letter-spacing: -0.02em">3,916</span>
+          <span style="font-size: 12px; color: #5A6762">4 users banned</span>
+        </div>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; align-items: start">
+        <section aria-labelledby="assets" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(18,32,28,0.05)">
+          <div style="padding: 16px 24px; border-bottom: 1px solid #EEF1ED">
+            <h2 id="assets" style="margin: 0; font-size: 14px; font-weight: 600">Assets tracked</h2>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0; font-size: 14px">
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Properties</span><span style="font-weight: 500">1,906</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Investments</span><span style="font-weight: 500">2,741</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Loans</span><span style="font-weight: 500">812</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Policies</span><span style="font-weight: 500">1,530</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px"><span style="color: #3E4B46">Documents</span><span style="font-weight: 500">6,388</span></li>
+          </ul>
+        </section>
+
+        <section aria-labelledby="engine" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(18,32,28,0.05)">
+          <div style="padding: 16px 24px; border-bottom: 1px solid #EEF1ED">
+            <h2 id="engine" style="margin: 0; font-size: 14px; font-weight: 600">Notification engine</h2>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0; font-size: 14px">
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Scheduled</span><span style="font-weight: 500">2,104</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Processing</span><span style="font-weight: 500">3</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Sent</span><span style="font-weight: 500">18,452</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #B42318; font-weight: 500">Failed</span><span style="font-weight: 600; color: #B42318">27</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px; border-bottom: 1px solid #EEF1ED"><span style="color: #3E4B46">Cancelled</span><span style="font-weight: 500">311</span></li>
+            <li style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 24px"><span style="color: #3E4B46">Skipped</span><span style="font-weight: 500">96</span></li>
+          </ul>
+        </section>
+      </div>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

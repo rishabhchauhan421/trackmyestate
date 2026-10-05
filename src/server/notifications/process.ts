@@ -35,7 +35,12 @@ const FINISHED_STATUSES = ["SENT", "FAILED", "SKIPPED", "CANCELLED"] as const;
 
 export interface ProcessDueJobsSummary {
   total: number;
-  outcomes: Record<DispatchOutcome, number>;
+  /**
+   * `ERRORED`: dispatching threw unexpectedly (e.g. a database error). The
+   * job stays claimed and is reclaimed by a later run (see
+   * `reclaimStaleJobs`).
+   */
+  outcomes: Record<DispatchOutcome | "ERRORED", number>;
   /** Stuck jobs put back in the queue (or failed, if out of attempts). */
   reclaimed: number;
   /** Old finished jobs deleted. */
@@ -44,13 +49,14 @@ export interface ProcessDueJobsSummary {
   hasMore: boolean;
 }
 
-const EMPTY_OUTCOMES: Record<DispatchOutcome, number> = {
+const EMPTY_OUTCOMES: Record<DispatchOutcome | "ERRORED", number> = {
   SENT: 0,
   SKIPPED: 0,
   RETRY_SCHEDULED: 0,
   FAILED: 0,
   ALREADY_CLAIMED: 0,
   CANCELLED: 0,
+  ERRORED: 0,
 };
 
 /**
@@ -81,8 +87,17 @@ export async function processDueNotificationJobs(
     })) as NotificationJobWithMetadata[];
 
     for (const job of batch) {
-      const outcome = await dispatchNotificationJob(job);
-      outcomes[outcome] += 1;
+      try {
+        outcomes[await dispatchNotificationJob(job)] += 1;
+      } catch (error) {
+        // Never let one job stop the run; the job is retried once
+        // reclaimed.
+        console.error(
+          `[notifications] Dispatching job ${job.id} failed`,
+          error,
+        );
+        outcomes.ERRORED += 1;
+      }
     }
     total += batch.length;
 

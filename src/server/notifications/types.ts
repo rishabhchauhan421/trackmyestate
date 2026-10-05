@@ -9,7 +9,15 @@ import type { NotificationJob } from "../../../generated/prisma";
 /** Structured `metadata` a job may carry, read by channel senders/templates. */
 export interface NotificationJobMetadata {
   /** Deep link into the app for this job's underlying entity, if any. */
-  actionUrl?: string;
+  /**
+   * Where the email's button goes. Omitted = the app's home page; `null` =
+   * no button (for recipients without an account).
+   */
+  actionUrl?: string | null;
+  /** Button text for `actionUrl`; defaults to "View in TrackMyEstate". */
+  actionLabel?: string;
+  /** Set on a guest's reminder, so it can be cancelled if they stop. */
+  guestId?: string;
   [key: string]: unknown;
 }
 

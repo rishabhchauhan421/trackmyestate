@@ -151,13 +151,18 @@ artboards use raw hex values that map to the tokens in the table).
 | `AddProperty.dc.html` | `src/app/(app)/properties/new/page.tsx` |
 | `Landing.dc.html` | `src/app/page.tsx` |
 | `SignIn.dc.html` | `src/app/(auth)/login/page.tsx` (also forgot/reset password) |
-| `SettingsNav.dc.html` | Not built yet — Settings is one page today |
-| `SettingsGeneral.dc.html` | Partly: the time zone picker is the Region section of `src/app/(app)/settings/page.tsx` |
-| `SettingsReminders.dc.html` | Partly: timing chips are built (`settings/reminder-chips.tsx`); per-kind channels and guests aren't |
-| `SettingsChannels.dc.html` | Not built yet (needs SMS/WhatsApp delivery) |
-| `SettingsGuests.dc.html`, `AddGuest.dc.html` | Not built yet (guests: reminders without an account) |
+| `SettingsNav.dc.html` | `src/app/(app)/settings/settings-nav.tsx`, `settings/layout.tsx` |
+| `SettingsGeneral.dc.html` | `src/app/(app)/settings/page.tsx` |
+| `SettingsReminders.dc.html` | `src/app/(app)/settings/reminders/page.tsx` |
+| `SettingsChannels.dc.html` | `src/app/(app)/settings/channels/page.tsx` — SMS/WhatsApp verification, quiet hours and digest show as "coming soon" |
+| `SettingsGuests.dc.html` | `src/app/(app)/settings/guests/page.tsx` |
+| `AddGuest.dc.html` | `src/app/(app)/settings/guests/new/page.tsx` (a page rather than a dialog; same form edits a guest) |
+| `AdminOverview.dc.html` | `src/app/(app)/admin/page.tsx` |
+| `AdminUsers.dc.html` | `src/app/(app)/admin/users/page.tsx` |
 
-The canvas has two pages — **App & marketing** and **Settings**.
+The canvas has three pages — **App & marketing**, **Settings** and **Admin**.
+The sidebar's Admin section only shows on the admin artboards (or with the
+sidebar's `admin` tweak), matching `isAdmin` in `app-shell.tsx`.
 
 Sample names and amounts in the artboards come from `prisma/seed.ts`; they're
 illustrative, not product copy.

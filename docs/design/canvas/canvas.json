@@ -85,7 +85,7 @@
       "y": 0,
       "w": 1440,
       "h": 1000,
-      "title": "Settings \u00b7 General",
+      "title": "Settings · General",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -95,7 +95,7 @@
       "y": 0,
       "w": 1440,
       "h": 1640,
-      "title": "Settings \u00b7 Reminders",
+      "title": "Settings · Reminders",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -105,7 +105,7 @@
       "y": 0,
       "w": 1440,
       "h": 1240,
-      "title": "Settings \u00b7 Channels",
+      "title": "Settings · Channels",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -115,7 +115,7 @@
       "y": 0,
       "w": 1440,
       "h": 1480,
-      "title": "Settings \u00b7 Guests",
+      "title": "Settings · Guests",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -129,6 +129,26 @@
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
+    },
+    "AdminOverview.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1180,
+      "title": "Admin · Overview",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "admin"
+    },
+    "AdminUsers.dc.html": {
+      "x": 1520,
+      "y": 0,
+      "w": 1440,
+      "h": 1180,
+      "title": "Admin · Users",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "admin"
     }
   },
   "createdOnFiles": {
@@ -167,6 +187,15 @@
       "maxW": 7832,
       "w": 240,
       "page": "settings"
+    },
+    "adminTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Admin",
+      "kind": "title1",
+      "maxW": 2960,
+      "w": 240,
+      "page": "admin"
     }
   },
   "order": [
@@ -182,7 +211,9 @@
     "SettingsReminders.dc.html",
     "SettingsChannels.dc.html",
     "SettingsGuests.dc.html",
-    "AddGuest.dc.html"
+    "AddGuest.dc.html",
+    "AdminOverview.dc.html",
+    "AdminUsers.dc.html"
   ],
   "pages": [
     {
@@ -192,6 +223,10 @@
     {
       "id": "settings",
       "name": "Settings"
+    },
+    {
+      "id": "admin",
+      "name": "Admin"
     }
   ],
   "title": "TrackMyEstate Redesign"

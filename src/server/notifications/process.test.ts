@@ -69,6 +69,7 @@ describe("processDueNotificationJobs", () => {
         FAILED: 0,
         ALREADY_CLAIMED: 0,
         CANCELLED: 0,
+        ERRORED: 0,
       },
       reclaimed: 0,
       purged: 0,
@@ -191,5 +192,21 @@ describe("purging old finished jobs", () => {
       },
     });
     expect(summary.purged).toBe(7);
+  });
+});
+
+describe("resilience", () => {
+  it("keeps dispatching after one job throws, and counts it", async () => {
+    dbMock.notificationJob.findMany.mockResolvedValue(buildJobs(3) as never);
+    dispatchMock
+      .mockResolvedValueOnce("SENT")
+      .mockRejectedValueOnce(new Error("database blip"))
+      .mockResolvedValueOnce("SENT");
+    jest.spyOn(console, "error").mockImplementation(() => undefined);
+
+    const summary = await processDueNotificationJobs(now);
+
+    expect(dispatchMock).toHaveBeenCalledTimes(3);
+    expect(summary.outcomes).toMatchObject({ SENT: 2, ERRORED: 1 });
   });
 });

@@ -111,3 +111,13 @@ export function sameOffsets(a: number[], b: number[]) {
   const y = normalizeOffsets(b);
   return x.length === y.length && x.every((value, i) => value === y[i]);
 }
+
+/** "9:00 am", "6:00 pm" for a 0-23 hour. */
+export function formatReminderHour(hour: number) {
+  const suffix = hour < 12 ? "am" : "pm";
+  const twelve = hour % 12 === 0 ? 12 : hour % 12;
+  return `${twelve}:00 ${suffix}`;
+}
+
+/** Local hours a user can pick for reminders (Settings › Channels). */
+export const REMINDER_HOURS = [7, 8, 9, 12, 18];

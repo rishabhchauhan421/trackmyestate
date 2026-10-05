@@ -1,6 +1,7 @@
 import "server-only";
 
 import { env } from "~/env";
+import { calendarDayOf } from "~/lib/calendar-day";
 import { EVENT_CATEGORY_LABELS } from "~/lib/labels";
 import {
   REMINDER_OFFSET_PRESETS,
@@ -13,6 +14,7 @@ import {
   zonedTimeToUtc,
 } from "~/lib/time-zone";
 import { db } from "~/server/db";
+import { guestOptOutUrl } from "~/server/guests/opt-out";
 import { enqueueNotificationJob } from "~/server/notifications/enqueue";
 import {
   NOT_SOFT_DELETED,
@@ -35,7 +37,7 @@ import { getEffectiveRemindersForOwners } from "./rules";
  * cancelled at send time (see `dispatchNotificationJob`).
  */
 
-/** Local hour reminders are sent at. */
+/** Local hour reminders are sent at, unless the owner picked another. */
 export const SEND_HOUR = 9;
 
 export const BATCH_SIZE = 200;
@@ -110,7 +112,13 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
   const [owners, remindersFor, schedules] = await Promise.all([
     db.user.findMany({
       where: { id: { in: ownerIds } },
-      select: { id: true, email: true, timezone: true },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        timezone: true,
+        reminderHour: true,
+      },
     }),
     getEffectiveRemindersForOwners(ownerIds),
     scheduleIds.length
@@ -122,6 +130,16 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
   ]);
   const ownerById = new Map(owners.map((owner) => [owner.id, owner]));
   const scheduleById = new Map(schedules.map((s) => [s.id, s]));
+  const guests = await db.guest.findMany({
+    where: {
+      ownerId: { in: ownerIds },
+      ...NOT_SOFT_DELETED,
+      AND: [
+        { OR: [{ pausedAt: null }, { pausedAt: { isSet: false } }] },
+        { OR: [{ optedOutAt: null }, { optedOutAt: { isSet: false } }] },
+      ],
+    },
+  });
 
   let queued = 0;
   for (const bill of bills) {
@@ -130,23 +148,34 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
 
     const timeZone = resolveTimeZone(owner.timezone);
     const today = todayInTimeZone(timeZone, now);
-    const dueDay = todayInTimeZone(timeZone, bill.dueDate);
+    // `dueDate` is a date-only value (see `~/lib/calendar-day`): its day
+    // is fixed. Only "today" depends on the owner's time zone.
+    const dueDay = calendarDayOf(bill.dueDate);
     const offsetDays = daysBetween(dueDay, today);
 
     const matching = remindersFor(owner.id, bill.category).filter(
       (reminder) => reminder.offsetDays === offsetDays,
     );
-    if (matching.length === 0) continue;
+    // Guests reminded about this bill today: on the owner's schedule, or
+    // only on the due day if that's how they were added.
+    const guestsToday = guests.filter(
+      (guest) =>
+        guest.ownerId === owner.id &&
+        guest.categories.includes(bill.category) &&
+        (guest.propertyIds.length === 0 ||
+          (bill.propertyId !== null &&
+            guest.propertyIds.includes(bill.propertyId))) &&
+        (guest.dueDayOnly ? offsetDays === 0 : matching.length > 0),
+    );
+    if (matching.length === 0 && guestsToday.length === 0) continue;
 
-    // The owner, plus anyone added to the utility who wants due reminders.
-    const emails = [
-      owner.email,
-      ...(bill.billScheduleId
-        ? (scheduleById.get(bill.billScheduleId)?.recipients ?? [])
-            .filter((recipient) => recipient.notifyOnDue)
-            .map((recipient) => recipient.email)
-        : []),
-    ];
+    // People added to this utility who want due reminders (the older,
+    // per-utility recipients; Guests are the newer, app-wide version).
+    const utilityRecipients = bill.billScheduleId
+      ? (scheduleById.get(bill.billScheduleId)?.recipients ?? [])
+          .filter((recipient) => recipient.notifyOnDue)
+          .map((recipient) => recipient.email)
+      : [];
 
     const { title, body } = reminderMessage({
       name: bill.description ?? EVENT_CATEGORY_LABELS[bill.category],
@@ -155,35 +184,93 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
       offsetDays,
       incoming: reminderCategoryConfig(bill.category).incoming,
     });
-    const scheduledFor = zonedTimeToUtc(today, SEND_HOUR, 0, timeZone);
+    // What anyone other than the owner sees: who it's from, and only the
+    // item, amount and due date (no "mark it paid" — they have no account).
+    const sharedBody = `From ${owner.name}, via TrackMyEstate.\n${body.split("\n")[0]}`;
+    const scheduledFor = zonedTimeToUtc(
+      today,
+      owner.reminderHour ?? SEND_HOUR,
+      0,
+      timeZone,
+    );
+    const base = {
+      ownerId: bill.ownerId,
+      category: bill.category,
+      title,
+      scheduledFor,
+      billId: bill.id,
+      billScheduleId: bill.billScheduleId ?? undefined,
+      propertyId: bill.propertyId ?? undefined,
+      leaseId: bill.leaseId ?? undefined,
+      loanId: bill.loanId ?? undefined,
+      policyId: bill.policyId ?? undefined,
+      investmentId: bill.investmentId ?? undefined,
+    };
+    const keyPrefix = `reminder:${bill.id}:DUE_DATE:${offsetDays}:EMAIL`;
 
-    for (const reminder of matching) {
-      for (const channel of reminder.channels) {
-        // Only email can be addressed today; other channels need a phone
-        // number or device, which users can't add yet.
-        if (channel !== "EMAIL") continue;
-        for (const recipient of new Set(emails)) {
-          await enqueueNotificationJob({
-            ownerId: bill.ownerId,
-            category: bill.category,
-            channel,
-            recipient,
-            title,
-            body,
-            scheduledFor,
-            billId: bill.id,
-            billScheduleId: bill.billScheduleId ?? undefined,
-            propertyId: bill.propertyId ?? undefined,
-            leaseId: bill.leaseId ?? undefined,
-            loanId: bill.loanId ?? undefined,
-            policyId: bill.policyId ?? undefined,
-            investmentId: bill.investmentId ?? undefined,
-            metadata: { actionUrl: actionUrlFor(bill) },
-            idempotencyKey: `reminder:${bill.id}:DUE_DATE:${reminder.offsetDays}:${channel}:${recipient}`,
-          });
-          queued += 1;
-        }
+    // Each address gets at most one email per reminder, whoever it belongs
+    // to (an owner who is also a utility recipient, a guest added twice…).
+    const emailed = new Set<string>();
+    const claim = (email: string) => {
+      const normalized = email.trim().toLowerCase();
+      if (emailed.has(normalized)) return false;
+      emailed.add(normalized);
+      return true;
+    };
+    const enqueue = async (
+      job: Parameters<typeof enqueueNotificationJob>[0],
+    ) => {
+      const { created } = await enqueueNotificationJob(job);
+      if (created) queued += 1;
+    };
+
+    // Only email can be delivered today; SMS/WhatsApp need a provider.
+    const ownerWantsEmail = matching.some((reminder) =>
+      reminder.channels.includes("EMAIL"),
+    );
+    if (ownerWantsEmail) {
+      if (claim(owner.email)) {
+        await enqueue({
+          ...base,
+          channel: "EMAIL",
+          recipient: owner.email,
+          body,
+          metadata: { actionUrl: actionUrlFor(bill) },
+          idempotencyKey: `${keyPrefix}:${owner.email}`,
+        });
       }
+      for (const email of utilityRecipients) {
+        if (!claim(email)) continue;
+        await enqueue({
+          ...base,
+          channel: "EMAIL",
+          recipient: email,
+          body: sharedBody,
+          // No button: recipients have no account to open.
+          metadata: { actionUrl: null },
+          idempotencyKey: `${keyPrefix}:${email}`,
+        });
+      }
+    }
+
+    // Guests, in the owner's name, with a stop link instead of a link into
+    // the app. `guestId` lets the sender cancel the job if the guest stops
+    // or is paused before it goes out.
+    for (const guest of guestsToday) {
+      if (!guest.email || !guest.channels.includes("EMAIL")) continue;
+      if (!claim(guest.email)) continue;
+      await enqueue({
+        ...base,
+        channel: "EMAIL",
+        recipient: guest.email,
+        body: sharedBody,
+        metadata: {
+          actionUrl: guestOptOutUrl(guest.id),
+          actionLabel: "Stop these reminders",
+          guestId: guest.id,
+        },
+        idempotencyKey: `${keyPrefix}:guest:${guest.id}`,
+      });
     }
   }
   return queued;

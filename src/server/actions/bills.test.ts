@@ -40,7 +40,6 @@ describe("generateBill", () => {
   it("creates the bill with its category/direction and asset-specific foreign key", async () => {
     dbMock.bill.create.mockResolvedValue({ id: "bill-1" } as never);
 
-    const dueDate = new Date(2026, 6, 10);
     await generateBill({
       ownerId: "user-1",
       category: "UTILITY_BILL",
@@ -48,7 +47,7 @@ describe("generateBill", () => {
       billScheduleId: "utility-1",
       propertyId: "prop-1",
       amount: 1500,
-      dueDate,
+      dueDay: "2026-07-10",
       description: "BESCOM (Electricity) - Test Flat",
     });
 
@@ -63,7 +62,9 @@ describe("generateBill", () => {
         loanId: undefined,
         policyId: undefined,
         investmentId: undefined,
-        dueDate,
+        // Stored as midnight UTC of the calendar day, whatever the server's
+        // time zone.
+        dueDate: new Date("2026-07-10T00:00:00.000Z"),
         amount: 1500,
         status: "DUE",
         description: "BESCOM (Electricity) - Test Flat",
@@ -74,14 +75,13 @@ describe("generateBill", () => {
   it("works for a loan-linked category with no property (e.g. an EMI)", async () => {
     dbMock.bill.create.mockResolvedValue({ id: "bill-2" } as never);
 
-    const dueDate = new Date(2026, 8, 5);
     await generateBill({
       ownerId: "user-1",
       category: "EMI",
       direction: "OUTFLOW",
       loanId: "loan-1",
       amount: 71_250,
-      dueDate,
+      dueDay: "2026-09-05",
       description: "Home loan EMI - SBI",
     });
 
@@ -106,11 +106,26 @@ describe("generateBill", () => {
       billScheduleId: "utility-1",
       propertyId: "prop-1",
       amount: 1500,
-      dueDate: new Date(2026, 6, 10),
+      dueDay: "2026-07-10",
       description: "BESCOM (Electricity) - Test Flat",
     });
 
     expect(result).toBe(created);
+  });
+
+  it("refuses something that isn't a calendar day", async () => {
+    await expect(
+      generateBill({
+        ownerId: "user-1",
+        category: "EMI",
+        direction: "OUTFLOW",
+        loanId: "loan-1",
+        amount: 1,
+        dueDay: "2026-02-30",
+        description: "x",
+      }),
+    ).rejects.toThrow("Not a calendar day");
+    expect(dbMock.bill.create).not.toHaveBeenCalled();
   });
 });
 

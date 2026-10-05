@@ -28,6 +28,12 @@ OAuth and email/password (including password reset). Email goes out through
 - **`NotificationRule`** is one reminder (see [Reminders](#reminders)) and
   **`NotificationJob`** one queued message.
 - `PaymentTransaction` and `AuditLog` exist in the schema but aren't wired up yet.
+- **Dates:** a date-only value (due date, purchase date, lease start…) is
+  stored as midnight UTC of its calendar day — exactly what an
+  `<input type="date">` value parses to — and always read back as that day
+  (`src/lib/calendar-day.ts`). Only "today" depends on a time zone: the
+  user's, from Settings. `generateBill` takes a `"YYYY-MM-DD"` day, not a
+  `Date`, so a bill can't land on the wrong day.
 - Most models carry `deletedAt` for soft deletes, and money fields an optional
   `Currency` (everything renders as INR today). Money fields are `Float`.
 
@@ -127,11 +133,36 @@ can go through the admin UI (`auth.api.setRole`) instead of the script.
   paid; first due date can't be in the past).
 - **Insurance, Investments, Loans** — lists with add/edit/delete.
 - **Documents** — lists `Document` rows (no upload flow yet).
-- **Settings** — **Region** (time zone, with "use this device's") and
-  **Reminders** (see below).
+- **Settings** — four tabs: **General** (name, time zone, currency),
+  **Reminders** (when and how, per kind of payment — see below),
+  **Channels** (email with a test send, mobile number for the coming
+  SMS/WhatsApp, reminder send time) and **Guests** (people who get reminders
+  without an account — see below).
 - **Admin** — platform overview and user list.
 
 Every form validates on the server with zod (field helpers in `src/lib/form.ts`).
+
+## Bills
+
+Recurring schedules (`BillSchedule`: utilities, loan EMIs…) become actual
+`Bill` rows through the **bill generator** (`src/server/bills/generate.ts`).
+Each run creates every missing bill due from 31 days ago to 35 days ahead,
+in each owner's time zone — enough for the earliest reminder, and enough to
+catch up after missed runs. It never creates the same schedule-and-day bill
+twice, so it's safe to run any number of times.
+
+- **`/api/cron/bills`** runs it daily at 06:00 IST (before the hourly
+  reminder run).
+- **Admin › Jobs** (`/admin/jobs`) runs it — or the reminder and sending
+  jobs — on demand, and shows their queues.
+- A new utility or loan generates its first bills straight away.
+
+A schedule's dates come from `src/lib/schedule.ts`: anchored on its
+`startDate` (first due date; a loan's first EMI after it starts),
+month-based schedules fall on `dueDay` (clamped to short months), weekly
+ones step from the start, and an EMI's `tenureMonths` caps it with
+numbered instalments. Users see each utility's and loan's **next bill** —
+the earliest unpaid bill, or the schedule's next date before one exists.
 
 ## Reminders
 
@@ -151,10 +182,20 @@ bill is still unpaid).
   (`src/server/notifications/process.ts`), reclaims jobs stuck mid-send, retries
   failures with backoff (5, 10, 20 min), cancels a reminder whose bill was paid
   since it was queued, and deletes finished jobs after 90 days.
-- **Channels:** email is live (Resend); WhatsApp, SMS and push are placeholders.
+- **Guests** (`Guest` model, Settings › Guests) get the owner's reminders for
+  the kinds of payment — and optionally the properties — they were added for,
+  on the owner's schedule or only on the due day. They get one welcome email
+  when added, and every email carries a signed "stop these reminders" link to
+  the public `/reminders/stop` page. A guest who stops can't be resumed by
+  the owner.
+- **Channels:** email is live (Resend). SMS and WhatsApp numbers can be saved
+  for the owner and guests, but nothing is sent to them until those
+  providers are connected; push is a placeholder.
+- **Send time:** 9 am by default, or the owner's choice in Settings ›
+  Channels, in their time zone.
 
-Both cron routes require `Authorization: Bearer $CRON_SECRET` and are scheduled
-in `vercel.json`.
+All three cron routes (`bills`, `reminders`, `notifications`) require
+`Authorization: Bearer $CRON_SECRET` and are scheduled in `vercel.json`.
 
 ## Design system
 
@@ -166,12 +207,13 @@ there too.
 
 ## What's next
 
-- The job that generates `Bill` rows from `BillSchedule`s ahead of time (the date
-  logic exists in `src/lib/recurrence.ts`). Until it runs, reminders only cover
-  bills already in the database.
-- WhatsApp and SMS delivery, with phone verification and opt-in; guests who get
-  reminders without an account; per-item reminder overrides. The redesigned
-  Settings (General · Reminders · Channels · Guests) is in the design canvas.
+- Premium and rent schedules: policies and leases don't create a
+  `BillSchedule` yet (utilities and loans do), so their bills aren't
+  generated automatically.
+- WhatsApp and SMS delivery (a provider such as Twilio/MSG91/Meta), with
+  phone verification and WhatsApp opt-in for owners and guests; quiet hours
+  and the weekly digest; per-item reminder overrides. Existing per-utility
+  recipients could then be folded into Guests.
 - Reminders anchored on a premium's grace-period end (`Bill.gracePeriodDays`).
 - Document upload; "Mark paid" links inside reminder emails.
 - Surfacing `Currency` and `PaymentTransaction` in the UI.

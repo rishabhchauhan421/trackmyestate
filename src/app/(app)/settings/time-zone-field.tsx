@@ -39,7 +39,7 @@ export function TimeZoneField({
           name="timezone"
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          className={`${controlClass} sm:max-w-md`}
+          className={controlClass}
         >
           {options.map((option) => (
             <option key={option.value} value={option.value}>

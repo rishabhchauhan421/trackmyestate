@@ -10,6 +10,7 @@ const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.findMany.mockResolvedValue([]);
 });
 
 describe("getLoanForOwner", () => {
@@ -49,6 +50,34 @@ describe("getLoanForOwner", () => {
 });
 
 describe("getLoans", () => {
+  it("falls back to the EMI schedule when no EMI bill exists yet", async () => {
+    jest.useFakeTimers({ now: new Date("2026-10-05T04:30:00Z") });
+    dbMock.loan.findMany.mockResolvedValue([
+      { id: "loan-1", linkedPropertyId: null },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValue([]);
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      {
+        loanId: "loan-1",
+        recurrence: "MONTHLY",
+        dueDay: 7,
+        dueMonth: null,
+        startDate: new Date("2026-01-07"),
+        createdAt: new Date("2026-01-01"),
+        tenureMonths: 120,
+        defaultAmount: 43000,
+      },
+    ] as never);
+
+    const [loan] = await getLoans("owner-1", "Asia/Kolkata");
+
+    expect(loan?.nextEmi).toEqual({
+      dueDate: new Date("2026-10-07"),
+      amount: 43000,
+    });
+    jest.useRealTimers();
+  });
+
   it("attaches the linked property's name for a loan with linkedPropertyId set", async () => {
     dbMock.loan.findMany.mockResolvedValue([
       { id: "loan-1", linkedPropertyId: "prop-1" },

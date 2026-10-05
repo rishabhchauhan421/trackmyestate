@@ -7,6 +7,7 @@
 import type {
   BillRecurrence,
   BillType,
+  Currency,
   EventCategory,
   InvestmentType,
   LoanType,
@@ -141,4 +142,15 @@ export const NOTIFICATION_STATUS_LABELS: Record<NotificationStatus, string> = {
   FAILED: "Failed",
   CANCELLED: "Cancelled",
   SKIPPED: "Skipped",
+};
+
+export const CURRENCY_LABELS: Record<Currency, string> = {
+  INR: "₹ Indian rupee (INR)",
+  USD: "$ US dollar (USD)",
+  EUR: "€ Euro (EUR)",
+  GBP: "£ British pound (GBP)",
+  CAD: "$ Canadian dollar (CAD)",
+  AED: "د.إ UAE dirham (AED)",
+  SGD: "$ Singapore dollar (SGD)",
+  AUD: "$ Australian dollar (AUD)",
 };

@@ -16,6 +16,9 @@ import type { BillRecurrence } from "../../generated/prisma";
  * 31 + 1 month lands on Mar 3, not Feb 28) — see `recurrence.test.ts` for
  * the exact documented behavior.
  */
+// `date` is a date-only value (midnight UTC — see `~/lib/calendar-day`),
+// so it's stepped with UTC fields: the calendar day can't drift with the
+// server's time zone or daylight saving.
 export function advanceByRecurrence(
   date: Date,
   recurrence: BillRecurrence,
@@ -23,22 +26,22 @@ export function advanceByRecurrence(
   const next = new Date(date);
   switch (recurrence) {
     case "WEEKLY":
-      next.setDate(next.getDate() + 7);
+      next.setUTCDate(next.getUTCDate() + 7);
       break;
     case "BI_WEEKLY":
-      next.setDate(next.getDate() + 14);
+      next.setUTCDate(next.getUTCDate() + 14);
       break;
     case "MONTHLY":
-      next.setMonth(next.getMonth() + 1);
+      next.setUTCMonth(next.getUTCMonth() + 1);
       break;
     case "QUARTERLY":
-      next.setMonth(next.getMonth() + 3);
+      next.setUTCMonth(next.getUTCMonth() + 3);
       break;
     case "HALF_YEARLY":
-      next.setMonth(next.getMonth() + 6);
+      next.setUTCMonth(next.getUTCMonth() + 6);
       break;
     case "YEARLY":
-      next.setFullYear(next.getFullYear() + 1);
+      next.setUTCFullYear(next.getUTCFullYear() + 1);
       break;
   }
   return next;
