@@ -1,0 +1,198 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "AddProperty.dc.html": {
+      "expand": "fill",
+      "h": 1340,
+      "is_interactive": true,
+      "title": "Add property (form)",
+      "w": 1440,
+      "x": 4904,
+      "y": 0,
+      "page": "screens"
+    },
+    "AppSidebar.dc.html": {
+      "h": 1180,
+      "is_interactive": true,
+      "title": "Sidebar (shared)",
+      "w": 264,
+      "x": 0,
+      "y": 0,
+      "page": "screens"
+    },
+    "Landing.dc.html": {
+      "expand": "fill",
+      "h": 3000,
+      "is_interactive": true,
+      "title": "Landing page",
+      "w": 1440,
+      "x": 0,
+      "y": 1760,
+      "page": "screens"
+    },
+    "Main.dc.html": {
+      "expand": "fill",
+      "h": 1180,
+      "is_interactive": true,
+      "title": "Dashboard",
+      "w": 1440,
+      "x": 344,
+      "y": 0,
+      "page": "screens"
+    },
+    "Properties.dc.html": {
+      "expand": "fill",
+      "h": 1180,
+      "is_interactive": true,
+      "title": "Properties",
+      "w": 1440,
+      "x": 1864,
+      "y": 0,
+      "page": "screens"
+    },
+    "PropertyDetail.dc.html": {
+      "expand": "fill",
+      "h": 1340,
+      "is_interactive": true,
+      "title": "Property detail",
+      "w": 1440,
+      "x": 3384,
+      "y": 0,
+      "page": "screens"
+    },
+    "SignIn.dc.html": {
+      "expand": "fill",
+      "h": 900,
+      "is_interactive": true,
+      "title": "Sign in",
+      "w": 1440,
+      "x": 1520,
+      "y": 1760,
+      "page": "screens"
+    },
+    "SettingsNav.dc.html": {
+      "x": 0,
+      "y": 0,
+      "w": 232,
+      "h": 200,
+      "title": "Settings nav (shared)",
+      "is_interactive": true,
+      "page": "settings"
+    },
+    "SettingsGeneral.dc.html": {
+      "x": 312,
+      "y": 0,
+      "w": 1440,
+      "h": 1000,
+      "title": "Settings \u00b7 General",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "settings"
+    },
+    "SettingsReminders.dc.html": {
+      "x": 1832,
+      "y": 0,
+      "w": 1440,
+      "h": 1640,
+      "title": "Settings \u00b7 Reminders",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "settings"
+    },
+    "SettingsChannels.dc.html": {
+      "x": 3352,
+      "y": 0,
+      "w": 1440,
+      "h": 1240,
+      "title": "Settings \u00b7 Channels",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "settings"
+    },
+    "SettingsGuests.dc.html": {
+      "x": 4872,
+      "y": 0,
+      "w": 1440,
+      "h": 1480,
+      "title": "Settings \u00b7 Guests",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "settings"
+    },
+    "AddGuest.dc.html": {
+      "x": 6392,
+      "y": 0,
+      "w": 1440,
+      "h": 1480,
+      "title": "Add guest (dialog)",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "settings"
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-10-05T09:30:00Z",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas",
+    "page": "settings"
+  },
+  "notes": {
+    "appTitle": {
+      "kind": "title1",
+      "maxW": 6344,
+      "text": "Signed-in app",
+      "w": 240,
+      "x": 0,
+      "y": -300,
+      "page": "screens"
+    },
+    "publicTitle": {
+      "kind": "title1",
+      "maxW": 2960,
+      "text": "Marketing & sign-in",
+      "w": 240,
+      "x": 0,
+      "y": 1460,
+      "page": "screens"
+    },
+    "settingsTitle": {
+      "x": 0,
+      "y": -300,
+      "text": "Settings",
+      "kind": "title1",
+      "maxW": 7832,
+      "w": 240,
+      "page": "settings"
+    }
+  },
+  "order": [
+    "AppSidebar.dc.html",
+    "Main.dc.html",
+    "Properties.dc.html",
+    "PropertyDetail.dc.html",
+    "AddProperty.dc.html",
+    "Landing.dc.html",
+    "SignIn.dc.html",
+    "SettingsNav.dc.html",
+    "SettingsGeneral.dc.html",
+    "SettingsReminders.dc.html",
+    "SettingsChannels.dc.html",
+    "SettingsGuests.dc.html",
+    "AddGuest.dc.html"
+  ],
+  "pages": [
+    {
+      "id": "screens",
+      "name": "App & marketing"
+    },
+    {
+      "id": "settings",
+      "name": "Settings"
+    }
+  ],
+  "title": "TrackMyEstate Redesign"
+}

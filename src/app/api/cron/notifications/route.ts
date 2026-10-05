@@ -9,6 +9,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { env } from "~/env";
 import { processDueNotificationJobs } from "~/server/notifications/process";
 
+// Comfortably above the drain's time budget (`TIME_BUDGET_MS`, 45s), so the
+// batch in flight when the budget runs out can still finish.
+export const maxDuration = 60;
+
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (!env.CRON_SECRET || authHeader !== `Bearer ${env.CRON_SECRET}`) {

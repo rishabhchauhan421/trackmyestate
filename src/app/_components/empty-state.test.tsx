@@ -82,3 +82,17 @@ describe("EmptyState", () => {
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });
+
+describe("EmptyState without an action link", () => {
+  it("says the action is coming soon, visibly", () => {
+    render(
+      <EmptyState
+        Icon={() => null}
+        title="No documents yet"
+        description="d"
+        actionLabel="Upload your first document"
+      />,
+    );
+    expect(screen.getByText("Coming soon")).toBeInTheDocument();
+  });
+});

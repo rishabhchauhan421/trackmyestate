@@ -2,8 +2,7 @@
 
 import * as Headless from "@headlessui/react";
 import clsx from "clsx";
-import { LayoutGroup, motion } from "motion/react";
-import React, { forwardRef, useId } from "react";
+import React, { forwardRef } from "react";
 
 import { Link } from "./link";
 import { TouchTarget } from "./touch-target";
@@ -15,7 +14,10 @@ export function Sidebar({
   return (
     <nav
       {...props}
-      className={clsx(className, "flex h-full min-h-0 flex-col")}
+      className={clsx(
+        className,
+        "flex h-full min-h-0 flex-col bg-night text-night-ink",
+      )}
     />
   );
 }
@@ -29,7 +31,7 @@ export function SidebarHeader({
       {...props}
       className={clsx(
         className,
-        "flex flex-col border-b border-zinc-950/5 p-4 dark:border-white/5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5",
+        "flex flex-col gap-4 p-4 pt-5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5",
       )}
     />
   );
@@ -44,7 +46,7 @@ export function SidebarBody({
       {...props}
       className={clsx(
         className,
-        "flex flex-1 flex-col overflow-y-auto p-4 [&>[data-slot=section]+[data-slot=section]]:mt-8",
+        "flex flex-1 flex-col overflow-y-auto px-4 pb-4 [&>[data-slot=section]+[data-slot=section]]:mt-6",
       )}
     />
   );
@@ -59,7 +61,7 @@ export function SidebarFooter({
       {...props}
       className={clsx(
         className,
-        "flex flex-col border-t border-zinc-950/5 p-4 dark:border-white/5 [&>[data-slot=section]+[data-slot=section]]:mt-2.5",
+        "flex flex-col gap-3 border-t border-white/10 p-4 [&>[data-slot=section]+[data-slot=section]]:mt-2.5",
       )}
     />
   );
@@ -69,16 +71,12 @@ export function SidebarSection({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const id = useId();
-
   return (
-    <LayoutGroup id={id}>
-      <div
-        {...props}
-        data-slot="section"
-        className={clsx(className, "flex flex-col gap-0.5")}
-      />
-    </LayoutGroup>
+    <div
+      {...props}
+      data-slot="section"
+      className={clsx(className, "flex flex-col gap-0.5")}
+    />
   );
 }
 
@@ -104,7 +102,7 @@ export function SidebarHeading({
       {...props}
       className={clsx(
         className,
-        "mb-1 px-2 text-xs/6 font-medium text-zinc-500 dark:text-zinc-400",
+        "mb-1 px-3 text-[0.6875rem]/6 font-semibold tracking-[0.08em] text-night-muted uppercase",
       )}
     />
   );
@@ -125,28 +123,21 @@ export const SidebarItem = forwardRef(function SidebarItem(
   ),
   ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>,
 ) {
+  // Icons use `text-*` (currentColor), not `fill-*`: the app's icons are
+  // outline icons drawn with `stroke="currentColor"`, and filling them turns
+  // the selected one into a solid blob.
   const classes = clsx(
-    "flex w-full items-center gap-3 rounded-lg px-2 py-2.5 text-left text-base/6 font-medium text-zinc-950 sm:py-2 sm:text-sm/5",
-    "*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:fill-zinc-500 sm:*:data-[slot=icon]:size-5",
+    "flex w-full items-center gap-3 rounded-[9px] px-3 py-2.5 text-left text-base/6 font-medium text-night-ink transition-colors sm:py-2 sm:text-sm/6",
+    "*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:text-night-muted sm:*:data-[slot=icon]:size-5",
     "*:last:data-[slot=icon]:ml-auto *:last:data-[slot=icon]:size-5 sm:*:last:data-[slot=icon]:size-4",
-    "*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-7 sm:*:data-[slot=avatar]:size-6",
-    "data-hover:bg-zinc-950/5 data-hover:*:data-[slot=icon]:fill-zinc-950",
-    "data-active:bg-zinc-950/5 data-active:*:data-[slot=icon]:fill-zinc-950",
-    "data-current:*:data-[slot=icon]:fill-zinc-950",
-    "dark:text-white dark:*:data-[slot=icon]:fill-zinc-400",
-    "dark:data-hover:bg-white/5 dark:data-hover:*:data-[slot=icon]:fill-white",
-    "dark:data-active:bg-white/5 dark:data-active:*:data-[slot=icon]:fill-white",
-    "dark:data-current:*:data-[slot=icon]:fill-white",
+    "*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-7 sm:*:data-[slot=avatar]:size-8",
+    "data-hover:bg-white/5 data-hover:text-white data-hover:*:data-[slot=icon]:text-white",
+    "data-active:bg-white/10",
+    "data-current:bg-night-3 data-current:text-white data-current:shadow-[inset_3px_0_0_var(--color-mint)] data-current:*:data-[slot=icon]:text-mint",
   );
 
   return (
     <span className={clsx(className, "relative")}>
-      {current && (
-        <motion.span
-          layoutId="current-indicator"
-          className="absolute inset-y-2 -left-4 w-0.5 rounded-full bg-zinc-950 dark:bg-white"
-        />
-      )}
       {typeof props.href === "string" ? (
         <Headless.CloseButton
           as={Link}

@@ -2,7 +2,7 @@ import "~/styles/globals.css";
 
 import { GoogleTagManager } from "@next/third-parties/google";
 import { type Metadata } from "next";
-import { Inter, Lexend } from "next/font/google";
+import { Bricolage_Grotesque, Geist } from "next/font/google";
 
 import { env } from "~/env";
 import { TRPCReactProvider } from "~/trpc/react";
@@ -48,23 +48,25 @@ export const metadata: Metadata = {
   },
 };
 
-const inter = Inter({
+// UI text.
+const geist = Geist({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  variable: "--font-geist",
 });
 
-const lexend = Lexend({
+// Headings and headline figures (`font-display`).
+const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-lexend",
+  variable: "--font-bricolage",
 });
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${lexend.variable}`}>
+    <html lang="en" className={`${geist.variable} ${bricolage.variable}`}>
       {env.NEXT_PUBLIC_GTM_ID && (
         <GoogleTagManager gtmId={env.NEXT_PUBLIC_GTM_ID} />
       )}

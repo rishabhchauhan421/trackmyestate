@@ -46,40 +46,29 @@ export default async function AdminOverviewPage() {
 
       <div className="grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="border-t border-slate-200 pt-4 dark:border-slate-800"
-          >
-            <p className="text-sm/6 font-medium text-slate-500 dark:text-slate-400">
-              {stat.label}
-            </p>
-            <p className="mt-2 text-3xl/8 font-semibold text-slate-900 dark:text-slate-50">
+          <div key={stat.label} className="border-t border-line pt-4">
+            <p className="text-sm/6 font-medium text-muted">{stat.label}</p>
+            <p className="mt-2 text-3xl/8 font-semibold text-ink">
               {stat.value}
             </p>
-            <p className="mt-2 text-xs text-slate-400 dark:text-slate-500">
-              {stat.hint}
-            </p>
+            <p className="mt-2 text-xs text-muted">{stat.hint}</p>
           </div>
         ))}
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
-            <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-              Assets tracked
-            </h2>
+        <div className="overflow-hidden rounded-card border border-line bg-surface shadow-sm">
+          <div className="border-b border-line-soft px-6 py-4">
+            <h2 className="text-sm font-semibold text-ink">Assets tracked</h2>
           </div>
-          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+          <ul className="divide-y divide-line-soft">
             {assetCounts.map((row) => (
               <li
                 key={row.label}
                 className="flex items-center justify-between px-6 py-3 text-sm"
               >
-                <span className="text-slate-600 dark:text-slate-300">
-                  {row.label}
-                </span>
-                <span className="font-medium text-slate-900 dark:text-slate-50">
+                <span className="text-ink-2">{row.label}</span>
+                <span className="font-medium text-ink">
                   {row.value.toLocaleString("en-IN")}
                 </span>
               </li>
@@ -87,25 +76,25 @@ export default async function AdminOverviewPage() {
           </ul>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <div className="border-b border-slate-100 px-6 py-4 dark:border-slate-800">
-            <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+        <div className="overflow-hidden rounded-card border border-line bg-surface shadow-sm">
+          <div className="border-b border-line-soft px-6 py-4">
+            <h2 className="text-sm font-semibold text-ink">
               Notification engine
             </h2>
           </div>
-          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+          <ul className="divide-y divide-line-soft">
             {Object.entries(overview.notificationsByStatus).map(
               ([status, count]) => (
                 <li
                   key={status}
                   className="flex items-center justify-between px-6 py-3 text-sm"
                 >
-                  <span className="text-slate-600 dark:text-slate-300">
+                  <span className="text-ink-2">
                     {NOTIFICATION_STATUS_LABELS[
                       status as keyof typeof NOTIFICATION_STATUS_LABELS
                     ] ?? status}
                   </span>
-                  <span className="font-medium text-slate-900 dark:text-slate-50">
+                  <span className="font-medium text-ink">
                     {count.toLocaleString("en-IN")}
                   </span>
                 </li>

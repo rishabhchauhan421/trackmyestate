@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings navigation</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0}
+a{text-decoration:none}
+</style>
+</helmet>
+<nav aria-label="Settings" style="width: 232px; box-sizing: border-box; font-family: 'Geist', system-ui, sans-serif; color: #12201C; display: flex; flex-direction: column; gap: 2px">
+  <a href="SettingsGeneral.dc.html" aria-current="{{general.aria}}" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; font-size: 14px; font-weight: {{general.weight}}; background: {{general.bg}}; color: {{general.fg}}; box-shadow: {{general.ring}}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{general.icon}}"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"></path></svg>
+    General
+  </a>
+  <a href="SettingsReminders.dc.html" aria-current="{{reminders.aria}}" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; font-size: 14px; font-weight: {{reminders.weight}}; background: {{reminders.bg}}; color: {{reminders.fg}}; box-shadow: {{reminders.ring}}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{reminders.icon}}"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+    Reminders
+  </a>
+  <a href="SettingsChannels.dc.html" aria-current="{{channels.aria}}" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; font-size: 14px; font-weight: {{channels.weight}}; background: {{channels.bg}}; color: {{channels.fg}}; box-shadow: {{channels.ring}}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{channels.icon}}"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>
+    Channels
+  </a>
+  <a href="SettingsGuests.dc.html" aria-current="{{guests.aria}}" style="display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; font-size: 14px; font-weight: {{guests.weight}}; background: {{guests.bg}}; color: {{guests.fg}}; box-shadow: {{guests.ring}}">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{guests.icon}}"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"></path><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14c2.2.6 3.5 2.8 3.5 6"></path></svg>
+    Guests
+    <span style="margin-left: auto; font-size: 12px; font-weight: 600; color: #5A6762">3</span>
+  </a>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"tab":{"editor":"enum","options":["general","reminders","channels","guests"],"default":"reminders"},"$preview":{"width":232,"height":200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    var tab = this.props.tab ?? 'reminders';
+    var vals = {};
+    ['general', 'reminders', 'channels', 'guests'].forEach(function (key) {
+      var on = key === tab;
+      vals[key] = {
+        aria: on ? 'page' : undefined,
+        bg: on ? '#FFFFFF' : 'transparent',
+        fg: on ? '#12201C' : '#3E4B46',
+        icon: on ? '#0F6E5D' : '#5A6762',
+        weight: on ? '600' : '500',
+        ring: on ? '0 0 0 1px #E3E7E2, inset 3px 0 0 #0F6E5D' : 'none'
+      };
+    });
+    return vals;
+  }
+}
+</script>
+</body>
+</html>

@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
@@ -14,10 +14,6 @@ import {
   getInvestmentForOwner,
   hasBillsForInvestment,
 } from "~/server/queries/investments";
-
-const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
-const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function EditInvestmentPage({
   params,
@@ -36,16 +32,12 @@ export default async function EditInvestmentPage({
 
   return (
     <>
-      <div>
-        <Link
-          href="/investments"
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-        >
-          ← Investments
-        </Link>
-      </div>
-
       <PageHeader
+        breadcrumbs={[
+          { label: "Investments", href: "/investments" },
+          { label: investment.name },
+          { label: "Edit" },
+        ]}
         title={`Edit ${investment.name}`}
         description="Update this investment's details, including its current estimated value."
       />
@@ -53,26 +45,26 @@ export default async function EditInvestmentPage({
       <form
         action={updateInvestment.bind(null, investment.id)}
         data-gtm-event="investment_updated"
-        className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+        className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Name</label>
+          <label className="block">
+            <span className={labelClass}>Name</span>
             <input
               type="text"
               name="name"
               required
               defaultValue={investment.name}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Type</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Type</span>
             <select
               name="type"
               required
               defaultValue={investment.type}
-              className={inputClass}
+              className={controlClass}
             >
               {Object.entries(INVESTMENT_TYPE_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>
@@ -80,34 +72,34 @@ export default async function EditInvestmentPage({
                 </option>
               ))}
             </select>
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Institution (optional)</label>
+          <label className="block">
+            <span className={labelClass}>Institution (optional)</span>
             <input
               type="text"
               name="institution"
               defaultValue={investment.institution ?? ""}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Invested date</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Invested date</span>
             <input
               type="date"
               name="investedDate"
               required
               defaultValue={toDateInputValue(investment.investedDate)}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Capital deployed (₹)</label>
+          <label className="block">
+            <span className={labelClass}>Capital deployed (₹)</span>
             <input
               type="number"
               name="capitalDeployed"
@@ -115,40 +107,36 @@ export default async function EditInvestmentPage({
               step="1"
               required
               defaultValue={investment.capitalDeployed}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>
+          </label>
+          <label className="block">
+            <span className={labelClass}>
               Current estimated value (₹, optional)
-            </label>
+            </span>
             <input
               type="number"
               name="currentEstimatedValue"
               min="0"
               step="1"
               defaultValue={investment.currentEstimatedValue ?? ""}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>
-              Expected return type (optional)
-            </label>
+          <label className="block">
+            <span className={labelClass}>Expected return type (optional)</span>
             <input
               type="text"
               name="expectedReturnType"
               defaultValue={investment.expectedReturnType ?? ""}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>
-              Expected return date (optional)
-            </label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Expected return date (optional)</span>
             <input
               type="date"
               name="expectedReturnDate"
@@ -157,40 +145,35 @@ export default async function EditInvestmentPage({
                   ? toDateInputValue(investment.expectedReturnDate)
                   : ""
               }
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
-        <div>
-          <label className={labelClass}>Target ROI % (optional)</label>
+        <label className="block">
+          <span className={labelClass}>Target ROI % (optional)</span>
           <input
             type="number"
             name="targetRoiPercent"
             min="0"
             step="0.1"
             defaultValue={investment.targetRoiPercent ?? ""}
-            className={`${inputClass} sm:w-40`}
+            className={`${controlClass} sm:w-40`}
           />
-        </div>
+        </label>
 
-        <div className="flex items-center gap-3 pt-2">
-          <Button type="submit">Save changes</Button>
-          <Link
-            href="/investments"
-            className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-          >
+        <FormActions>
+          <Button href="/investments" variant="outline">
             Cancel
-          </Link>
-        </div>
+          </Button>
+          <Button type="submit">Save changes</Button>
+        </FormActions>
       </form>
 
-      <div className="max-w-xl space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+      <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
-          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            Delete investment
-          </p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-sm font-semibold text-ink">Delete investment</p>
+          <p className="mt-1 text-xs text-muted">
             {canDelete
               ? "Permanently removes this investment. Only possible when it has no bills on record."
               : "This investment has bills on record, so it can't be deleted."}

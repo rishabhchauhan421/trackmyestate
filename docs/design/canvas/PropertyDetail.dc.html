@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Property detail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif; font-variant-numeric: tabular-nums">
+  <dc-import name="AppSidebar" current="properties" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+      <nav aria-label="Breadcrumb" style="font-size: 13px; color: #5A6762; display: flex; gap: 8px; align-items: center">
+        <a href="Properties.dc.html" style="font-weight: 500">Properties</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Whitefield Rented Flat</span>
+      </nav>
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px">
+        <div style="display: flex; gap: 16px; align-items: center">
+          <span style="width: 64px; height: 64px; border-radius: 16px; background: #E3F1EC; display: flex; align-items: center; justify-content: center; flex-shrink: 0">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0F6E5D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path><path d="M10 20v-6h4v6"></path></svg>
+          </span>
+          <div style="display: flex; flex-direction: column; gap: 6px">
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+              <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Whitefield Rented Flat</h1>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E3F1EC; color: #0A5446">Rented</span>
+            </div>
+            <span style="font-size: 14px; color: #5A6762">Apartment · Whitefield, Bengaluru, Karnataka · Sole ownership</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 10px">
+          <a href="AddProperty.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D5DBD6; background: #FFFFFF; color: #12201C; font-size: 14px; font-weight: 500">Edit property</a>
+          <a href="PropertyDetail.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 10px; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+            Add bill
+          </a>
+        </div>
+      </header>
+
+      <section aria-label="Key figures" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px">
+        <div style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; color: #5A6762">Current value</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 600">₹89,00,000</span>
+          <span style="font-size: 12px; color: #0F6E5D; font-weight: 600">+₹21,00,000 since purchase</span>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; color: #5A6762">Monthly rent</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 600">₹32,000</span>
+          <span style="font-size: 12px; color: #5A6762">Due on the 7th</span>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; color: #5A6762">Gross rental yield</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 600">4.3%</span>
+          <span style="font-size: 12px; color: #5A6762">₹3,84,000 a year</span>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 8px">
+          <span style="font-size: 13px; color: #5A6762">Open bills</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 600">₹3,500</span>
+          <span style="font-size: 12px; color: #8A4B0B; font-weight: 600">Maintenance due in 5 days</span>
+        </div>
+      </section>
+
+      <div role="tablist" aria-label="Property sections" style="display: flex; flex-wrap: wrap; gap: 24px; border-bottom: 1px solid #E3E7E2">
+        <a role="tab" aria-selected="true" href="PropertyDetail.dc.html" style="padding: 10px 0 12px; font-size: 14px; font-weight: 600; color: #12201C; box-shadow: inset 0 -2px 0 #0F6E5D">Overview</a>
+        <a role="tab" aria-selected="false" href="PropertyDetail.dc.html" style="padding: 10px 0 12px; font-size: 14px; font-weight: 500; color: #5A6762">Lease &amp; rent</a>
+        <a role="tab" aria-selected="false" href="PropertyDetail.dc.html" style="padding: 10px 0 12px; font-size: 14px; font-weight: 500; color: #5A6762">Rental units</a>
+        <a role="tab" aria-selected="false" href="PropertyDetail.dc.html" style="padding: 10px 0 12px; font-size: 14px; font-weight: 500; color: #5A6762">Utilities &amp; bills</a>
+        <a role="tab" aria-selected="false" href="PropertyDetail.dc.html" style="padding: 10px 0 12px; font-size: 14px; font-weight: 500; color: #5A6762">Documents · 2</a>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; align-items: start">
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 16px">
+
+          <section aria-labelledby="lease" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+              <h2 id="lease" style="margin: 0; font-size: 16px; font-weight: 600">Current lease</h2>
+              <a href="PropertyDetail.dc.html" style="font-size: 13px; font-weight: 500">Change terms</a>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px">
+              <span style="width: 44px; height: 44px; border-radius: 999px; background: #E9ECE7; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600">KS</span>
+              <div style="flex: 1 1 200px; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 15px; font-weight: 600">Karthik Subramaniam</span>
+                <span style="font-size: 13px; color: #5A6762">Whole property · deposit ₹96,000</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E3F1EC; color: #0A5446">Active</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+              <div style="border-radius: 12px; background: #F5F6F2; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+                <span style="font-size: 12px; color: #5A6762">August</span>
+                <span style="font-size: 14px; font-weight: 600">₹32,000</span>
+                <span style="font-size: 12px; font-weight: 600; color: #116B4A">Received</span>
+              </div>
+              <div style="border-radius: 12px; background: #F5F6F2; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+                <span style="font-size: 12px; color: #5A6762">September</span>
+                <span style="font-size: 14px; font-weight: 600">₹32,000</span>
+                <span style="font-size: 12px; font-weight: 600; color: #116B4A">Received</span>
+              </div>
+              <div style="border-radius: 12px; background: #FDF1DC; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px">
+                <span style="font-size: 12px; color: #6B3A08">October</span>
+                <span style="font-size: 14px; font-weight: 600">₹32,000</span>
+                <span style="font-size: 12px; font-weight: 600; color: #8A4B0B">Due 7 Oct</span>
+              </div>
+            </div>
+          </section>
+
+          <section aria-labelledby="bills" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; overflow: hidden">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px">
+              <h2 id="bills" style="margin: 0; font-size: 16px; font-weight: 600">Bills</h2>
+              <a href="PropertyDetail.dc.html" style="font-size: 13px; font-weight: 500">All bills →</a>
+            </div>
+            <div style="overflow-x: auto">
+              <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 560px">
+                <thead>
+                  <tr style="text-align: left; color: #5A6762; font-size: 12px; background: #F8F9F6">
+                    <th scope="col" style="padding: 10px 22px; font-weight: 600">Bill</th>
+                    <th scope="col" style="padding: 10px 12px; font-weight: 600">Due</th>
+                    <th scope="col" style="padding: 10px 12px; font-weight: 600">Status</th>
+                    <th scope="col" style="padding: 10px 22px; font-weight: 600; text-align: right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-top: 1px solid #EEF1ED">
+                    <td style="padding: 14px 22px; font-weight: 500">Society maintenance</td>
+                    <td style="padding: 14px 12px; color: #5A6762">10 Oct 2026</td>
+                    <td style="padding: 14px 12px"><span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #FDF1DC; color: #8A4B0B">Due</span></td>
+                    <td style="padding: 14px 22px; text-align: right; font-weight: 600">₹3,500</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #EEF1ED">
+                    <td style="padding: 14px 22px; font-weight: 500">Society maintenance</td>
+                    <td style="padding: 14px 12px; color: #5A6762">10 Sep 2026</td>
+                    <td style="padding: 14px 12px"><span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E2F3EA; color: #116B4A">Paid 8 Sep</span></td>
+                    <td style="padding: 14px 22px; text-align: right; font-weight: 600">₹3,500</td>
+                  </tr>
+                  <tr style="border-top: 1px solid #EEF1ED">
+                    <td style="padding: 14px 22px; font-weight: 500">Society maintenance</td>
+                    <td style="padding: 14px 12px; color: #5A6762">10 Aug 2026</td>
+                    <td style="padding: 14px 12px"><span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E2F3EA; color: #116B4A">Paid 9 Aug</span></td>
+                    <td style="padding: 14px 22px; text-align: right; font-weight: 600">₹3,500</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <aside style="display: flex; flex-direction: column; gap: 16px">
+          <section aria-labelledby="facts" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px">
+            <h2 id="facts" style="margin: 0; font-size: 16px; font-weight: 600">Details</h2>
+            <dl style="margin: 0; display: flex; flex-direction: column; gap: 12px; font-size: 14px">
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Purchase price</dt><dd style="margin: 0; font-weight: 500">₹68,00,000</dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Purchased</dt><dd style="margin: 0; font-weight: 500">1 Jul 2022</dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Category</dt><dd style="margin: 0; font-weight: 500">Apartment</dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Ownership</dt><dd style="margin: 0; font-weight: 500">Sole</dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Linked loan</dt><dd style="margin: 0; font-weight: 500">None</dd></div>
+            </dl>
+          </section>
+
+          <section aria-labelledby="docs" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px">
+            <div style="display: flex; align-items: center; justify-content: space-between">
+              <h2 id="docs" style="margin: 0; font-size: 16px; font-weight: 600">Documents</h2>
+              <a href="PropertyDetail.dc.html" style="font-size: 13px; font-weight: 500">Upload</a>
+            </div>
+            <a href="PropertyDetail.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px; background: #F5F6F2; color: #12201C">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A6762" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+              <span style="flex: 1; font-size: 14px; font-weight: 500">Sale deed</span><span style="font-size: 12px; color: #5A6762">PDF</span>
+            </a>
+            <a href="PropertyDetail.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px; background: #F5F6F2; color: #12201C">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5A6762" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"></path><path d="M14 3v5h5"></path></svg>
+              <span style="flex: 1; font-size: 14px; font-weight: 500">Rental agreement</span><span style="font-size: 12px; color: #5A6762">PDF</span>
+            </a>
+          </section>
+
+          <section aria-labelledby="notify" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px">
+            <h2 id="notify" style="margin: 0; font-size: 16px; font-weight: 600">Reminders</h2>
+            <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #5A6762">Maintenance reminders go to you 5 days before each due date.</p>
+            <a href="PropertyDetail.dc.html" style="font-size: 13px; font-weight: 600">Add someone to notify</a>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1340}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

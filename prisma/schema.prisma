@@ -36,6 +36,11 @@ model User {
 
   currency      Currency  @default(INR)
 
+  // IANA time zone (e.g. "Asia/Kolkata") for reminder send times and "today"
+  // in date logic. Optional so existing users need no backfill — null means
+  // `DEFAULT_TIME_ZONE` in `src/lib/time-zone.ts`. Set from Settings.
+  timezone      String?
+
   // better-auth `admin` plugin fields (see `src/server/better-auth/config.ts`).
   // All optional: existing users have none of these set and are treated as
   // ordinary, unbanned, non-admin users until explicitly promoted/banned —
@@ -290,11 +295,11 @@ enum ReminderChannel {
   SMS
 }
 
-enum NotificationTrigger {
-  BEFORE_DUE
-  ON_DUE_DATE
-  OVERDUE
-  PAYMENT_RECEIVED
+// The date a reminder's `offsetDays` is measured from. Only the bill's due
+// date exists today; e.g. a policy's grace-period end can be added once
+// `Policy` stores its grace period.
+enum ReminderAnchor {
+  DUE_DATE
 }
 
 enum NotificationStatus {
@@ -437,7 +442,6 @@ model BillSchedule {
   recurrence       BillRecurrence @default(MONTHLY)
   dueDay           Int            
   dueMonth         Int?           
-  reminderLeadDays Int            @default(7)
   defaultAmount    Float?
   currency         Currency?
   tenureMonths     Int? 
@@ -695,6 +699,12 @@ model AuditLog {
 // Scalable Notification Engine
 // ---------------------------------------------------------------------------
 
+// One reminder: for `category` bills, remind `offsetDays` from `anchor` on
+// `channels`. With no item link set (`billScheduleId`, `loanId`, ...) it's
+// the owner's default for that category, edited in Settings › Reminders;
+// with one set it overrides the defaults for that item only. An owner with
+// no rows for a category gets the built-in defaults in
+// `src/server/reminders/defaults.ts`.
 model NotificationRule {
   id             String              @id @default(auto()) @map("_id") @db.ObjectId
   ownerId        String              @db.ObjectId
@@ -718,11 +728,13 @@ model NotificationRule {
   investmentId   String?             @db.ObjectId
   investment     Investment?         @relation(fields: [investmentId], references: [id], onDelete: Cascade)
 
-  trigger        NotificationTrigger @default(BEFORE_DUE)
-  leadDays       Int                 @default(3)
-  
+  // When to remind: `offsetDays` from `anchor` — negative is before
+  // (-7 = a week before), 0 is the day itself, positive is an overdue
+  // follow-up (+3 = three days after, if still unpaid).
+  anchor         ReminderAnchor      @default(DUE_DATE)
+  offsetDays     Int
+
   channels       ReminderChannel[]
-  recipients     String[]            
   
   active         Boolean             @default(true)
   deletedAt      DateTime?           
@@ -732,6 +744,7 @@ model NotificationRule {
   jobs           NotificationJob[]
 
   @@index([ownerId, deletedAt])
+  @@index([ownerId, category])
 }
 
 model NotificationJob {

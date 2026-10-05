@@ -59,11 +59,11 @@ describe("StatusBadge", () => {
     render(<StatusBadge status="REFUNDED" />);
 
     expect(screen.getByText("REFUNDED").className).not.toBe(fallbackClass);
-    expect(screen.getByText("REFUNDED").className).toContain("sky");
+    expect(screen.getByText("REFUNDED").className).toContain("accent");
   });
 
   it("still defines CANCELLED explicitly rather than relying on chance", () => {
     render(<StatusBadge status="CANCELLED" />);
-    expect(screen.getByText("CANCELLED").className).toContain("slate");
+    expect(screen.getByText("CANCELLED").className).toContain("sunken-2");
   });
 });

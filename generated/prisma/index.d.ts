@@ -325,14 +325,11 @@ export const ReminderChannel: {
 export type ReminderChannel = (typeof ReminderChannel)[keyof typeof ReminderChannel]
 
 
-export const NotificationTrigger: {
-  BEFORE_DUE: 'BEFORE_DUE',
-  ON_DUE_DATE: 'ON_DUE_DATE',
-  OVERDUE: 'OVERDUE',
-  PAYMENT_RECEIVED: 'PAYMENT_RECEIVED'
+export const ReminderAnchor: {
+  DUE_DATE: 'DUE_DATE'
 };
 
-export type NotificationTrigger = (typeof NotificationTrigger)[keyof typeof NotificationTrigger]
+export type ReminderAnchor = (typeof ReminderAnchor)[keyof typeof ReminderAnchor]
 
 
 export const NotificationStatus: {
@@ -420,9 +417,9 @@ export type ReminderChannel = $Enums.ReminderChannel
 
 export const ReminderChannel: typeof $Enums.ReminderChannel
 
-export type NotificationTrigger = $Enums.NotificationTrigger
+export type ReminderAnchor = $Enums.ReminderAnchor
 
-export const NotificationTrigger: typeof $Enums.NotificationTrigger
+export const ReminderAnchor: typeof $Enums.ReminderAnchor
 
 export type NotificationStatus = $Enums.NotificationStatus
 
@@ -4521,6 +4518,7 @@ export namespace Prisma {
     emailVerified: boolean | null
     image: string | null
     currency: $Enums.Currency | null
+    timezone: string | null
     role: string | null
     banned: boolean | null
     banReason: string | null
@@ -4536,6 +4534,7 @@ export namespace Prisma {
     emailVerified: boolean | null
     image: string | null
     currency: $Enums.Currency | null
+    timezone: string | null
     role: string | null
     banned: boolean | null
     banReason: string | null
@@ -4551,6 +4550,7 @@ export namespace Prisma {
     emailVerified: number
     image: number
     currency: number
+    timezone: number
     role: number
     banned: number
     banReason: number
@@ -4568,6 +4568,7 @@ export namespace Prisma {
     emailVerified?: true
     image?: true
     currency?: true
+    timezone?: true
     role?: true
     banned?: true
     banReason?: true
@@ -4583,6 +4584,7 @@ export namespace Prisma {
     emailVerified?: true
     image?: true
     currency?: true
+    timezone?: true
     role?: true
     banned?: true
     banReason?: true
@@ -4598,6 +4600,7 @@ export namespace Prisma {
     emailVerified?: true
     image?: true
     currency?: true
+    timezone?: true
     role?: true
     banned?: true
     banReason?: true
@@ -4686,6 +4689,7 @@ export namespace Prisma {
     emailVerified: boolean
     image: string | null
     currency: $Enums.Currency
+    timezone: string | null
     role: string | null
     banned: boolean | null
     banReason: string | null
@@ -4718,6 +4722,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: boolean
     currency?: boolean
+    timezone?: boolean
     role?: boolean
     banned?: boolean
     banReason?: boolean
@@ -4750,6 +4755,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: boolean
     currency?: boolean
+    timezone?: boolean
     role?: boolean
     banned?: boolean
     banReason?: boolean
@@ -4758,7 +4764,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "currency" | "role" | "banned" | "banReason" | "banExpires" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "currency" | "timezone" | "role" | "banned" | "banReason" | "banExpires" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
@@ -4802,6 +4808,7 @@ export namespace Prisma {
       emailVerified: boolean
       image: string | null
       currency: $Enums.Currency
+      timezone: string | null
       role: string | null
       banned: boolean | null
       banReason: string | null
@@ -5220,6 +5227,7 @@ export namespace Prisma {
     readonly emailVerified: FieldRef<"User", 'Boolean'>
     readonly image: FieldRef<"User", 'String'>
     readonly currency: FieldRef<"User", 'Currency'>
+    readonly timezone: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'String'>
     readonly banned: FieldRef<"User", 'Boolean'>
     readonly banReason: FieldRef<"User", 'String'>
@@ -12908,7 +12916,6 @@ export namespace Prisma {
   export type BillScheduleAvgAggregateOutputType = {
     dueDay: number | null
     dueMonth: number | null
-    reminderLeadDays: number | null
     defaultAmount: number | null
     tenureMonths: number | null
   }
@@ -12916,7 +12923,6 @@ export namespace Prisma {
   export type BillScheduleSumAggregateOutputType = {
     dueDay: number | null
     dueMonth: number | null
-    reminderLeadDays: number | null
     defaultAmount: number | null
     tenureMonths: number | null
   }
@@ -12939,7 +12945,6 @@ export namespace Prisma {
     recurrence: $Enums.BillRecurrence | null
     dueDay: number | null
     dueMonth: number | null
-    reminderLeadDays: number | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -12967,7 +12972,6 @@ export namespace Prisma {
     recurrence: $Enums.BillRecurrence | null
     dueDay: number | null
     dueMonth: number | null
-    reminderLeadDays: number | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -12995,7 +12999,6 @@ export namespace Prisma {
     recurrence: number
     dueDay: number
     dueMonth: number
-    reminderLeadDays: number
     defaultAmount: number
     currency: number
     tenureMonths: number
@@ -13010,7 +13013,6 @@ export namespace Prisma {
   export type BillScheduleAvgAggregateInputType = {
     dueDay?: true
     dueMonth?: true
-    reminderLeadDays?: true
     defaultAmount?: true
     tenureMonths?: true
   }
@@ -13018,7 +13020,6 @@ export namespace Prisma {
   export type BillScheduleSumAggregateInputType = {
     dueDay?: true
     dueMonth?: true
-    reminderLeadDays?: true
     defaultAmount?: true
     tenureMonths?: true
   }
@@ -13041,7 +13042,6 @@ export namespace Prisma {
     recurrence?: true
     dueDay?: true
     dueMonth?: true
-    reminderLeadDays?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -13069,7 +13069,6 @@ export namespace Prisma {
     recurrence?: true
     dueDay?: true
     dueMonth?: true
-    reminderLeadDays?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -13097,7 +13096,6 @@ export namespace Prisma {
     recurrence?: true
     dueDay?: true
     dueMonth?: true
-    reminderLeadDays?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -13212,7 +13210,6 @@ export namespace Prisma {
     recurrence: $Enums.BillRecurrence
     dueDay: number
     dueMonth: number | null
-    reminderLeadDays: number
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -13259,7 +13256,6 @@ export namespace Prisma {
     recurrence?: boolean
     dueDay?: boolean
     dueMonth?: boolean
-    reminderLeadDays?: boolean
     defaultAmount?: boolean
     currency?: boolean
     tenureMonths?: boolean
@@ -13301,7 +13297,6 @@ export namespace Prisma {
     recurrence?: boolean
     dueDay?: boolean
     dueMonth?: boolean
-    reminderLeadDays?: boolean
     defaultAmount?: boolean
     currency?: boolean
     tenureMonths?: boolean
@@ -13311,7 +13306,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "dueDay" | "dueMonth" | "reminderLeadDays" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
+  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "dueDay" | "dueMonth" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
   export type BillScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     property?: boolean | BillSchedule$propertyArgs<ExtArgs>
@@ -13358,7 +13353,6 @@ export namespace Prisma {
       recurrence: $Enums.BillRecurrence
       dueDay: number
       dueMonth: number | null
-      reminderLeadDays: number
       defaultAmount: number | null
       currency: $Enums.Currency | null
       tenureMonths: number | null
@@ -13787,7 +13781,6 @@ export namespace Prisma {
     readonly recurrence: FieldRef<"BillSchedule", 'BillRecurrence'>
     readonly dueDay: FieldRef<"BillSchedule", 'Int'>
     readonly dueMonth: FieldRef<"BillSchedule", 'Int'>
-    readonly reminderLeadDays: FieldRef<"BillSchedule", 'Int'>
     readonly defaultAmount: FieldRef<"BillSchedule", 'Float'>
     readonly currency: FieldRef<"BillSchedule", 'Currency'>
     readonly tenureMonths: FieldRef<"BillSchedule", 'Int'>
@@ -22426,11 +22419,11 @@ export namespace Prisma {
   }
 
   export type NotificationRuleAvgAggregateOutputType = {
-    leadDays: number | null
+    offsetDays: number | null
   }
 
   export type NotificationRuleSumAggregateOutputType = {
-    leadDays: number | null
+    offsetDays: number | null
   }
 
   export type NotificationRuleMinAggregateOutputType = {
@@ -22444,8 +22437,8 @@ export namespace Prisma {
     loanId: string | null
     policyId: string | null
     investmentId: string | null
-    trigger: $Enums.NotificationTrigger | null
-    leadDays: number | null
+    anchor: $Enums.ReminderAnchor | null
+    offsetDays: number | null
     active: boolean | null
     deletedAt: Date | null
     createdAt: Date | null
@@ -22463,8 +22456,8 @@ export namespace Prisma {
     loanId: string | null
     policyId: string | null
     investmentId: string | null
-    trigger: $Enums.NotificationTrigger | null
-    leadDays: number | null
+    anchor: $Enums.ReminderAnchor | null
+    offsetDays: number | null
     active: boolean | null
     deletedAt: Date | null
     createdAt: Date | null
@@ -22482,10 +22475,9 @@ export namespace Prisma {
     loanId: number
     policyId: number
     investmentId: number
-    trigger: number
-    leadDays: number
+    anchor: number
+    offsetDays: number
     channels: number
-    recipients: number
     active: number
     deletedAt: number
     createdAt: number
@@ -22495,11 +22487,11 @@ export namespace Prisma {
 
 
   export type NotificationRuleAvgAggregateInputType = {
-    leadDays?: true
+    offsetDays?: true
   }
 
   export type NotificationRuleSumAggregateInputType = {
-    leadDays?: true
+    offsetDays?: true
   }
 
   export type NotificationRuleMinAggregateInputType = {
@@ -22513,8 +22505,8 @@ export namespace Prisma {
     loanId?: true
     policyId?: true
     investmentId?: true
-    trigger?: true
-    leadDays?: true
+    anchor?: true
+    offsetDays?: true
     active?: true
     deletedAt?: true
     createdAt?: true
@@ -22532,8 +22524,8 @@ export namespace Prisma {
     loanId?: true
     policyId?: true
     investmentId?: true
-    trigger?: true
-    leadDays?: true
+    anchor?: true
+    offsetDays?: true
     active?: true
     deletedAt?: true
     createdAt?: true
@@ -22551,10 +22543,9 @@ export namespace Prisma {
     loanId?: true
     policyId?: true
     investmentId?: true
-    trigger?: true
-    leadDays?: true
+    anchor?: true
+    offsetDays?: true
     channels?: true
-    recipients?: true
     active?: true
     deletedAt?: true
     createdAt?: true
@@ -22659,10 +22650,9 @@ export namespace Prisma {
     loanId: string | null
     policyId: string | null
     investmentId: string | null
-    trigger: $Enums.NotificationTrigger
-    leadDays: number
+    anchor: $Enums.ReminderAnchor
+    offsetDays: number
     channels: $Enums.ReminderChannel[]
-    recipients: string[]
     active: boolean
     deletedAt: Date | null
     createdAt: Date
@@ -22699,10 +22689,9 @@ export namespace Prisma {
     loanId?: boolean
     policyId?: boolean
     investmentId?: boolean
-    trigger?: boolean
-    leadDays?: boolean
+    anchor?: boolean
+    offsetDays?: boolean
     channels?: boolean
-    recipients?: boolean
     active?: boolean
     deletedAt?: boolean
     createdAt?: boolean
@@ -22732,17 +22721,16 @@ export namespace Prisma {
     loanId?: boolean
     policyId?: boolean
     investmentId?: boolean
-    trigger?: boolean
-    leadDays?: boolean
+    anchor?: boolean
+    offsetDays?: boolean
     channels?: boolean
-    recipients?: boolean
     active?: boolean
     deletedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type NotificationRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "billScheduleId" | "billId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "trigger" | "leadDays" | "channels" | "recipients" | "active" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationRule"]>
+  export type NotificationRuleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "billScheduleId" | "billId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "anchor" | "offsetDays" | "channels" | "active" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationRule"]>
   export type NotificationRuleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     billSchedule?: boolean | NotificationRule$billScheduleArgs<ExtArgs>
@@ -22780,10 +22768,9 @@ export namespace Prisma {
       loanId: string | null
       policyId: string | null
       investmentId: string | null
-      trigger: $Enums.NotificationTrigger
-      leadDays: number
+      anchor: $Enums.ReminderAnchor
+      offsetDays: number
       channels: $Enums.ReminderChannel[]
-      recipients: string[]
       active: boolean
       deletedAt: Date | null
       createdAt: Date
@@ -23199,10 +23186,9 @@ export namespace Prisma {
     readonly loanId: FieldRef<"NotificationRule", 'String'>
     readonly policyId: FieldRef<"NotificationRule", 'String'>
     readonly investmentId: FieldRef<"NotificationRule", 'String'>
-    readonly trigger: FieldRef<"NotificationRule", 'NotificationTrigger'>
-    readonly leadDays: FieldRef<"NotificationRule", 'Int'>
+    readonly anchor: FieldRef<"NotificationRule", 'ReminderAnchor'>
+    readonly offsetDays: FieldRef<"NotificationRule", 'Int'>
     readonly channels: FieldRef<"NotificationRule", 'ReminderChannel[]'>
-    readonly recipients: FieldRef<"NotificationRule", 'String[]'>
     readonly active: FieldRef<"NotificationRule", 'Boolean'>
     readonly deletedAt: FieldRef<"NotificationRule", 'DateTime'>
     readonly createdAt: FieldRef<"NotificationRule", 'DateTime'>
@@ -26460,6 +26446,7 @@ export namespace Prisma {
     emailVerified: 'emailVerified',
     image: 'image',
     currency: 'currency',
+    timezone: 'timezone',
     role: 'role',
     banned: 'banned',
     banReason: 'banReason',
@@ -26598,7 +26585,6 @@ export namespace Prisma {
     recurrence: 'recurrence',
     dueDay: 'dueDay',
     dueMonth: 'dueMonth',
-    reminderLeadDays: 'reminderLeadDays',
     defaultAmount: 'defaultAmount',
     currency: 'currency',
     tenureMonths: 'tenureMonths',
@@ -26768,10 +26754,9 @@ export namespace Prisma {
     loanId: 'loanId',
     policyId: 'policyId',
     investmentId: 'investmentId',
-    trigger: 'trigger',
-    leadDays: 'leadDays',
+    anchor: 'anchor',
+    offsetDays: 'offsetDays',
     channels: 'channels',
-    recipients: 'recipients',
     active: 'active',
     deletedAt: 'deletedAt',
     createdAt: 'createdAt',
@@ -27163,16 +27148,16 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'NotificationTrigger'
+   * Reference to a field of type 'ReminderAnchor'
    */
-  export type EnumNotificationTriggerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationTrigger'>
+  export type EnumReminderAnchorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReminderAnchor'>
     
 
 
   /**
-   * Reference to a field of type 'NotificationTrigger[]'
+   * Reference to a field of type 'ReminderAnchor[]'
    */
-  export type ListEnumNotificationTriggerFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationTrigger[]'>
+  export type ListEnumReminderAnchorFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ReminderAnchor[]'>
     
 
 
@@ -27272,6 +27257,7 @@ export namespace Prisma {
     emailVerified?: BoolFilter<"User"> | boolean
     image?: StringNullableFilter<"User"> | string | null
     currency?: EnumCurrencyFilter<"User"> | $Enums.Currency
+    timezone?: StringNullableFilter<"User"> | string | null
     role?: StringNullableFilter<"User"> | string | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
@@ -27301,6 +27287,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     currency?: SortOrder
+    timezone?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -27333,6 +27320,7 @@ export namespace Prisma {
     emailVerified?: BoolFilter<"User"> | boolean
     image?: StringNullableFilter<"User"> | string | null
     currency?: EnumCurrencyFilter<"User"> | $Enums.Currency
+    timezone?: StringNullableFilter<"User"> | string | null
     role?: StringNullableFilter<"User"> | string | null
     banned?: BoolNullableFilter<"User"> | boolean | null
     banReason?: StringNullableFilter<"User"> | string | null
@@ -27362,6 +27350,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     currency?: SortOrder
+    timezone?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -27383,6 +27372,7 @@ export namespace Prisma {
     emailVerified?: BoolWithAggregatesFilter<"User"> | boolean
     image?: StringNullableWithAggregatesFilter<"User"> | string | null
     currency?: EnumCurrencyWithAggregatesFilter<"User"> | $Enums.Currency
+    timezone?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: StringNullableWithAggregatesFilter<"User"> | string | null
     banned?: BoolNullableWithAggregatesFilter<"User"> | boolean | null
     banReason?: StringNullableWithAggregatesFilter<"User"> | string | null
@@ -28017,7 +28007,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFilter<"BillSchedule"> | $Enums.BillRecurrence
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
-    reminderLeadDays?: IntFilter<"BillSchedule"> | number
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -28056,7 +28045,6 @@ export namespace Prisma {
     recurrence?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
-    reminderLeadDays?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -28098,7 +28086,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFilter<"BillSchedule"> | $Enums.BillRecurrence
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
-    reminderLeadDays?: IntFilter<"BillSchedule"> | number
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -28137,7 +28124,6 @@ export namespace Prisma {
     recurrence?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
-    reminderLeadDays?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -28173,7 +28159,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceWithAggregatesFilter<"BillSchedule"> | $Enums.BillRecurrence
     dueDay?: IntWithAggregatesFilter<"BillSchedule"> | number
     dueMonth?: IntNullableWithAggregatesFilter<"BillSchedule"> | number | null
-    reminderLeadDays?: IntWithAggregatesFilter<"BillSchedule"> | number
     defaultAmount?: FloatNullableWithAggregatesFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableWithAggregatesFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableWithAggregatesFilter<"BillSchedule"> | number | null
@@ -29057,10 +29042,9 @@ export namespace Prisma {
     loanId?: StringNullableFilter<"NotificationRule"> | string | null
     policyId?: StringNullableFilter<"NotificationRule"> | string | null
     investmentId?: StringNullableFilter<"NotificationRule"> | string | null
-    trigger?: EnumNotificationTriggerFilter<"NotificationRule"> | $Enums.NotificationTrigger
-    leadDays?: IntFilter<"NotificationRule"> | number
+    anchor?: EnumReminderAnchorFilter<"NotificationRule"> | $Enums.ReminderAnchor
+    offsetDays?: IntFilter<"NotificationRule"> | number
     channels?: EnumReminderChannelNullableListFilter<"NotificationRule">
-    recipients?: StringNullableListFilter<"NotificationRule">
     active?: BoolFilter<"NotificationRule"> | boolean
     deletedAt?: DateTimeNullableFilter<"NotificationRule"> | Date | string | null
     createdAt?: DateTimeFilter<"NotificationRule"> | Date | string
@@ -29087,10 +29071,9 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
-    trigger?: SortOrder
-    leadDays?: SortOrder
+    anchor?: SortOrder
+    offsetDays?: SortOrder
     channels?: SortOrder
-    recipients?: SortOrder
     active?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
@@ -29120,10 +29103,9 @@ export namespace Prisma {
     loanId?: StringNullableFilter<"NotificationRule"> | string | null
     policyId?: StringNullableFilter<"NotificationRule"> | string | null
     investmentId?: StringNullableFilter<"NotificationRule"> | string | null
-    trigger?: EnumNotificationTriggerFilter<"NotificationRule"> | $Enums.NotificationTrigger
-    leadDays?: IntFilter<"NotificationRule"> | number
+    anchor?: EnumReminderAnchorFilter<"NotificationRule"> | $Enums.ReminderAnchor
+    offsetDays?: IntFilter<"NotificationRule"> | number
     channels?: EnumReminderChannelNullableListFilter<"NotificationRule">
-    recipients?: StringNullableListFilter<"NotificationRule">
     active?: BoolFilter<"NotificationRule"> | boolean
     deletedAt?: DateTimeNullableFilter<"NotificationRule"> | Date | string | null
     createdAt?: DateTimeFilter<"NotificationRule"> | Date | string
@@ -29150,10 +29132,9 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
-    trigger?: SortOrder
-    leadDays?: SortOrder
+    anchor?: SortOrder
+    offsetDays?: SortOrder
     channels?: SortOrder
-    recipients?: SortOrder
     active?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
@@ -29179,10 +29160,9 @@ export namespace Prisma {
     loanId?: StringNullableWithAggregatesFilter<"NotificationRule"> | string | null
     policyId?: StringNullableWithAggregatesFilter<"NotificationRule"> | string | null
     investmentId?: StringNullableWithAggregatesFilter<"NotificationRule"> | string | null
-    trigger?: EnumNotificationTriggerWithAggregatesFilter<"NotificationRule"> | $Enums.NotificationTrigger
-    leadDays?: IntWithAggregatesFilter<"NotificationRule"> | number
+    anchor?: EnumReminderAnchorWithAggregatesFilter<"NotificationRule"> | $Enums.ReminderAnchor
+    offsetDays?: IntWithAggregatesFilter<"NotificationRule"> | number
     channels?: EnumReminderChannelNullableListFilter<"NotificationRule">
-    recipients?: StringNullableListFilter<"NotificationRule">
     active?: BoolWithAggregatesFilter<"NotificationRule"> | boolean
     deletedAt?: DateTimeNullableWithAggregatesFilter<"NotificationRule"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"NotificationRule"> | Date | string
@@ -29557,6 +29537,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -29586,6 +29567,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -29614,6 +29596,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29642,6 +29625,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29671,6 +29655,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -29685,6 +29670,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29699,6 +29685,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -30398,7 +30385,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -30437,7 +30423,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -30463,7 +30448,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -30501,7 +30485,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -30534,7 +30517,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -30556,7 +30538,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -30584,7 +30565,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -31544,10 +31524,9 @@ export namespace Prisma {
   export type NotificationRuleCreateInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -31574,10 +31553,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -31587,10 +31565,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31616,10 +31593,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31638,10 +31614,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -31650,10 +31625,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateManyMutationInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -31670,10 +31644,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -32256,6 +32229,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     currency?: SortOrder
+    timezone?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -32271,6 +32245,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     currency?: SortOrder
+    timezone?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -32286,6 +32261,7 @@ export namespace Prisma {
     emailVerified?: SortOrder
     image?: SortOrder
     currency?: SortOrder
+    timezone?: SortOrder
     role?: SortOrder
     banned?: SortOrder
     banReason?: SortOrder
@@ -32958,7 +32934,6 @@ export namespace Prisma {
     recurrence?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
-    reminderLeadDays?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -32971,7 +32946,6 @@ export namespace Prisma {
   export type BillScheduleAvgOrderByAggregateInput = {
     dueDay?: SortOrder
     dueMonth?: SortOrder
-    reminderLeadDays?: SortOrder
     defaultAmount?: SortOrder
     tenureMonths?: SortOrder
   }
@@ -32994,7 +32968,6 @@ export namespace Prisma {
     recurrence?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
-    reminderLeadDays?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -33022,7 +32995,6 @@ export namespace Prisma {
     recurrence?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
-    reminderLeadDays?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -33035,7 +33007,6 @@ export namespace Prisma {
   export type BillScheduleSumOrderByAggregateInput = {
     dueDay?: SortOrder
     dueMonth?: SortOrder
-    reminderLeadDays?: SortOrder
     defaultAmount?: SortOrder
     tenureMonths?: SortOrder
   }
@@ -33745,11 +33716,11 @@ export namespace Prisma {
     isSet?: boolean
   }
 
-  export type EnumNotificationTriggerFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationTrigger | EnumNotificationTriggerFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTriggerFilter<$PrismaModel> | $Enums.NotificationTrigger
+  export type EnumReminderAnchorFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReminderAnchor | EnumReminderAnchorFieldRefInput<$PrismaModel>
+    in?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    not?: NestedEnumReminderAnchorFilter<$PrismaModel> | $Enums.ReminderAnchor
   }
 
   export type EnumReminderChannelNullableListFilter<$PrismaModel = never> = {
@@ -33771,10 +33742,9 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
-    trigger?: SortOrder
-    leadDays?: SortOrder
+    anchor?: SortOrder
+    offsetDays?: SortOrder
     channels?: SortOrder
-    recipients?: SortOrder
     active?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
@@ -33782,7 +33752,7 @@ export namespace Prisma {
   }
 
   export type NotificationRuleAvgOrderByAggregateInput = {
-    leadDays?: SortOrder
+    offsetDays?: SortOrder
   }
 
   export type NotificationRuleMaxOrderByAggregateInput = {
@@ -33796,8 +33766,8 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
-    trigger?: SortOrder
-    leadDays?: SortOrder
+    anchor?: SortOrder
+    offsetDays?: SortOrder
     active?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
@@ -33815,8 +33785,8 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
-    trigger?: SortOrder
-    leadDays?: SortOrder
+    anchor?: SortOrder
+    offsetDays?: SortOrder
     active?: SortOrder
     deletedAt?: SortOrder
     createdAt?: SortOrder
@@ -33824,17 +33794,17 @@ export namespace Prisma {
   }
 
   export type NotificationRuleSumOrderByAggregateInput = {
-    leadDays?: SortOrder
+    offsetDays?: SortOrder
   }
 
-  export type EnumNotificationTriggerWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationTrigger | EnumNotificationTriggerFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTriggerWithAggregatesFilter<$PrismaModel> | $Enums.NotificationTrigger
+  export type EnumReminderAnchorWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReminderAnchor | EnumReminderAnchorFieldRefInput<$PrismaModel>
+    in?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    not?: NestedEnumReminderAnchorWithAggregatesFilter<$PrismaModel> | $Enums.ReminderAnchor
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationTriggerFilter<$PrismaModel>
-    _max?: NestedEnumNotificationTriggerFilter<$PrismaModel>
+    _min?: NestedEnumReminderAnchorFilter<$PrismaModel>
+    _max?: NestedEnumReminderAnchorFilter<$PrismaModel>
   }
 
   export type EnumNotificationStatusFilter<$PrismaModel = never> = {
@@ -37266,10 +37236,6 @@ export namespace Prisma {
     set: $Enums.ReminderChannel[]
   }
 
-  export type NotificationRuleCreaterecipientsInput = {
-    set: string[]
-  }
-
   export type UserCreateNestedOneWithoutNotificationRulesInput = {
     create?: XOR<UserCreateWithoutNotificationRulesInput, UserUncheckedCreateWithoutNotificationRulesInput>
     connectOrCreate?: UserCreateOrConnectWithoutNotificationRulesInput
@@ -37332,18 +37298,13 @@ export namespace Prisma {
     connect?: NotificationJobWhereUniqueInput | NotificationJobWhereUniqueInput[]
   }
 
-  export type EnumNotificationTriggerFieldUpdateOperationsInput = {
-    set?: $Enums.NotificationTrigger
+  export type EnumReminderAnchorFieldUpdateOperationsInput = {
+    set?: $Enums.ReminderAnchor
   }
 
   export type NotificationRuleUpdatechannelsInput = {
     set?: $Enums.ReminderChannel[]
     push?: $Enums.ReminderChannel | $Enums.ReminderChannel[]
-  }
-
-  export type NotificationRuleUpdaterecipientsInput = {
-    set?: string[]
-    push?: string | string[]
   }
 
   export type UserUpdateOneRequiredWithoutNotificationRulesNestedInput = {
@@ -38343,21 +38304,21 @@ export namespace Prisma {
     isSet?: boolean
   }
 
-  export type NestedEnumNotificationTriggerFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationTrigger | EnumNotificationTriggerFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTriggerFilter<$PrismaModel> | $Enums.NotificationTrigger
+  export type NestedEnumReminderAnchorFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReminderAnchor | EnumReminderAnchorFieldRefInput<$PrismaModel>
+    in?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    not?: NestedEnumReminderAnchorFilter<$PrismaModel> | $Enums.ReminderAnchor
   }
 
-  export type NestedEnumNotificationTriggerWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.NotificationTrigger | EnumNotificationTriggerFieldRefInput<$PrismaModel>
-    in?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    notIn?: $Enums.NotificationTrigger[] | ListEnumNotificationTriggerFieldRefInput<$PrismaModel>
-    not?: NestedEnumNotificationTriggerWithAggregatesFilter<$PrismaModel> | $Enums.NotificationTrigger
+  export type NestedEnumReminderAnchorWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ReminderAnchor | EnumReminderAnchorFieldRefInput<$PrismaModel>
+    in?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ReminderAnchor[] | ListEnumReminderAnchorFieldRefInput<$PrismaModel>
+    not?: NestedEnumReminderAnchorWithAggregatesFilter<$PrismaModel> | $Enums.ReminderAnchor
     _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumNotificationTriggerFilter<$PrismaModel>
-    _max?: NestedEnumNotificationTriggerFilter<$PrismaModel>
+    _min?: NestedEnumReminderAnchorFilter<$PrismaModel>
+    _max?: NestedEnumReminderAnchorFilter<$PrismaModel>
   }
 
   export type NestedEnumNotificationStatusFilter<$PrismaModel = never> = {
@@ -38401,6 +38362,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -38429,6 +38391,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -38472,6 +38435,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38499,6 +38463,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -38968,7 +38933,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -39005,7 +38969,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -39032,10 +38995,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutOwnerInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -39060,10 +39022,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -39609,7 +39570,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFilter<"BillSchedule"> | $Enums.BillRecurrence
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
-    reminderLeadDays?: IntFilter<"BillSchedule"> | number
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -39649,10 +39609,9 @@ export namespace Prisma {
     loanId?: StringNullableFilter<"NotificationRule"> | string | null
     policyId?: StringNullableFilter<"NotificationRule"> | string | null
     investmentId?: StringNullableFilter<"NotificationRule"> | string | null
-    trigger?: EnumNotificationTriggerFilter<"NotificationRule"> | $Enums.NotificationTrigger
-    leadDays?: IntFilter<"NotificationRule"> | number
+    anchor?: EnumReminderAnchorFilter<"NotificationRule"> | $Enums.ReminderAnchor
+    offsetDays?: IntFilter<"NotificationRule"> | number
     channels?: EnumReminderChannelNullableListFilter<"NotificationRule">
-    recipients?: StringNullableListFilter<"NotificationRule">
     active?: BoolFilter<"NotificationRule"> | boolean
     deletedAt?: DateTimeNullableFilter<"NotificationRule"> | Date | string | null
     createdAt?: DateTimeFilter<"NotificationRule"> | Date | string
@@ -39820,6 +39779,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -39848,6 +39808,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -39891,6 +39852,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39918,6 +39880,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -39946,6 +39909,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -39974,6 +39938,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -40017,6 +39982,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40044,6 +40010,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40072,6 +40039,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -40100,6 +40068,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -40295,7 +40264,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -40332,7 +40300,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -40595,10 +40562,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutPropertyInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -40623,10 +40589,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -40723,6 +40688,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -40750,6 +40716,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -41357,7 +41324,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -41394,7 +41360,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -41602,10 +41567,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutLeaseInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -41630,10 +41594,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -41924,6 +41887,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -41952,6 +41916,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -42404,10 +42369,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutBillScheduleInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -42432,10 +42396,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -42541,6 +42504,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42568,6 +42532,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -42971,6 +42936,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -42999,6 +42965,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -43037,7 +43004,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -43075,7 +43041,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -43480,10 +43445,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutBillInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -43508,10 +43472,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -43608,6 +43571,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43635,6 +43599,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43678,7 +43643,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -43715,7 +43679,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -44111,6 +44074,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44139,6 +44103,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44248,7 +44213,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -44285,7 +44249,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -44548,10 +44511,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutPolicyInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -44576,10 +44538,9 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -44676,6 +44637,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44703,6 +44665,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44918,6 +44881,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44946,6 +44910,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -44984,7 +44949,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -45021,7 +44985,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -45284,10 +45247,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutInvestmentInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -45312,10 +45274,9 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     policyId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -45412,6 +45373,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45439,6 +45401,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45579,6 +45542,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -45607,6 +45571,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -45832,7 +45797,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -45869,7 +45833,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -46077,10 +46040,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutLoanInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -46105,10 +46067,9 @@ export namespace Prisma {
     leaseId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -46205,6 +46166,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46232,6 +46194,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46555,6 +46518,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -46583,6 +46547,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47002,6 +46967,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47029,6 +46995,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47457,6 +47424,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47485,6 +47453,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47528,6 +47497,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47555,6 +47525,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -47583,6 +47554,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47611,6 +47583,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -47649,7 +47622,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -47687,7 +47659,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -48162,6 +48133,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48189,6 +48161,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48232,7 +48205,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -48269,7 +48241,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -48702,10 +48673,9 @@ export namespace Prisma {
   export type NotificationRuleCreateWithoutJobsInput = {
     id?: string
     category: $Enums.EventCategory
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -48731,10 +48701,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -48753,6 +48722,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -48781,6 +48751,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -48819,7 +48790,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -48857,7 +48827,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -49265,10 +49234,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutJobsInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -49293,10 +49261,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -49320,6 +49287,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49347,6 +49315,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49390,7 +49359,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -49427,7 +49395,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -49848,6 +49815,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -49876,6 +49844,7 @@ export namespace Prisma {
     emailVerified?: boolean
     image?: string | null
     currency?: $Enums.Currency
+    timezone?: string | null
     role?: string | null
     banned?: boolean | null
     banReason?: string | null
@@ -50234,7 +50203,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -50272,7 +50240,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -50393,6 +50360,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50420,6 +50388,7 @@ export namespace Prisma {
     emailVerified?: BoolFieldUpdateOperationsInput | boolean
     image?: NullableStringFieldUpdateOperationsInput | string | null
     currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
     role?: NullableStringFieldUpdateOperationsInput | string | null
     banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
     banReason?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50807,7 +50776,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -50844,7 +50812,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51112,7 +51079,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -51133,10 +51099,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -51716,7 +51681,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51752,7 +51716,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51783,7 +51746,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51796,10 +51758,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutOwnerInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51823,10 +51784,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -51843,10 +51803,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52130,7 +52089,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -52241,10 +52199,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -52460,7 +52417,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52496,7 +52452,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52527,7 +52482,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52818,10 +52772,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutPropertyInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52845,10 +52798,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -52865,10 +52817,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53116,7 +53067,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -53210,10 +53160,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -53258,7 +53207,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53294,7 +53242,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53325,7 +53272,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53556,10 +53502,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutLeaseInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53583,10 +53528,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53603,10 +53547,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53754,10 +53697,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -53962,10 +53904,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutBillScheduleInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -53989,10 +53930,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54009,10 +53949,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54144,10 +54083,9 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -54288,10 +54226,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutBillInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54315,10 +54252,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54335,10 +54271,9 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54440,7 +54375,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -54551,10 +54485,9 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -54599,7 +54532,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54635,7 +54567,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54666,7 +54597,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54957,10 +54887,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutPolicyInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54984,10 +54913,9 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55004,10 +54932,9 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55109,7 +55036,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -55220,10 +55146,9 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     policyId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -55268,7 +55193,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55304,7 +55228,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55335,7 +55258,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55626,10 +55548,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutInvestmentInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55653,10 +55574,9 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55673,10 +55593,9 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55778,7 +55697,6 @@ export namespace Prisma {
     recurrence?: $Enums.BillRecurrence
     dueDay: number
     dueMonth?: number | null
-    reminderLeadDays?: number
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -55872,10 +55790,9 @@ export namespace Prisma {
     leaseId?: string | null
     policyId?: string | null
     investmentId?: string | null
-    trigger?: $Enums.NotificationTrigger
-    leadDays?: number
+    anchor?: $Enums.ReminderAnchor
+    offsetDays: number
     channels?: NotificationRuleCreatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleCreaterecipientsInput | string[]
     active?: boolean
     deletedAt?: Date | string | null
     createdAt?: Date | string
@@ -55920,7 +55837,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55956,7 +55872,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55987,7 +55902,6 @@ export namespace Prisma {
     recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
-    reminderLeadDays?: IntFieldUpdateOperationsInput | number
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -56218,10 +56132,9 @@ export namespace Prisma {
 
   export type NotificationRuleUpdateWithoutLoanInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56245,10 +56158,9 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56265,10 +56177,9 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
-    trigger?: EnumNotificationTriggerFieldUpdateOperationsInput | $Enums.NotificationTrigger
-    leadDays?: IntFieldUpdateOperationsInput | number
+    anchor?: EnumReminderAnchorFieldUpdateOperationsInput | $Enums.ReminderAnchor
+    offsetDays?: IntFieldUpdateOperationsInput | number
     channels?: NotificationRuleUpdatechannelsInput | $Enums.ReminderChannel[]
-    recipients?: NotificationRuleUpdaterecipientsInput | string[]
     active?: BoolFieldUpdateOperationsInput | boolean
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

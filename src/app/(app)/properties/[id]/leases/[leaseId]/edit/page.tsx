@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
-import { PageHeader } from "~/app/_components/page-header";
+import { FormActions, controlClass, labelClass } from "~/app/_components/form";
+import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { deleteLease, endLease, updateLease } from "~/server/actions/leases";
 import { getSession } from "~/server/better-auth/server";
@@ -10,10 +10,6 @@ import { getDocumentsForLease } from "~/server/queries/documents";
 import { getLeaseForOwner, hasBillsForLease } from "~/server/queries/leases";
 import { getPropertyForOwner } from "~/server/queries/properties";
 import { getRoomsForProperty } from "~/server/queries/rentals";
-
-const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
-const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function EditLeasePage({
   params,
@@ -42,16 +38,11 @@ export default async function EditLeasePage({
 
   return (
     <>
-      <div>
-        <Link
-          href={`/properties/${id}/leases`}
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-        >
-          ← {property.name} leases
-        </Link>
-      </div>
-
       <PageHeader
+        breadcrumbs={[
+          ...propertyCrumbs(property, "Leases"),
+          { label: "Edit lease" },
+        ]}
         title={`Edit lease for ${lease.tenantName}`}
         description="Change this lease's terms, end it, or remove it if it was added by mistake."
       />
@@ -59,15 +50,15 @@ export default async function EditLeasePage({
       <form
         action={updateLease.bind(null, lease.id)}
         data-gtm-event="lease_updated"
-        className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+        className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
         {rooms.length > 0 && (
-          <div>
-            <label className={labelClass}>Rental unit</label>
+          <label className="block">
+            <span className={labelClass}>Rental unit</span>
             <select
               name="roomId"
               defaultValue={lease.roomId ?? ""}
-              className={inputClass}
+              className={controlClass}
             >
               <option value="">Entire property</option>
               {rooms.map((room) => (
@@ -76,12 +67,12 @@ export default async function EditLeasePage({
                 </option>
               ))}
             </select>
-          </div>
+          </label>
         )}
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Rent amount (₹/month)</label>
+          <label className="block">
+            <span className={labelClass}>Rent amount (₹/month)</span>
             <input
               type="number"
               name="rentAmount"
@@ -89,11 +80,11 @@ export default async function EditLeasePage({
               step="1"
               required
               defaultValue={lease.rentAmount}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Deposit amount (₹)</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Deposit amount (₹)</span>
             <input
               type="number"
               name="depositAmount"
@@ -101,25 +92,25 @@ export default async function EditLeasePage({
               step="1"
               required
               defaultValue={lease.depositAmount}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Lease end (optional)</label>
+          <label className="block">
+            <span className={labelClass}>Lease end (optional)</span>
             <input
               type="date"
               name="leaseEnd"
               defaultValue={
                 lease.leaseEnd ? toDateInputValue(lease.leaseEnd) : ""
               }
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Rent due day (optional)</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Rent due day (optional)</span>
             <input
               type="number"
               name="rentDueDay"
@@ -128,28 +119,23 @@ export default async function EditLeasePage({
               step="1"
               placeholder="e.g. 5"
               defaultValue={lease.rentDueDay ?? ""}
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-          <Button type="submit">Save changes</Button>
-          <Link
-            href={`/properties/${id}/leases`}
-            className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-          >
+        <FormActions>
+          <Button href={`/properties/${id}/leases`} variant="outline">
             Cancel
-          </Link>
-        </div>
+          </Button>
+          <Button type="submit">Save changes</Button>
+        </FormActions>
       </form>
 
-      <div className="max-w-xl space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+      <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
-          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            End lease
-          </p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-sm font-semibold text-ink">End lease</p>
+          <p className="mt-1 text-xs text-muted">
             {lease.active
               ? "Marks this lease inactive. The record is kept for history."
               : "This lease has already ended."}
@@ -171,12 +157,10 @@ export default async function EditLeasePage({
         </form>
       </div>
 
-      <div className="max-w-xl space-y-4 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
+      <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
-          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-            Delete lease
-          </p>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-sm font-semibold text-ink">Delete lease</p>
+          <p className="mt-1 text-xs text-muted">
             {canDelete
               ? "Permanently removes this lease. Only possible when it has no bills on record."
               : "This lease has bills on record, so it can't be deleted — end the lease instead."}
@@ -198,11 +182,11 @@ export default async function EditLeasePage({
         </form>
       </div>
 
-      <div className="max-w-xl space-y-2 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900">
-        <label className={labelClass}>
+      <label className="block max-w-xl space-y-2 rounded-card border border-line bg-surface p-6">
+        <span className={labelClass}>
           Documents attached ({documents.length})
-        </label>
-        <select disabled={documents.length === 0} className={inputClass}>
+        </span>
+        <select disabled={documents.length === 0} className={controlClass}>
           {documents.length === 0 ? (
             <option>No documents attached</option>
           ) : (
@@ -213,7 +197,7 @@ export default async function EditLeasePage({
             ))
           )}
         </select>
-      </div>
+      </label>
     </>
   );
 }

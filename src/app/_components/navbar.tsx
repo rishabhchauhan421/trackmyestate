@@ -2,8 +2,7 @@
 
 import * as Headless from "@headlessui/react";
 import clsx from "clsx";
-import { LayoutGroup, motion } from "motion/react";
-import React, { forwardRef, useId } from "react";
+import React, { forwardRef } from "react";
 
 import { Link } from "./link";
 import { TouchTarget } from "./touch-target";
@@ -24,12 +23,8 @@ export function NavbarSection({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
-  const id = useId();
-
   return (
-    <LayoutGroup id={id}>
-      <div {...props} className={clsx(className, "flex items-center gap-3")} />
-    </LayoutGroup>
+    <div {...props} className={clsx(className, "flex items-center gap-3")} />
   );
 }
 
@@ -62,25 +57,16 @@ export const NavbarItem = forwardRef(function NavbarItem(
   ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>,
 ) {
   const classes = clsx(
-    "relative flex min-w-0 items-center gap-3 rounded-lg p-2 text-left text-base/6 font-medium text-zinc-950 sm:text-sm/5",
-    "*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:fill-zinc-500 sm:*:data-[slot=icon]:size-5",
+    "relative flex min-w-0 items-center gap-3 rounded-control p-2 text-left text-base/6 font-medium text-ink sm:text-sm/5",
+    "*:data-[slot=icon]:size-6 *:data-[slot=icon]:shrink-0 *:data-[slot=icon]:text-muted sm:*:data-[slot=icon]:size-5",
     "*:not-nth-2:last:data-[slot=icon]:ml-auto *:not-nth-2:last:data-[slot=icon]:size-5 sm:*:not-nth-2:last:data-[slot=icon]:size-4",
-    "*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-7 *:data-[slot=avatar]:[--avatar-radius:var(--radius-md)] sm:*:data-[slot=avatar]:size-6",
-    "data-hover:bg-zinc-950/5 data-hover:*:data-[slot=icon]:fill-zinc-950",
-    "data-active:bg-zinc-950/5 data-active:*:data-[slot=icon]:fill-zinc-950",
-    "dark:text-white dark:*:data-[slot=icon]:fill-zinc-400",
-    "dark:data-hover:bg-white/5 dark:data-hover:*:data-[slot=icon]:fill-white",
-    "dark:data-active:bg-white/5 dark:data-active:*:data-[slot=icon]:fill-white",
+    "*:data-[slot=avatar]:-m-0.5 *:data-[slot=avatar]:size-8 *:data-[slot=avatar]:[--avatar-radius:var(--radius-md)]",
+    "data-hover:bg-sunken-2 data-hover:*:data-[slot=icon]:text-ink",
+    "data-active:bg-sunken-2 data-active:*:data-[slot=icon]:text-ink",
   );
 
   return (
     <span className={clsx(className, "relative")}>
-      {current && (
-        <motion.span
-          layoutId="current-indicator"
-          className="absolute inset-x-2 -bottom-2.5 h-0.5 rounded-full bg-zinc-950 dark:bg-white"
-        />
-      )}
       {typeof props.href === "string" ? (
         <Link
           {...props}

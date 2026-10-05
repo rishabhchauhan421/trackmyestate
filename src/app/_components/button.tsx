@@ -2,36 +2,36 @@ import Link from "next/link";
 import type { ComponentPropsWithoutRef } from "react";
 
 /**
- * Shared button/link, styled from the app's theme (blue-600 primary accent,
- * slate neutrals). Renders a `<Link>` when `href` is given, a `<button>`
- * otherwise — so the same component covers both a form submit and a
- * navigation action. `variant` picks the shape (filled vs bordered),
- * `color` picks the palette within that shape.
+ * Shared button/link, styled from the design tokens in `globals.css`
+ * (`accent` primary, `ink` neutrals). Renders a `<Link>` when `href` is
+ * given, a `<button>` otherwise — so the same component covers both a form
+ * submit and a navigation action. `variant` picks the shape (filled vs
+ * bordered), `color` picks the palette within that shape.
  */
 const baseStyles =
-  "inline-flex items-center justify-center gap-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-40";
+  "inline-flex shrink-0 items-center justify-center gap-2 font-medium whitespace-nowrap transition-colors disabled:cursor-not-allowed disabled:opacity-40 [&_svg]:size-4.5 [&_svg]:shrink-0";
 
 const variantStyles = {
   solid: {
-    blue: "bg-blue-600 text-white hover:bg-blue-500",
-    slate:
-      "bg-slate-900 text-white hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white",
-    red: "bg-red-600 text-white hover:bg-red-500",
-    white: "bg-white text-slate-900 hover:bg-blue-50",
+    // `blue` is the primary action — the name predates the re-theme and is
+    // kept so call sites don't change.
+    blue: "bg-accent font-semibold text-on-accent hover:bg-accent-strong",
+    slate: "bg-night font-semibold text-white hover:bg-night-3",
+    red: "bg-danger font-semibold text-white hover:opacity-90 dark:text-night",
+    white: "bg-white font-semibold text-accent-strong hover:bg-accent-soft",
   },
   outline: {
     slate:
-      "border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800",
-    red: "border border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40",
-    amber:
-      "border border-amber-300 text-amber-700 hover:bg-amber-50 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-950/40",
+      "border border-line-strong bg-surface text-ink hover:border-ink-2/40 hover:bg-sunken",
+    red: "border border-danger/30 bg-surface text-danger hover:bg-danger-soft",
+    amber: "border border-warn/30 bg-surface text-warn hover:bg-warn-soft",
   },
 } as const;
 
 const sizeStyles = {
-  md: "px-4 py-2",
-  sm: "px-2.5 py-1.5 text-xs",
-  lg: "px-6 py-3",
+  md: "h-11 px-4 text-sm",
+  sm: "h-9 px-3 text-[0.8125rem]",
+  lg: "h-12 px-6 text-base",
 };
 
 type SolidColor = keyof typeof variantStyles.solid;
@@ -42,7 +42,7 @@ type ButtonProps = (
   | { variant: "outline"; color?: OutlineColor }
 ) & {
   size?: keyof typeof sizeStyles;
-  /** Fully-rounded pill shape, for the marketing site — the app dashboard stays `rounded-lg`. */
+  /** Fully-rounded pill shape. */
   pill?: boolean;
 } & (
     | Omit<ComponentPropsWithoutRef<typeof Link>, "color">
@@ -60,7 +60,7 @@ export function Button({
 
   const classes = [
     baseStyles,
-    pill ? "rounded-full" : "rounded-lg",
+    pill ? "rounded-full" : "rounded-control",
     sizeStyles[size],
     variant === "outline"
       ? variantStyles.outline[color as OutlineColor]

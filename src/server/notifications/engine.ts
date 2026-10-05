@@ -13,8 +13,31 @@ import type { NotificationJobWithMetadata } from "./types";
 /** Retryable failures get this many attempts (the original send + retries) before giving up. */
 export const MAX_SEND_ATTEMPTS = 3;
 
+/**
+ * Delay before retrying a failed send: 5 min, then 10, then 20. Pushing
+ * `scheduledFor` into the future also keeps a draining run from picking
+ * the same job straight back up (see `processDueNotificationJobs`).
+ */
+export const RETRY_BASE_DELAY_MS = 5 * 60 * 1000;
+
+export function retryDelayMs(retryCount: number) {
+  return RETRY_BASE_DELAY_MS * 2 ** Math.max(0, retryCount - 1);
+}
+
 export type DispatchOutcome =
-  "SENT" | "SKIPPED" | "RETRY_SCHEDULED" | "FAILED" | "ALREADY_CLAIMED";
+  | "SENT"
+  | "SKIPPED"
+  | "RETRY_SCHEDULED"
+  | "FAILED"
+  | "ALREADY_CLAIMED"
+  | "CANCELLED";
+
+/** A bill in one of these is still awaiting payment, so still worth a reminder. */
+const OPEN_BILL_STATUSES: readonly string[] = [
+  "DUE",
+  "OVERDUE",
+  "PARTIALLY_PAID",
+];
 
 /**
  * Claims `job` (SCHEDULED -> PROCESSING, so two overlapping cron runs can't
@@ -29,6 +52,25 @@ export async function dispatchNotificationJob(
     data: { status: "PROCESSING" },
   });
   if (claim.count === 0) return "ALREADY_CLAIMED";
+
+  // Stop when paid: a reminder for a bill settled since it was queued is
+  // cancelled rather than sent.
+  if (job.billId) {
+    const bill = await db.bill.findUnique({
+      where: { id: job.billId },
+      select: { status: true },
+    });
+    if (bill && !OPEN_BILL_STATUSES.includes(bill.status)) {
+      await db.notificationJob.update({
+        where: { id: job.id },
+        data: {
+          status: "CANCELLED",
+          failedReason: `Bill is ${bill.status.toLowerCase()}`,
+        },
+      });
+      return "CANCELLED";
+    }
+  }
 
   try {
     const result = await CHANNEL_SENDERS[job.channel](job);
@@ -66,11 +108,14 @@ async function recordFailure(
 
   await db.notificationJob.update({
     where: { id: job.id },
-    data: {
-      status: givingUp ? "FAILED" : "SCHEDULED",
-      retryCount,
-      failedReason: reason,
-    },
+    data: givingUp
+      ? { status: "FAILED", retryCount, failedReason: reason }
+      : {
+          status: "SCHEDULED",
+          retryCount,
+          failedReason: reason,
+          scheduledFor: new Date(Date.now() + retryDelayMs(retryCount)),
+        },
   });
 
   return givingUp ? "FAILED" : "RETRY_SCHEDULED";

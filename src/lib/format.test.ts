@@ -1,4 +1,11 @@
-import { formatDate, formatINR, toDateInputValue } from "./format";
+import {
+  formatBillAmount,
+  formatDate,
+  formatDueIn,
+  formatINR,
+  formatShortDate,
+  toDateInputValue,
+} from "./format";
 
 describe("formatINR", () => {
   it("formats whole rupee amounts with the ₹ symbol and no decimals", () => {
@@ -77,5 +84,35 @@ describe("toDateInputValue", () => {
     // Local midnight on the 5th must stay the 5th, even though its UTC
     // instant could fall on the 4th at a negative UTC offset.
     expect(toDateInputValue(new Date(2026, 2, 5, 0, 0))).toBe("2026-03-05");
+  });
+});
+
+describe("formatDueIn", () => {
+  const now = new Date(2026, 9, 5, 15, 30);
+
+  it.each([
+    [new Date(2026, 9, 2), "Overdue 3 days"],
+    [new Date(2026, 9, 4, 23, 59), "Overdue 1 day"],
+    [new Date(2026, 9, 5, 0, 0), "Due today"],
+    [new Date(2026, 9, 6), "Tomorrow"],
+    [new Date(2026, 9, 10), "In 5 days"],
+  ])("formats %p as %p", (date, expected) => {
+    expect(formatDueIn(date, now)).toBe(expected);
+  });
+});
+
+describe("formatShortDate", () => {
+  it("drops the year", () => {
+    expect(formatShortDate(new Date(2026, 9, 5))).toBe("5 Oct");
+  });
+});
+
+describe("formatBillAmount", () => {
+  it("marks estimates as approximate", () => {
+    expect(formatBillAmount(4120, true)).toBe(`Approx. ${formatINR(4120)}`);
+  });
+
+  it("leaves exact amounts as plain rupees", () => {
+    expect(formatBillAmount(4120, false)).toBe(formatINR(4120));
   });
 });

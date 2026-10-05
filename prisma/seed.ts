@@ -187,7 +187,6 @@ async function seedAnanyaPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 3_500,
       dueDay: daysFromNow(5).getDate(),
-      reminderLeadDays: 5,
     },
   });
   await db.bill.create({
@@ -215,7 +214,6 @@ async function seedAnanyaPortfolio(ownerId: string) {
       defaultAmount: 18_400,
       dueDay: daysFromNow(40).getDate(),
       dueMonth: daysFromNow(40).getMonth() + 1,
-      reminderLeadDays: 14,
     },
   });
   await db.bill.create({
@@ -243,7 +241,6 @@ async function seedAnanyaPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 4_120,
       dueDay: daysFromNow(-3).getDate(),
-      reminderLeadDays: 5,
       recipients: [
         { name: "Radha Rao", email: "radha.rao@example.in", notifyOnDue: true },
       ],
@@ -550,7 +547,6 @@ async function seedVikramPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 9_800,
       dueDay: daysFromNow(12).getDate(),
-      reminderLeadDays: 5,
     },
   });
   await db.bill.create({
@@ -577,7 +573,6 @@ async function seedVikramPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 1_450,
       dueDay: daysFromNow(-1).getDate(),
-      reminderLeadDays: 3,
       recipients: [
         {
           name: "Shalini Mehta",
@@ -951,7 +946,6 @@ async function seedRishabhPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 4_200,
       dueDay: daysFromNow(8).getDate(),
-      reminderLeadDays: 5,
     },
   });
   await db.bill.create({
@@ -979,7 +973,6 @@ async function seedRishabhPortfolio(ownerId: string) {
       defaultAmount: 21_600,
       dueDay: daysFromNow(-6).getDate(),
       dueMonth: daysFromNow(-6).getMonth() + 1,
-      reminderLeadDays: 14,
       recipients: [
         {
           name: "Priya Chauhan",
@@ -1016,7 +1009,6 @@ async function seedRishabhPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 900,
       dueDay: monthsAgo(1, 12).getDate(),
-      reminderLeadDays: 3,
     },
   });
   await db.bill.create({
@@ -1045,7 +1037,6 @@ async function seedRishabhPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 1_200,
       dueDay: daysFromNow(-4).getDate(),
-      reminderLeadDays: 3,
     },
   });
   await db.bill.create({
@@ -1074,7 +1065,6 @@ async function seedRishabhPortfolio(ownerId: string) {
       recurrence: "MONTHLY",
       defaultAmount: 650,
       dueDay: monthsAgo(2, 15).getDate(),
-      reminderLeadDays: 3,
     },
   });
   await db.bill.create({

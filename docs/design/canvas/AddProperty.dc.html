@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add property</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+input::placeholder{color:#7C8883}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif">
+  <dc-import name="AppSidebar" current="properties" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+      <nav aria-label="Breadcrumb" style="font-size: 13px; color: #5A6762; display: flex; gap: 8px; align-items: center">
+        <a href="Properties.dc.html" style="font-weight: 500">Properties</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="page">Add property</span>
+      </nav>
+
+      <header style="display: flex; flex-direction: column; gap: 6px">
+        <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Add a property</h1>
+        <p style="margin: 0; font-size: 15px; color: #5A6762">Only the name, type and address are required. You can fill in the rest any time.</p>
+      </header>
+
+      <div style="display: flex; flex-wrap: wrap-reverse; gap: 24px; align-items: flex-start">
+        <form action="#" style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+          <fieldset style="margin: 0; border: 1px solid #E3E7E2; border-radius: 16px; background: #FFFFFF; padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 18px">
+            <legend style="float: left; padding: 0; font-size: 16px; font-weight: 600">Basics</legend>
+            <div style="clear: both; display: flex; flex-direction: column; gap: 6px">
+              <label for="name" style="font-size: 14px; font-weight: 500">Property name</label>
+              <input id="name" name="name" required placeholder="e.g. Whitefield Rented Flat" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF; box-sizing: border-box">
+            </div>
+            <div role="radiogroup" aria-label="How is it used?" style="display: flex; flex-direction: column; gap: 8px">
+              <span style="font-size: 14px; font-weight: 500">How is it used?</span>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px">
+                <label style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer">
+                  <input type="radio" name="type" value="SELF_OCCUPIED" style="accent-color: #0F6E5D; width: 18px; height: 18px; margin: 0">Self-occupied
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border: 2px solid #0F6E5D; background: #E3F1EC; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer">
+                  <input type="radio" name="type" value="RENTED" checked style="accent-color: #0F6E5D; width: 18px; height: 18px; margin: 0">Rented out
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer">
+                  <input type="radio" name="type" value="UNDER_CONSTRUCTION" style="accent-color: #0F6E5D; width: 18px; height: 18px; margin: 0">Under construction
+                </label>
+                <label style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer">
+                  <input type="radio" name="type" value="INVESTMENT" style="accent-color: #0F6E5D; width: 18px; height: 18px; margin: 0">Investment
+                </label>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <label for="category" style="font-size: 14px; font-weight: 500">Category <span style="font-weight: 400; color: #5A6762">· optional</span></label>
+                <select id="category" name="propertyCategory" style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF">
+                  <option>Apartment</option><option>Single-family house</option><option>Office</option>
+                </select>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <label for="ownership" style="font-size: 14px; font-weight: 500">Ownership <span style="font-weight: 400; color: #5A6762">· optional</span></label>
+                <select id="ownership" name="ownershipType" style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF">
+                  <option>Sole</option><option>Joint</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset style="margin: 0; border: 1px solid #E3E7E2; border-radius: 16px; background: #FFFFFF; padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 18px">
+            <legend style="float: left; padding: 0; font-size: 16px; font-weight: 600">Address</legend>
+            <div style="clear: both; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+              <div style="grid-column: span 6; display: flex; flex-direction: column; gap: 6px">
+                <label for="a1" style="font-size: 14px; font-weight: 500">Address line 1</label>
+                <input id="a1" name="addressLine1" required placeholder="Flat, building, street" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box">
+              </div>
+              <div style="grid-column: span 6; display: flex; flex-direction: column; gap: 6px">
+                <label for="a2" style="font-size: 14px; font-weight: 500">Address line 2 <span style="font-weight: 400; color: #5A6762">· optional</span></label>
+                <input id="a2" name="addressLine2" placeholder="Area, landmark" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box">
+              </div>
+              <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 6px">
+                <label for="city" style="font-size: 14px; font-weight: 500">City</label>
+                <input id="city" name="city" required placeholder="Bengaluru" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box; min-width: 0">
+              </div>
+              <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 6px">
+                <label for="state" style="font-size: 14px; font-weight: 500">State</label>
+                <input id="state" name="state" required placeholder="Karnataka" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box; min-width: 0">
+              </div>
+              <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 6px">
+                <label for="pin" style="font-size: 14px; font-weight: 500">PIN code</label>
+                <input id="pin" name="pinCode" required inputmode="numeric" placeholder="560066" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box; min-width: 0">
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset style="margin: 0; border: 1px solid #E3E7E2; border-radius: 16px; background: #FFFFFF; padding: 22px 24px 24px; display: flex; flex-direction: column; gap: 18px">
+            <legend style="float: left; padding: 0; font-size: 16px; font-weight: 600">Value <span style="font-weight: 400; font-size: 14px; color: #5A6762">· optional</span></legend>
+            <div style="clear: both; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px">
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <label for="pp" style="font-size: 14px; font-weight: 500">Purchase price</label>
+                <div style="display: flex; align-items: center; height: 44px; border: 1px solid #CBD3CD; border-radius: 10px; overflow: hidden">
+                  <span style="padding: 0 12px; color: #5A6762; font-size: 15px; border-right: 1px solid #E3E7E2; height: 100%; display: flex; align-items: center; background: #F8F9F6">₹</span>
+                  <input id="pp" name="purchasePrice" inputmode="numeric" placeholder="68,00,000" style="flex: 1; min-width: 0; height: 100%; padding: 0 12px; border: 0; font: inherit; font-size: 15px">
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <label for="pd" style="font-size: 14px; font-weight: 500">Purchase date</label>
+                <input id="pd" name="purchaseDate" type="date" style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box">
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 6px">
+                <label for="cv" style="font-size: 14px; font-weight: 500">Current estimated value</label>
+                <div style="display: flex; align-items: center; height: 44px; border: 1px solid #CBD3CD; border-radius: 10px; overflow: hidden">
+                  <span style="padding: 0 12px; color: #5A6762; font-size: 15px; border-right: 1px solid #E3E7E2; height: 100%; display: flex; align-items: center; background: #F8F9F6">₹</span>
+                  <input id="cv" name="currentEstimatedValue" inputmode="numeric" placeholder="89,00,000" style="flex: 1; min-width: 0; height: 100%; padding: 0 12px; border: 0; font: inherit; font-size: 15px">
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div style="display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; padding-top: 4px">
+            <a href="Properties.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #D5DBD6; background: #FFFFFF; color: #12201C; font-size: 14px; font-weight: 500">Cancel</a>
+            <a href="PropertyDetail.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 22px; border-radius: 10px; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600">Save property</a>
+          </div>
+        </form>
+
+        <aside style="flex: 1 1 280px; display: flex; flex-direction: column; gap: 16px">
+          <label for="papers" style="border: 1.5px dashed #9FC9BB; background: #F0F8F5; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; cursor: pointer">
+            <span style="width: 48px; height: 48px; border-radius: 999px; background: #FFFFFF; color: #0F6E5D; display: flex; align-items: center; justify-content: center">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+            </span>
+            <span style="font-size: 15px; font-weight: 600">Skip the typing</span>
+            <span style="font-size: 13px; line-height: 1.5; color: #3E4B46">Drop a sale deed or property tax receipt and we&#39;ll pre-fill this form for you to check.</span>
+            <span style="margin-top: 4px; display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 10px; background: #0F6E5D; color: #FFFFFF; font-size: 13px; font-weight: 600">Choose a file</span>
+            <input id="papers" type="file" accept=".pdf,image/*" style="position: absolute; width: 1px; height: 1px; opacity: 0">
+          </label>
+          <div style="border: 1px solid #E3E7E2; background: #FFFFFF; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 10px">
+            <span style="font-size: 14px; font-weight: 600">After you save</span>
+            <ul style="margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; color: #3E4B46">
+              <li>Add a lease to start tracking rent</li>
+              <li>Add utilities to get bill reminders</li>
+              <li>Link the home loan, if there is one</li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1340}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

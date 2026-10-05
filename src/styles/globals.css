@@ -2,6 +2,118 @@
 
 @plugin '@tailwindcss/forms';
 
+/*
+ * Design tokens. Components and pages use the semantic names below
+ * (`bg-surface`, `text-muted`, `border-line`, `bg-accent`, ...) rather than
+ * raw palette colors, so light/dark mode and any future re-theme happen
+ * here only. Dark values flip with the OS setting, the same `media`
+ * strategy Tailwind's `dark:` variant uses.
+ */
+:root {
+  /* Page and panels */
+  --tme-ground: #f5f6f2;
+  --tme-surface: #ffffff;
+  --tme-sunken: #f5f6f2;
+  --tme-sunken-2: #e9ece7;
+
+  /* Text */
+  --tme-ink: #12201c;
+  --tme-ink-2: #3e4b46;
+  --tme-muted: #5a6762;
+
+  /* Borders */
+  --tme-line: #e3e7e2;
+  --tme-line-soft: #eef1ed;
+  --tme-line-strong: #cbd3cd;
+
+  /* Brand */
+  --tme-accent: #0f6e5d;
+  --tme-accent-strong: #0a5446;
+  --tme-accent-soft: #e3f1ec;
+  --tme-on-accent: #ffffff;
+  --tme-mint: #5fd0b4;
+
+  /* Always-dark surfaces (sidebar, hero panels) */
+  --tme-night: #10201c;
+  --tme-night-2: #182c27;
+  --tme-night-3: #21413a;
+  --tme-night-ink: #c3cfca;
+  --tme-night-muted: #8ea19a;
+
+  /* Status */
+  --tme-danger: #b42318;
+  --tme-danger-soft: #fdecea;
+  --tme-warn: #8a4b0b;
+  --tme-warn-soft: #fdf1dc;
+  --tme-ok: #116b4a;
+  --tme-ok-soft: #e2f3ea;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tme-ground: #0b1412;
+    --tme-surface: #121e1b;
+    --tme-sunken: #0f1a17;
+    --tme-sunken-2: #1a2925;
+
+    --tme-ink: #e8eeeb;
+    --tme-ink-2: #c3cfca;
+    --tme-muted: #9aaba4;
+
+    --tme-line: #22332e;
+    --tme-line-soft: #1b2a26;
+    --tme-line-strong: #34483f;
+
+    --tme-accent: #4cc3a5;
+    --tme-accent-strong: #74d8be;
+    --tme-accent-soft: #143a31;
+    --tme-on-accent: #06201a;
+
+    --tme-night: #08110f;
+    --tme-night-2: #12201c;
+    --tme-night-3: #1c3831;
+
+    --tme-danger: #f7a39a;
+    --tme-danger-soft: #3a1714;
+    --tme-warn: #f2c27a;
+    --tme-warn-soft: #3a2a10;
+    --tme-ok: #7dd8a8;
+    --tme-ok-soft: #12301f;
+  }
+}
+
+@theme inline {
+  --color-ground: var(--tme-ground);
+  --color-surface: var(--tme-surface);
+  --color-sunken: var(--tme-sunken);
+  --color-sunken-2: var(--tme-sunken-2);
+  --color-ink: var(--tme-ink);
+  --color-ink-2: var(--tme-ink-2);
+  --color-muted: var(--tme-muted);
+  --color-line: var(--tme-line);
+  --color-line-soft: var(--tme-line-soft);
+  --color-line-strong: var(--tme-line-strong);
+  --color-accent: var(--tme-accent);
+  --color-accent-strong: var(--tme-accent-strong);
+  --color-accent-soft: var(--tme-accent-soft);
+  --color-on-accent: var(--tme-on-accent);
+  --color-mint: var(--tme-mint);
+  --color-night: var(--tme-night);
+  --color-night-2: var(--tme-night-2);
+  --color-night-3: var(--tme-night-3);
+  --color-night-ink: var(--tme-night-ink);
+  --color-night-muted: var(--tme-night-muted);
+  --color-danger: var(--tme-danger);
+  --color-danger-soft: var(--tme-danger-soft);
+  --color-warn: var(--tme-warn);
+  --color-warn-soft: var(--tme-warn-soft);
+  --color-ok: var(--tme-ok);
+  --color-ok-soft: var(--tme-ok-soft);
+
+  --font-sans: var(--font-geist);
+  --font-display: var(--font-bricolage);
+}
+
 @theme {
   --text-*: initial;
   --text-xs: 0.75rem;
@@ -19,22 +131,41 @@
   --text-3xl: 2rem;
   --text-3xl--line-height: 2.5rem;
   --text-4xl: 2.5rem;
-  --text-4xl--line-height: 3.5rem;
+  --text-4xl--line-height: 3rem;
   --text-5xl: 3rem;
-  --text-5xl--line-height: 3.5rem;
+  --text-5xl--line-height: 3.25rem;
   --text-6xl: 3.75rem;
   --text-6xl--line-height: 1;
   --text-7xl: 4.5rem;
-  --text-7xl--line-height: 1.1;
+  --text-7xl--line-height: 1.05;
   --text-8xl: 6rem;
   --text-8xl--line-height: 1;
   --text-9xl: 8rem;
   --text-9xl--line-height: 1;
 
+  /* Controls (buttons, inputs) and cards */
+  --radius-control: 0.625rem;
+  --radius-card: 1rem;
   --radius-4xl: 2rem;
 
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-lexend);
-
   --container-2xl: 40rem;
+}
+
+@layer base {
+  html {
+    background-color: var(--tme-ground);
+    color: var(--tme-ink);
+    color-scheme: light dark;
+  }
+
+  body {
+    font-family: var(--font-sans), system-ui, sans-serif;
+    /* Money columns line up. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--tme-accent);
+    outline-offset: 2px;
+  }
 }

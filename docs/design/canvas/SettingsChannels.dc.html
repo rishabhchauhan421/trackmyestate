@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings — Channels</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+button{font:inherit}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif">
+  <dc-import name="AppSidebar" current="none" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+      <header style="display: flex; flex-direction: column; gap: 6px">
+        <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Settings</h1>
+        <p style="margin: 0; font-size: 15px; color: #5A6762">Your profile, how and when you&#39;re reminded, and who else gets reminders.</p>
+      </header>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+        <dc-import name="SettingsNav" tab="channels" hint-size="232px,184px"></dc-import>
+
+        <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+
+          <section aria-labelledby="where" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; overflow: hidden">
+            <div style="padding: 20px 24px; border-bottom: 1px solid #EEF1ED; display: flex; flex-direction: column; gap: 4px">
+              <h2 id="where" style="margin: 0; font-size: 16px; font-weight: 600">Where reminders reach you</h2>
+              <p style="margin: 0; font-size: 13px; color: #5A6762">Verify a channel once, then choose it for any kind of payment in Reminders.</p>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #EEF1ED">
+              <span style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: #E3F1EC; color: #0F6E5D; display: flex; align-items: center; justify-content: center">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 7l9 6 9-6"></path></svg>
+              </span>
+              <div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 15px; font-weight: 600">Email</span>
+                <span style="font-size: 13px; color: #5A6762">ananya.rao@example.in · your sign-in email</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E2F3EA; color: #116B4A">Verified</span>
+              <button type="button" style="height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid #CBD3CD; background: #FFFFFF; color: #12201C; font-size: 13px; font-weight: 500; cursor: pointer">Send a test</button>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; padding: 20px 24px; border-bottom: 1px solid #EEF1ED">
+              <span style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: #E3F1EC; color: #0F6E5D; display: flex; align-items: center; justify-content: center">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path><path d="M9 10.5c.3 1.8 2.7 4.2 4.5 4.5l1.2-1.2 2 .8"></path></svg>
+              </span>
+              <div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 15px; font-weight: 600">WhatsApp</span>
+                <span style="font-size: 13px; color: #5A6762">+91 98765 43210 · opted in on 2 Oct</span>
+                <span style="font-size: 12px; line-height: 1.5; color: #5A6762; margin-top: 4px">Sent from the TrackMyEstate business account. Reply STOP to any message to turn WhatsApp off.</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E2F3EA; color: #116B4A">Connected</span>
+              <button type="button" style="height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid #CBD3CD; background: #FFFFFF; color: #12201C; font-size: 13px; font-weight: 500; cursor: pointer">Change number</button>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 16px; padding: 20px 24px">
+              <span style="width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px; background: #F5F6F2; color: #3E4B46; display: flex; align-items: center; justify-content: center">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"></rect><path d="M10 18h4"></path></svg>
+              </span>
+              <div style="flex: 1 1 240px; display: flex; flex-direction: column; gap: 12px">
+                <div style="display: flex; flex-direction: column; gap: 3px">
+                  <span style="font-size: 15px; font-weight: 600">SMS</span>
+                  <span style="font-size: 13px; color: #5A6762">For when you&#39;re offline — reaches any phone without data.</span>
+                </div>
+                <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px">
+                  <label style="display: flex; flex-direction: column; gap: 6px; flex: 0 1 300px">
+                    <span style="font-size: 13px; font-weight: 500">Mobile number</span>
+                    <span style="display: flex; height: 44px; border: 1px solid #CBD3CD; border-radius: 10px; overflow: hidden; background: #FFFFFF">
+                      <span style="display: flex; align-items: center; padding: 0 12px; border-right: 1px solid #E3E7E2; background: #F8F9F6; color: #5A6762; font-size: 15px">+91</span>
+                      <input inputmode="tel" placeholder="98765 43210" style="flex: 1; min-width: 0; border: 0; padding: 0 12px; font: inherit; font-size: 15px; color: #12201C; outline: none">
+                    </span>
+                  </label>
+                  <button type="button" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 0; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer">Send code</button>
+                  <button type="button" style="height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid #CBD3CD; background: #FFFFFF; color: #12201C; font-size: 14px; font-weight: 500; cursor: pointer">Use WhatsApp number</button>
+                </div>
+                <span style="font-size: 12px; color: #5A6762">We&#39;ll text a 6-digit code to confirm it&#39;s yours. Standard SMS rates may apply.</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E9ECE7; color: #3E4B46">Not set up</span>
+            </div>
+          </section>
+
+          <section aria-labelledby="timing" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 24px; display: flex; flex-direction: column; gap: 18px">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 id="timing" style="margin: 0; font-size: 16px; font-weight: 600">Delivery</h2>
+              <p style="margin: 0; font-size: 13px; color: #5A6762">Times are in Asia/Kolkata · <a href="SettingsGeneral.dc.html" style="font-weight: 600">change time zone</a></p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px">
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 14px; font-weight: 500">Send reminders at</span>
+                <select style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF">
+                  <option>7:00 am</option><option>8:00 am</option><option selected>9:00 am</option><option>12:00 pm</option><option>6:00 pm</option>
+                </select>
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 14px; font-weight: 500">Quiet from</span>
+                <select style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF">
+                  <option>9:00 pm</option><option selected>10:00 pm</option><option>11:00 pm</option>
+                </select>
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 14px; font-weight: 500">Quiet until</span>
+                <select style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF">
+                  <option>6:00 am</option><option selected>7:00 am</option><option>8:00 am</option>
+                </select>
+              </label>
+            </div>
+            <div style="height: 1px; background: #EEF1ED"></div>
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
+              <div style="flex: 1 1 260px; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 15px; font-weight: 600">Weekly digest</span>
+                <span style="font-size: 13px; color: #5A6762">Every Monday: what&#39;s due and expected in the next 30 days.</span>
+              </div>
+              <select aria-label="Weekly digest channel" style="height: 40px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 14px; color: #12201C; background: #FFFFFF">
+                <option>Email</option><option selected>WhatsApp</option><option>Email and WhatsApp</option>
+              </select>
+              <button type="button" role="switch" aria-checked="true" aria-label="Weekly digest" style="width: 44px; height: 26px; border-radius: 999px; border: 0; background: #0F6E5D; padding: 3px; display: flex; justify-content: flex-end; cursor: pointer">
+                <span style="width: 20px; height: 20px; border-radius: 999px; background: #FFFFFF"></span>
+              </button>
+            </div>
+          </section>
+
+          <div style="display: flex; justify-content: flex-end">
+            <button type="button" style="height: 44px; padding: 0 20px; border-radius: 10px; border: 0; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1240}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

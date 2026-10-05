@@ -1,26 +1,27 @@
+const OK = "bg-ok-soft text-ok";
+const WARN = "bg-warn-soft text-warn";
+const DANGER = "bg-danger-soft text-danger";
+const NEUTRAL = "bg-sunken-2 text-ink-2";
+
 const STATUS_STYLES: Record<string, string> = {
-  PAID: "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
-  DUE: "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300",
-  OVERDUE: "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300",
-  PARTIALLY_PAID:
-    "bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300",
-  CANCELLED:
-    "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-  REFUNDED: "bg-sky-100 text-sky-800 dark:bg-sky-500/15 dark:text-sky-300",
-  ACTIVE:
-    "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300",
-  LAPSED: "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300",
-  MATURED: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
-  CLAIMED: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+  PAID: OK,
+  DUE: WARN,
+  OVERDUE: DANGER,
+  PARTIALLY_PAID: WARN,
+  CANCELLED: NEUTRAL,
+  REFUNDED: "bg-accent-soft text-accent-strong",
+  ACTIVE: OK,
+  LAPSED: DANGER,
+  MATURED: NEUTRAL,
+  CLAIMED: NEUTRAL,
 };
 
-const FALLBACK_STYLE =
-  "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400";
+const FALLBACK_STYLE = NEUTRAL;
 
 export function StatusBadge({ status }: { status: string }) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-xs font-medium ${
+      className={`inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[0.6875rem] font-semibold tracking-wide ${
         STATUS_STYLES[status] ?? FALLBACK_STYLE
       }`}
     >

@@ -24,6 +24,7 @@ export async function getDashboardData(ownerId: string) {
     outflows,
     inflows,
     attentionItems,
+    upcoming,
   ] = await Promise.all([
     db.property.aggregate({
       where: { ownerId },
@@ -70,18 +71,40 @@ export async function getDashboardData(ownerId: string) {
       orderBy: { dueDate: "asc" },
       take: 5,
     }),
+    // The next few open bills from today on, in either direction — the
+    // dashboard's "Coming up" strip.
+    db.bill.findMany({
+      where: {
+        ownerId,
+        status: { in: [...OPEN_PAYMENT_STATUSES] },
+        dueDate: { gte: startOfDay(now) },
+      },
+      orderBy: { dueDate: "asc" },
+      take: 6,
+    }),
   ]);
 
+  const totals = {
+    propertyValue: propertyValue._sum.currentEstimatedValue ?? 0,
+    investmentValue: investmentValue._sum.currentEstimatedValue ?? 0,
+    loanOutstanding: loanOutstanding._sum.outstandingBalance ?? 0,
+  };
   const netWorth =
-    (propertyValue._sum.currentEstimatedValue ?? 0) +
-    (investmentValue._sum.currentEstimatedValue ?? 0) -
-    (loanOutstanding._sum.outstandingBalance ?? 0);
+    totals.propertyValue + totals.investmentValue - totals.loanOutstanding;
 
   return {
+    ...totals,
     netWorth,
     totalCoverage: coverage._sum.sumAssured ?? 0,
     upcomingOutflows: outflows._sum.amount ?? 0,
     expectedInflows: inflows._sum.amount ?? 0,
     attentionItems,
+    upcoming,
   };
+}
+
+function startOfDay(date: Date) {
+  const start = new Date(date);
+  start.setHours(0, 0, 0, 0);
+  return start;
 }

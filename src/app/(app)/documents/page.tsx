@@ -44,18 +44,18 @@ export default async function DocumentsPage() {
           actionLabel="Upload your first document"
         />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="overflow-hidden rounded-card border border-line bg-surface">
+          <ul className="divide-y divide-line-soft">
             {documents.map((document) => (
               <li
                 key={document.id}
                 className="flex items-center justify-between gap-4 px-5 py-4"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                  <p className="truncate text-sm font-medium text-ink">
                     {document.fileName}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 text-xs text-muted">
                     {OWNER_TYPE_LABELS[document.ownerType]} · uploaded{" "}
                     {formatDate(document.uploadedAt)}
                   </p>

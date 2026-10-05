@@ -33,8 +33,8 @@ export default async function InsurancePage() {
           actionHref="/insurance/new"
         />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="overflow-hidden rounded-card border border-line bg-surface">
+          <ul className="divide-y divide-line-soft">
             {policies.map((policy) => {
               const nextPremium = policy.nextPremium;
               return (
@@ -43,39 +43,35 @@ export default async function InsurancePage() {
                   className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                    <p className="truncate text-sm font-medium text-ink">
                       {policy.insurer}
                     </p>
-                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-0.5 text-xs text-muted">
                       {POLICY_TYPE_LABELS[policy.type]} · {policy.policyNumber}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <p className="text-sm font-semibold text-ink">
                       {policy.sumAssured ? formatINR(policy.sumAssured) : "—"}
                     </p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500">
-                      sum assured
-                    </p>
+                    <p className="text-xs text-muted">sum assured</p>
                   </div>
                   {nextPremium ? (
                     <div className="text-right">
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                      <p className="text-sm font-medium text-ink-2">
                         {formatINR(nextPremium.amount)}
                       </p>
-                      <p className="text-xs text-slate-400 dark:text-slate-500">
+                      <p className="text-xs text-muted">
                         due {formatDate(nextPremium.dueDate)}
                       </p>
                     </div>
                   ) : (
-                    <span className="text-xs text-slate-400 dark:text-slate-500">
-                      No premium due
-                    </span>
+                    <span className="text-xs text-muted">No premium due</span>
                   )}
                   <StatusBadge status={policy.status} />
                   <Link
                     href={`/insurance/${policy.id}/edit`}
-                    className="shrink-0 text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    className="shrink-0 text-xs font-medium text-accent hover:text-accent-strong"
                   >
                     Edit →
                   </Link>

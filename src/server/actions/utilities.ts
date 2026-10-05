@@ -32,13 +32,14 @@ import {
   enumValue,
   number,
   optionalEnumValue,
-  optionalNumber,
   optionalText,
   parseFormData,
   text,
 } from "~/lib/form";
+import { todayInTimeZone } from "~/lib/time-zone";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { getUserTimeZone } from "~/server/queries/settings";
 
 /** The "Add utility" form. */
 const utilitySchema = z.object({
@@ -52,11 +53,9 @@ const utilitySchema = z.object({
   ).transform((billingType) => billingType ?? BillingType.VARIABLE),
   recurrence: enumValue(BillRecurrence, "Choose how often the bill recurs"),
   defaultAmount: number("Enter a valid amount", { positive: true }),
+  // Must be today or later — checked in `createUtility`, which knows the
+  // user's time zone and so what "today" is for them.
   firstDueDate: date("Enter a valid first due date"),
-  reminderLeadDays: optionalNumber("Enter a valid reminder lead time", {
-    int: true,
-    min: 0,
-  }).transform((days) => days ?? 7),
 });
 
 /** The "Add recipient" form on a utility. */
@@ -109,9 +108,16 @@ export async function createUtility(formData: FormData) {
     recurrence,
     defaultAmount,
     firstDueDate,
-    reminderLeadDays,
   } = parseFormData(utilitySchema, formData);
   const { session } = await requireOwnedProperty(propertyId);
+
+  // A new schedule starts today or later — a past first due date would
+  // describe bills that were never generated. Compared as calendar days:
+  // the input's date (parsed as UTC midnight) vs. today where the user is.
+  const today = todayInTimeZone(await getUserTimeZone(session.user.id));
+  if (firstDueDate.toISOString().slice(0, 10) < today) {
+    throw new Error("The first due date can't be in the past");
+  }
 
   await db.billSchedule.create({
     data: {
@@ -125,7 +131,6 @@ export async function createUtility(formData: FormData) {
       recurrence,
       dueDay: firstDueDate.getDate(),
       dueMonth: recurrence === "YEARLY" ? firstDueDate.getMonth() + 1 : null,
-      reminderLeadDays,
       defaultAmount,
     },
   });

@@ -2,7 +2,12 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
-import { dispatchNotificationJob, MAX_SEND_ATTEMPTS } from "./engine";
+import {
+  dispatchNotificationJob,
+  MAX_SEND_ATTEMPTS,
+  RETRY_BASE_DELAY_MS,
+  retryDelayMs,
+} from "./engine";
 import { CHANNEL_SENDERS } from "./registry";
 import { NotImplementedChannelError } from "./types";
 import type { NotificationJobWithMetadata } from "./types";
@@ -90,6 +95,7 @@ describe("dispatchNotificationJob", () => {
       reason: "Temporary provider outage",
     });
 
+    const before = Date.now();
     const outcome = await dispatchNotificationJob(buildJob({ retryCount: 0 }));
 
     expect(outcome).toBe("RETRY_SCHEDULED");
@@ -99,8 +105,14 @@ describe("dispatchNotificationJob", () => {
         status: "SCHEDULED",
         retryCount: 1,
         failedReason: "Temporary provider outage",
+        scheduledFor: expect.any(Date) as Date,
       },
     });
+    // Rescheduled one base delay out, not left due immediately.
+    const { data } = dbMock.notificationJob.update.mock.calls[0]![0];
+    const retryAt = (data.scheduledFor as Date).getTime();
+    expect(retryAt).toBeGreaterThanOrEqual(before + RETRY_BASE_DELAY_MS);
+    expect(retryAt).toBeLessThan(before + RETRY_BASE_DELAY_MS + 5_000);
   });
 
   it("gives up once a retryable failure hits the attempt cap", async () => {
@@ -149,5 +161,56 @@ describe("dispatchNotificationJob", () => {
         failedReason: "network blip",
       }),
     });
+  });
+});
+
+describe("retryDelayMs", () => {
+  it("doubles the delay with each attempt: 5, 10, 20 minutes", () => {
+    expect([1, 2, 3].map(retryDelayMs)).toEqual([
+      RETRY_BASE_DELAY_MS,
+      RETRY_BASE_DELAY_MS * 2,
+      RETRY_BASE_DELAY_MS * 4,
+    ]);
+    expect(RETRY_BASE_DELAY_MS).toBe(5 * 60 * 1000);
+  });
+});
+
+describe("stop when paid", () => {
+  it("cancels a reminder whose bill was paid after it was queued", async () => {
+    dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
+    dbMock.bill.findUnique.mockResolvedValue({ status: "PAID" } as never);
+
+    const outcome = await dispatchNotificationJob(
+      buildJob({ billId: "bill-1" }),
+    );
+
+    expect(outcome).toBe("CANCELLED");
+    expect(sendEmailMock).not.toHaveBeenCalled();
+    expect(dbMock.notificationJob.update).toHaveBeenCalledWith({
+      where: { id: "job-1" },
+      data: { status: "CANCELLED", failedReason: "Bill is paid" },
+    });
+  });
+
+  it("sends a reminder whose bill is still unpaid", async () => {
+    dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
+    dbMock.bill.findUnique.mockResolvedValue({ status: "OVERDUE" } as never);
+    sendEmailMock.mockResolvedValue({ ok: true });
+
+    const outcome = await dispatchNotificationJob(
+      buildJob({ billId: "bill-1" }),
+    );
+
+    expect(outcome).toBe("SENT");
+    expect(sendEmailMock).toHaveBeenCalled();
+  });
+
+  it("doesn't look up a bill for a job that isn't about one", async () => {
+    dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
+    sendEmailMock.mockResolvedValue({ ok: true });
+
+    await dispatchNotificationJob(buildJob({ billId: null }));
+
+    expect(dbMock.bill.findUnique).not.toHaveBeenCalled();
   });
 });

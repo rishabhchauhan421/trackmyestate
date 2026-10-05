@@ -13,42 +13,49 @@ import {
 export const navItems = [
   {
     label: "Dashboard",
+    group: "Overview",
     href: "/dashboard",
     description: "Net worth, coverage and what needs attention",
     Icon: DashboardIcon,
   },
   {
     label: "Timeline",
+    group: "Overview",
     href: "/timeline",
     description: "Every inflow and outflow, in one dated view",
     Icon: TimelineIcon,
   },
   {
     label: "Properties",
+    group: "Assets",
     href: "/properties",
     description: "Homes, rentals, tenants, rent and bills",
     Icon: PropertiesIcon,
   },
   {
     label: "Insurance",
+    group: "Assets",
     href: "/insurance",
     description: "Life, health, vehicle and home policies",
     Icon: InsuranceIcon,
   },
   {
     label: "Investments",
+    group: "Assets",
     href: "/investments",
     description: "FDs, mutual funds, stocks and gold",
     Icon: InvestmentsIcon,
   },
   {
     label: "Loans",
+    group: "Assets",
     href: "/loans",
     description: "EMIs, amortization and outstanding balance",
     Icon: LoansIcon,
   },
   {
     label: "Documents",
+    group: "Vault",
     href: "/documents",
     description: "Every policy, statement and paper, in one vault",
     Icon: DocumentsIcon,
@@ -56,6 +63,9 @@ export const navItems = [
 ] as const;
 
 export type NavItem = (typeof navItems)[number];
+
+/** Sidebar section headings, in display order. */
+export const navGroups = ["Overview", "Assets", "Vault"] as const;
 
 /** Only rendered for admins — see `isAdmin` in `~/server/better-auth/server`. */
 export const adminNavItems = [

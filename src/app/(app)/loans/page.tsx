@@ -32,8 +32,8 @@ export default async function LoansPage() {
           actionHref="/loans/new"
         />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="overflow-hidden rounded-card border border-line bg-surface">
+          <ul className="divide-y divide-line-soft">
             {loans.map((loan) => {
               const nextEmi = loan.nextEmi;
               return (
@@ -42,10 +42,10 @@ export default async function LoansPage() {
                   className="flex flex-wrap items-center justify-between gap-4 px-5 py-4"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                    <p className="truncate text-sm font-medium text-ink">
                       {loan.lender}
                     </p>
-                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-0.5 text-xs text-muted">
                       {LOAN_TYPE_LABELS[loan.type]} · {loan.interestRatePercent}
                       % p.a.
                       {loan.linkedPropertyName && (
@@ -54,26 +54,24 @@ export default async function LoansPage() {
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                    <p className="text-sm font-semibold text-ink">
                       {formatINR(loan.outstandingBalance)}
                     </p>
-                    <p className="text-xs text-slate-400 dark:text-slate-500">
-                      outstanding
-                    </p>
+                    <p className="text-xs text-muted">outstanding</p>
                   </div>
                   {nextEmi && (
                     <div className="text-right">
-                      <p className="text-sm font-medium text-slate-700 dark:text-slate-200">
+                      <p className="text-sm font-medium text-ink-2">
                         {formatINR(nextEmi.amount)}
                       </p>
-                      <p className="text-xs text-slate-400 dark:text-slate-500">
+                      <p className="text-xs text-muted">
                         EMI due {formatDate(nextEmi.dueDate)}
                       </p>
                     </div>
                   )}
                   <Link
                     href={`/loans/${loan.id}/edit`}
-                    className="shrink-0 text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                    className="shrink-0 text-xs font-medium text-accent hover:text-accent-strong"
                   >
                     Edit →
                   </Link>

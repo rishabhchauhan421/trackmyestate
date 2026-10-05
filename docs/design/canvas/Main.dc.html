@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif; font-variant-numeric: tabular-nums">
+  <dc-import name="AppSidebar" current="dashboard" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <span style="font-size: 13px; color: #5A6762">Monday, 5 October 2026</span>
+          <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Good morning, Ananya</h1>
+          <p style="margin: 0; font-size: 15px; color: #5A6762">1 bill is overdue and 2 payments are due this week.</p>
+        </div>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <a href="AddProperty.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #D5DBD6; background: #FFFFFF; color: #12201C; font-size: 14px; font-weight: 500">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"></path><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"></path></svg>
+            Upload a document
+          </a>
+          <a href="AddProperty.dc.html" style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 18px; border-radius: 10px; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+            Add asset
+          </a>
+        </div>
+      </header>
+
+      <section aria-label="Summary" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 16px">
+        <div style="background: #10201C; color: #FFFFFF; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 13px; color: #A9B8B2">Net worth</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 600; letter-spacing: -0.02em">₹1,89,28,000</span>
+          <span style="font-size: 12px; color: #A9B8B2">₹2.38 Cr assets − ₹48.5 L loans</span>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 13px; color: #5A6762">Insurance cover</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 600; letter-spacing: -0.02em">₹25,00,000</span>
+          <span style="font-size: 12px; color: #5A6762">2 active policies</span>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 13px; color: #5A6762">Going out · next 30 days</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 600; letter-spacing: -0.02em">₹1,40,270</span>
+          <span style="font-size: 12px; color: #5A6762">EMI, premiums &amp; bills</span>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px">
+          <span style="font-size: 13px; color: #5A6762">Coming in · next 30 days</span>
+          <span style="font-family: 'Bricolage Grotesque', sans-serif; font-size: 30px; font-weight: 600; letter-spacing: -0.02em; color: #0F6E5D">₹32,000</span>
+          <span style="font-size: 12px; color: #5A6762">Rent from Whitefield</span>
+        </div>
+      </section>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; align-items: start">
+
+        <section aria-labelledby="attention" style="grid-column: span 2; background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; overflow: hidden">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 22px; border-bottom: 1px solid #EEF1ED">
+            <h2 id="attention" style="margin: 0; font-size: 16px; font-weight: 600">Needs attention</h2>
+            <a href="Main.dc.html" style="font-size: 13px; font-weight: 500">Open timeline →</a>
+          </div>
+          <ul style="list-style: none; margin: 0; padding: 0">
+            <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 22px; border-bottom: 1px solid #EEF1ED">
+              <span style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #FDECEA; color: #B42318; display: flex; align-items: center; justify-content: center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z"></path></svg>
+              </span>
+              <div style="flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 14px; font-weight: 500">BESCOM electricity · Indiranagar 2BHK</span>
+                <span style="font-size: 13px; color: #5A6762">Was due 2 Oct</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #FDECEA; color: #B42318">Overdue 3 days</span>
+              <span style="width: 96px; text-align: right; font-size: 15px; font-weight: 600">₹4,120</span>
+              <a href="Main.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid #D5DBD6; color: #12201C; font-size: 13px; font-weight: 500">Mark paid</a>
+            </li>
+            <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 22px; border-bottom: 1px solid #EEF1ED">
+              <span style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #FDF1DC; color: #8A4B0B; display: flex; align-items: center; justify-content: center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-5 9 5"></path><path d="M5 9v9M10 9v9M14 9v9M19 9v9"></path><path d="M3 20h18"></path></svg>
+              </span>
+              <div style="flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 14px; font-weight: 500">Home loan EMI · SBI</span>
+                <span style="font-size: 13px; color: #5A6762">Auto-debit from savings</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #FDF1DC; color: #8A4B0B">Due today</span>
+              <span style="width: 96px; text-align: right; font-size: 15px; font-weight: 600">₹71,250</span>
+              <a href="Main.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid #D5DBD6; color: #12201C; font-size: 13px; font-weight: 500">Mark paid</a>
+            </li>
+            <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 22px; border-bottom: 1px solid #EEF1ED">
+              <span style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #FDF1DC; color: #8A4B0B; display: flex; align-items: center; justify-content: center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"></path><path d="M5 10v10h14V10"></path></svg>
+              </span>
+              <div style="flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 14px; font-weight: 500">Society maintenance · Whitefield Rented Flat</span>
+                <span style="font-size: 13px; color: #5A6762">Due 10 Oct</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #FDF1DC; color: #8A4B0B">In 5 days</span>
+              <span style="width: 96px; text-align: right; font-size: 15px; font-weight: 600">₹3,500</span>
+              <a href="Main.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid #D5DBD6; color: #12201C; font-size: 13px; font-weight: 500">Mark paid</a>
+            </li>
+            <li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 22px">
+              <span style="width: 40px; height: 40px; flex-shrink: 0; border-radius: 10px; background: #E3F1EC; color: #0F6E5D; display: flex; align-items: center; justify-content: center">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7 7 7-7"></path></svg>
+              </span>
+              <div style="flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+                <span style="font-size: 14px; font-weight: 500">Rent from Karthik Subramaniam · Whitefield</span>
+                <span style="font-size: 13px; color: #5A6762">Expected 7 Oct</span>
+              </div>
+              <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #E3F1EC; color: #0A5446">Incoming</span>
+              <span style="width: 96px; text-align: right; font-size: 15px; font-weight: 600; color: #0F6E5D">+₹32,000</span>
+              <a href="Main.dc.html" style="display: inline-flex; align-items: center; height: 36px; padding: 0 14px; border-radius: 9px; border: 1px solid #D5DBD6; color: #12201C; font-size: 13px; font-weight: 500">Received</a>
+            </li>
+          </ul>
+        </section>
+
+        <div style="display: flex; flex-direction: column; gap: 16px">
+          <section aria-labelledby="cashflow" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px">
+            <h2 id="cashflow" style="margin: 0; font-size: 16px; font-weight: 600">Next 30 days</h2>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #5A6762">Coming in</span><span style="font-weight: 600; color: #0F6E5D">₹32,000</span></div>
+              <div style="height: 10px; border-radius: 999px; background: #EEF1ED; overflow: hidden"><div style="width: 23%; height: 100%; background: #0F6E5D; border-radius: 999px"></div></div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 6px">
+              <div style="display: flex; justify-content: space-between; font-size: 13px"><span style="color: #5A6762">Going out</span><span style="font-weight: 600">₹1,40,270</span></div>
+              <div style="height: 10px; border-radius: 999px; background: #EEF1ED; overflow: hidden"><div style="width: 100%; height: 100%; background: #12201C; border-radius: 999px"></div></div>
+            </div>
+            <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #5A6762">Net <strong style="color: #12201C">−₹1,08,270</strong>. The LIC premium (₹42,500) is the largest one-off.</p>
+          </section>
+
+          <section aria-labelledby="mix" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 14px">
+            <h2 id="mix" style="margin: 0; font-size: 16px; font-weight: 600">Portfolio</h2>
+            <div style="display: flex; height: 12px; border-radius: 999px; overflow: hidden; gap: 2px">
+              <div style="flex: 93; background: #0F6E5D"></div>
+              <div style="flex: 7; background: #5FD0B4"></div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px">
+              <div style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #0F6E5D"></span><span style="flex: 1">Properties · 2</span><span style="font-weight: 600">₹2,21,00,000</span></div>
+              <div style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 3px; background: #5FD0B4"></span><span style="flex: 1">Investments · 3</span><span style="font-weight: 600">₹16,78,000</span></div>
+              <div style="display: flex; align-items: center; gap: 8px"><span style="width: 10px; height: 10px; border-radius: 3px; border: 2px solid #12201C; box-sizing: border-box"></span><span style="flex: 1">Loans · 1</span><span style="font-weight: 600">−₹48,50,000</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <section aria-labelledby="upcoming" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 20px 22px; display: flex; flex-direction: column; gap: 16px">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px">
+          <h2 id="upcoming" style="margin: 0; font-size: 16px; font-weight: 600">Coming up</h2>
+          <span style="font-size: 13px; color: #5A6762">Next 6 dates</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px">
+          <div style="border: 1px solid #EEF1ED; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 600; color: #B42318">2 OCT · OVERDUE</span>
+            <span style="font-size: 14px; font-weight: 500">BESCOM bill</span>
+            <span style="font-size: 14px; font-weight: 600">₹4,120</span>
+          </div>
+          <div style="border: 1px solid #EEF1ED; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 600; color: #8A4B0B">5 OCT · TODAY</span>
+            <span style="font-size: 14px; font-weight: 500">SBI home loan EMI</span>
+            <span style="font-size: 14px; font-weight: 600">₹71,250</span>
+          </div>
+          <div style="border: 1px solid #EEF1ED; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 600; color: #5A6762">7 OCT</span>
+            <span style="font-size: 14px; font-weight: 500">Rent · Whitefield</span>
+            <span style="font-size: 14px; font-weight: 600; color: #0F6E5D">+₹32,000</span>
+          </div>
+          <div style="border: 1px solid #EEF1ED; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 600; color: #5A6762">10 OCT</span>
+            <span style="font-size: 14px; font-weight: 500">Maintenance</span>
+            <span style="font-size: 14px; font-weight: 600">₹3,500</span>
+          </div>
+          <div style="border: 1px solid #EEF1ED; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 600; color: #5A6762">21 OCT</span>
+            <span style="font-size: 14px; font-weight: 500">LIC Jeevan Anand</span>
+            <span style="font-size: 14px; font-weight: 600">₹42,500</span>
+          </div>
+          <div style="border: 1px solid #EEF1ED; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+            <span style="font-size: 12px; font-weight: 600; color: #5A6762">28 OCT</span>
+            <span style="font-size: 14px; font-weight: 500">HDFC Ergo mediclaim</span>
+            <span style="font-size: 14px; font-weight: 600">₹18,900</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1180}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

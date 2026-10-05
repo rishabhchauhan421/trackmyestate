@@ -1,13 +1,15 @@
 import { type Metadata } from "next";
-import Image from "next/image";
+import Link from "next/link";
 
 import { Button } from "~/app/_components/button";
 import {
+  BellIcon,
   CheckIcon,
   DocumentsIcon,
   InsuranceIcon,
   InvestmentsIcon,
   LoansIcon,
+  PlusIcon,
   PropertiesIcon,
 } from "~/app/_components/icons";
 import { SiteFooter } from "~/app/_components/site-footer";
@@ -101,13 +103,6 @@ const faqJsonLd = {
   })),
 };
 
-/** Splits `faqs` round-robin into `columns` roughly-even columns, for the FAQ grid below. */
-function intoColumns<T>(items: T[], columns: number): T[][] {
-  const result: T[][] = Array.from({ length: columns }, () => []);
-  items.forEach((item, i) => result[i % columns]!.push(item));
-  return result;
-}
-
 const pillars = [
   {
     title: "Fast onboarding",
@@ -174,245 +169,233 @@ const proPlanFeatures = [
   "Pay bills directly from our portal",
 ];
 
+/** Example rows for the hero's "this week" card — illustrative only. */
+const heroRows = [
+  {
+    when: "Overdue",
+    what: "Electricity bill",
+    amount: "₹4,120",
+    tone: "danger",
+  },
+  { when: "Today", what: "Home loan EMI", amount: "₹71,250", tone: "warn" },
+  { when: "7 Oct", what: "Rent received", amount: "+₹32,000", tone: "in" },
+  {
+    when: "10 Oct",
+    what: "Society maintenance",
+    amount: "₹3,500",
+    tone: "plain",
+  },
+] as const;
+
+const HERO_TONES = {
+  danger: "bg-danger-soft [&>span:first-child]:text-danger",
+  warn: "bg-warn-soft [&>span:first-child]:text-warn",
+  in: "bg-sunken [&>span:first-child]:text-muted [&>span:last-child]:text-accent",
+  plain: "bg-sunken [&>span:first-child]:text-muted",
+};
+
+const sectionEyebrow =
+  "text-[0.8125rem] font-semibold tracking-[0.08em] uppercase";
+const sectionTitle =
+  "font-display text-4xl leading-tight font-semibold tracking-[-0.02em] text-balance";
+
 export default async function Home() {
   const session = await getSession();
-  const faqColumns = intoColumns(faqs, 3);
 
   return (
-    <div className="bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50">
+    <div className="bg-ground text-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
       <SiteHeader session={session} />
 
       <main>
-        <section className="mx-auto max-w-4xl px-6 pt-8 pb-20 text-center sm:pt-16 sm:pb-28">
-          <span className="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 dark:bg-blue-500/10 dark:text-blue-300">
-            Free for people with a lot going on
-          </span>
-          <h1 className="mx-auto mt-6 max-w-3xl font-display text-4xl font-medium tracking-tight text-balance sm:text-6xl">
-            Aggregate{" "}
-            <span className="relative whitespace-nowrap text-blue-600">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 418 42"
-                className="absolute top-2/3 left-0 h-[0.58em] w-full fill-blue-300/70"
-                preserveAspectRatio="none"
-              >
-                <path d="M203.371.916c-26.013-2.078-76.686 1.963-124.73 9.946L67.3 12.749C35.421 18.062 18.2 21.766 6.004 25.934 1.244 27.561.828 27.778.874 28.61c.07 1.214.828 1.121 9.595-1.176 9.072-2.377 17.15-3.92 39.246-7.496C123.565 7.986 157.869 4.492 195.942 5.046c7.461.108 19.25 1.696 19.17 2.582-.107 1.183-7.874 4.31-25.75 10.366-21.992 7.45-35.43 12.534-36.701 13.884-2.173 2.308-.202 4.407 4.442 4.734 2.654.187 3.263.157 15.593-.78 35.401-2.686 57.944-3.488 88.365-3.143 46.327.526 75.721 2.23 130.788 7.584 19.787 1.924 20.814 1.98 24.557 1.332l.066-.011c1.201-.203 1.53-1.825.399-2.335-2.911-1.31-4.893-1.604-22.048-3.261-57.509-5.556-87.871-7.36-132.059-7.842-23.239-.254-33.617-.116-50.627.674-11.629.54-42.371 2.494-46.696 2.967-2.359.259 8.133-3.625 26.504-9.81 23.239-7.825 27.934-10.149 28.304-14.005.417-4.348-3.529-6-16.878-7.066Z" />
-              </svg>
-              <span className="relative">everything</span>
+        <section className="mx-auto flex max-w-300 flex-col items-center gap-14 px-4 pt-10 pb-20 sm:px-8 lg:flex-row lg:pt-16 lg:pb-24">
+          <div className="flex-1 space-y-6">
+            <span className="inline-flex rounded-full bg-accent-soft px-3 py-1.5 text-[0.8125rem] font-semibold text-accent-strong">
+              Free for properties, policies, loans &amp; investments
             </span>
-            . Never miss a date.
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-600 dark:text-slate-400">
-            Properties, insurance, investments and loans — every premium,
-            renewal, EMI, rent collection and maturity, in one place, with a
-            reminder that actually reaches you in time.
-          </p>
-          <div className="mt-10 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button href="/login" pill size="lg">
-              Get started for free
-            </Button>
-            <Button href="/timeline" pill variant="outline" size="lg">
-              See the timeline
-            </Button>
+            <h1 className="font-display text-5xl leading-[1.02] font-bold tracking-[-0.035em] text-balance sm:text-6xl">
+              Aggregate everything.{" "}
+              <span className="text-accent">Never miss a date.</span>
+            </h1>
+            <p className="max-w-xl text-lg leading-relaxed text-ink-2">
+              Every property, insurance policy, investment and loan in one place
+              — with reminders for premiums, EMIs, rent and maturities before
+              they slip.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button href="/login" size="lg">
+                Start tracking — it&apos;s free →
+              </Button>
+              <Button href="#features" variant="outline" size="lg">
+                See how it works
+              </Button>
+            </div>
+            <p className="text-[0.8125rem] text-muted">
+              No card required. Your documents are encrypted and never shared.
+            </p>
           </div>
-          <p className="mt-4 text-xs text-slate-400 dark:text-slate-500">
-            Free to use, forever. No credit card required.
-          </p>
+
+          <div aria-hidden="true" className="relative w-full max-w-lg flex-1">
+            <div className="absolute inset-y-6 right-0 left-10 rounded-3xl bg-night" />
+            <div className="relative mr-12 space-y-3 rounded-[20px] bg-surface p-5 shadow-[0_24px_60px_rgb(16_32_28/0.18)]">
+              <div className="flex items-baseline justify-between">
+                <span className="text-sm font-semibold">This week</span>
+                <span className="text-xs text-muted">Next 7 days</span>
+              </div>
+              {heroRows.map((row) => (
+                <div
+                  key={row.what}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-3 ${HERO_TONES[row.tone]}`}
+                >
+                  <span className="w-16 text-[0.6875rem] font-bold uppercase">
+                    {row.when}
+                  </span>
+                  <span className="flex-1 text-sm font-medium">{row.what}</span>
+                  <span className="text-sm font-semibold">{row.amount}</span>
+                </div>
+              ))}
+            </div>
+            <div className="relative -mt-6 ml-auto flex w-64 items-start gap-3 rounded-card bg-surface p-4 shadow-[0_18px_40px_rgb(16_32_28/0.2)]">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-control bg-accent-soft text-accent">
+                <BellIcon className="size-4.5" />
+              </span>
+              <span className="space-y-0.5">
+                <span className="block text-[0.8125rem] font-semibold">
+                  Premium due in 14 days
+                </span>
+                <span className="block text-xs leading-snug text-muted">
+                  Pay before the due date to stay covered.
+                </span>
+              </span>
+            </div>
+          </div>
         </section>
 
         <section
           id="features"
-          aria-label="How TrackMyEstate helps"
-          className="relative overflow-hidden bg-blue-600 py-20 sm:py-28"
+          aria-labelledby="features-title"
+          className="border-y border-line bg-surface"
         >
-          <Image
-            className="absolute top-1/2 left-1/2 max-w-none translate-x-[-44%] translate-y-[-42%] opacity-80"
-            src="/images/background-features.jpg"
-            alt=""
-            width={2245}
-            height={1636}
-          />
-          <div className="relative mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl text-white sm:text-4xl">
+          <div className="mx-auto max-w-300 space-y-12 px-4 py-20 sm:px-8 lg:py-24">
+            <div className="max-w-2xl space-y-3">
+              <p className={`${sectionEyebrow} text-accent`}>
                 How TrackMyEstate helps
-              </h2>
-              <p className="mt-4 text-lg text-blue-100">
-                Every asset reduces to dated money in, money out, and the dates
-                that matter. Build that once, and it powers the timeline, the
-                dashboard and every reminder.
               </p>
+              <h2 id="features-title" className={sectionTitle}>
+                Three things, done really well.
+              </h2>
             </div>
-            <div className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-3">
-              {pillars.map((pillar) => (
-                <div
-                  key={pillar.title}
-                  className="rounded-2xl bg-white/10 p-6 ring-1 ring-white/10 ring-inset"
-                >
-                  <h3 className="font-display text-lg text-white">
-                    {pillar.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-blue-100">
-                    {pillar.description}
-                  </p>
-                </div>
-              ))}
-            </div>
+            <ol className="grid grid-cols-1 gap-5 md:grid-cols-3">
+              {pillars.map((pillar, index) => {
+                const featured = index === pillars.length - 1;
+                return (
+                  <li
+                    key={pillar.title}
+                    className={`space-y-3.5 rounded-[20px] p-7 ${featured ? "bg-night text-white" : "bg-sunken"}`}
+                  >
+                    <span
+                      className={`font-display text-[0.9375rem] font-bold ${featured ? "text-mint" : "text-accent"}`}
+                    >
+                      0{index + 1}
+                    </span>
+                    <h3 className="text-xl font-semibold">{pillar.title}</h3>
+                    <p
+                      className={`text-[0.9375rem] leading-relaxed ${featured ? "text-night-ink" : "text-ink-2"}`}
+                    >
+                      {pillar.description}
+                    </p>
+                  </li>
+                );
+              })}
+            </ol>
           </div>
         </section>
 
         <section
-          aria-label="Everything you can track"
-          className="py-20 sm:py-28"
+          aria-labelledby="modules-title"
+          className="mx-auto max-w-300 space-y-10 px-4 py-20 sm:px-8 lg:py-24"
         >
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl text-center">
-              <h2 className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl dark:text-slate-50">
-                Everything you own, one shared spine
-              </h2>
-              <p className="mt-4 text-lg text-slate-600 dark:text-slate-400">
-                Homes, policies, investments and loans — all reduce to the same
-                dated money in, money out.
-              </p>
-            </div>
-            <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              {modules.map(({ label, description, Icon }) => (
-                <div
-                  key={label}
-                  className="rounded-2xl border border-slate-200 p-5 dark:border-slate-800"
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400">
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <h3 className="mt-3 text-sm font-semibold">{label}</h3>
-                  <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    {description}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section
-          id="get-started"
-          aria-label="Get started"
-          className="relative overflow-hidden bg-blue-600 py-24 sm:py-32"
-        >
-          <Image
-            className="absolute top-1/2 left-1/2 max-w-none -translate-x-1/2 -translate-y-1/2 opacity-80"
-            src="/images/background-call-to-action.jpg"
-            alt=""
-            width={2347}
-            height={1244}
-          />
-          <div className="relative mx-auto max-w-lg px-6 text-center">
-            <h2 className="font-display text-3xl text-white sm:text-4xl">
-              Get started today
-            </h2>
-            <p className="mt-4 text-lg text-white/90">
-              Free to use, forever. Add your first property, policy or loan in
-              minutes, and never miss a date again.
+          <div className="max-w-2xl space-y-3">
+            <p className={`${sectionEyebrow} text-accent`}>
+              Everything you can track
             </p>
-            <Button
-              href="/login"
-              pill
-              color="white"
-              size="lg"
-              className="mt-10"
-            >
-              Get started for free
-            </Button>
+            <h2 id="modules-title" className={sectionTitle}>
+              Your whole financial life, in one place.
+            </h2>
           </div>
+          <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {modules.map(({ label, description, Icon }) => (
+              <li
+                key={label}
+                className="space-y-2.5 rounded-card border border-line bg-surface p-5"
+              >
+                <Icon className="size-7 text-accent" strokeWidth={1.6} />
+                <h3 className="text-[1.0625rem] font-semibold">{label}</h3>
+                <p className="text-sm leading-relaxed text-ink-2">
+                  {description}
+                </p>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section
           id="pricing"
-          aria-label="Pricing"
-          className="bg-slate-900 py-20 sm:py-32"
+          aria-labelledby="pricing-title"
+          className="bg-night text-white"
         >
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="text-center">
-              <h2 className="font-display text-3xl tracking-tight text-white sm:text-4xl">
-                <span className="relative whitespace-nowrap">
-                  <svg
-                    aria-hidden="true"
-                    viewBox="0 0 281 40"
-                    preserveAspectRatio="none"
-                    className="absolute top-1/2 left-0 h-[1em] w-full -translate-y-1/2 fill-blue-500"
-                  >
-                    <path d="M240.172 22.994c-8.007 1.246-15.477 2.23-31.26 4.114-18.506 2.21-26.323 2.977-34.487 3.386-2.971.149-3.727.324-6.566 1.523-15.124 6.388-43.775 9.404-69.425 7.31-26.207-2.14-50.986-7.103-78-15.624C10.912 20.7.988 16.143.734 14.657c-.066-.381.043-.344 1.324.456 10.423 6.506 49.649 16.322 77.8 19.468 23.708 2.65 38.249 2.95 55.821 1.156 9.407-.962 24.451-3.773 25.101-4.692.074-.104.053-.155-.058-.135-1.062.195-13.863-.271-18.848-.687-16.681-1.389-28.722-4.345-38.142-9.364-15.294-8.15-7.298-19.232 14.802-20.514 16.095-.934 32.793 1.517 47.423 6.96 13.524 5.033 17.942 12.326 11.463 18.922l-.859.874.697-.006c2.681-.026 15.304-1.302 29.208-2.953 25.845-3.07 35.659-4.519 54.027-7.978 9.863-1.858 11.021-2.048 13.055-2.145a61.901 61.901 0 0 0 4.506-.417c1.891-.259 2.151-.267 1.543-.047-.402.145-2.33.913-4.285 1.707-4.635 1.882-5.202 2.07-8.736 2.903-3.414.805-19.773 3.797-26.404 4.829Zm40.321-9.93c.1-.066.231-.085.29-.041.059.043-.024.096-.183.119-.177.024-.219-.007-.107-.079ZM172.299 26.22c9.364-6.058 5.161-12.039-12.304-17.51-11.656-3.653-23.145-5.47-35.243-5.576-22.552-.198-33.577 7.462-21.321 14.814 12.012 7.205 32.994 10.557 61.531 9.831 4.563-.116 5.372-.288 7.337-1.559Z" />
-                  </svg>
-                  <span className="relative">Simple pricing,</span>
-                </span>{" "}
-                for every net worth.
+          <div className="mx-auto max-w-300 space-y-10 px-4 py-20 sm:px-8 lg:py-24">
+            <div className="max-w-2xl space-y-3">
+              <p className={`${sectionEyebrow} text-mint`}>Pricing</p>
+              <h2 id="pricing-title" className={sectionTitle}>
+                Simple pricing, free to start.
               </h2>
-              <p className="mt-4 text-lg text-slate-400">
-                No tiers, no seat limits, no card on file — the whole point is
-                that you actually keep using it.
-              </p>
             </div>
-
-            <div className="mx-auto mt-16 grid max-w-3xl grid-cols-1 gap-8 sm:grid-cols-2">
-              <div className="rounded-3xl bg-slate-800/60 px-6 py-8 ring-1 ring-slate-700 sm:px-8">
-                <h3 className="font-display text-lg text-white">
-                  Free, forever
-                </h3>
-                <p className="mt-2 text-base text-slate-300">
-                  Every core feature, no catches.
-                </p>
-                <p className="mt-6 font-display text-5xl font-light tracking-tight text-white">
-                  $0
-                </p>
-                <ul className="mt-10 flex flex-col gap-y-3 text-sm text-slate-200">
-                  {planFeatures.map((feature) => (
-                    <li key={feature} className="flex">
-                      <CheckIcon className="h-6 w-6 flex-none text-slate-400" />
-                      <span className="ml-3">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
+            <div className="grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-2">
+              <div className="flex flex-col gap-5 rounded-[20px] border border-night-3 p-7">
+                <div className="space-y-1.5">
+                  <h3 className="text-lg font-semibold">Free</h3>
+                  <p className="font-display text-4xl font-bold">₹0</p>
+                </div>
+                <PlanFeatures
+                  features={planFeatures}
+                  className="text-night-ink"
+                  checkClassName="text-mint"
+                />
+                <Link
                   href="/login"
-                  pill
-                  variant="outline"
-                  color="slate"
-                  className="mt-8 w-full border-slate-600 text-slate-100 hover:bg-slate-700"
+                  className="mt-auto inline-flex h-12 items-center justify-center rounded-control border border-mint text-[0.9375rem] font-semibold text-mint transition-colors hover:bg-mint hover:text-night"
                 >
                   Get started for free
-                </Button>
+                </Link>
               </div>
-
-              <div className="rounded-3xl bg-blue-600 px-6 py-8 sm:px-8">
-                <h3 className="font-display text-lg text-white">Pro</h3>
-                <p className="mt-2 text-base text-white">
-                  For power users who want priority support and early access.
-                </p>
-                <p className="mt-6 font-display text-5xl font-light tracking-tight text-white">
-                  $20
-                  <span className="text-lg font-normal text-white/80">
-                    /month
-                  </span>
-                </p>
-                <ul className="mt-10 flex flex-col gap-y-3 text-sm text-white">
-                  {proPlanFeatures.map((feature) => (
-                    <li key={feature} className="flex">
-                      <CheckIcon className="h-6 w-6 flex-none text-white" />
-                      <span className="ml-3">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button
-                  href="/login"
-                  pill
-                  color="white"
-                  className="mt-8 w-full"
-                >
+              <div className="flex flex-col gap-5 rounded-[20px] bg-surface p-7 text-ink">
+                <div className="space-y-1.5">
+                  <h3 className="text-lg font-semibold">Pro</h3>
+                  <p className="font-display text-4xl font-bold">
+                    $20
+                    <span className="font-sans text-base font-normal text-muted">
+                      /month
+                    </span>
+                  </p>
+                  <p className="text-sm text-muted">
+                    For power users who want priority support and early access.
+                  </p>
+                </div>
+                <PlanFeatures
+                  features={proPlanFeatures}
+                  className="text-ink-2"
+                  checkClassName="text-accent"
+                />
+                <Button href="/login" size="lg" className="mt-auto">
                   Upgrade to Pro
                 </Button>
               </div>
@@ -423,52 +406,72 @@ export default async function Home() {
         <section
           id="faq"
           aria-labelledby="faq-title"
-          className="relative overflow-hidden bg-slate-50 py-20 sm:py-32 dark:bg-slate-900/40"
+          className="mx-auto flex max-w-300 flex-col gap-12 px-4 py-20 sm:px-8 lg:flex-row lg:py-24"
         >
-          <Image
-            className="absolute top-0 left-1/2 max-w-none translate-x-[-30%] -translate-y-1/4 opacity-70 dark:opacity-15"
-            src="/images/background-faqs.jpg"
-            alt=""
-            width={1558}
-            height={946}
-          />
-          <div className="relative mx-auto max-w-6xl px-6">
-            <div className="mx-auto max-w-2xl lg:mx-0">
-              <h2
-                id="faq-title"
-                className="font-display text-3xl tracking-tight text-slate-900 sm:text-4xl dark:text-slate-50"
+          <div className="space-y-3 lg:w-80">
+            <p className={`${sectionEyebrow} text-accent`}>FAQ</p>
+            <h2 id="faq-title" className={sectionTitle}>
+              Questions, answered.
+            </h2>
+          </div>
+          <div className="flex-1 divide-y divide-line border-y border-line">
+            {faqs.map((faq, index) => (
+              <details
+                key={faq.question}
+                open={index === 0}
+                className="group py-5"
               >
-                Frequently asked questions
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-[1.0625rem] font-semibold [&::-webkit-details-marker]:hidden">
+                  {faq.question}
+                  <PlusIcon className="size-5 shrink-0 text-muted transition-transform group-open:rotate-45" />
+                </summary>
+                <p className="mt-2.5 text-[0.9375rem] leading-relaxed text-ink-2">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-300 px-4 pb-20 sm:px-8 lg:pb-24">
+          <div className="flex flex-col gap-6 rounded-[28px] bg-accent px-8 py-12 text-white sm:px-12 lg:flex-row lg:items-center lg:justify-between dark:text-night">
+            <div className="max-w-xl space-y-2.5">
+              <h2 className="font-display text-[2.25rem] leading-tight font-semibold tracking-[-0.02em]">
+                Get your first five assets in tonight.
               </h2>
+              <p className="text-base opacity-85">
+                Start with names and dates. Your timeline fills in as you go.
+              </p>
             </div>
-            <ul className="mx-auto mt-16 grid max-w-2xl grid-cols-1 gap-8 lg:max-w-none lg:grid-cols-3">
-              {faqColumns.map((column, columnIndex) => (
-                <li key={columnIndex}>
-                  <ul className="flex flex-col gap-y-8">
-                    {column.map((faq) => (
-                      <li key={faq.question}>
-                        <h3 className="font-display text-lg text-slate-900 dark:text-slate-50">
-                          {faq.question}
-                        </h3>
-                        <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
-                          {faq.answer}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
+            <Button href="/login" color="white" size="lg">
+              Start tracking — it&apos;s free →
+            </Button>
           </div>
         </section>
       </main>
 
       <SiteFooter />
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
     </div>
+  );
+}
+
+function PlanFeatures({
+  features,
+  className,
+  checkClassName,
+}: {
+  features: string[];
+  className: string;
+  checkClassName: string;
+}) {
+  return (
+    <ul className={`space-y-2.5 text-[0.9375rem] ${className}`}>
+      {features.map((feature) => (
+        <li key={feature} className="flex gap-2.5">
+          <CheckIcon className={`size-5 flex-none ${checkClassName}`} />
+          {feature}
+        </li>
+      ))}
+    </ul>
   );
 }

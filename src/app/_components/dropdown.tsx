@@ -31,11 +31,11 @@ export function DropdownMenu({
       className={clsx(
         className,
         "[--anchor-gap:--spacing(2)] [--anchor-padding:--spacing(1)] data-[anchor~=end]:[--anchor-offset:6px] data-[anchor~=start]:[--anchor-offset:-6px] sm:data-[anchor~=end]:[--anchor-offset:4px] sm:data-[anchor~=start]:[--anchor-offset:-4px]",
-        "isolate w-max rounded-xl p-1",
+        "isolate w-max rounded-card p-1.5",
         "outline outline-transparent focus:outline-hidden",
         "overflow-y-auto",
-        "bg-white/75 backdrop-blur-xl dark:bg-zinc-800/75",
-        "shadow-lg ring-1 ring-zinc-950/10 dark:ring-white/10 dark:ring-inset",
+        "bg-surface",
+        "shadow-[0_12px_32px_rgb(16_32_28/0.14)] ring-1 ring-line",
         "supports-[grid-template-columns:subgrid]:grid supports-[grid-template-columns:subgrid]:grid-cols-[auto_1fr_1.5rem_0.5rem_auto]",
         "transition data-leave:duration-100 data-leave:ease-in data-closed:data-leave:opacity-0",
       )}
@@ -47,14 +47,14 @@ export function DropdownMenu({
 export function dropdownItemClassName(className?: string) {
   return clsx(
     className,
-    "group cursor-default rounded-lg px-3.5 py-2.5 focus:outline-hidden sm:px-3 sm:py-1.5",
-    "text-left text-base/6 text-zinc-950 sm:text-sm/6 dark:text-white forced-colors:text-[CanvasText]",
-    "data-focus:bg-blue-500 data-focus:text-white",
+    "group cursor-default rounded-[9px] px-3.5 py-2.5 focus:outline-hidden sm:px-3 sm:py-2",
+    "text-left text-base/6 text-ink sm:text-sm/6 forced-colors:text-[CanvasText]",
+    "data-focus:bg-accent-soft data-focus:text-accent-strong",
     "data-disabled:opacity-50",
     "forced-color-adjust-none forced-colors:data-focus:bg-[Highlight] forced-colors:data-focus:text-[HighlightText] forced-colors:data-focus:*:data-[slot=icon]:text-[HighlightText]",
     "col-span-full grid grid-cols-[auto_1fr_1.5rem_0.5rem_auto] items-center supports-[grid-template-columns:subgrid]:grid-cols-subgrid",
     "*:data-[slot=icon]:col-start-1 *:data-[slot=icon]:row-start-1 *:data-[slot=icon]:mr-2.5 *:data-[slot=icon]:-ml-0.5 *:data-[slot=icon]:size-5 sm:*:data-[slot=icon]:mr-2 sm:*:data-[slot=icon]:size-4",
-    "*:data-[slot=icon]:text-zinc-500 data-focus:*:data-[slot=icon]:text-white dark:*:data-[slot=icon]:text-zinc-400 dark:data-focus:*:data-[slot=icon]:text-white",
+    "*:data-[slot=icon]:text-muted data-focus:*:data-[slot=icon]:text-accent",
     "*:data-[slot=avatar]:mr-2.5 *:data-[slot=avatar]:-ml-1 *:data-[slot=avatar]:size-6 sm:*:data-[slot=avatar]:mr-2 sm:*:data-[slot=avatar]:size-5",
   );
 }
@@ -110,7 +110,7 @@ export function DropdownDivider({
       {...props}
       className={clsx(
         className,
-        "col-span-full mx-3.5 my-1 h-px border-0 bg-zinc-950/5 sm:mx-3 dark:bg-white/10 forced-colors:bg-[CanvasText]",
+        "col-span-full mx-3.5 my-1 h-px border-0 bg-line-soft sm:mx-3 forced-colors:bg-[CanvasText]",
       )}
     />
   );

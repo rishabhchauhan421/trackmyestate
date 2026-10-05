@@ -1,6 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 
-import { PageHeader } from "./page-header";
+import { PageHeader, propertyCrumbs } from "./page-header";
 
 describe("PageHeader", () => {
   it("renders title and description", () => {
@@ -58,5 +58,40 @@ describe("PageHeader", () => {
     expect(screen.getByText("<i>italic</i>")).toBeInTheDocument();
     expect(document.querySelector("b")).toBeNull();
     expect(document.querySelector("i")).toBeNull();
+  });
+});
+
+describe("PageHeader breadcrumbs", () => {
+  it("links every ancestor and marks the last item as the current page", () => {
+    render(
+      <PageHeader
+        title="Edit lease"
+        description="Change terms"
+        breadcrumbs={[
+          ...propertyCrumbs({ id: "p1", name: "Whitefield Flat" }, "Leases"),
+          { label: "Edit lease" },
+        ]}
+      />,
+    );
+
+    const trail = screen.getByRole("navigation", { name: "Breadcrumb" });
+    const links = within(trail).getAllByRole("link");
+    expect(
+      links.map((link) => [link.textContent, link.getAttribute("href")]),
+    ).toEqual([
+      ["Properties", "/properties"],
+      ["Whitefield Flat", "/properties/p1"],
+      ["Leases", "/properties/p1/leases"],
+    ]);
+    const current = within(trail).getByText("Edit lease");
+    expect(current).toHaveAttribute("aria-current", "page");
+    expect(current.closest("a")).toBeNull();
+  });
+
+  it("renders no trail when none is given", () => {
+    render(<PageHeader title="Dashboard" description="Overview" />);
+    expect(
+      screen.queryByRole("navigation", { name: "Breadcrumb" }),
+    ).not.toBeInTheDocument();
   });
 });

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Add a guest</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+button{font:inherit}
+input[type=checkbox],input[type=radio]{accent-color:#0F6E5D;width:18px;height:18px;margin:0;flex-shrink:0}
+</style>
+</helmet>
+<div style="position: relative; min-height: 100vh; font-family: 'Geist', system-ui, sans-serif; color: #12201C">
+  <div aria-hidden="true">
+    <dc-import name="SettingsGuests" hint-size="100%,1480px"></dc-import>
+  </div>
+
+  <div style="position: absolute; inset: 0; background: rgba(16, 32, 28, 0.5); display: flex; justify-content: center; align-items: flex-start; padding: 64px 16px; box-sizing: border-box">
+    <div role="dialog" aria-modal="true" aria-labelledby="add-guest-title" style="width: 100%; max-width: 640px; background: #FFFFFF; border-radius: 20px; box-shadow: 0 24px 64px rgba(16, 32, 28, 0.3); display: flex; flex-direction: column; overflow: hidden">
+
+      <div style="display: flex; align-items: flex-start; gap: 16px; padding: 24px 24px 16px">
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 4px">
+          <h2 id="add-guest-title" style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 600; letter-spacing: -0.01em">Add a guest</h2>
+          <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #5A6762">They&#39;ll get reminders only — no account, no dashboard.</p>
+        </div>
+        <a href="SettingsGuests.dc.html" aria-label="Close" style="width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #5A6762">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+        </a>
+      </div>
+
+      <form action="#" style="display: flex; flex-direction: column; gap: 22px; padding: 4px 24px 24px">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px">
+          <label style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 14px; font-weight: 500">Name</span>
+            <input value="Radha Rao" required style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 14px; font-weight: 500">Relationship <span style="font-weight: 400; color: #5A6762">· optional</span></span>
+            <select style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; background: #FFFFFF">
+              <option>Family</option><option>Tenant</option><option>Accountant</option><option>Property manager</option><option>Other</option>
+            </select>
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 14px; font-weight: 500">Email</span>
+            <input type="email" value="radha.rao@example.in" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; box-sizing: border-box">
+          </label>
+          <label style="display: flex; flex-direction: column; gap: 6px">
+            <span style="font-size: 14px; font-weight: 500">Mobile</span>
+            <span style="display: flex; height: 44px; border: 1px solid #CBD3CD; border-radius: 10px; overflow: hidden">
+              <span style="display: flex; align-items: center; padding: 0 12px; border-right: 1px solid #E3E7E2; background: #F8F9F6; color: #5A6762; font-size: 15px">+91</span>
+              <input inputmode="tel" value="98450 12345" style="flex: 1; min-width: 0; border: 0; padding: 0 12px; font: inherit; font-size: 15px; outline: none">
+            </span>
+          </label>
+        </div>
+        <span style="margin-top: -12px; font-size: 12px; color: #5A6762">Add an email, a mobile number or both.</span>
+
+        <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
+          <legend style="padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500">Send by</legend>
+          <div style="display: flex; flex-wrap: wrap; gap: 8px">
+            <label style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border: 1px solid #0F6E5D; background: #E3F1EC; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer"><input type="checkbox" checked>Email</label>
+            <label style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border: 1px solid #0F6E5D; background: #E3F1EC; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer"><input type="checkbox" checked>WhatsApp</label>
+            <label style="display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer"><input type="checkbox">SMS</label>
+          </div>
+        </fieldset>
+
+        <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 10px">
+          <legend style="padding: 0; margin-bottom: 10px; font-size: 14px; font-weight: 500">Remind them about</legend>
+          <div role="radiogroup" aria-label="Scope" style="display: inline-flex; align-self: flex-start; gap: 4px; padding: 4px; border-radius: 12px; background: #E9ECE7">
+            <label style="display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 9px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16,32,28,0.08); font-size: 13px; font-weight: 600; cursor: pointer"><input type="radio" name="scope" checked style="width: 16px; height: 16px">Specific items</label>
+            <label style="display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border-radius: 9px; font-size: 13px; font-weight: 500; color: #3E4B46; cursor: pointer"><input type="radio" name="scope" style="width: 16px; height: 16px">Whole kinds of payment</label>
+          </div>
+          <div style="border: 1px solid #E3E7E2; border-radius: 12px; overflow: hidden">
+            <label style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #EEF1ED; cursor: pointer"><input type="checkbox" checked><span style="flex: 1; font-size: 14px; font-weight: 500">Indiranagar 2BHK</span><span style="font-size: 13px; color: #5A6762">Utility bills</span></label>
+            <label style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #EEF1ED; cursor: pointer"><input type="checkbox"><span style="flex: 1; font-size: 14px; font-weight: 500">Indiranagar 2BHK</span><span style="font-size: 13px; color: #5A6762">Property tax</span></label>
+            <label style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #EEF1ED; cursor: pointer"><input type="checkbox"><span style="flex: 1; font-size: 14px; font-weight: 500">Whitefield Rented Flat</span><span style="font-size: 13px; color: #5A6762">Rent</span></label>
+            <label style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #EEF1ED; cursor: pointer"><input type="checkbox"><span style="flex: 1; font-size: 14px; font-weight: 500">LIC Jeevan Anand</span><span style="font-size: 13px; color: #5A6762">Premium</span></label>
+            <label style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; cursor: pointer"><input type="checkbox"><span style="flex: 1; font-size: 14px; font-weight: 500">HDFC Ergo mediclaim</span><span style="font-size: 13px; color: #5A6762">Premium</span></label>
+          </div>
+        </fieldset>
+
+        <fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px">
+          <legend style="padding: 0; margin-bottom: 8px; font-size: 14px; font-weight: 500">When</legend>
+          <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer"><input type="radio" name="when" checked>Same schedule as yours</label>
+          <label style="display: flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer"><input type="radio" name="when">Only on the due day</label>
+        </fieldset>
+
+        <div style="display: flex; gap: 12px; padding: 14px 16px; border-radius: 12px; background: #F5F6F2; font-size: 13px; line-height: 1.5; color: #3E4B46">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0F6E5D" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"></path></svg>
+          <span>We&#39;ll send Radha one message saying you&#39;ve added her, with a link to stop. <strong style="color: #12201C">WhatsApp reminders start once she replies YES</strong> — email and SMS start right away.</span>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; padding-top: 4px">
+          <a href="SettingsGuests.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 18px; border-radius: 10px; border: 1px solid #CBD3CD; color: #12201C; font-size: 14px; font-weight: 500">Cancel</a>
+          <a href="SettingsGuests.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 10px; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600">Add guest</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1480}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

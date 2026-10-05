@@ -40,7 +40,13 @@ export async function getUtilityBillsForProperty(propertyId: string) {
   const utilities = utilityIds.length
     ? await db.billSchedule.findMany({
         where: { id: { in: utilityIds } },
-        select: { id: true, billType: true, provider: true, active: true },
+        select: {
+          id: true,
+          billType: true,
+          billingType: true,
+          provider: true,
+          active: true,
+        },
       })
     : [];
   const utilityById = new Map(
@@ -49,6 +55,7 @@ export async function getUtilityBillsForProperty(propertyId: string) {
       {
         type: utility.billType!,
         provider: utility.provider,
+        billingType: utility.billingType,
         active: utility.active,
       },
     ]),
@@ -79,7 +86,7 @@ export async function getUtilityBillForOwner(
 
   const utility = await db.billSchedule.findFirst({
     where: { id: bill.billScheduleId! },
-    select: { billType: true, provider: true },
+    select: { billType: true, billingType: true, provider: true },
   });
   if (!utility) return null;
 
@@ -87,7 +94,11 @@ export async function getUtilityBillForOwner(
   // `property` relation is never actually null here.
   return {
     ...bill,
-    utility: { type: utility.billType!, provider: utility.provider },
+    utility: {
+      type: utility.billType!,
+      provider: utility.provider,
+      billingType: utility.billingType,
+    },
     property: bill.property!,
   };
 }

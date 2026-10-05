@@ -8,9 +8,15 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { nextCookies } from "better-auth/next-js";
 import { admin } from "better-auth/plugins";
+import { after } from "next/server";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
+import { sendPasswordResetEmail } from "./emails";
+
+/** Password length limits, enforced by better-auth and our own forms. */
+export const PASSWORD_MIN_LENGTH = 8;
+export const PASSWORD_MAX_LENGTH = 128;
 
 /** better-auth instance, configured for MongoDB + Google OAuth + email/password. */
 export const auth = betterAuth({
@@ -27,6 +33,21 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    minPasswordLength: PASSWORD_MIN_LENGTH,
+    maxPasswordLength: PASSWORD_MAX_LENGTH,
+    // `url` is better-auth's own `/api/auth/reset-password/:token` endpoint,
+    // which checks the token and redirects to our `/reset-password` page
+    // (the `redirectTo` passed in `requestPasswordReset`). Sent via
+    // `after()` so the response time doesn't reveal whether the email has
+    // an account.
+    sendResetPassword: async ({ user, url }) => {
+      after(() =>
+        sendPasswordResetEmail({ to: user.email, name: user.name, url }),
+      );
+    },
+    // A reset usually means the old password may be compromised, so sign
+    // out every existing session.
+    revokeSessionsOnPasswordReset: true,
   },
   socialProviders: {
     google: {

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { MenuIcon } from "~/app/_components/icons";
-import { NavLink } from "~/app/_components/nav-link";
+import { Logo } from "~/app/_components/logo";
 import { auth } from "~/server/better-auth";
 import type { getSession } from "~/server/better-auth/server";
 
@@ -13,6 +13,9 @@ const navItems = [
   { href: "#pricing", label: "Pricing" },
   { href: "#faq", label: "FAQ" },
 ];
+
+const navLinkClass =
+  "rounded-control px-3 py-2 text-sm font-medium text-ink-2 transition-colors hover:bg-sunken-2 hover:text-ink";
 
 /**
  * The marketing homepage's own header — not the signed-in app's sidebar
@@ -27,84 +30,74 @@ export function SiteHeader({
   session: Awaited<ReturnType<typeof getSession>>;
 }) {
   return (
-    <header className="py-6">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6">
-        <Link
-          href="/"
-          className="flex items-center gap-2"
-          aria-label="TrackMyEstate home"
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-600 text-sm font-bold text-white">
-            T
-          </span>
-          <span className="font-display text-sm font-semibold text-slate-900 dark:text-slate-50">
-            TrackMyEstate
-          </span>
-        </Link>
+    <header className="mx-auto flex max-w-300 items-center justify-between gap-4 px-4 py-5 sm:px-8">
+      <Link href="/" aria-label="TrackMyEstate home" className="text-ink">
+        <Logo />
+      </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
-          {navItems.map((item) => (
-            <NavLink key={item.href} href={item.href}>
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
+      <nav aria-label="Site" className="hidden items-center gap-1 md:flex">
+        {navItems.map((item) => (
+          <a key={item.href} href={item.href} className={navLinkClass}>
+            {item.label}
+          </a>
+        ))}
+      </nav>
 
-        <div className="flex items-center gap-3">
-          {session ? (
-            <div className="flex items-center gap-3">
-              <span className="hidden text-sm text-slate-500 sm:inline dark:text-slate-400">
-                {session.user?.name}
-              </span>
-              <Button href="/dashboard" pill size="sm">
-                Dashboard
-              </Button>
-              <form data-gtm-event="sign_out">
-                <button
-                  formAction={async () => {
-                    "use server";
-                    await auth.api.signOut({ headers: await headers() });
-                    redirect("/");
-                  }}
-                  className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-                >
-                  Sign out
-                </button>
-              </form>
-            </div>
-          ) : (
-            <div className="hidden items-center gap-3 sm:flex">
-              <NavLink href="/login">Sign in</NavLink>
-              <Button href="/login" pill size="sm">
-                Get started
-              </Button>
-            </div>
-          )}
+      <div className="flex items-center gap-2">
+        {session ? (
+          <>
+            <form data-gtm-event="sign_out" className="hidden sm:block">
+              <button
+                formAction={async () => {
+                  "use server";
+                  await auth.api.signOut({ headers: await headers() });
+                  redirect("/");
+                }}
+                className={navLinkClass}
+              >
+                Sign out
+              </button>
+            </form>
+            <Button href="/dashboard" color="slate" size="sm">
+              Open dashboard
+            </Button>
+          </>
+        ) : (
+          <>
+            <Link href="/login" className={`${navLinkClass} hidden sm:block`}>
+              Sign in
+            </Link>
+            <Button href="/login" color="slate" className="max-sm:hidden">
+              Get started free
+            </Button>
+          </>
+        )}
 
-          <details className="relative md:hidden">
-            <summary
-              className="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 [&::-webkit-details-marker]:hidden"
-              aria-label="Toggle navigation"
-            >
-              <MenuIcon className="h-5 w-5" />
-            </summary>
-            <div className="absolute top-full right-0 z-50 mt-3 w-48 rounded-2xl border border-slate-200 bg-white p-3 shadow-xl dark:border-slate-800 dark:bg-slate-900">
-              <nav className="flex flex-col gap-1">
-                {navItems.map((item) => (
-                  <NavLink key={item.href} href={item.href}>
-                    {item.label}
-                  </NavLink>
-                ))}
-                {!session && (
-                  <>
-                    <hr className="my-2 border-slate-200 dark:border-slate-800" />
-                    <NavLink href="/login">Sign in</NavLink>
-                  </>
-                )}
-              </nav>
-            </div>
-          </details>
-        </div>
+        <details className="relative md:hidden">
+          <summary
+            className="flex size-11 cursor-pointer list-none items-center justify-center rounded-control text-ink-2 hover:bg-sunken-2 [&::-webkit-details-marker]:hidden"
+            aria-label="Toggle navigation"
+          >
+            <MenuIcon className="size-5" />
+          </summary>
+          <nav className="absolute top-full right-0 z-50 mt-2 flex w-52 flex-col gap-0.5 rounded-card border border-line bg-surface p-2 shadow-xl">
+            {navItems.map((item) => (
+              <a key={item.href} href={item.href} className={navLinkClass}>
+                {item.label}
+              </a>
+            ))}
+            {!session && (
+              <>
+                <Link href="/login" className={navLinkClass}>
+                  Sign in
+                </Link>
+                <Button href="/login" color="slate" className="mt-1 sm:hidden">
+                  Get started free
+                </Button>
+              </>
+            )}
+          </nav>
+        </details>
       </div>
     </header>
   );

@@ -1,16 +1,12 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { createLoan } from "~/server/actions/loans";
 import { getSession } from "~/server/better-auth/server";
 import { getPropertyOptionsForOwner } from "~/server/queries/properties";
-
-const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
-const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function NewLoanPage() {
   const session = await getSession();
@@ -19,16 +15,11 @@ export default async function NewLoanPage() {
 
   return (
     <>
-      <div>
-        <Link
-          href="/loans"
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-        >
-          ← Loans
-        </Link>
-      </div>
-
       <PageHeader
+        breadcrumbs={[
+          { label: "Loans", href: "/loans" },
+          { label: "Add loan" },
+        ]}
         title="Add loan"
         description="Track a loan's principal, EMI and outstanding balance."
       />
@@ -36,26 +27,26 @@ export default async function NewLoanPage() {
       <form
         action={createLoan}
         data-gtm-event="loan_created"
-        className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+        className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Lender</label>
+          <label className="block">
+            <span className={labelClass}>Lender</span>
             <input
               type="text"
               name="lender"
               required
               placeholder="e.g. HDFC Bank"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Type</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Type</span>
             <select
               name="type"
               required
               defaultValue="HOME_LOAN"
-              className={inputClass}
+              className={controlClass}
             >
               {Object.entries(LOAN_TYPE_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>
@@ -63,62 +54,62 @@ export default async function NewLoanPage() {
                 </option>
               ))}
             </select>
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Principal (₹)</label>
+          <label className="block">
+            <span className={labelClass}>Principal (₹)</span>
             <input
               type="number"
               name="principal"
               min="1"
               step="1"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Interest rate (% p.a.)</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Interest rate (% p.a.)</span>
             <input
               type="number"
               name="interestRatePercent"
               min="0"
               step="0.01"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Tenure (months)</label>
+          <label className="block">
+            <span className={labelClass}>Tenure (months)</span>
             <input
               type="number"
               name="tenureMonths"
               min="1"
               step="1"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>EMI amount (₹)</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>EMI amount (₹)</span>
             <input
               type="number"
               name="emiAmount"
               min="1"
               step="1"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>EMI due day (1-31)</label>
+          <label className="block">
+            <span className={labelClass}>EMI due day (1-31)</span>
             <input
               type="number"
               name="emiDueDay"
@@ -126,40 +117,38 @@ export default async function NewLoanPage() {
               max="31"
               step="1"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Start date</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Start date</span>
             <input
               type="date"
               name="startDate"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
-        <div>
-          <label className={labelClass}>
-            Outstanding balance (₹, optional)
-          </label>
+        <label className="block">
+          <span className={labelClass}>Outstanding balance (₹, optional)</span>
           <input
             type="number"
             name="outstandingBalance"
             min="0"
             step="1"
             placeholder="Defaults to the principal"
-            className={`${inputClass} sm:w-56`}
+            className={`${controlClass} sm:w-56`}
           />
-        </div>
+        </label>
 
-        <div>
-          <label className={labelClass}>Linked property (optional)</label>
+        <label className="block">
+          <span className={labelClass}>Linked property (optional)</span>
           <select
             name="linkedPropertyId"
             defaultValue=""
-            className={`${inputClass} sm:w-72`}
+            className={`${controlClass} sm:w-72`}
           >
             <option value="">Not linked to a property</option>
             {properties.map((property) => (
@@ -168,21 +157,18 @@ export default async function NewLoanPage() {
               </option>
             ))}
           </select>
-          <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+          <span className="mt-1.5 block text-xs text-muted">
             Links this loan&apos;s EMI bills to a property, e.g. a home loan
             against a property you own.
-          </p>
-        </div>
+          </span>
+        </label>
 
-        <div className="flex items-center gap-3 pt-2">
-          <Button type="submit">Save loan</Button>
-          <Link
-            href="/loans"
-            className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-          >
+        <FormActions>
+          <Button href="/loans" variant="outline">
             Cancel
-          </Link>
-        </div>
+          </Button>
+          <Button type="submit">Save loan</Button>
+        </FormActions>
       </form>
     </>
   );

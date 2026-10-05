@@ -13,8 +13,8 @@ export default async function AdminUsersPage() {
         description={`${users.length} signed-up user${users.length === 1 ? "" : "s"}, newest first.`}
       />
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-        <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+      <div className="overflow-hidden rounded-card border border-line bg-surface">
+        <ul className="divide-y divide-line-soft">
           {users.map((user) => (
             <li
               key={user.id}
@@ -23,44 +23,38 @@ export default async function AdminUsersPage() {
               <div className="flex min-w-0 items-center gap-3">
                 <Avatar
                   initials={user.name.charAt(0).toUpperCase()}
-                  className="size-9 shrink-0 bg-blue-600 text-white"
+                  className="size-9 shrink-0 bg-accent text-white"
                 />
                 <div className="min-w-0">
-                  <p className="flex items-center gap-2 truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                  <p className="flex items-center gap-2 truncate text-sm font-medium text-ink">
                     {user.name}
                     {user.role === "admin" && (
-                      <span className="inline-flex shrink-0 items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-500/15 dark:text-blue-300">
+                      <span className="inline-flex shrink-0 items-center rounded-full bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent-strong">
                         Admin
                       </span>
                     )}
                     {user.banned && (
-                      <span className="inline-flex shrink-0 items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-500/15 dark:text-red-300">
+                      <span className="inline-flex shrink-0 items-center rounded-full bg-danger-soft px-2 py-0.5 text-xs font-medium text-danger">
                         Banned
                       </span>
                     )}
                   </p>
-                  <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                    {user.email}
-                  </p>
+                  <p className="truncate text-xs text-muted">{user.email}</p>
                 </div>
               </div>
 
               <div className="flex shrink-0 items-center gap-6 text-right">
                 <div>
-                  <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                  <p className="text-sm font-medium text-ink">
                     {user.propertyCount + user.investmentCount + user.loanCount}
                   </p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">
-                    assets tracked
-                  </p>
+                  <p className="text-xs text-muted">assets tracked</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
+                  <p className="text-sm font-medium text-ink">
                     {formatDate(user.createdAt)}
                   </p>
-                  <p className="text-xs text-slate-400 dark:text-slate-500">
-                    joined
-                  </p>
+                  <p className="text-xs text-muted">joined</p>
                 </div>
               </div>
             </li>

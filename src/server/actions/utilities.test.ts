@@ -35,6 +35,18 @@ const { revalidatePath } = jest.requireMock<{
 const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 const PROPERTY = { id: "prop-1", ownerId: "user-1", name: "Test Flat" };
 
+// Pin "today" so the fixed first due dates below are in the future; the
+// action rejects a past one. Only the clock is faked, not the task queues.
+beforeAll(() => {
+  jest.useFakeTimers({
+    now: new Date(2026, 0, 15, 10, 0),
+    doNotFake: ["nextTick", "queueMicrotask", "setImmediate", "setTimeout"],
+  });
+});
+afterAll(() => {
+  jest.useRealTimers();
+});
+
 beforeEach(() => {
   mockReset(dbMock);
   getSessionMock.mockReset().mockResolvedValue(SESSION);
@@ -52,7 +64,6 @@ function buildUtilityForm(overrides: Record<string, string> = {}) {
     recurrence: "MONTHLY",
     defaultAmount: "1500",
     firstDueDate: "2026-06-10",
-    reminderLeadDays: "5",
     ...overrides,
   };
 
@@ -64,6 +75,47 @@ function buildUtilityForm(overrides: Record<string, string> = {}) {
 }
 
 describe("createUtility", () => {
+  it("rejects a first due date before today", async () => {
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-1" } as never);
+
+    await expect(
+      createUtility(buildUtilityForm({ firstDueDate: "2026-01-14" })),
+    ).rejects.toThrow("The first due date can't be in the past");
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
+  });
+
+  it('judges "today" in the user\'s time zone', async () => {
+    // 20:00 UTC on 15 Jan: already 16 Jan in India, still 15 Jan in New York.
+    jest.setSystemTime(new Date("2026-01-15T20:00:00Z"));
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-1" } as never);
+    const firstDueDate = "2026-01-15";
+
+    dbMock.user.findUnique.mockResolvedValue({
+      timezone: "Asia/Kolkata",
+    } as never);
+    await expect(
+      createUtility(buildUtilityForm({ firstDueDate })),
+    ).rejects.toThrow("The first due date can't be in the past");
+
+    dbMock.user.findUnique.mockResolvedValue({
+      timezone: "America/New_York",
+    } as never);
+    await expect(
+      createUtility(buildUtilityForm({ firstDueDate })),
+    ).rejects.toThrow("REDIRECT:/properties/prop-1/utilities");
+
+    jest.setSystemTime(new Date(2026, 0, 15, 10, 0));
+  });
+
+  it("accepts today as the first due date", async () => {
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-1" } as never);
+
+    await expect(
+      createUtility(buildUtilityForm({ firstDueDate: "2026-01-15" })),
+    ).rejects.toThrow("REDIRECT:/properties/prop-1/utilities");
+    expect(dbMock.billSchedule.create).toHaveBeenCalled();
+  });
+
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 
@@ -124,7 +176,6 @@ describe("createUtility", () => {
         defaultAmount: 1500,
         dueDay: 10,
         dueMonth: null,
-        reminderLeadDays: 5,
       }),
     });
 
@@ -222,24 +273,6 @@ describe("createUtility", () => {
 
     expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ billingType: "VARIABLE" }),
-    });
-  });
-
-  it("defaults reminderLeadDays to 7 when the field is absent entirely", async () => {
-    dbMock.property.findFirst.mockResolvedValue(PROPERTY as never);
-    dbMock.billSchedule.create.mockResolvedValue({
-      id: "utility-1",
-      billType: "ELECTRICITY",
-      provider: null,
-    } as never);
-
-    const formData = buildUtilityForm();
-    formData.delete("reminderLeadDays");
-
-    await expect(createUtility(formData)).rejects.toThrow("REDIRECT:");
-
-    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ reminderLeadDays: 7 }),
     });
   });
 

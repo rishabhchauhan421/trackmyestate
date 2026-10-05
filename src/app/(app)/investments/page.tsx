@@ -41,31 +41,25 @@ export default async function InvestmentsPage() {
             return (
               <div
                 key={investment.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+                className="rounded-card border border-line bg-surface p-5"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-50">
+                  <p className="truncate text-sm font-semibold text-ink">
                     {investment.name}
                   </p>
-                  <span className="shrink-0 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                  <span className="shrink-0 rounded-full bg-sunken-2 px-2.5 py-1 text-xs font-medium text-ink-2">
                     {INVESTMENT_TYPE_LABELS[investment.type]}
                   </span>
                 </div>
-                <p className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-50">
+                <p className="mt-4 text-xl font-semibold text-ink">
                   {investment.currentEstimatedValue
                     ? formatINR(investment.currentEstimatedValue)
                     : formatINR(investment.capitalDeployed)}
                 </p>
-                <p className="text-xs text-slate-400 dark:text-slate-500">
+                <p className="text-xs text-muted">
                   {formatINR(investment.capitalDeployed)} deployed
                   {gain != null && (
-                    <span
-                      className={
-                        gain >= 0
-                          ? "text-emerald-600 dark:text-emerald-400"
-                          : "text-red-600 dark:text-red-400"
-                      }
-                    >
+                    <span className={gain >= 0 ? "text-ok" : "text-danger"}>
                       {" "}
                       ({gain >= 0 ? "+" : ""}
                       {formatINR(gain)})
@@ -74,7 +68,7 @@ export default async function InvestmentsPage() {
                 </p>
                 <Link
                   href={`/investments/${investment.id}/edit`}
-                  className="mt-4 inline-block text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                  className="mt-4 inline-block text-xs font-medium text-accent hover:text-accent-strong"
                 >
                   Edit →
                 </Link>

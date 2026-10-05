@@ -6,6 +6,7 @@ import {
   ChevronUpIcon,
   Cog8ToothIcon,
 } from "@heroicons/react/16/solid";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { Avatar } from "~/app/_components/avatar";
@@ -13,12 +14,25 @@ import {
   Dropdown,
   DropdownButton,
   DropdownDivider,
+  DropdownHeader,
   DropdownItem,
   DropdownLabel,
   DropdownMenu,
   dropdownItemClassName,
 } from "~/app/_components/dropdown";
-import { adminNavItems, isActive, navItems } from "~/app/_components/nav";
+import {
+  InsuranceIcon,
+  InvestmentsIcon,
+  LoansIcon,
+  PlusIcon,
+  PropertiesIcon,
+} from "~/app/_components/icons";
+import {
+  adminNavItems,
+  isActive,
+  navGroups,
+  navItems,
+} from "~/app/_components/nav";
 import {
   Navbar,
   NavbarItem,
@@ -34,10 +48,18 @@ import {
   SidebarItem,
   SidebarLabel,
   SidebarSection,
-  SidebarSpacer,
 } from "~/app/_components/sidebar";
+import { Logo } from "~/app/_components/logo";
 import { SidebarLayout } from "~/app/_components/sidebar-layout";
 import { signOut } from "~/server/actions/sign-out";
+
+/** One entry per asset type the "Add asset" menu can create. */
+const addAssetItems = [
+  { label: "Property", href: "/properties/new", Icon: PropertiesIcon },
+  { label: "Insurance policy", href: "/insurance/new", Icon: InsuranceIcon },
+  { label: "Investment", href: "/investments/new", Icon: InvestmentsIcon },
+  { label: "Loan", href: "/loans/new", Icon: LoansIcon },
+];
 
 function AccountMenu({
   anchor,
@@ -51,14 +73,8 @@ function AccountMenu({
   return (
     <DropdownMenu className="min-w-64" anchor={anchor}>
       <DropdownHeader>
-        <p className="truncate text-sm font-medium text-zinc-950 dark:text-white">
-          {name}
-        </p>
-        {email && (
-          <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
-            {email}
-          </p>
-        )}
+        <p className="truncate text-sm font-semibold text-ink">{name}</p>
+        {email && <p className="truncate text-xs text-muted">{email}</p>}
       </DropdownHeader>
       <DropdownDivider />
       <DropdownItem href="/settings">
@@ -80,9 +96,25 @@ function AccountMenu({
   );
 }
 
-function DropdownHeader({ children }: { children: React.ReactNode }) {
+function AddAssetMenu() {
   return (
-    <div className="col-span-5 px-3.5 pt-2.5 pb-1 sm:px-3">{children}</div>
+    <Dropdown>
+      <DropdownButton
+        as="button"
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-control bg-mint text-sm font-semibold text-night transition-colors hover:bg-[#7ddcc4]"
+      >
+        <PlusIcon className="size-4.5" />
+        Add asset
+      </DropdownButton>
+      <DropdownMenu anchor="bottom start" className="min-w-56">
+        {addAssetItems.map(({ label, href, Icon }) => (
+          <DropdownItem key={href} href={href}>
+            <Icon data-slot="icon" />
+            <DropdownLabel>{label}</DropdownLabel>
+          </DropdownItem>
+        ))}
+      </DropdownMenu>
+    </Dropdown>
   );
 }
 
@@ -105,11 +137,18 @@ export function AppShell({
     <SidebarLayout
       navbar={
         <Navbar>
+          <Link href="/dashboard" className="text-ink">
+            <Logo />
+          </Link>
           <NavbarSpacer />
           <NavbarSection>
             <Dropdown>
-              <DropdownButton as={NavbarItem}>
-                <Avatar initials={initial} className="bg-blue-600 text-white" />
+              <DropdownButton as={NavbarItem} aria-label="Account menu">
+                <Avatar
+                  initials={initial}
+                  className="bg-night-3 text-white"
+                  square
+                />
               </DropdownButton>
               <AccountMenu anchor="bottom end" name={name} email={email} />
             </Dropdown>
@@ -119,29 +158,30 @@ export function AppShell({
       sidebar={
         <Sidebar>
           <SidebarHeader>
-            <SidebarItem href="/dashboard">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-blue-600 text-xs font-bold text-white">
-                T
-              </span>
-              <SidebarLabel className="font-semibold">
-                TrackMyEstate
-              </SidebarLabel>
-            </SidebarItem>
+            <Link href="/dashboard" className="px-2 py-1 text-white">
+              <Logo />
+            </Link>
+            <AddAssetMenu />
           </SidebarHeader>
 
           <SidebarBody>
-            <SidebarSection>
-              {navItems.map(({ label, href, Icon }) => (
-                <SidebarItem
-                  key={href}
-                  href={href}
-                  current={isActive(pathname, href)}
-                >
-                  <Icon data-slot="icon" />
-                  <SidebarLabel>{label}</SidebarLabel>
-                </SidebarItem>
-              ))}
-            </SidebarSection>
+            {navGroups.map((group) => (
+              <SidebarSection key={group}>
+                <SidebarHeading>{group}</SidebarHeading>
+                {navItems
+                  .filter((item) => item.group === group)
+                  .map(({ label, href, Icon }) => (
+                    <SidebarItem
+                      key={href}
+                      href={href}
+                      current={isActive(pathname, href)}
+                    >
+                      <Icon data-slot="icon" />
+                      <SidebarLabel>{label}</SidebarLabel>
+                    </SidebarItem>
+                  ))}
+              </SidebarSection>
+            ))}
 
             {isAdmin && (
               <SidebarSection>
@@ -164,8 +204,6 @@ export function AppShell({
                 ))}
               </SidebarSection>
             )}
-
-            <SidebarSpacer />
           </SidebarBody>
 
           <SidebarFooter>
@@ -174,20 +212,20 @@ export function AppShell({
                 <span className="flex min-w-0 items-center gap-3">
                   <Avatar
                     initials={initial}
-                    className="size-8 bg-blue-600 text-white"
+                    className="size-9 bg-night-3 text-white"
                   />
                   <span className="min-w-0">
-                    <span className="block truncate text-sm/5 font-medium text-zinc-950 dark:text-white">
+                    <span className="block truncate text-sm/5 font-semibold text-white">
                       {name}
                     </span>
                     {email && (
-                      <span className="block truncate text-xs/5 font-normal text-zinc-500 dark:text-zinc-400">
+                      <span className="block truncate text-xs/5 font-normal text-night-muted">
                         {email}
                       </span>
                     )}
                   </span>
                 </span>
-                <ChevronUpIcon />
+                <ChevronUpIcon data-slot="icon" />
               </DropdownButton>
               <AccountMenu anchor="top start" name={name} email={email} />
             </Dropdown>

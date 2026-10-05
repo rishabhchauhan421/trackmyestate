@@ -129,6 +129,7 @@ exports.Prisma.UserScalarFieldEnum = {
   emailVerified: 'emailVerified',
   image: 'image',
   currency: 'currency',
+  timezone: 'timezone',
   role: 'role',
   banned: 'banned',
   banReason: 'banReason',
@@ -246,7 +247,6 @@ exports.Prisma.BillScheduleScalarFieldEnum = {
   recurrence: 'recurrence',
   dueDay: 'dueDay',
   dueMonth: 'dueMonth',
-  reminderLeadDays: 'reminderLeadDays',
   defaultAmount: 'defaultAmount',
   currency: 'currency',
   tenureMonths: 'tenureMonths',
@@ -395,10 +395,9 @@ exports.Prisma.NotificationRuleScalarFieldEnum = {
   loanId: 'loanId',
   policyId: 'policyId',
   investmentId: 'investmentId',
-  trigger: 'trigger',
-  leadDays: 'leadDays',
+  anchor: 'anchor',
+  offsetDays: 'offsetDays',
   channels: 'channels',
-  recipients: 'recipients',
   active: 'active',
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
@@ -611,11 +610,8 @@ exports.PaymentMethod = exports.$Enums.PaymentMethod = {
   OTHER: 'OTHER'
 };
 
-exports.NotificationTrigger = exports.$Enums.NotificationTrigger = {
-  BEFORE_DUE: 'BEFORE_DUE',
-  ON_DUE_DATE: 'ON_DUE_DATE',
-  OVERDUE: 'OVERDUE',
-  PAYMENT_RECEIVED: 'PAYMENT_RECEIVED'
+exports.ReminderAnchor = exports.$Enums.ReminderAnchor = {
+  DUE_DATE: 'DUE_DATE'
 };
 
 exports.ReminderChannel = exports.$Enums.ReminderChannel = {

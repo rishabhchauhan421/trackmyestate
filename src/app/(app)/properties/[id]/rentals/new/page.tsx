@@ -1,15 +1,11 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
-import { PageHeader } from "~/app/_components/page-header";
+import { FormActions, controlClass, labelClass } from "~/app/_components/form";
+import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { createRental } from "~/server/actions/rentals";
 import { getSession } from "~/server/better-auth/server";
 import { getPropertyForOwner } from "~/server/queries/properties";
-
-const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
-const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function NewRentalPage({
   params,
@@ -31,16 +27,11 @@ export default async function NewRentalPage({
 
   return (
     <>
-      <div>
-        <Link
-          href={`/properties/${id}/rentals`}
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-        >
-          ← {property.name} rental units
-        </Link>
-      </div>
-
       <PageHeader
+        breadcrumbs={[
+          ...propertyCrumbs(property, "Rental units"),
+          { label: "Add rental unit" },
+        ]}
         title="Add rental unit"
         description="A room, floor or unit within this property that gets rented out on its own. Create a lease for it afterwards."
       />
@@ -48,47 +39,44 @@ export default async function NewRentalPage({
       <form
         action={createRental}
         data-gtm-event="rental_created"
-        className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+        className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
         <input type="hidden" name="propertyId" value={id} />
 
-        <div>
-          <label className={labelClass}>Label</label>
+        <label className="block">
+          <span className={labelClass}>Label</span>
           <input
             type="text"
             name="label"
             required
             placeholder="e.g. 2nd floor, Room B"
-            className={inputClass}
+            className={controlClass}
           />
-        </div>
+        </label>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Floor (optional)</label>
-            <input type="text" name="floor" className={inputClass} />
-          </div>
-          <div>
-            <label className={labelClass}>Area (sqft, optional)</label>
+          <label className="block">
+            <span className={labelClass}>Floor (optional)</span>
+            <input type="text" name="floor" className={controlClass} />
+          </label>
+          <label className="block">
+            <span className={labelClass}>Area (sqft, optional)</span>
             <input
               type="number"
               name="areaSqft"
               min="1"
               step="1"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-          <Button type="submit">Save rental unit</Button>
-          <Link
-            href={`/properties/${id}/rentals`}
-            className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-          >
+        <FormActions>
+          <Button href={`/properties/${id}/rentals`} variant="outline">
             Cancel
-          </Link>
-        </div>
+          </Button>
+          <Button type="submit">Save rental unit</Button>
+        </FormActions>
       </form>
     </>
   );

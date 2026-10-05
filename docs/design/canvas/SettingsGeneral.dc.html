@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Settings — General</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif">
+  <dc-import name="AppSidebar" current="none" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 32px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px">
+      <header style="display: flex; flex-direction: column; gap: 6px">
+        <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 32px; line-height: 1.15; font-weight: 600; letter-spacing: -0.02em">Settings</h1>
+        <p style="margin: 0; font-size: 15px; color: #5A6762">Your profile, how and when you&#39;re reminded, and who else gets reminders.</p>
+      </header>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start">
+        <dc-import name="SettingsNav" tab="general" hint-size="232px,184px"></dc-import>
+
+        <div style="flex: 999 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 16px">
+          <section aria-labelledby="profile" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 id="profile" style="margin: 0; font-size: 16px; font-weight: 600">Profile</h2>
+              <p style="margin: 0; font-size: 13px; color: #5A6762">How your name appears in reminders you send to guests.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px">
+              <span style="width: 56px; height: 56px; border-radius: 999px; background: #21413A; color: #FFFFFF; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 600">AR</span>
+              <div style="display: flex; flex-direction: column; gap: 2px">
+                <span style="font-size: 15px; font-weight: 600">Ananya Rao</span>
+                <span style="font-size: 13px; color: #5A6762">Signed in with Google</span>
+              </div>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 14px; font-weight: 500">Full name</span>
+                <input value="Ananya Rao" style="height: 44px; padding: 0 14px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF; box-sizing: border-box">
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 14px; font-weight: 500">Email <span style="font-weight: 400; color: #5A6762">· used to sign in</span></span>
+                <input value="ananya.rao@example.in" disabled style="height: 44px; padding: 0 14px; border: 1px solid #E3E7E2; border-radius: 10px; font: inherit; font-size: 15px; color: #5A6762; background: #F5F6F2; box-sizing: border-box">
+              </label>
+            </div>
+          </section>
+
+          <section aria-labelledby="region" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 20px">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 id="region" style="margin: 0; font-size: 16px; font-weight: 600">Region</h2>
+              <p style="margin: 0; font-size: 13px; color: #5A6762">Decides what &ldquo;today&rdquo; is and when reminders arrive.</p>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px">
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 14px; font-weight: 500">Time zone</span>
+                <select style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF">
+                  <option>(GMT+05:30) Asia/Kolkata</option>
+                  <option>(GMT+04:00) Asia/Dubai</option>
+                  <option>(GMT+00:00) Europe/London</option>
+                </select>
+                <a href="SettingsGeneral.dc.html" style="font-size: 13px; font-weight: 500">Use this device&#39;s time zone</a>
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 6px">
+                <span style="font-size: 14px; font-weight: 500">Currency</span>
+                <select style="height: 44px; padding: 0 12px; border: 1px solid #CBD3CD; border-radius: 10px; font: inherit; font-size: 15px; color: #12201C; background: #FFFFFF">
+                  <option>₹ Indian rupee (INR)</option>
+                  <option>$ US dollar (USD)</option>
+                </select>
+              </label>
+            </div>
+          </section>
+
+          <div style="display: flex; justify-content: flex-end; gap: 10px">
+            <a href="SettingsGeneral.dc.html" style="display: inline-flex; align-items: center; height: 44px; padding: 0 20px; border-radius: 10px; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600">Save changes</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

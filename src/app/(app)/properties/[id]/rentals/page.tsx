@@ -4,7 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PropertiesIcon } from "~/app/_components/icons";
-import { PageHeader } from "~/app/_components/page-header";
+import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { getSession } from "~/server/better-auth/server";
 import { getPropertyForOwner } from "~/server/queries/properties";
@@ -28,16 +28,8 @@ export default async function PropertyRentalsPage({
 
   return (
     <>
-      <div>
-        <Link
-          href={`/properties/${id}`}
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-        >
-          ← {property.name}
-        </Link>
-      </div>
-
       <PageHeader
+        breadcrumbs={[...propertyCrumbs(property), { label: "Rental units" }]}
         title={`${property.name} — Rental units`}
         description="Subdivisions of this property that get rented out individually — add one per room, unit or floor before creating a lease for it."
         action={
@@ -58,7 +50,7 @@ export default async function PropertyRentalsPage({
       />
 
       {isSelfOccupied ? (
-        <p className="text-sm text-slate-500 dark:text-slate-400">
+        <p className="text-sm text-muted">
           This property is marked self-occupied, so it can&apos;t have rental
           units or leases.
         </p>
@@ -75,15 +67,15 @@ export default async function PropertyRentalsPage({
           {rooms.map((room) => (
             <div
               key={room.id}
-              className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-900"
+              className="rounded-card border border-line bg-surface p-5"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-semibold text-slate-900 dark:text-slate-50">
+                  <p className="truncate text-sm font-semibold text-ink">
                     {room.label}
                   </p>
                   {room.floor && (
-                    <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-0.5 text-xs text-muted">
                       {room.floor}
                       {room.areaSqft != null && <> · {room.areaSqft} sqft</>}
                     </p>
@@ -93,7 +85,7 @@ export default async function PropertyRentalsPage({
               </div>
               <Link
                 href={`/properties/${id}/leases/new?roomId=${room.id}`}
-                className="mt-4 inline-block text-xs font-medium text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                className="mt-4 inline-block text-xs font-medium text-accent hover:text-accent-strong"
               >
                 Add lease →
               </Link>

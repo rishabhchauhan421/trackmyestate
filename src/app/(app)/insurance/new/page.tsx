@@ -1,15 +1,11 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { POLICY_TYPE_LABELS } from "~/lib/labels";
 import { createPolicy } from "~/server/actions/policies";
 import { getSession } from "~/server/better-auth/server";
-
-const inputClass =
-  "mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-blue-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100";
-const labelClass = "text-xs font-medium text-slate-600 dark:text-slate-300";
 
 export default async function NewPolicyPage() {
   const session = await getSession();
@@ -17,16 +13,11 @@ export default async function NewPolicyPage() {
 
   return (
     <>
-      <div>
-        <Link
-          href="/insurance"
-          className="text-xs font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-        >
-          ← Insurance
-        </Link>
-      </div>
-
       <PageHeader
+        breadcrumbs={[
+          { label: "Insurance", href: "/insurance" },
+          { label: "Add policy" },
+        ]}
         title="Add policy"
         description="Track a policy's premium due dates, sum assured, maturity payouts and claims."
       />
@@ -34,26 +25,26 @@ export default async function NewPolicyPage() {
       <form
         action={createPolicy}
         data-gtm-event="policy_created"
-        className="max-w-xl space-y-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-900"
+        className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Insurer</label>
+          <label className="block">
+            <span className={labelClass}>Insurer</span>
             <input
               type="text"
               name="insurer"
               required
               placeholder="e.g. LIC, HDFC Ergo"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Type</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Type</span>
             <select
               name="type"
               required
               defaultValue="TERM_LIFE"
-              className={inputClass}
+              className={controlClass}
             >
               {Object.entries(POLICY_TYPE_LABELS).map(([value, label]) => (
                 <option key={value} value={value}>
@@ -61,121 +52,118 @@ export default async function NewPolicyPage() {
                 </option>
               ))}
             </select>
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Policy number</label>
+          <label className="block">
+            <span className={labelClass}>Policy number</span>
             <input
               type="text"
               name="policyNumber"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Policyholder name</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Policyholder name</span>
             <input
               type="text"
               name="holderName"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Start date</label>
+          <label className="block">
+            <span className={labelClass}>Start date</span>
             <input
               type="date"
               name="startDate"
               required
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Tenure (years, optional)</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Tenure (years, optional)</span>
             <input
               type="number"
               name="tenureYears"
               min="1"
               step="1"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
-        <div>
-          <label className={labelClass}>
+        <label className="block">
+          <span className={labelClass}>
             Nominees (comma-separated, optional)
-          </label>
+          </span>
           <input
             type="text"
             name="nominees"
             placeholder="e.g. Jane Doe, John Doe"
-            className={inputClass}
+            className={controlClass}
           />
-        </div>
+        </label>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Sum assured (₹, optional)</label>
+          <label className="block">
+            <span className={labelClass}>Sum assured (₹, optional)</span>
             <input
               type="number"
               name="sumAssured"
               min="0"
               step="1"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>Room rent limit (₹, optional)</label>
+          </label>
+          <label className="block">
+            <span className={labelClass}>Room rent limit (₹, optional)</span>
             <input
               type="number"
               name="roomRentLimit"
               min="0"
               step="1"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className={labelClass}>Co-pay % (optional)</label>
+          <label className="block">
+            <span className={labelClass}>Co-pay % (optional)</span>
             <input
               type="number"
               name="coPayPercent"
               min="0"
               step="0.1"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
-          <div>
-            <label className={labelClass}>
+          </label>
+          <label className="block">
+            <span className={labelClass}>
               Waiting period (months, optional)
-            </label>
+            </span>
             <input
               type="number"
               name="waitingPeriodMonths"
               min="0"
               step="1"
-              className={inputClass}
+              className={controlClass}
             />
-          </div>
+          </label>
         </div>
 
-        <div className="flex items-center gap-3 pt-2">
-          <Button type="submit">Save policy</Button>
-          <Link
-            href="/insurance"
-            className="text-sm font-medium text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-          >
+        <FormActions>
+          <Button href="/insurance" variant="outline">
             Cancel
-          </Link>
-        </div>
+          </Button>
+          <Button type="submit">Save policy</Button>
+        </FormActions>
       </form>
     </>
   );

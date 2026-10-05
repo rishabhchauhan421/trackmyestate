@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { Button } from "~/app/_components/button";
 import { SlimLayout } from "~/app/_components/slim-layout";
+import { Notice } from "~/app/_components/form";
 import { TextField } from "~/app/_components/text-field";
 import { email, parseFormData } from "~/lib/form";
 import { auth } from "~/server/better-auth";
@@ -60,81 +61,97 @@ async function signInWithGoogle() {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; reset?: string }>;
 }) {
   const session = await getSession();
   if (session) {
     redirect("/dashboard");
   }
-  const { error } = await searchParams;
+  const { error, reset } = await searchParams;
 
   return (
-    <SlimLayout>
-      <Link href="/" aria-label="Home" className="flex items-center gap-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-md bg-blue-600 text-sm font-bold text-white">
-          T
-        </span>
-        <span className="font-display text-sm font-semibold text-slate-900 dark:text-slate-50">
-          TrackMyEstate
-        </span>
-      </Link>
-
-      <h2 className="mt-16 font-display text-lg font-semibold text-slate-900 dark:text-slate-50">
-        Sign in to your account
-      </h2>
-      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-        Use your email and password, or continue with the Google account you
-        signed up with.
-      </p>
-
-      {error && (
-        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-400">
-          {error}
-        </p>
+    <SlimLayout
+      title="Welcome back"
+      description="Sign in to see what's due this week."
+    >
+      {reset && (
+        <Notice tone="success">
+          Your password has been changed. Sign in with your new password.
+        </Notice>
       )}
+      {error && <Notice tone="error">{error}</Notice>}
+
+      <form action={signInWithGoogle} data-gtm-event="sign_in_google">
+        <Button type="submit" variant="outline" size="lg" className="w-full">
+          <GoogleIcon />
+          Continue with Google
+        </Button>
+      </form>
+
+      <div className="flex items-center gap-3 text-[0.8125rem] text-muted">
+        <span className="h-px flex-1 bg-line" />
+        or with email
+        <span className="h-px flex-1 bg-line" />
+      </div>
 
       <form
         action={signInWithEmail}
         data-gtm-event="sign_in_email"
-        className="mt-8 grid grid-cols-1 gap-y-6"
+        className="space-y-5"
       >
         <TextField
           label="Email address"
           name="email"
           type="email"
           autoComplete="email"
+          placeholder="you@example.com"
           required
         />
-        <TextField
-          label="Password"
-          name="password"
-          type="password"
-          autoComplete="current-password"
-          required
-        />
-        <Button type="submit">
-          Sign in <span aria-hidden="true">&rarr;</span>
+        <div className="space-y-2">
+          <TextField
+            label="Password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+          <div className="text-right">
+            <Link
+              href="/forgot-password"
+              className="text-[0.8125rem] font-medium text-accent hover:text-accent-strong"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
+        <Button type="submit" size="lg" className="w-full">
+          Sign in
         </Button>
       </form>
-
-      <div className="mt-8 flex items-center gap-3">
-        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-        <span className="text-xs text-slate-400 dark:text-slate-500">or</span>
-        <span className="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-      </div>
-
-      <form
-        action={signInWithGoogle}
-        data-gtm-event="sign_in_google"
-        className="mt-6"
-      >
-        <button
-          type="submit"
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800"
-        >
-          Sign in with Google
-        </button>
-      </form>
     </SlimLayout>
+  );
+}
+
+/** Google's multicolour "G" mark for the sign-in button. */
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M22.5 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h5.9a5 5 0 0 1-2.2 3.3v2.7h3.6c2-1.9 3.2-4.7 3.2-8z"
+      />
+      <path
+        fill="#34A853"
+        d="M12 23c3 0 5.5-1 7.3-2.7l-3.6-2.7c-1 .7-2.2 1.1-3.7 1.1-2.9 0-5.3-1.9-6.2-4.5H2.1v2.8A11 11 0 0 0 12 23z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M5.8 14.2a6.6 6.6 0 0 1 0-4.3V7.1H2.1a11 11 0 0 0 0 9.9z"
+      />
+      <path
+        fill="#EA4335"
+        d="M12 5.4c1.6 0 3 .6 4.2 1.6l3.1-3.1A11 11 0 0 0 2.1 7.1l3.7 2.8C6.7 7.3 9.1 5.4 12 5.4z"
+      />
+    </svg>
   );
 }

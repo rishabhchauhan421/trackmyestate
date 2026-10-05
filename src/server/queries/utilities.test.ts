@@ -92,7 +92,7 @@ describe("getUtilityBillsForProperty", () => {
     expect(call?.orderBy).toEqual({ dueDate: "desc" });
   });
 
-  it("attaches the parent utility's type/provider/active for display, fetched separately via billScheduleId", async () => {
+  it("attaches the parent utility's type/provider/billing type/active for display, fetched separately via billScheduleId", async () => {
     dbMock.bill.findMany.mockResolvedValue([
       { id: "bill-1", billScheduleId: "utility-1" },
     ] as never);
@@ -101,6 +101,7 @@ describe("getUtilityBillsForProperty", () => {
         id: "utility-1",
         billType: "ELECTRICITY",
         provider: "BESCOM",
+        billingType: "VARIABLE",
         active: true,
       },
     ] as never);
@@ -112,12 +113,14 @@ describe("getUtilityBillsForProperty", () => {
     expect(utilityCall?.select).toEqual({
       id: true,
       billType: true,
+      billingType: true,
       provider: true,
       active: true,
     });
     expect(result[0]?.utility).toEqual({
       type: "ELECTRICITY",
       provider: "BESCOM",
+      billingType: "VARIABLE",
       active: true,
     });
   });

@@ -71,15 +71,13 @@ export default async function TimelinePage({
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="inline-flex rounded-lg border border-slate-200 bg-white p-1 dark:border-slate-800 dark:bg-slate-900">
+        <div className="inline-flex rounded-lg border border-line bg-surface p-1">
           {RANGE_TABS.map((tab) => (
             <Link
               key={tab.value}
               href={`/timeline?range=${tab.value}&filter=${filter}`}
               className={`rounded-md px-3 py-1.5 text-sm font-medium ${
-                tab.value === range
-                  ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                  : "text-slate-500 dark:text-slate-400"
+                tab.value === range ? "bg-night text-white" : "text-muted"
               }`}
             >
               {tab.label}
@@ -93,8 +91,8 @@ export default async function TimelinePage({
               href={`/timeline?range=${range}&filter=${tab.value}`}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
                 tab.value === filter
-                  ? "bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300"
-                  : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                  ? "bg-accent-soft text-accent-strong"
+                  : "bg-sunken-2 text-muted"
               }`}
             >
               {tab.label}
@@ -111,18 +109,18 @@ export default async function TimelinePage({
           actionLabel="Export CSV / PDF"
         />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-          <ul className="divide-y divide-slate-100 dark:divide-slate-800">
+        <div className="overflow-hidden rounded-card border border-line bg-surface">
+          <ul className="divide-y divide-line-soft">
             {events.map((event) => (
               <li
                 key={event.id}
                 className="flex items-center justify-between gap-4 px-5 py-4"
               >
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium text-slate-800 dark:text-slate-100">
+                  <p className="truncate text-sm font-medium text-ink">
                     {event.description ?? CATEGORY_LABELS[event.category]}
                   </p>
-                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-0.5 text-xs text-muted">
                     {formatDate(event.dueDate)} ·{" "}
                     {CATEGORY_LABELS[event.category]}
                   </p>
@@ -131,9 +129,7 @@ export default async function TimelinePage({
                   <StatusBadge status={event.status} />
                   <span
                     className={`w-28 text-right text-sm font-semibold ${
-                      event.direction === "INFLOW"
-                        ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-slate-800 dark:text-slate-100"
+                      event.direction === "INFLOW" ? "text-ok" : "text-ink"
                     }`}
                   >
                     {event.direction === "INFLOW" ? "+" : "-"}
