@@ -1,8 +1,9 @@
 /**
- * Cron entry point for the reminder generator. Vercel Cron (see
- * `vercel.json`) hits this hourly with `Authorization: Bearer
- * $CRON_SECRET`; it queues today's reminders for every user (idempotently,
- * so hourly runs never duplicate) and `/api/cron/notifications` sends them.
+ * The reminder generator on its own. GitHub Actions
+ * (`.github/workflows/cron.yml`) calls this hourly with `Authorization:
+ * Bearer $CRON_SECRET`; it queues today's reminders for every user
+ * (idempotently, so repeated runs never duplicate) and
+ * `/api/cron/notifications` sends them. `/api/cron/daily` also runs it.
  */
 import { NextResponse, type NextRequest } from "next/server";
 

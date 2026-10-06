@@ -1,8 +1,7 @@
 /**
- * Cron entry point for the bill generator. Vercel Cron (see `vercel.json`)
- * hits this daily with `Authorization: Bearer $CRON_SECRET`, before the
- * hourly reminder run, so a newly generated bill is reminded about the
- * same day. Admins can also run it from the admin portal.
+ * The bill generator on its own, for `Authorization: Bearer $CRON_SECRET`
+ * callers (GitHub Actions' manual run, scripts). The scheduled daily run
+ * is part of `/api/cron/daily`; admins can also run it from Admin › Jobs.
  */
 import { NextResponse, type NextRequest } from "next/server";
 

@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Admin · Notification detail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&amp;family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400&amp;display=swap">
+<style>
+body{margin:0;background:#F5F6F2}
+a{color:#0F6E5D;text-decoration:none}
+a:hover{color:#0A5446}
+button{font:inherit}
+</style>
+</helmet>
+<div style="display: flex; flex-wrap: wrap; align-items: stretch; min-height: 100vh; background: #F5F6F2; color: #12201C; font-family: 'Geist', system-ui, sans-serif; font-variant-numeric: tabular-nums">
+  <dc-import name="AppSidebar" current="adminNotifications" hint-size="264px,100%"></dc-import>
+
+  <main style="flex: 999 1 560px; min-width: 0; box-sizing: border-box; padding: 28px 40px 56px">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px">
+
+      <nav aria-label="Breadcrumb" style="font-size: 13px; color: #5A6762; display: flex; flex-wrap: wrap; gap: 8px; align-items: center">
+        <a href="AdminOverview.dc.html" style="font-weight: 500">Admin</a>
+        <span aria-hidden="true" style="color: #CBD3CD">/</span>
+        <a href="AdminNotifications.dc.html" style="font-weight: 500">Notifications</a>
+        <span aria-hidden="true" style="color: #CBD3CD">/</span>
+        <span aria-current="page">Home loan EMI · HDFC Bank</span>
+      </nav>
+
+      <header style="display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px">
+        <div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+            <span style="font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: #FDECEA; color: #B42318">Failed</span>
+            <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #3E4B46"><span style="width: 8px; height: 8px; border-radius: 999px; background: #0F6E5D"></span>Email</span>
+          </div>
+          <h1 style="margin: 0; font-family: 'Bricolage Grotesque', sans-serif; font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: -0.02em">Home loan EMI · HDFC Bank: ₹96,500 due today</h1>
+          <p style="margin: 0; font-size: 14px; color: #5A6762">To vikram@example.in · gave up after 3 attempts on 6 Oct, 09:21 IST</p>
+        </div>
+        <div style="display: flex; gap: 10px">
+          <button type="button" style="height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #CBD3CD; background: #FFFFFF; color: #12201C; font-size: 14px; font-weight: 500; cursor: pointer">Cancel</button>
+          <button type="button" style="height: 44px; padding: 0 18px; border-radius: 10px; border: 0; background: #0F6E5D; color: #FFFFFF; font-size: 14px; font-weight: 600; cursor: pointer">Retry now</button>
+        </div>
+      </header>
+
+      <div style="display: flex; gap: 12px; padding: 14px 16px; border-radius: 12px; background: #FDECEA; color: #8F1D14; font-size: 14px; line-height: 1.5">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px"><path d="M12 3L21 20H3z"></path><path d="M12 9v5M12 17.2v.3"></path></svg>
+        <span><strong>Last error:</strong> Resend 503 — Service unavailable. Temporary errors are retried after 5, 10 and 20 minutes; this one didn&#39;t clear in time.</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; align-items: start">
+        <div style="grid-column: span 2; display: flex; flex-direction: column; gap: 16px; min-width: 0">
+          <section aria-labelledby="preview" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; overflow: hidden">
+            <div style="padding: 16px 20px; border-bottom: 1px solid #EEF1ED; display: flex; justify-content: space-between; gap: 12px; align-items: center">
+              <h2 id="preview" style="margin: 0; font-size: 16px; font-weight: 600">Message</h2>
+              <span style="font-size: 12px; color: #5A6762">Exactly as sent</span>
+            </div>
+            <dl style="margin: 0; padding: 14px 20px; display: grid; grid-template-columns: 72px 1fr; gap: 6px 12px; font-size: 13px; border-bottom: 1px solid #EEF1ED; background: #F8F9F6">
+              <dt style="color: #5A6762">From</dt><dd style="margin: 0">notifications@trackmyestate.app</dd>
+              <dt style="color: #5A6762">To</dt><dd style="margin: 0">vikram@example.in</dd>
+              <dt style="color: #5A6762">Subject</dt><dd style="margin: 0; font-weight: 600">Home loan EMI · HDFC Bank: ₹96,500 due today</dd>
+            </dl>
+            <div style="padding: 24px 20px">
+              <div style="max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px">
+                <span style="font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; color: #5A6762">TrackMyEstate</span>
+                <span style="font-size: 19px; font-weight: 600">Home loan EMI · HDFC Bank: ₹96,500 due today</span>
+                <span style="font-size: 14px; line-height: 1.6; white-space: pre-line">Home loan EMI · HDFC Bank — ₹96,500, due on 6 Oct 2026.
+Mark it paid in TrackMyEstate once it&#39;s done, and we&#39;ll stop reminding you.</span>
+                <span style="align-self: flex-start; display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 8px; background: #0F6E5D; color: #FFFFFF; font-size: 14px">View in TrackMyEstate</span>
+              </div>
+            </div>
+          </section>
+
+          <section aria-labelledby="timeline" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 id="timeline" style="margin: 0; font-size: 16px; font-weight: 600">Delivery</h2>
+            <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0">
+              <li style="display: grid; grid-template-columns: 20px 1fr auto; gap: 12px; padding-bottom: 16px">
+                <span style="width: 10px; height: 10px; margin: 5px; border-radius: 999px; background: #0F6E5D"></span>
+                <span><span style="display: block; font-size: 14px; font-weight: 500">Queued</span><span style="font-size: 13px; color: #5A6762">By the hourly reminder run — EMI due today (0 days)</span></span>
+                <span style="font-size: 13px; color: #5A6762">6 Oct, 06:35</span>
+              </li>
+              <li style="display: grid; grid-template-columns: 20px 1fr auto; gap: 12px; padding-bottom: 16px">
+                <span style="width: 10px; height: 10px; margin: 5px; border-radius: 999px; background: #0F6E5D"></span>
+                <span><span style="display: block; font-size: 14px; font-weight: 500">Scheduled for 09:00 IST</span><span style="font-size: 13px; color: #5A6762">Owner&#39;s send time, in Asia/Kolkata</span></span>
+                <span style="font-size: 13px; color: #5A6762">6 Oct, 09:00</span>
+              </li>
+              <li style="display: grid; grid-template-columns: 20px 1fr auto; gap: 12px; padding-bottom: 16px">
+                <span style="width: 10px; height: 10px; margin: 5px; border-radius: 999px; background: #F2B544"></span>
+                <span><span style="display: block; font-size: 14px; font-weight: 500">3 attempts</span><span style="font-size: 13px; color: #5A6762">Retried with backoff after temporary errors</span></span>
+                <span style="font-size: 13px; color: #5A6762">09:01 – 09:21</span>
+              </li>
+              <li style="display: grid; grid-template-columns: 20px 1fr auto; gap: 12px">
+                <span style="width: 10px; height: 10px; margin: 5px; border-radius: 999px; background: #B42318"></span>
+                <span><span style="display: block; font-size: 14px; font-weight: 500; color: #B42318">Failed</span><span style="font-size: 13px; color: #5A6762">Resend 503 — Service unavailable</span></span>
+                <span style="font-size: 13px; color: #5A6762">6 Oct, 09:21</span>
+              </li>
+            </ol>
+          </section>
+        </div>
+
+        <aside style="display: flex; flex-direction: column; gap: 16px">
+          <section aria-labelledby="details" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px">
+            <h2 id="details" style="margin: 0; font-size: 16px; font-weight: 600">Details</h2>
+            <dl style="margin: 0; display: flex; flex-direction: column; gap: 12px; font-size: 14px">
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Recipient</dt><dd style="margin: 0; text-align: right">vikram@example.in<br><span style="font-size: 12px; color: #5A6762">The owner</span></dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Owner</dt><dd style="margin: 0; text-align: right"><a href="AdminUsers.dc.html" style="font-weight: 500">Vikram Mehta</a></dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Kind</dt><dd style="margin: 0">EMI</dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Bill</dt><dd style="margin: 0; text-align: right">₹96,500 · due 6 Oct<br><span style="font-size: 12px; color: #B42318; font-weight: 600">Still unpaid</span></dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Scheduled</dt><dd style="margin: 0">6 Oct, 09:00 IST</dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Sent</dt><dd style="margin: 0">—</dd></div>
+              <div style="display: flex; justify-content: space-between; gap: 12px"><dt style="color: #5A6762">Attempts</dt><dd style="margin: 0">3 of 3</dd></div>
+            </dl>
+          </section>
+          <section aria-labelledby="ids" style="background: #FFFFFF; border: 1px solid #E3E7E2; border-radius: 16px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+            <h2 id="ids" style="margin: 0; font-size: 16px; font-weight: 600">Identifiers</h2>
+            <dl style="margin: 0; display: flex; flex-direction: column; gap: 10px; font-size: 12px">
+              <div><dt style="color: #5A6762">Job ID</dt><dd style="margin: 2px 0 0; font-family: 'Geist Mono', monospace; color: #3E4B46; word-break: break-all">6702a1f4c3e9b8001d2f4a17</dd></div>
+              <div><dt style="color: #5A6762">Provider message ID</dt><dd style="margin: 2px 0 0; font-family: 'Geist Mono', monospace; color: #3E4B46">— (not accepted by Resend)</dd></div>
+              <div><dt style="color: #5A6762">Idempotency key</dt><dd style="margin: 2px 0 0; font-family: 'Geist Mono', monospace; color: #3E4B46; word-break: break-all">reminder:6702…a12:DUE_DATE:0:EMAIL:vikram@example.in</dd></div>
+            </dl>
+          </section>
+        </aside>
+      </div>
+    </div>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {};
+  }
+}
+</script>
+</body>
+</html>

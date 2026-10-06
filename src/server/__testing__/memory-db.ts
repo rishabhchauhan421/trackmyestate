@@ -123,6 +123,14 @@ function matchesField(value: unknown, condition: unknown): boolean {
         return !matchesField(value, arg);
       case "has":
         return Array.isArray(value) && value.some((v) => same(v, arg));
+      case "contains": {
+        if (typeof value !== "string") return false;
+        return condition.mode === "insensitive"
+          ? value.toLowerCase().includes((arg as string).toLowerCase())
+          : value.includes(arg as string);
+      }
+      case "mode": // read by "contains"
+        return true;
       default:
         throw new Error(`memory-db: unsupported filter operator "${op}"`);
     }

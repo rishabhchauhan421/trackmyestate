@@ -1,0 +1,78 @@
+# Frequent background jobs. Vercel's Hobby plan only runs crons once a day
+# (see vercel.json → /api/cron/daily), so the runs that make reminder send
+# times and time zones exact come from here instead:
+#
+#   every 15 minutes → /api/cron/notifications   (send due reminders)
+#   hourly at :05    → /api/cron/reminders       (queue today's reminders)
+#
+# Needs two repository secrets (Settings → Secrets and variables → Actions):
+#   APP_URL      the deployed app, e.g. https://trackmyestate.app
+#   CRON_SECRET  the same value as the app's CRON_SECRET env var
+#
+# GitHub runs scheduled workflows on a best-effort basis — usually within a
+# few minutes of the time. Every job is idempotent, so late or overlapping
+# runs are harmless.
+name: Background jobs
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+    - cron: "5 * * * *"
+  workflow_dispatch:
+    inputs:
+      job:
+        description: Which job to run
+        type: choice
+        options: [notifications, reminders, bills]
+        default: notifications
+
+permissions: {}
+
+concurrency:
+  group: background-jobs-${{ github.event.schedule || inputs.job }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check secrets are set
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$APP_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::error::Set the APP_URL and CRON_SECRET repository secrets."
+            exit 1
+          fi
+
+      - name: Queue reminders
+        if: github.event.schedule == '5 * * * *' || inputs.job == 'reminders'
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 90 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/reminders"
+
+      - name: Generate bills
+        if: inputs.job == 'bills'
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 90 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/bills"
+
+      - name: Send due reminders
+        if: github.event.schedule == '*/15 * * * *' || inputs.job == 'notifications'
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          curl --fail-with-body --silent --show-error --max-time 90 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$APP_URL/api/cron/notifications"

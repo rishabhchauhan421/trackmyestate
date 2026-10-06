@@ -44,9 +44,11 @@ OAuth and email/password (including password reset). Email goes out through
    pnpm install
    ```
 2. Copy env and fill in values:
+
    ```bash
    cp .env.example .env
    ```
+
    `src/env.js` validates these at startup — the app won't boot without them:
    - `DATABASE_URL` — a MongoDB connection string. Prisma needs a replica set
      (MongoDB Atlas works out of the box).
@@ -58,6 +60,7 @@ OAuth and email/password (including password reset). Email goes out through
    Required in production, optional locally: `RESEND_API_KEY` (without it, emails
    such as password-reset links are logged to the server console instead) and
    `CRON_SECRET` (authenticates the cron routes).
+
 3. Push the schema (MongoDB has no migrations — `db push` syncs indexes and
    collections directly):
    ```bash
@@ -81,7 +84,7 @@ OAuth and email/password (including password reset). Email goes out through
    Open http://localhost:3000 and sign in with Google (or register with
    email/password).
 
-**Important:** after any `prisma/schema.prisma` change, run `pnpm db:push` *and*
+**Important:** after any `prisma/schema.prisma` change, run `pnpm db:push` _and_
 restart `pnpm dev`. The dev server caches a single `PrismaClient` instance across
 hot reloads (see `src/server/db.ts`), so it keeps the pre-change client — missing
 new models/fields — until the process itself restarts, not just the file.
@@ -91,16 +94,16 @@ new models/fields — until the process itself restarts, not just the file.
 
 ## Scripts
 
-| Command | What it does |
-| --- | --- |
-| `pnpm dev` | Dev server with hot reload |
-| `pnpm build` / `pnpm start` | Production build / serve it |
-| `pnpm check` | ESLint + `tsc --noEmit` |
-| `pnpm lint` / `pnpm lint:fix` | ESLint only (the `next lint` command was removed in Next 16) |
-| `pnpm typecheck` | TypeScript only |
-| `pnpm test` / `pnpm test:watch` | Jest |
-| `pnpm format:check` / `pnpm format:write` | Prettier |
-| `pnpm db:push` / `pnpm db:seed` / `pnpm db:studio` | Prisma |
+| Command                                            | What it does                                                 |
+| -------------------------------------------------- | ------------------------------------------------------------ |
+| `pnpm dev`                                         | Dev server with hot reload                                   |
+| `pnpm build` / `pnpm start`                        | Production build / serve it                                  |
+| `pnpm check`                                       | ESLint + `tsc --noEmit`                                      |
+| `pnpm lint` / `pnpm lint:fix`                      | ESLint only (the `next lint` command was removed in Next 16) |
+| `pnpm typecheck`                                   | TypeScript only                                              |
+| `pnpm test` / `pnpm test:watch`                    | Jest                                                         |
+| `pnpm format:check` / `pnpm format:write`          | Prettier                                                     |
+| `pnpm db:push` / `pnpm db:seed` / `pnpm db:studio` | Prisma                                                       |
 
 ## Granting the first admin
 
@@ -138,7 +141,11 @@ can go through the admin UI (`auth.api.setRole`) instead of the script.
   **Channels** (email with a test send, mobile number for the coming
   SMS/WhatsApp, reminder send time) and **Guests** (people who get reminders
   without an account — see below).
-- **Admin** — platform overview and user list.
+- **Admin** — platform overview, user list, background jobs, and the
+  notification log (`/admin/notifications`: every reminder by channel —
+  email, SMS, WhatsApp — and status, with search; open one for the message,
+  its delivery history, provider id and last error, and retry a failed one
+  or cancel a queued one).
 
 Every form validates on the server with zod (field helpers in `src/lib/form.ts`).
 
@@ -151,8 +158,8 @@ in each owner's time zone — enough for the earliest reminder, and enough to
 catch up after missed runs. It never creates the same schedule-and-day bill
 twice, so it's safe to run any number of times.
 
-- **`/api/cron/bills`** runs it daily at 06:00 IST (before the hourly
-  reminder run).
+- It runs daily as part of **`/api/cron/daily`** (see [Scheduled
+  jobs](#scheduled-jobs)); `/api/cron/bills` runs it alone.
 - **Admin › Jobs** (`/admin/jobs`) runs it — or the reminder and sending
   jobs — on demand, and shows their queues.
 - A new utility or loan generates its first bills straight away.
@@ -174,7 +181,7 @@ bill is still unpaid).
   premiums 30, 7 and 1 day before plus 1 day after. A user changes them in
   **Settings › Reminders**; only changed kinds are stored, as `NotificationRule`
   rows, so improving a default reaches everyone who hasn't customised it.
-- **`/api/cron/reminders`** (hourly) runs `generateReminders`
+- **`/api/cron/reminders`** (hourly — see [Scheduled jobs](#scheduled-jobs)) runs `generateReminders`
   (`src/server/reminders/generate.ts`): for each unpaid bill near its due date it
   counts days in the owner's time zone and queues a `NotificationJob` per matching
   reminder, for 9 am local time. Idempotency keys make re-runs harmless.
@@ -194,8 +201,27 @@ bill is still unpaid).
 - **Send time:** 9 am by default, or the owner's choice in Settings ›
   Channels, in their time zone.
 
-All three cron routes (`bills`, `reminders`, `notifications`) require
-`Authorization: Bearer $CRON_SECRET` and are scheduled in `vercel.json`.
+### Scheduled jobs
+
+Vercel's Hobby plan only allows crons that run **once a day**, so:
+
+| Schedule                     | Runs                                          | Calls                                                   |
+| ---------------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| Daily, 03:30 UTC (09:00 IST) | Vercel Cron (`vercel.json`)                   | `/api/cron/daily` — bills, then reminders, then sending |
+| Hourly at :05                | GitHub Actions (`.github/workflows/cron.yml`) | `/api/cron/reminders`                                   |
+| Every 15 minutes             | GitHub Actions                                | `/api/cron/notifications`                               |
+
+The daily run alone is enough for India-based users on the default 9 am
+send time. The GitHub Actions runs make other send times and time zones
+exact; they need two repository secrets — `APP_URL` (the deployed URL) and
+`CRON_SECRET` (same as the app's). On Vercel Pro you could instead put the
+hourly and 15-minute schedules straight into `vercel.json`.
+
+Every cron route requires `Authorization: Bearer $CRON_SECRET`, and every
+job is idempotent, so late, repeated or overlapping runs are harmless.
+Admins can run any job from **Admin › Jobs**, and see what was sent (or why
+it failed) in **Admin › Notifications**. Run `pnpm db:push` after pulling
+this — the log needs the new `NotificationJob` indexes.
 
 ## Design system
 

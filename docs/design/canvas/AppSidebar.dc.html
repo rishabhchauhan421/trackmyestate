@@ -80,6 +80,10 @@ a:hover{color:#FFFFFF}
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{adminUsers.icon}}"><circle cx="9" cy="8" r="3.5"></circle><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"></path><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.8c1.9.7 3.2 2.5 3.5 5.2"></path></svg>
           Users
         </a>
+        <a href="AdminNotifications.dc.html" aria-current="{{adminNotifications.aria}}" style="display: flex; align-items: center; gap: 12px; height: 40px; padding: 0 12px; border-radius: 9px; font-size: 14px; font-weight: 500; background: {{adminNotifications.bg}}; color: {{adminNotifications.fg}}; box-shadow: {{adminNotifications.ring}}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: {{adminNotifications.icon}}"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+          Notifications
+        </a>
       </div>
     </sc-if>
   </nav>
@@ -99,11 +103,11 @@ a:hover{color:#FFFFFF}
   </div>
 </aside>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"current":{"editor":"enum","options":["dashboard","timeline","properties","insurance","investments","loans","documents","adminOverview","adminUsers"],"default":"dashboard"},"admin":{"editor":"boolean","default":false},"$preview":{"width":264,"height":1180}}'>
+<script type="text/x-dc" data-dc-script data-props='{"current":{"editor":"enum","options":["dashboard","timeline","properties","insurance","investments","loans","documents","adminOverview","adminUsers","adminNotifications"],"default":"dashboard"},"admin":{"editor":"boolean","default":false},"$preview":{"width":264,"height":1180}}'>
 class Component extends DCLogic {
   renderVals() {
     var current = this.props.current ?? 'dashboard';
-    var keys = ['dashboard', 'timeline', 'properties', 'insurance', 'investments', 'loans', 'documents', 'adminOverview', 'adminUsers'];
+    var keys = ['dashboard', 'timeline', 'properties', 'insurance', 'investments', 'loans', 'documents', 'adminOverview', 'adminUsers', 'adminNotifications'];
     var admin = this.props.admin === true || this.props.admin === 'true';
     var vals = { showAdmin: admin || current.indexOf('admin') === 0 };
     keys.forEach(function (k) {

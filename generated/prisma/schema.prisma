@@ -800,15 +800,21 @@ model NotificationJob {
   batchGroup     String?
   metadata       Json?
 
-  sentAt       DateTime?
-  failedReason String?
-  retryCount   Int       @default(0)
+  sentAt            DateTime?
+  // The provider's id for the message once accepted (e.g. Resend's email
+  // id) — what to search for in the provider's logs.
+  providerMessageId String?
+  failedReason      String?
+  retryCount        Int       @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([status, scheduledFor])
   @@index([ownerId])
+  // The admin notification log: newest first, optionally per channel.
+  @@index([scheduledFor])
+  @@index([channel, scheduledFor])
 }
 
 // ---------------------------------------------------------------------------

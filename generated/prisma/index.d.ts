@@ -23974,6 +23974,7 @@ export namespace Prisma {
     idempotencyKey: string | null
     batchGroup: string | null
     sentAt: Date | null
+    providerMessageId: string | null
     failedReason: string | null
     retryCount: number | null
     createdAt: Date | null
@@ -24001,6 +24002,7 @@ export namespace Prisma {
     idempotencyKey: string | null
     batchGroup: string | null
     sentAt: Date | null
+    providerMessageId: string | null
     failedReason: string | null
     retryCount: number | null
     createdAt: Date | null
@@ -24029,6 +24031,7 @@ export namespace Prisma {
     batchGroup: number
     metadata: number
     sentAt: number
+    providerMessageId: number
     failedReason: number
     retryCount: number
     createdAt: number
@@ -24066,6 +24069,7 @@ export namespace Prisma {
     idempotencyKey?: true
     batchGroup?: true
     sentAt?: true
+    providerMessageId?: true
     failedReason?: true
     retryCount?: true
     createdAt?: true
@@ -24093,6 +24097,7 @@ export namespace Prisma {
     idempotencyKey?: true
     batchGroup?: true
     sentAt?: true
+    providerMessageId?: true
     failedReason?: true
     retryCount?: true
     createdAt?: true
@@ -24121,6 +24126,7 @@ export namespace Prisma {
     batchGroup?: true
     metadata?: true
     sentAt?: true
+    providerMessageId?: true
     failedReason?: true
     retryCount?: true
     createdAt?: true
@@ -24236,6 +24242,7 @@ export namespace Prisma {
     batchGroup: string | null
     metadata: JsonValue | null
     sentAt: Date | null
+    providerMessageId: string | null
     failedReason: string | null
     retryCount: number
     createdAt: Date
@@ -24283,6 +24290,7 @@ export namespace Prisma {
     batchGroup?: boolean
     metadata?: boolean
     sentAt?: boolean
+    providerMessageId?: boolean
     failedReason?: boolean
     retryCount?: boolean
     createdAt?: boolean
@@ -24322,13 +24330,14 @@ export namespace Prisma {
     batchGroup?: boolean
     metadata?: boolean
     sentAt?: boolean
+    providerMessageId?: boolean
     failedReason?: boolean
     retryCount?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type NotificationJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "notificationRuleId" | "ownerId" | "category" | "billScheduleId" | "billId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "scheduledFor" | "status" | "channel" | "recipient" | "title" | "body" | "idempotencyKey" | "batchGroup" | "metadata" | "sentAt" | "failedReason" | "retryCount" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationJob"]>
+  export type NotificationJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "notificationRuleId" | "ownerId" | "category" | "billScheduleId" | "billId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "scheduledFor" | "status" | "channel" | "recipient" | "title" | "body" | "idempotencyKey" | "batchGroup" | "metadata" | "sentAt" | "providerMessageId" | "failedReason" | "retryCount" | "createdAt" | "updatedAt", ExtArgs["result"]["notificationJob"]>
   export type NotificationJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     notificationRule?: boolean | NotificationJob$notificationRuleArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
@@ -24376,6 +24385,7 @@ export namespace Prisma {
       batchGroup: string | null
       metadata: Prisma.JsonValue | null
       sentAt: Date | null
+      providerMessageId: string | null
       failedReason: string | null
       retryCount: number
       createdAt: Date
@@ -24802,6 +24812,7 @@ export namespace Prisma {
     readonly batchGroup: FieldRef<"NotificationJob", 'String'>
     readonly metadata: FieldRef<"NotificationJob", 'Json'>
     readonly sentAt: FieldRef<"NotificationJob", 'DateTime'>
+    readonly providerMessageId: FieldRef<"NotificationJob", 'String'>
     readonly failedReason: FieldRef<"NotificationJob", 'String'>
     readonly retryCount: FieldRef<"NotificationJob", 'Int'>
     readonly createdAt: FieldRef<"NotificationJob", 'DateTime'>
@@ -28063,6 +28074,7 @@ export namespace Prisma {
     batchGroup: 'batchGroup',
     metadata: 'metadata',
     sentAt: 'sentAt',
+    providerMessageId: 'providerMessageId',
     failedReason: 'failedReason',
     retryCount: 'retryCount',
     createdAt: 'createdAt',
@@ -30510,6 +30522,7 @@ export namespace Prisma {
     batchGroup?: StringNullableFilter<"NotificationJob"> | string | null
     metadata?: JsonNullableFilter<"NotificationJob">
     sentAt?: DateTimeNullableFilter<"NotificationJob"> | Date | string | null
+    providerMessageId?: StringNullableFilter<"NotificationJob"> | string | null
     failedReason?: StringNullableFilter<"NotificationJob"> | string | null
     retryCount?: IntFilter<"NotificationJob"> | number
     createdAt?: DateTimeFilter<"NotificationJob"> | Date | string
@@ -30547,6 +30560,7 @@ export namespace Prisma {
     batchGroup?: SortOrder
     metadata?: SortOrder
     sentAt?: SortOrder
+    providerMessageId?: SortOrder
     failedReason?: SortOrder
     retryCount?: SortOrder
     createdAt?: SortOrder
@@ -30587,6 +30601,7 @@ export namespace Prisma {
     batchGroup?: StringNullableFilter<"NotificationJob"> | string | null
     metadata?: JsonNullableFilter<"NotificationJob">
     sentAt?: DateTimeNullableFilter<"NotificationJob"> | Date | string | null
+    providerMessageId?: StringNullableFilter<"NotificationJob"> | string | null
     failedReason?: StringNullableFilter<"NotificationJob"> | string | null
     retryCount?: IntFilter<"NotificationJob"> | number
     createdAt?: DateTimeFilter<"NotificationJob"> | Date | string
@@ -30624,6 +30639,7 @@ export namespace Prisma {
     batchGroup?: SortOrder
     metadata?: SortOrder
     sentAt?: SortOrder
+    providerMessageId?: SortOrder
     failedReason?: SortOrder
     retryCount?: SortOrder
     createdAt?: SortOrder
@@ -30660,6 +30676,7 @@ export namespace Prisma {
     batchGroup?: StringNullableWithAggregatesFilter<"NotificationJob"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"NotificationJob">
     sentAt?: DateTimeNullableWithAggregatesFilter<"NotificationJob"> | Date | string | null
+    providerMessageId?: StringNullableWithAggregatesFilter<"NotificationJob"> | string | null
     failedReason?: StringNullableWithAggregatesFilter<"NotificationJob"> | string | null
     retryCount?: IntWithAggregatesFilter<"NotificationJob"> | number
     createdAt?: DateTimeWithAggregatesFilter<"NotificationJob"> | Date | string
@@ -33112,6 +33129,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -33149,6 +33167,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -33167,6 +33186,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33203,6 +33223,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33231,6 +33252,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -33249,6 +33271,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33276,6 +33299,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35442,6 +35466,7 @@ export namespace Prisma {
     batchGroup?: SortOrder
     metadata?: SortOrder
     sentAt?: SortOrder
+    providerMessageId?: SortOrder
     failedReason?: SortOrder
     retryCount?: SortOrder
     createdAt?: SortOrder
@@ -35473,6 +35498,7 @@ export namespace Prisma {
     idempotencyKey?: SortOrder
     batchGroup?: SortOrder
     sentAt?: SortOrder
+    providerMessageId?: SortOrder
     failedReason?: SortOrder
     retryCount?: SortOrder
     createdAt?: SortOrder
@@ -35500,6 +35526,7 @@ export namespace Prisma {
     idempotencyKey?: SortOrder
     batchGroup?: SortOrder
     sentAt?: SortOrder
+    providerMessageId?: SortOrder
     failedReason?: SortOrder
     retryCount?: SortOrder
     createdAt?: SortOrder
@@ -40844,6 +40871,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -40879,6 +40907,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -41487,6 +41516,7 @@ export namespace Prisma {
     batchGroup?: StringNullableFilter<"NotificationJob"> | string | null
     metadata?: JsonNullableFilter<"NotificationJob">
     sentAt?: DateTimeNullableFilter<"NotificationJob"> | Date | string | null
+    providerMessageId?: StringNullableFilter<"NotificationJob"> | string | null
     failedReason?: StringNullableFilter<"NotificationJob"> | string | null
     retryCount?: IntFilter<"NotificationJob"> | number
     createdAt?: DateTimeFilter<"NotificationJob"> | Date | string
@@ -42481,6 +42511,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -42516,6 +42547,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -43494,6 +43526,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -43529,6 +43562,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -44302,6 +44336,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -44337,6 +44372,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -45392,6 +45428,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -45427,6 +45464,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -46474,6 +46512,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -46509,6 +46548,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -47224,6 +47264,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -47259,6 +47300,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -48031,6 +48073,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -48066,6 +48109,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -50036,6 +50080,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -50071,6 +50116,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -53299,6 +53345,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -54045,6 +54092,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54079,6 +54127,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54105,6 +54154,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -54451,6 +54501,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -55063,6 +55114,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55097,6 +55149,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55123,6 +55176,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55416,6 +55470,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -55797,6 +55852,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55831,6 +55887,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55857,6 +55914,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -55956,6 +56014,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -56199,6 +56258,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56233,6 +56293,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56259,6 +56320,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56342,6 +56404,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -56521,6 +56584,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56555,6 +56619,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56581,6 +56646,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -56745,6 +56811,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -57186,6 +57253,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57220,6 +57288,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57246,6 +57315,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57410,6 +57480,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -57851,6 +57922,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57885,6 +57957,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -57911,6 +57984,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58058,6 +58132,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -58439,6 +58514,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58473,6 +58549,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58499,6 +58576,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58526,6 +58604,7 @@ export namespace Prisma {
     batchGroup?: string | null
     metadata?: InputJsonValue | null
     sentAt?: Date | string | null
+    providerMessageId?: string | null
     failedReason?: string | null
     retryCount?: number
     createdAt?: Date | string
@@ -58544,6 +58623,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58578,6 +58658,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -58604,6 +58685,7 @@ export namespace Prisma {
     batchGroup?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: InputJsonValue | InputJsonValue | null
     sentAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    providerMessageId?: NullableStringFieldUpdateOperationsInput | string | null
     failedReason?: NullableStringFieldUpdateOperationsInput | string | null
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

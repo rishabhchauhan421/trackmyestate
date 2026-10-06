@@ -1,8 +1,8 @@
 /**
- * Cron entry point for the notification engine. Vercel Cron (see
- * `vercel.json`) hits this on a schedule with `Authorization: Bearer
- * $CRON_SECRET`; anything else is rejected so the send path can't be
- * triggered by a stray request.
+ * Sends due reminders. GitHub Actions (`.github/workflows/cron.yml`) calls
+ * this every 15 minutes, and `/api/cron/daily` once a day, with
+ * `Authorization: Bearer $CRON_SECRET`; anything else is rejected so the
+ * send path can't be triggered by a stray request.
  */
 import { NextResponse, type NextRequest } from "next/server";
 

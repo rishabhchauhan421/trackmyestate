@@ -429,6 +429,7 @@ exports.Prisma.NotificationJobScalarFieldEnum = {
   batchGroup: 'batchGroup',
   metadata: 'metadata',
   sentAt: 'sentAt',
+  providerMessageId: 'providerMessageId',
   failedReason: 'failedReason',
   retryCount: 'retryCount',
   createdAt: 'createdAt',

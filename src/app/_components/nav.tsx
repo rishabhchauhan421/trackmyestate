@@ -1,4 +1,5 @@
 import {
+  BellIcon,
   DashboardIcon,
   DocumentsIcon,
   InsuranceIcon,
@@ -74,6 +75,12 @@ export const adminNavItems = [
     href: "/admin",
     description: "Platform-wide users, portfolio value and notification health",
     Icon: ShieldIcon,
+  },
+  {
+    label: "Notifications",
+    href: "/admin/notifications",
+    description: "Every reminder sent, queued, skipped or failed — by channel",
+    Icon: BellIcon,
   },
   {
     label: "Jobs",

@@ -54,37 +54,37 @@ screen sits on the same width-capped column, card style and spacing scale.
 
 Defined as CSS variables in `globals.css` and exposed as Tailwind colors.
 
-| Token | Use | Light |
-|---|---|---|
-| `ground` | Page background | `#f5f6f2` |
-| `surface` | Cards, inputs, menus | `#ffffff` |
-| `sunken` / `sunken-2` | Inset areas, table headers, tab track, hover | `#f5f6f2` / `#e9ece7` |
-| `ink` | Primary text, headings | `#12201c` |
-| `ink-2` | Secondary body text | `#3e4b46` |
-| `muted` | Labels, hints, meta text | `#5a6762` |
-| `line` / `line-soft` / `line-strong` | Card borders / dividers / input borders | `#e3e7e2` / `#eef1ed` / `#cbd3cd` |
+| Token                                      | Use                                                                 | Light                             |
+| ------------------------------------------ | ------------------------------------------------------------------- | --------------------------------- |
+| `ground`                                   | Page background                                                     | `#f5f6f2`                         |
+| `surface`                                  | Cards, inputs, menus                                                | `#ffffff`                         |
+| `sunken` / `sunken-2`                      | Inset areas, table headers, tab track, hover                        | `#f5f6f2` / `#e9ece7`             |
+| `ink`                                      | Primary text, headings                                              | `#12201c`                         |
+| `ink-2`                                    | Secondary body text                                                 | `#3e4b46`                         |
+| `muted`                                    | Labels, hints, meta text                                            | `#5a6762`                         |
+| `line` / `line-soft` / `line-strong`       | Card borders / dividers / input borders                             | `#e3e7e2` / `#eef1ed` / `#cbd3cd` |
 | `accent` / `accent-strong` / `accent-soft` | Primary actions, links, incoming money / hover / tinted backgrounds | `#0f6e5d` / `#0a5446` / `#e3f1ec` |
-| `on-accent` | Text on `bg-accent` | `#ffffff` |
-| `mint` | Highlights on dark surfaces | `#5fd0b4` |
-| `night`, `night-2`, `night-3` | Always-dark surfaces: sidebar, hero/feature panels | `#10201c`, `#182c27`, `#21413a` |
-| `night-ink` / `night-muted` | Text on night surfaces | `#c3cfca` / `#8ea19a` |
-| `danger` / `danger-soft` | Overdue, errors, destructive | `#b42318` / `#fdecea` |
-| `warn` / `warn-soft` | Due soon | `#8a4b0b` / `#fdf1dc` |
-| `ok` / `ok-soft` | Paid, active, success | `#116b4a` / `#e2f3ea` |
+| `on-accent`                                | Text on `bg-accent`                                                 | `#ffffff`                         |
+| `mint`                                     | Highlights on dark surfaces                                         | `#5fd0b4`                         |
+| `night`, `night-2`, `night-3`              | Always-dark surfaces: sidebar, hero/feature panels                  | `#10201c`, `#182c27`, `#21413a`   |
+| `night-ink` / `night-muted`                | Text on night surfaces                                              | `#c3cfca` / `#8ea19a`             |
+| `danger` / `danger-soft`                   | Overdue, errors, destructive                                        | `#b42318` / `#fdecea`             |
+| `warn` / `warn-soft`                       | Due soon                                                            | `#8a4b0b` / `#fdf1dc`             |
+| `ok` / `ok-soft`                           | Paid, active, success                                               | `#116b4a` / `#e2f3ea`             |
 
 Radii: `rounded-control` (10px) for buttons and inputs, `rounded-card` (16px)
 for cards, `rounded-full` for badges and chips.
 
 ## Typography
 
-| Role | Classes |
-|---|---|
-| Page title | `font-display text-[2rem] font-semibold tracking-[-0.02em] text-ink` (rendered by `PageHeader`) |
-| Big figure | `font-display text-[1.75rem] font-semibold` (rendered by `StatCard`) |
-| Card title | `text-base font-semibold text-ink` (rendered by `CardHeader`) |
-| Body | `text-sm`/`text-[0.9375rem] text-ink` or `text-ink-2` |
-| Meta / hint | `text-[0.8125rem]` or `text-xs`, `text-muted` |
-| Eyebrow (marketing) | `text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-accent` |
+| Role                | Classes                                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| Page title          | `font-display text-[2rem] font-semibold tracking-[-0.02em] text-ink` (rendered by `PageHeader`) |
+| Big figure          | `font-display text-[1.75rem] font-semibold` (rendered by `StatCard`)                            |
+| Card title          | `text-base font-semibold text-ink` (rendered by `CardHeader`)                                   |
+| Body                | `text-sm`/`text-[0.9375rem] text-ink` or `text-ink-2`                                           |
+| Meta / hint         | `text-[0.8125rem]` or `text-xs`, `text-muted`                                                   |
+| Eyebrow (marketing) | `text-[0.8125rem] font-semibold uppercase tracking-[0.08em] text-accent`                        |
 
 Fonts: `font-display` = Bricolage Grotesque (headings, figures),
 `font-sans` = Geist (default). Never Inter, Roboto or Arial.
@@ -104,23 +104,23 @@ Fonts: `font-display` = Bricolage Grotesque (headings, figures),
 
 All in `src/app/_components/`.
 
-| Component | Use it for |
-|---|---|
-| `PageHeader` | Top of every app page: `title`, `description`, `action` (buttons), `breadcrumbs`. |
-| `Breadcrumbs`, `propertyCrumbs()` | Full trail from the section down: `[...propertyCrumbs(property, "Leases"), { label: "Edit lease" }]`. Last item = current page. |
-| `Card`, `CardHeader` | Every white panel; header row with title + optional link. |
-| `StatCard` | Headline figure with label and hint. `tone="dark"` for the one emphasised stat in a row. |
-| `Button` | All buttons and button-styled links (`href`). `variant` solid/outline, `color` (`blue` = primary accent, `slate` = dark, `red`, `white`), `size` sm/md/lg. |
-| `Field`, `Input`, `Select`, `MoneyInput` | Labelled form controls. `optional` adds "· optional". `MoneyInput` adds the ₹ prefix. |
-| `FormSection`, `FormActions` | Group fields into titled cards; right-aligned Cancel (outline) + Save (primary) row. |
-| `ChoiceCards` | A short set of exclusive options shown as large radio cards (e.g. property type). |
-| `Notice` | Inline success/error message above a form. |
-| `Breadcrumbs` | The trail alone, where a page builds its own header (e.g. property detail). |
-| `StatusBadge` | Bill/policy status chips (PAID, DUE, OVERDUE, ACTIVE, LAPSED, …). |
-| `EmptyState` | A list with nothing in it yet, with one call to action. |
-| `Dropdown*` | Menus (e.g. "Manage", "Add asset"). |
-| `SlimLayout` | Auth pages: form column + dark brand panel. |
-| `Logo` | The mark + wordmark. |
+| Component                                | Use it for                                                                                                                                                 |
+| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PageHeader`                             | Top of every app page: `title`, `description`, `action` (buttons), `breadcrumbs`.                                                                          |
+| `Breadcrumbs`, `propertyCrumbs()`        | Full trail from the section down: `[...propertyCrumbs(property, "Leases"), { label: "Edit lease" }]`. Last item = current page.                            |
+| `Card`, `CardHeader`                     | Every white panel; header row with title + optional link.                                                                                                  |
+| `StatCard`                               | Headline figure with label and hint. `tone="dark"` for the one emphasised stat in a row.                                                                   |
+| `Button`                                 | All buttons and button-styled links (`href`). `variant` solid/outline, `color` (`blue` = primary accent, `slate` = dark, `red`, `white`), `size` sm/md/lg. |
+| `Field`, `Input`, `Select`, `MoneyInput` | Labelled form controls. `optional` adds "· optional". `MoneyInput` adds the ₹ prefix.                                                                      |
+| `FormSection`, `FormActions`             | Group fields into titled cards; right-aligned Cancel (outline) + Save (primary) row.                                                                       |
+| `ChoiceCards`                            | A short set of exclusive options shown as large radio cards (e.g. property type).                                                                          |
+| `Notice`                                 | Inline success/error message above a form.                                                                                                                 |
+| `Breadcrumbs`                            | The trail alone, where a page builds its own header (e.g. property detail).                                                                                |
+| `StatusBadge`                            | Bill/policy status chips (PAID, DUE, OVERDUE, ACTIVE, LAPSED, …).                                                                                          |
+| `EmptyState`                             | A list with nothing in it yet, with one call to action.                                                                                                    |
+| `Dropdown*`                              | Menus (e.g. "Manage", "Add asset").                                                                                                                        |
+| `SlimLayout`                             | Auth pages: form column + dark brand panel.                                                                                                                |
+| `Logo`                                   | The mark + wordmark.                                                                                                                                       |
 
 ## Page recipes
 
@@ -142,23 +142,25 @@ with inline styles. Read them for exact layout, copy and spacing; don't import
 or copy their markup — rebuild with the tokens and components above (the
 artboards use raw hex values that map to the tokens in the table).
 
-| Artboard | Implemented in |
-|---|---|
-| `Main.dc.html` (dashboard) | `src/app/(app)/dashboard/page.tsx` |
-| `AppSidebar.dc.html` | `src/app/_components/app-shell.tsx`, `sidebar.tsx` |
-| `Properties.dc.html` | `src/app/(app)/properties/page.tsx` |
-| `PropertyDetail.dc.html` | `src/app/(app)/properties/[id]/page.tsx` |
-| `AddProperty.dc.html` | `src/app/(app)/properties/new/page.tsx` |
-| `Landing.dc.html` | `src/app/page.tsx` |
-| `SignIn.dc.html` | `src/app/(auth)/login/page.tsx` (also forgot/reset password) |
-| `SettingsNav.dc.html` | `src/app/(app)/settings/settings-nav.tsx`, `settings/layout.tsx` |
-| `SettingsGeneral.dc.html` | `src/app/(app)/settings/page.tsx` |
-| `SettingsReminders.dc.html` | `src/app/(app)/settings/reminders/page.tsx` |
-| `SettingsChannels.dc.html` | `src/app/(app)/settings/channels/page.tsx` — SMS/WhatsApp verification, quiet hours and digest show as "coming soon" |
-| `SettingsGuests.dc.html` | `src/app/(app)/settings/guests/page.tsx` |
-| `AddGuest.dc.html` | `src/app/(app)/settings/guests/new/page.tsx` (a page rather than a dialog; same form edits a guest) |
-| `AdminOverview.dc.html` | `src/app/(app)/admin/page.tsx` |
-| `AdminUsers.dc.html` | `src/app/(app)/admin/users/page.tsx` |
+| Artboard                          | Implemented in                                                                                                       |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `Main.dc.html` (dashboard)        | `src/app/(app)/dashboard/page.tsx`                                                                                   |
+| `AppSidebar.dc.html`              | `src/app/_components/app-shell.tsx`, `sidebar.tsx`                                                                   |
+| `Properties.dc.html`              | `src/app/(app)/properties/page.tsx`                                                                                  |
+| `PropertyDetail.dc.html`          | `src/app/(app)/properties/[id]/page.tsx`                                                                             |
+| `AddProperty.dc.html`             | `src/app/(app)/properties/new/page.tsx`                                                                              |
+| `Landing.dc.html`                 | `src/app/page.tsx`                                                                                                   |
+| `SignIn.dc.html`                  | `src/app/(auth)/login/page.tsx` (also forgot/reset password)                                                         |
+| `SettingsNav.dc.html`             | `src/app/(app)/settings/settings-nav.tsx`, `settings/layout.tsx`                                                     |
+| `SettingsGeneral.dc.html`         | `src/app/(app)/settings/page.tsx`                                                                                    |
+| `SettingsReminders.dc.html`       | `src/app/(app)/settings/reminders/page.tsx`                                                                          |
+| `SettingsChannels.dc.html`        | `src/app/(app)/settings/channels/page.tsx` — SMS/WhatsApp verification, quiet hours and digest show as "coming soon" |
+| `SettingsGuests.dc.html`          | `src/app/(app)/settings/guests/page.tsx`                                                                             |
+| `AddGuest.dc.html`                | `src/app/(app)/settings/guests/new/page.tsx` (a page rather than a dialog; same form edits a guest)                  |
+| `AdminOverview.dc.html`           | `src/app/(app)/admin/page.tsx`                                                                                       |
+| `AdminUsers.dc.html`              | `src/app/(app)/admin/users/page.tsx`                                                                                 |
+| `AdminNotifications.dc.html`      | `src/app/(app)/admin/notifications/page.tsx`                                                                         |
+| `AdminNotificationDetail.dc.html` | `src/app/(app)/admin/notifications/[id]/page.tsx`                                                                    |
 
 The canvas has three pages — **App & marketing**, **Settings** and **Admin**.
 The sidebar's Admin section only shows on the admin artboards (or with the

@@ -85,7 +85,7 @@
       "y": 0,
       "w": 1440,
       "h": 1000,
-      "title": "Settings · General",
+      "title": "Settings \u00b7 General",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -95,7 +95,7 @@
       "y": 0,
       "w": 1440,
       "h": 1640,
-      "title": "Settings · Reminders",
+      "title": "Settings \u00b7 Reminders",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -105,7 +105,7 @@
       "y": 0,
       "w": 1440,
       "h": 1240,
-      "title": "Settings · Channels",
+      "title": "Settings \u00b7 Channels",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -115,7 +115,7 @@
       "y": 0,
       "w": 1440,
       "h": 1480,
-      "title": "Settings · Guests",
+      "title": "Settings \u00b7 Guests",
       "expand": "fill",
       "is_interactive": true,
       "page": "settings"
@@ -135,7 +135,7 @@
       "y": 0,
       "w": 1440,
       "h": 1180,
-      "title": "Admin · Overview",
+      "title": "Admin \u00b7 Overview",
       "expand": "fill",
       "is_interactive": true,
       "page": "admin"
@@ -145,7 +145,27 @@
       "y": 0,
       "w": 1440,
       "h": 1180,
-      "title": "Admin · Users",
+      "title": "Admin \u00b7 Users",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "admin"
+    },
+    "AdminNotifications.dc.html": {
+      "x": 3040,
+      "y": 0,
+      "w": 1440,
+      "h": 1240,
+      "title": "Admin \u00b7 Notification log",
+      "expand": "fill",
+      "is_interactive": true,
+      "page": "admin"
+    },
+    "AdminNotificationDetail.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 1300,
+      "title": "Admin \u00b7 Notification detail",
       "expand": "fill",
       "is_interactive": true,
       "page": "admin"
@@ -158,7 +178,7 @@
   "designSystems": [],
   "launch": {
     "view": "canvas",
-    "page": "settings"
+    "page": "admin"
   },
   "notes": {
     "appTitle": {
@@ -193,7 +213,7 @@
       "y": -300,
       "text": "Admin",
       "kind": "title1",
-      "maxW": 2960,
+      "maxW": 6000,
       "w": 240,
       "page": "admin"
     }
@@ -213,7 +233,9 @@
     "SettingsGuests.dc.html",
     "AddGuest.dc.html",
     "AdminOverview.dc.html",
-    "AdminUsers.dc.html"
+    "AdminUsers.dc.html",
+    "AdminNotifications.dc.html",
+    "AdminNotificationDetail.dc.html"
   ],
   "pages": [
     {

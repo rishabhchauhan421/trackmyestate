@@ -97,7 +97,7 @@ export default async function AdminJobsPage({
       <PageHeader
         breadcrumbs={[{ label: "Admin", href: "/admin" }, { label: "Jobs" }]}
         title="Background jobs"
-        description="These run on their own schedule. Run one now to catch up after an outage or to check a change — every job is safe to run any number of times."
+        description="Vercel runs all three once a day (09:00 IST); GitHub Actions runs reminders hourly and sending every 15 minutes. Run one now to catch up or check a change — every job is safe to run any number of times."
       />
 
       {message && <Notice tone="success">{message}</Notice>}
@@ -105,7 +105,7 @@ export default async function AdminJobsPage({
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <JobCard
           title="1 · Generate bills"
-          schedule="Daily, 6:00 am IST"
+          schedule="Daily, 9:00 am IST"
           description={`Turns every active schedule (utilities, EMIs…) into bills due from ${LOOKBACK_DAYS} days ago to ${HORIZON_DAYS} days ahead. Never creates the same bill twice.`}
           stats={[
             { label: "Active schedules", value: overview.activeSchedules },
@@ -115,7 +115,7 @@ export default async function AdminJobsPage({
         />
         <JobCard
           title="2 · Queue reminders"
-          schedule="Hourly"
+          schedule="Hourly + daily"
           description="Works out which reminders fall today for each unpaid bill, in each owner's time zone, and queues them for their send time."
           stats={[
             { label: "Queued, not yet due", value: overview.scheduledJobs },
@@ -125,7 +125,7 @@ export default async function AdminJobsPage({
         />
         <JobCard
           title="3 · Send reminders"
-          schedule="Every 15 minutes"
+          schedule="Every 15 min + daily"
           description="Sends queued reminders that are due, retries temporary failures, and cancels ones for bills that have been paid."
           stats={[
             { label: "Sent, last 24 h", value: overview.sentLast24h },

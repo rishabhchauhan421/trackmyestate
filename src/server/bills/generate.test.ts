@@ -351,3 +351,52 @@ describe("/api/cron/bills", () => {
     expect(denied.status).toBe(401);
   });
 });
+
+describe("/api/cron/daily", () => {
+  it("generates bills, queues reminders and sends them in one run", async () => {
+    jest.useFakeTimers({
+      // 09:00 in India: the default send time, when the daily cron runs.
+      now: new Date("2026-10-05T03:30:00Z"),
+      doNotFake: ["nextTick", "queueMicrotask", "setImmediate", "setTimeout"],
+    });
+    const { GET } = await import("~/app/api/cron/daily/route");
+    const user = await owner();
+    await schedule(user.id, {
+      category: "UTILITY_BILL",
+      provider: "BESCOM",
+      billType: "ELECTRICITY",
+      startDate: new Date("2026-10-08"), // 3 days away: a default reminder
+      dueDay: 8,
+      defaultAmount: 4120,
+    });
+
+    const response = await GET(
+      new NextRequest("https://trackmyestate.app/api/cron/daily", {
+        headers: { authorization: "Bearer cron-secret" },
+      }),
+    );
+
+    expect(response.status).toBe(200);
+    const body = (await response.json()) as {
+      bills: { billsCreated: number };
+      reminders: { queued: number };
+      notifications: { total: number };
+    };
+    // 8 Oct and 8 Nov both fall within the 35-day horizon.
+    expect(body.bills.billsCreated).toBe(2);
+    expect(body.reminders.queued).toBe(1);
+    // Queued for 09:00 today — due now, so sent in the same run (email
+    // goes through the channel, which has no API key here and fails fast).
+    expect(body.notifications.total).toBe(1);
+    expect(rows("notificationJob")[0]!.status).not.toBe("SCHEDULED");
+    jest.useRealTimers();
+  });
+
+  it("rejects a request without the cron secret", async () => {
+    const { GET } = await import("~/app/api/cron/daily/route");
+    const response = await GET(
+      new NextRequest("https://trackmyestate.app/api/cron/daily"),
+    );
+    expect(response.status).toBe(401);
+  });
+});

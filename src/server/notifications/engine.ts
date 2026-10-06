@@ -104,7 +104,12 @@ export async function dispatchNotificationJob(
     if (result.ok) {
       await db.notificationJob.update({
         where: { id: job.id },
-        data: { status: "SENT", sentAt: new Date(), failedReason: null },
+        data: {
+          status: "SENT",
+          sentAt: new Date(),
+          failedReason: null,
+          providerMessageId: result.providerMessageId ?? null,
+        },
       });
       return "SENT";
     }

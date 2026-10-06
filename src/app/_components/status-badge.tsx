@@ -14,6 +14,12 @@ const STATUS_STYLES: Record<string, string> = {
   LAPSED: DANGER,
   MATURED: NEUTRAL,
   CLAIMED: NEUTRAL,
+  // Notification jobs
+  SENT: OK,
+  SCHEDULED: "bg-accent-soft text-accent-strong",
+  PROCESSING: WARN,
+  FAILED: DANGER,
+  SKIPPED: NEUTRAL,
 };
 
 const FALLBACK_STYLE = NEUTRAL;
