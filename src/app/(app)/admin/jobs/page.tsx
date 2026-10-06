@@ -1,4 +1,4 @@
-import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
 import { Notice } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
@@ -72,9 +72,9 @@ function JobCard({
         ))}
       </dl>
       <form action={action} className="mt-auto">
-        <Button type="submit" variant="outline" className="w-full">
+        <SubmitButton variant="outline" className="w-full">
           Run now
-        </Button>
+        </SubmitButton>
       </form>
     </Card>
   );

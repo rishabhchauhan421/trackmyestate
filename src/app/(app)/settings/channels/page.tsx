@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
 import { Field, FormActions, Notice, Select } from "~/app/_components/form";
 import { formatPhone, localMobileDigits } from "~/lib/phone";
@@ -213,7 +214,7 @@ export default async function ChannelSettingsPage({
       </Card>
 
       <FormActions>
-        <Button type="submit">Save changes</Button>
+        <SubmitButton>Save changes</SubmitButton>
       </FormActions>
     </form>
   );

@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
@@ -205,7 +206,7 @@ export default async function EditPolicyPage({
           <Button href="/insurance" variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Save changes</Button>
+          <SubmitButton>Save changes</SubmitButton>
         </FormActions>
       </form>
 
@@ -222,15 +223,14 @@ export default async function EditPolicyPage({
           action={deletePolicy.bind(null, policy.id)}
           data-gtm-event="policy_deleted"
         >
-          <Button
-            type="submit"
+          <SubmitButton
             variant="outline"
             color="red"
             disabled={!canDelete}
             title={canDelete ? undefined : "Bills exist for this policy"}
           >
             Delete policy
-          </Button>
+          </SubmitButton>
         </form>
       </div>
     </>

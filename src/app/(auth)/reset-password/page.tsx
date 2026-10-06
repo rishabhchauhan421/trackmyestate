@@ -1,6 +1,7 @@
 import { type Metadata } from "next";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { Notice } from "~/app/_components/form";
 import { SlimLayout } from "~/app/_components/slim-layout";
 import { TextField } from "~/app/_components/text-field";
@@ -74,9 +75,9 @@ export default async function ResetPasswordPage({
               maxLength={PASSWORD_MAX_LENGTH}
               required
             />
-            <Button type="submit" size="lg" className="w-full">
+            <SubmitButton size="lg" className="w-full" pendingLabel="Updating…">
               Update password
-            </Button>
+            </SubmitButton>
           </form>
         </>
       )}

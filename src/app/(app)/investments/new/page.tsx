@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
@@ -137,7 +138,7 @@ export default async function NewInvestmentPage() {
           <Button href="/investments" variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Save investment</Button>
+          <SubmitButton>Save investment</SubmitButton>
         </FormActions>
       </form>
     </>

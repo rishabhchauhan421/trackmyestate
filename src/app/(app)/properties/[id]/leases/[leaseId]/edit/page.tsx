@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
@@ -128,7 +129,7 @@ export default async function EditLeasePage({
           <Button href={`/properties/${id}/leases`} variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Save changes</Button>
+          <SubmitButton>Save changes</SubmitButton>
         </FormActions>
       </form>
 
@@ -145,15 +146,14 @@ export default async function EditLeasePage({
           action={endLease.bind(null, lease.id)}
           data-gtm-event="lease_ended"
         >
-          <Button
-            type="submit"
+          <SubmitButton
             variant="outline"
             color="amber"
             disabled={!lease.active}
             title={lease.active ? undefined : "This lease has already ended"}
           >
             End lease
-          </Button>
+          </SubmitButton>
         </form>
       </div>
 
@@ -170,15 +170,14 @@ export default async function EditLeasePage({
           action={deleteLease.bind(null, lease.id)}
           data-gtm-event="lease_deleted"
         >
-          <Button
-            type="submit"
+          <SubmitButton
             variant="outline"
             color="red"
             disabled={!canDelete}
             title={canDelete ? undefined : "Bills exist for this lease"}
           >
             Delete lease
-          </Button>
+          </SubmitButton>
         </form>
       </div>
 

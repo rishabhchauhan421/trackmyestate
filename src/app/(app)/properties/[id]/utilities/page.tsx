@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
@@ -184,12 +185,9 @@ export default async function PropertyUtilitiesPage({
                           className="min-w-0 flex-2 rounded-lg border border-line px-3 py-1.5 text-xs text-ink focus:border-accent focus:outline-none"
                         />
                         <input type="hidden" name="notifyOnDue" value="on" />
-                        <button
-                          type="submit"
-                          className="shrink-0 rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-ink-2 transition hover:bg-sunken"
-                        >
+                        <SubmitButton variant="outline" size="sm">
                           Add
-                        </button>
+                        </SubmitButton>
                       </form>
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { createRental } from "~/server/actions/rentals";
@@ -75,7 +76,7 @@ export default async function NewRentalPage({
           <Button href={`/properties/${id}/rentals`} variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Save rental unit</Button>
+          <SubmitButton>Save rental unit</SubmitButton>
         </FormActions>
       </form>
     </>

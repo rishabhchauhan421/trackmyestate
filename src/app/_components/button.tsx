@@ -37,7 +37,7 @@ const sizeStyles = {
 type SolidColor = keyof typeof variantStyles.solid;
 type OutlineColor = keyof typeof variantStyles.outline;
 
-type ButtonProps = (
+export type ButtonProps = (
   | { variant?: "solid"; color?: SolidColor }
   | { variant: "outline"; color?: OutlineColor }
 ) & {

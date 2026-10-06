@@ -1,5 +1,6 @@
 import type { Guest } from "../../../../../generated/prisma";
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import {
   Field,
   FormActions,
@@ -235,7 +236,7 @@ export function GuestForm({
         <Button href="/settings/guests" variant="outline">
           Cancel
         </Button>
-        <Button type="submit">{submitLabel}</Button>
+        <SubmitButton>{submitLabel}</SubmitButton>
       </FormActions>
     </form>
   );

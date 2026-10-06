@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { createProperty } from "~/server/actions/properties";
@@ -33,7 +34,7 @@ export default async function NewPropertyPage() {
             <Button href="/properties" variant="outline">
               Cancel
             </Button>
-            <Button type="submit">Save property</Button>
+            <SubmitButton>Save property</SubmitButton>
           </FormActions>
         </form>
 

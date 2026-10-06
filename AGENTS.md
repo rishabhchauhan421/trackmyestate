@@ -13,5 +13,5 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 All UI follows the TrackMyEstate design system. Before creating or changing any page or component, read [`docs/design/README.md`](docs/design/README.md) — it covers the tokens, typography, layout, shared components and page recipes. In short:
 
 - Use the semantic color tokens from `src/styles/globals.css` (`text-ink`, `text-muted`, `bg-surface`, `border-line`, `bg-accent`, `text-danger`, …). Never raw Tailwind palette colors (`slate-*`, `blue-*`, `zinc-*`, …) and no `dark:` color variants — the tokens handle dark mode.
-- Build from the shared components in `src/app/_components/` (`PageHeader` with `breadcrumbs`, `Card`, `StatCard`, `Button`, `Field`/`Input`/`Select`/`MoneyInput`, `FormSection`/`FormActions`, `StatusBadge`, `EmptyState`) instead of new markup.
+- Build from the shared components in `src/app/_components/` (`PageHeader` with `breadcrumbs`, `Card`, `StatCard`, `Button`, `SubmitButton` (every form submit — it blocks double submits), `Field`/`Input`/`Select`/`MoneyInput`, `FormSection`/`FormActions`, `StatusBadge`, `EmptyState`) instead of new markup.
 - Reference screens from the Claude Design canvas are in [`docs/design/canvas/`](docs/design/canvas/) (the live canvas, private to the owner: https://claude.ai/artifact/G9Y8VkA5NoSGewfDnHi9Be).

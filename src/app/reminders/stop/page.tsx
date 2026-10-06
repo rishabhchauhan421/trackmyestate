@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 
-import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { Notice } from "~/app/_components/form";
 import { SlimLayout } from "~/app/_components/slim-layout";
 import { stopGuestReminders } from "~/server/actions/guest-opt-out";
@@ -64,9 +64,9 @@ export default async function StopRemindersPage({
       description={`${guest.owner.name} added you, ${guest.name}, to get reminders about some of their payments.`}
     >
       <form action={stopGuestReminders.bind(null, guestId, sig)}>
-        <Button type="submit" size="lg" className="w-full">
+        <SubmitButton size="lg" className="w-full">
           Stop all reminders from {guest.owner.name}
-        </Button>
+        </SubmitButton>
       </form>
       <p className="text-sm text-muted">
         Changed your mind? Ask {guest.owner.name} to add you again.

@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { createLease } from "~/server/actions/leases";
@@ -155,7 +156,7 @@ export default async function NewLeasePage({
           <Button href={`/properties/${id}/leases`} variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Save lease</Button>
+          <SubmitButton>Save lease</SubmitButton>
         </FormActions>
       </form>
     </>

@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { Card, CardHeader } from "~/app/_components/card";
 import { Notice } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
@@ -152,14 +152,14 @@ export default async function AdminNotificationPage({
           <>
             {job.status === "FAILED" && (
               <form action={retryNotification.bind(null, job.id)}>
-                <Button type="submit">Retry now</Button>
+                <SubmitButton>Retry now</SubmitButton>
               </form>
             )}
             {job.status === "SCHEDULED" && (
               <form action={cancelNotification.bind(null, job.id)}>
-                <Button type="submit" variant="outline" color="red">
+                <SubmitButton variant="outline" color="red">
                   Cancel
-                </Button>
+                </SubmitButton>
               </form>
             )}
           </>

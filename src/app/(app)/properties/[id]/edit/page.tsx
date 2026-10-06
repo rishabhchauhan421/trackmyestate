@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { deleteProperty, updateProperty } from "~/server/actions/properties";
@@ -46,7 +47,7 @@ export default async function EditPropertyPage({
             <Button href={`/properties/${id}`} variant="outline">
               Cancel
             </Button>
-            <Button type="submit">Save changes</Button>
+            <SubmitButton>Save changes</SubmitButton>
           </FormActions>
         </form>
 
@@ -61,8 +62,7 @@ export default async function EditPropertyPage({
             action={deleteProperty.bind(null, property.id)}
             data-gtm-event="property_deleted"
           >
-            <Button
-              type="submit"
+            <SubmitButton
               variant="outline"
               color="red"
               size="sm"
@@ -74,7 +74,7 @@ export default async function EditPropertyPage({
               }
             >
               Delete property
-            </Button>
+            </SubmitButton>
           </form>
         </aside>
       </div>

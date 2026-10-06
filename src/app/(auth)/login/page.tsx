@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { APIError } from "better-auth";
 import { z } from "zod";
 
-import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { SlimLayout } from "~/app/_components/slim-layout";
 import { Notice } from "~/app/_components/form";
 import { TextField } from "~/app/_components/text-field";
@@ -82,10 +82,15 @@ export default async function LoginPage({
       {error && <Notice tone="error">{error}</Notice>}
 
       <form action={signInWithGoogle} data-gtm-event="sign_in_google">
-        <Button type="submit" variant="outline" size="lg" className="w-full">
+        <SubmitButton
+          variant="outline"
+          size="lg"
+          className="w-full"
+          pendingLabel="Opening Google…"
+        >
           <GoogleIcon />
           Continue with Google
-        </Button>
+        </SubmitButton>
       </form>
 
       <div className="flex items-center gap-3 text-[0.8125rem] text-muted">
@@ -124,9 +129,9 @@ export default async function LoginPage({
             </Link>
           </div>
         </div>
-        <Button type="submit" size="lg" className="w-full">
+        <SubmitButton size="lg" className="w-full" pendingLabel="Signing in…">
           Sign in
-        </Button>
+        </SubmitButton>
       </form>
     </SlimLayout>
   );

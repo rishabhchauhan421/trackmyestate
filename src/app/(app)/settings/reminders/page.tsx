@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
 import { Notice } from "~/app/_components/form";
 import { CheckIcon } from "~/app/_components/icons";
@@ -224,7 +224,7 @@ export default async function ReminderSettingsPage({
               </Link>
               .
             </p>
-            <Button type="submit">Save reminders</Button>
+            <SubmitButton>Save reminders</SubmitButton>
           </div>
         </Card>
       </form>

@@ -104,23 +104,24 @@ Fonts: `font-display` = Bricolage Grotesque (headings, figures),
 
 All in `src/app/_components/`.
 
-| Component                                | Use it for                                                                                                                                                 |
-| ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PageHeader`                             | Top of every app page: `title`, `description`, `action` (buttons), `breadcrumbs`.                                                                          |
-| `Breadcrumbs`, `propertyCrumbs()`        | Full trail from the section down: `[...propertyCrumbs(property, "Leases"), { label: "Edit lease" }]`. Last item = current page.                            |
-| `Card`, `CardHeader`                     | Every white panel; header row with title + optional link.                                                                                                  |
-| `StatCard`                               | Headline figure with label and hint. `tone="dark"` for the one emphasised stat in a row.                                                                   |
-| `Button`                                 | All buttons and button-styled links (`href`). `variant` solid/outline, `color` (`blue` = primary accent, `slate` = dark, `red`, `white`), `size` sm/md/lg. |
-| `Field`, `Input`, `Select`, `MoneyInput` | Labelled form controls. `optional` adds "· optional". `MoneyInput` adds the ₹ prefix.                                                                      |
-| `FormSection`, `FormActions`             | Group fields into titled cards; right-aligned Cancel (outline) + Save (primary) row.                                                                       |
-| `ChoiceCards`                            | A short set of exclusive options shown as large radio cards (e.g. property type).                                                                          |
-| `Notice`                                 | Inline success/error message above a form.                                                                                                                 |
-| `Breadcrumbs`                            | The trail alone, where a page builds its own header (e.g. property detail).                                                                                |
-| `StatusBadge`                            | Bill/policy status chips (PAID, DUE, OVERDUE, ACTIVE, LAPSED, …).                                                                                          |
-| `EmptyState`                             | A list with nothing in it yet, with one call to action.                                                                                                    |
-| `Dropdown*`                              | Menus (e.g. "Manage", "Add asset").                                                                                                                        |
-| `SlimLayout`                             | Auth pages: form column + dark brand panel.                                                                                                                |
-| `Logo`                                   | The mark + wordmark.                                                                                                                                       |
+| Component                                | Use it for                                                                                                                                                                        |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PageHeader`                             | Top of every app page: `title`, `description`, `action` (buttons), `breadcrumbs`.                                                                                                 |
+| `Breadcrumbs`, `propertyCrumbs()`        | Full trail from the section down: `[...propertyCrumbs(property, "Leases"), { label: "Edit lease" }]`. Last item = current page.                                                   |
+| `Card`, `CardHeader`                     | Every white panel; header row with title + optional link.                                                                                                                         |
+| `StatCard`                               | Headline figure with label and hint. `tone="dark"` for the one emphasised stat in a row.                                                                                          |
+| `Button`                                 | All buttons and button-styled links (`href`). `variant` solid/outline, `color` (`blue` = primary accent, `slate` = dark, `red`, `white`), `size` sm/md/lg.                        |
+| `SubmitButton`                           | Every Server Action form's submit button. Same props as `Button`, plus `pendingLabel`; disables itself with a spinner while the action runs so a slow submit can't be sent twice. |
+| `Field`, `Input`, `Select`, `MoneyInput` | Labelled form controls. `optional` adds "· optional". `MoneyInput` adds the ₹ prefix.                                                                                             |
+| `FormSection`, `FormActions`             | Group fields into titled cards; right-aligned Cancel (outline) + Save (primary) row.                                                                                              |
+| `ChoiceCards`                            | A short set of exclusive options shown as large radio cards (e.g. property type).                                                                                                 |
+| `Notice`                                 | Inline success/error message above a form.                                                                                                                                        |
+| `Breadcrumbs`                            | The trail alone, where a page builds its own header (e.g. property detail).                                                                                                       |
+| `StatusBadge`                            | Bill/policy status chips (PAID, DUE, OVERDUE, ACTIVE, LAPSED, …).                                                                                                                 |
+| `EmptyState`                             | A list with nothing in it yet, with one call to action.                                                                                                                           |
+| `Dropdown*`                              | Menus (e.g. "Manage", "Add asset").                                                                                                                                               |
+| `SlimLayout`                             | Auth pages: form column + dark brand panel.                                                                                                                                       |
+| `Logo`                                   | The mark + wordmark.                                                                                                                                                              |
 
 ## Page recipes
 

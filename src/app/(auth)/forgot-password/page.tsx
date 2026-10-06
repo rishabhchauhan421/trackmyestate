@@ -2,7 +2,7 @@ import { type Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { Notice } from "~/app/_components/form";
 import { SlimLayout } from "~/app/_components/slim-layout";
 import { TextField } from "~/app/_components/text-field";
@@ -54,9 +54,9 @@ export default async function ForgotPasswordPage({
               placeholder="you@example.com"
               required
             />
-            <Button type="submit" size="lg" className="w-full">
+            <SubmitButton size="lg" className="w-full" pendingLabel="Sending…">
               Send reset link
-            </Button>
+            </SubmitButton>
           </form>
         </>
       )}

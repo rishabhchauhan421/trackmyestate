@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
@@ -115,7 +116,7 @@ export default async function NewUtilityPage({
           <Button href={`/properties/${id}/utilities`} variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Save utility</Button>
+          <SubmitButton>Save utility</SubmitButton>
         </FormActions>
       </form>
     </>

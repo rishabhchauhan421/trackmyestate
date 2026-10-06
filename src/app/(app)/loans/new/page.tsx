@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
+import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
@@ -167,7 +168,7 @@ export default async function NewLoanPage() {
           <Button href="/loans" variant="outline">
             Cancel
           </Button>
-          <Button type="submit">Save loan</Button>
+          <SubmitButton>Save loan</SubmitButton>
         </FormActions>
       </form>
     </>
