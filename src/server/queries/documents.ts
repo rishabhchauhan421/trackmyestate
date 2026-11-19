@@ -32,9 +32,9 @@ function ownerType(document: DocumentOwnerFields) {
 }
 
 /** Documents for the Documents page (there's no upload flow yet, so usually empty). */
-export async function getDocuments(ownerId: string) {
+export async function getDocuments(householdId: string) {
   const documents = await db.document.findMany({
-    where: { ownerId },
+    where: { householdId },
     orderBy: { uploadedAt: "desc" },
   });
 
@@ -50,10 +50,13 @@ export async function getDocuments(ownerId: string) {
  * `getDocuments`), so this only ever shows something once a document gets
  * attached some other way.
  */
-export async function getDocumentsForLease(leaseId: string, ownerId: string) {
+export async function getDocumentsForLease(
+  leaseId: string,
+  householdId: string,
+) {
   return db.document.findMany({
     where: {
-      ownerId,
+      householdId,
       leaseId,
       ...NOT_SOFT_DELETED,
     },

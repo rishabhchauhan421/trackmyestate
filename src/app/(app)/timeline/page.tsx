@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { EmptyState } from "~/app/_components/empty-state";
 import { TimelineIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
 import {
   getTimelineEvents,
@@ -60,11 +58,10 @@ export default async function TimelinePage({
     ? (rawFilter as TimelineFilter)
     : "all";
 
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const timeZone = await getUserTimeZone(session.user.id);
+  const scope = await requireScope();
+  const timeZone = await getUserTimeZone(scope.userId);
   const events = await getTimelineEvents(
-    session.user.id,
+    scope.householdId,
     range,
     filter,
     timeZone,

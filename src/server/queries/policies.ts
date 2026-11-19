@@ -12,9 +12,9 @@ import {
  * `getProperties`. Deleted policies (see `deletePolicy` in
  * `~/server/actions/policies`) are excluded.
  */
-export async function getPolicies(ownerId: string) {
+export async function getPolicies(householdId: string) {
   const policies = await db.policy.findMany({
-    where: { ownerId, ...NOT_SOFT_DELETED },
+    where: { householdId, ...NOT_SOFT_DELETED },
     orderBy: { createdAt: "asc" },
   });
 
@@ -44,13 +44,16 @@ export async function getPolicies(ownerId: string) {
 }
 
 /**
- * A single `Policy`, scoped to `ownerId` — for the edit page. Returns
+ * A single `Policy`, scoped to `householdId` — for the edit page. Returns
  * `null` for a nonexistent policy *or* one owned by someone else, same
- * rationale as `getPropertyForOwner`.
+ * rationale as `getPropertyForHousehold`.
  */
-export async function getPolicyForOwner(policyId: string, ownerId: string) {
+export async function getPolicyForHousehold(
+  policyId: string,
+  householdId: string,
+) {
   return db.policy.findFirst({
-    where: { id: policyId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: policyId, householdId, ...NOT_SOFT_DELETED },
   });
 }
 

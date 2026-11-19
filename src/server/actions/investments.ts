@@ -25,18 +25,15 @@ import {
   parseFormData,
   text,
 } from "~/lib/form";
-import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { requireScope } from "~/server/households";
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) redirect("/");
-  return session;
-}
-
-async function requireOwnedInvestment(investmentId: string, ownerId: string) {
+async function requireOwnedInvestment(
+  investmentId: string,
+  householdId: string,
+) {
   const investment = await db.investment.findFirst({
-    where: { id: investmentId, ownerId },
+    where: { id: investmentId, householdId },
   });
   if (!investment) throw new Error("Investment not found");
   return investment;
@@ -61,11 +58,15 @@ const investmentFieldsSchema = z.object({
 
 /** Creates a new `Investment` for the signed-in owner. */
 export async function createInvestment(formData: FormData) {
-  const session = await requireSession();
+  const scope = await requireScope();
   const fields = parseFormData(investmentFieldsSchema, formData);
 
   await db.investment.create({
-    data: { ownerId: session.user.id, ...fields },
+    data: {
+      ownerId: scope.userId,
+      householdId: scope.householdId,
+      ...fields,
+    },
   });
 
   revalidatePath("/investments");
@@ -77,8 +78,8 @@ export async function updateInvestment(
   investmentId: string,
   formData: FormData,
 ) {
-  const session = await requireSession();
-  await requireOwnedInvestment(investmentId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedInvestment(investmentId, scope.householdId);
   const fields = parseFormData(investmentFieldsSchema, formData);
 
   await db.investment.update({
@@ -96,8 +97,8 @@ export async function updateInvestment(
  * record to stay meaningful. Same rationale as `deleteLease`.
  */
 export async function deleteInvestment(investmentId: string) {
-  const session = await requireSession();
-  await requireOwnedInvestment(investmentId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedInvestment(investmentId, scope.householdId);
 
   const existingBill = await db.bill.findFirst({
     where: { investmentId },

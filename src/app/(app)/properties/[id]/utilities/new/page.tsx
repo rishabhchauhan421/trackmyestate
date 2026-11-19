@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -7,8 +7,8 @@ import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
 import { todayInTimeZone } from "~/lib/time-zone";
 import { createUtility } from "~/server/actions/utilities";
-import { getSession } from "~/server/better-auth/server";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { requireScope } from "~/server/households";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getUserTimeZone } from "~/server/queries/settings";
 import { BillingFields } from "./billing-fields";
 
@@ -18,13 +18,12 @@ export default async function NewUtilityPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const property = await getPropertyForOwner(id, session.user.id);
+  const scope = await requireScope();
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
-  const timeZone = await getUserTimeZone(session.user.id);
+  const timeZone = await getUserTimeZone(scope.userId);
 
   return (
     <>

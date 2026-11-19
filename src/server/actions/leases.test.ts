@@ -6,6 +6,11 @@ import { getSession } from "~/server/better-auth/server";
 import { createLease, deleteLease, endLease, updateLease } from "./leases";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));

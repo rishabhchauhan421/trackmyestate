@@ -24,19 +24,13 @@ import {
   parseFormData,
   text,
 } from "~/lib/form";
-import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { requireScope } from "~/server/households";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) redirect("/");
-  return session;
-}
-
-async function requireOwnedPolicy(policyId: string, ownerId: string) {
+async function requireOwnedPolicy(policyId: string, householdId: string) {
   const policy = await db.policy.findFirst({
-    where: { id: policyId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: policyId, householdId, ...NOT_SOFT_DELETED },
   });
   if (!policy) throw new Error("Policy not found");
   return policy;
@@ -76,11 +70,15 @@ const policyUpdateSchema = policyFieldsSchema.extend({
 
 /** Creates a new `Policy` for the signed-in owner, defaulting `status` to `ACTIVE`. */
 export async function createPolicy(formData: FormData) {
-  const session = await requireSession();
+  const scope = await requireScope();
   const fields = parseFormData(policyFieldsSchema, formData);
 
   await db.policy.create({
-    data: { ownerId: session.user.id, ...fields },
+    data: {
+      ownerId: scope.userId,
+      householdId: scope.householdId,
+      ...fields,
+    },
   });
 
   revalidatePath("/insurance");
@@ -92,8 +90,8 @@ export async function createPolicy(formData: FormData) {
  * including its `status` (e.g. marking it lapsed, matured or claimed).
  */
 export async function updatePolicy(policyId: string, formData: FormData) {
-  const session = await requireSession();
-  await requireOwnedPolicy(policyId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedPolicy(policyId, scope.householdId);
   const fields = parseFormData(policyUpdateSchema, formData);
 
   await db.policy.update({
@@ -111,8 +109,8 @@ export async function updatePolicy(policyId: string, formData: FormData) {
  * stay meaningful. Same rationale as `deleteLease`.
  */
 export async function deletePolicy(policyId: string) {
-  const session = await requireSession();
-  await requireOwnedPolicy(policyId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedPolicy(policyId, scope.householdId);
 
   const existingBill = await db.bill.findFirst({
     where: { policyId },

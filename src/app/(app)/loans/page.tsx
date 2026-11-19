@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { NextDue } from "~/app/_components/next-due";
@@ -8,15 +6,14 @@ import { LoansIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatINR } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
 import { getLoans } from "~/server/queries/loans";
 
 export default async function LoansPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const timeZone = await getUserTimeZone(session.user.id);
-  const loans = await getLoans(session.user.id, timeZone);
+  const scope = await requireScope();
+  const timeZone = await getUserTimeZone(scope.userId);
+  const loans = await getLoans(scope.householdId, timeZone);
 
   return (
     <>

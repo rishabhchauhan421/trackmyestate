@@ -3,9 +3,14 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
-import { generateBill, markBillPaid } from "./bills";
+import { markBillPaid } from "./bills";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -34,99 +39,6 @@ beforeEach(() => {
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
   revalidatePath.mockClear();
-});
-
-describe("generateBill", () => {
-  it("creates the bill with its category/direction and asset-specific foreign key", async () => {
-    dbMock.bill.create.mockResolvedValue({ id: "bill-1" } as never);
-
-    await generateBill({
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      direction: "OUTFLOW",
-      billScheduleId: "utility-1",
-      propertyId: "prop-1",
-      amount: 1500,
-      dueDay: "2026-07-10",
-      description: "BESCOM (Electricity) - Test Flat",
-    });
-
-    expect(dbMock.bill.create).toHaveBeenCalledWith({
-      data: {
-        ownerId: "user-1",
-        category: "UTILITY_BILL",
-        direction: "OUTFLOW",
-        billScheduleId: "utility-1",
-        propertyId: "prop-1",
-        leaseId: undefined,
-        loanId: undefined,
-        policyId: undefined,
-        investmentId: undefined,
-        // Stored as midnight UTC of the calendar day, whatever the server's
-        // time zone.
-        dueDate: new Date("2026-07-10T00:00:00.000Z"),
-        amount: 1500,
-        status: "DUE",
-        description: "BESCOM (Electricity) - Test Flat",
-      },
-    });
-  });
-
-  it("works for a loan-linked category with no property (e.g. an EMI)", async () => {
-    dbMock.bill.create.mockResolvedValue({ id: "bill-2" } as never);
-
-    await generateBill({
-      ownerId: "user-1",
-      category: "EMI",
-      direction: "OUTFLOW",
-      loanId: "loan-1",
-      amount: 71_250,
-      dueDay: "2026-09-05",
-      description: "Home loan EMI - SBI",
-    });
-
-    expect(dbMock.bill.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({
-        category: "EMI",
-        direction: "OUTFLOW",
-        loanId: "loan-1",
-        propertyId: undefined,
-      }),
-    });
-  });
-
-  it("returns the created bill", async () => {
-    const created = { id: "bill-1" };
-    dbMock.bill.create.mockResolvedValue(created as never);
-
-    const result = await generateBill({
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      direction: "OUTFLOW",
-      billScheduleId: "utility-1",
-      propertyId: "prop-1",
-      amount: 1500,
-      dueDay: "2026-07-10",
-      description: "BESCOM (Electricity) - Test Flat",
-    });
-
-    expect(result).toBe(created);
-  });
-
-  it("refuses something that isn't a calendar day", async () => {
-    await expect(
-      generateBill({
-        ownerId: "user-1",
-        category: "EMI",
-        direction: "OUTFLOW",
-        loanId: "loan-1",
-        amount: 1,
-        dueDay: "2026-02-30",
-        description: "x",
-      }),
-    ).rejects.toThrow("Not a calendar day");
-    expect(dbMock.bill.create).not.toHaveBeenCalled();
-  });
 });
 
 describe("markBillPaid", () => {

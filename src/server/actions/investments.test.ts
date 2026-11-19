@@ -10,6 +10,11 @@ import {
 } from "./investments";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -124,6 +129,7 @@ describe("createInvestment", () => {
     expect(dbMock.investment.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         ownerId: "user-1",
+        householdId: "household-1",
         name: "HDFC Flexicap Fund",
         type: "MUTUAL_FUND",
         institution: "HDFC Mutual Fund",

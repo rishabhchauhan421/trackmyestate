@@ -49,6 +49,7 @@ const DEFAULTS: Partial<Record<Model, Record<string, unknown>>> = {
 /** Fields with a unique index, per model (besides `id`). */
 const UNIQUE: Partial<Record<Model, string[]>> = {
   notificationJob: ["idempotencyKey"],
+  bill: ["generationKey"],
   user: ["email"],
 };
 
@@ -245,6 +246,10 @@ function makeDelegate(model: Model) {
         updatedAt: now,
       };
       applyData(doc, args.data);
+      // `Bill.generationKey` is `@default(uuid())` in the schema.
+      if (model === "bill" && doc.generationKey === undefined) {
+        doc.generationKey = `uuid-${doc.id as string}`;
+      }
       checkUnique(model, doc);
       all().push(doc);
       return clone(doc);

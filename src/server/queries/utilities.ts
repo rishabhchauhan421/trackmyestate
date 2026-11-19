@@ -68,18 +68,18 @@ export async function getUtilityBillsForProperty(propertyId: string) {
 }
 
 /**
- * A single utility `Bill`, scoped to `ownerId` — for the bill detail/mark-
+ * A single utility `Bill`, scoped to `householdId` — for the bill detail/mark-
  * paid page. Returns `null` for a nonexistent bill *or* one belonging to
- * someone else, same rationale as `getPropertyForOwner`. `Bill.ownerId` is
+ * someone else, same rationale as `getPropertyForHousehold`. `Bill.householdId` is
  * denormalized directly onto the row, so ownership is checked without a
  * join.
  */
-export async function getUtilityBillForOwner(
+export async function getUtilityBillForHousehold(
   utilityBillId: string,
-  ownerId: string,
+  householdId: string,
 ) {
   const bill = await db.bill.findFirst({
-    where: { id: utilityBillId, category: "UTILITY_BILL", ownerId },
+    where: { id: utilityBillId, category: "UTILITY_BILL", householdId },
     include: { property: { select: { id: true, name: true } } },
   });
   if (!bill) return null;

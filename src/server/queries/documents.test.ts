@@ -20,7 +20,7 @@ describe("getDocumentsForLease", () => {
 
     const call = dbMock.document.findMany.mock.calls[0]?.[0];
     expect(call?.where).toMatchObject({
-      ownerId: "owner-1",
+      householdId: "owner-1",
       leaseId: "lease-1",
     });
   });

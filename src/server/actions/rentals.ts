@@ -16,8 +16,8 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { optionalNumber, optionalText, parseFormData, text } from "~/lib/form";
-import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { requireScope } from "~/server/households";
 
 /** The "Add rental unit" form. */
 const rentalSchema = z.object({
@@ -33,16 +33,15 @@ const rentalSchema = z.object({
  * no session at all).
  */
 async function requireRentableProperty(propertyId: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
+  const scope = await requireScope();
   const property = await db.property.findFirst({
-    where: { id: propertyId, ownerId: session.user.id },
+    where: { id: propertyId, householdId: scope.householdId },
   });
   if (!property) throw new Error("Property not found");
   if (property.type === "SELF_OCCUPIED") {
     throw new Error("Self-occupied properties can't have rental units");
   }
-  return { session, property };
+  return { scope, property };
 }
 
 /** Creates a new rental unit (`Room`) for a property, from the "Add rental unit" form. */

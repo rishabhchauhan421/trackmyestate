@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SubmitButton } from "~/app/_components/submit-button";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
@@ -8,8 +8,8 @@ import { StatusBadge } from "~/app/_components/status-badge";
 import { formatBillAmount, formatDate, formatINR } from "~/lib/format";
 import { BILL_TYPE_LABELS } from "~/lib/labels";
 import { markBillPaid } from "~/server/actions/bills";
-import { getSession } from "~/server/better-auth/server";
-import { getUtilityBillForOwner } from "~/server/queries/utilities";
+import { requireScope } from "~/server/households";
+import { getUtilityBillForHousehold } from "~/server/queries/utilities";
 
 export default async function UtilityBillPage({
   params,
@@ -17,10 +17,9 @@ export default async function UtilityBillPage({
   params: Promise<{ id: string; billId: string }>;
 }) {
   const { id, billId } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const bill = await getUtilityBillForOwner(billId, session.user.id);
+  const bill = await getUtilityBillForHousehold(billId, scope.householdId);
   if (bill?.propertyId !== id) {
     notFound();
   }

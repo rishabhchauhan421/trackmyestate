@@ -36,20 +36,14 @@ import {
   parseFormData,
   text,
 } from "~/lib/form";
-import { getSession } from "~/server/better-auth/server";
 import { calendarDayOf, dateOnly } from "~/lib/calendar-day";
 import { firstDueDayAfter } from "~/lib/schedule";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
+import { requireScope } from "~/server/households";
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) redirect("/");
-  return session;
-}
-
-async function requireOwnedLoan(loanId: string, ownerId: string) {
-  const loan = await db.loan.findFirst({ where: { id: loanId, ownerId } });
+async function requireOwnedLoan(loanId: string, householdId: string) {
+  const loan = await db.loan.findFirst({ where: { id: loanId, householdId } });
   if (!loan) throw new Error("Loan not found");
   return loan;
 }
@@ -92,11 +86,11 @@ const loanFieldsSchema = z
  */
 async function requireOwnedLinkedProperty(
   linkedPropertyId: string | null,
-  ownerId: string,
+  householdId: string,
 ) {
   if (!linkedPropertyId) return null;
   const property = await db.property.findFirst({
-    where: { id: linkedPropertyId, ownerId },
+    where: { id: linkedPropertyId, householdId },
   });
   if (!property) throw new Error("Property not found");
   return linkedPropertyId;
@@ -109,16 +103,17 @@ function firstEmiDate(loanStart: Date, emiDueDay: number) {
 
 /** Creates a new `Loan` and its EMI `BillSchedule` for the signed-in owner. */
 export async function createLoan(formData: FormData) {
-  const session = await requireSession();
+  const scope = await requireScope();
   const fields = parseFormData(loanFieldsSchema, formData);
   const linkedPropertyId = await requireOwnedLinkedProperty(
     fields.linkedPropertyId,
-    session.user.id,
+    scope.householdId,
   );
 
   const loan = await db.loan.create({
     data: {
-      ownerId: session.user.id,
+      ownerId: scope.userId,
+      householdId: scope.householdId,
       lender: fields.lender,
       type: fields.type,
       principal: fields.principal,
@@ -131,7 +126,8 @@ export async function createLoan(formData: FormData) {
 
   const schedule = await db.billSchedule.create({
     data: {
-      ownerId: session.user.id,
+      ownerId: scope.userId,
+      householdId: scope.householdId,
       category: "EMI",
       loanId: loan.id,
       recurrence: "MONTHLY",
@@ -151,12 +147,12 @@ export async function createLoan(formData: FormData) {
 
 /** Updates every editable field of an existing `Loan` and its EMI `BillSchedule`. */
 export async function updateLoan(loanId: string, formData: FormData) {
-  const session = await requireSession();
-  const existingLoan = await requireOwnedLoan(loanId, session.user.id);
+  const scope = await requireScope();
+  const existingLoan = await requireOwnedLoan(loanId, scope.householdId);
   const fields = parseFormData(loanFieldsSchema, formData);
   const linkedPropertyId = await requireOwnedLinkedProperty(
     fields.linkedPropertyId,
-    session.user.id,
+    scope.householdId,
   );
 
   await db.loan.update({
@@ -196,8 +192,8 @@ export async function updateLoan(loanId: string, formData: FormData) {
  * the loan record to stay meaningful. Same rationale as `deleteLease`.
  */
 export async function deleteLoan(loanId: string) {
-  const session = await requireSession();
-  const loan = await requireOwnedLoan(loanId, session.user.id);
+  const scope = await requireScope();
+  const loan = await requireOwnedLoan(loanId, scope.householdId);
 
   const existingBill = await db.bill.findFirst({
     where: { loanId },

@@ -31,20 +31,14 @@ import {
   parseFormData,
   text,
 } from "~/lib/form";
-import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { requireScope } from "~/server/households";
 import { hasDependentRecordsForProperty } from "~/server/queries/properties";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) redirect("/");
-  return session;
-}
-
-async function requireOwnedProperty(propertyId: string, ownerId: string) {
+async function requireOwnedProperty(propertyId: string, householdId: string) {
   const property = await db.property.findFirst({
-    where: { id: propertyId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: propertyId, householdId, ...NOT_SOFT_DELETED },
   });
   if (!property) throw new Error("Property not found");
   return property;
@@ -78,11 +72,15 @@ const propertyFieldsSchema = z.object({
 
 /** Creates a new `Property` for the signed-in owner. */
 export async function createProperty(formData: FormData) {
-  const session = await requireSession();
+  const scope = await requireScope();
   const fields = parseFormData(propertyFieldsSchema, formData);
 
   await db.property.create({
-    data: { ownerId: session.user.id, ...fields },
+    data: {
+      ownerId: scope.userId,
+      householdId: scope.householdId,
+      ...fields,
+    },
   });
 
   revalidatePath("/properties");
@@ -91,8 +89,8 @@ export async function createProperty(formData: FormData) {
 
 /** Updates every editable field of an existing `Property` the owner holds. */
 export async function updateProperty(propertyId: string, formData: FormData) {
-  const session = await requireSession();
-  await requireOwnedProperty(propertyId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedProperty(propertyId, scope.householdId);
   const fields = parseFormData(propertyFieldsSchema, formData);
 
   await db.property.update({
@@ -112,8 +110,8 @@ export async function updateProperty(propertyId: string, formData: FormData) {
  * `deleteLease`.
  */
 export async function deleteProperty(propertyId: string) {
-  const session = await requireSession();
-  await requireOwnedProperty(propertyId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedProperty(propertyId, scope.householdId);
 
   if (await hasDependentRecordsForProperty(propertyId)) {
     throw new Error(

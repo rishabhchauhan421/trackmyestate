@@ -5,8 +5,8 @@ import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { createLease } from "~/server/actions/leases";
-import { getSession } from "~/server/better-auth/server";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { requireScope } from "~/server/households";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getRoomsForProperty } from "~/server/queries/rentals";
 
 export default async function NewLeasePage({
@@ -18,9 +18,8 @@ export default async function NewLeasePage({
 }) {
   const { id } = await params;
   const { roomId } = await searchParams;
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const property = await getPropertyForOwner(id, session.user.id);
+  const scope = await requireScope();
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }

@@ -1,13 +1,13 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { deleteProperty, updateProperty } from "~/server/actions/properties";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import {
-  getPropertyForOwner,
+  getPropertyForHousehold,
   hasDependentRecordsForProperty,
 } from "~/server/queries/properties";
 import { PropertyFormFields } from "../../_components/property-form-fields";
@@ -18,10 +18,9 @@ export default async function EditPropertyPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const property = await getPropertyForOwner(id, session.user.id);
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }

@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -10,9 +10,9 @@ import {
   deleteInvestment,
   updateInvestment,
 } from "~/server/actions/investments";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import {
-  getInvestmentForOwner,
+  getInvestmentForHousehold,
   hasBillsForInvestment,
 } from "~/server/queries/investments";
 
@@ -22,10 +22,9 @@ export default async function EditInvestmentPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const investment = await getInvestmentForOwner(id, session.user.id);
+  const investment = await getInvestmentForHousehold(id, scope.householdId);
   if (!investment) {
     notFound();
   }

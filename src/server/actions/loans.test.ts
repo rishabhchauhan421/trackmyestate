@@ -10,6 +10,11 @@ jest.mock("~/server/db");
 jest.mock("~/server/bills/generate", () => ({
   generateBillsForSchedule: jest.fn(),
 }));
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -153,6 +158,7 @@ describe("createLoan", () => {
     expect(dbMock.loan.create).toHaveBeenCalledWith({
       data: {
         ownerId: "user-1",
+        householdId: "household-1",
         lender: "HDFC Bank",
         type: "HOME_LOAN",
         principal: 5000000,
@@ -184,6 +190,7 @@ describe("createLoan", () => {
     expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: {
         ownerId: "user-1",
+        householdId: "household-1",
         category: "EMI",
         loanId: "loan-1",
         recurrence: "MONTHLY",
@@ -206,7 +213,7 @@ describe("createLoan", () => {
     ).rejects.toThrow("REDIRECT:/loans");
 
     expect(dbMock.property.findFirst).toHaveBeenCalledWith({
-      where: { id: "prop-1", ownerId: "user-1" },
+      where: { id: "prop-1", householdId: "household-1" },
     });
     expect(dbMock.loan.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ linkedPropertyId: "prop-1" }),

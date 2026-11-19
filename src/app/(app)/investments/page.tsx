@@ -1,19 +1,16 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { InvestmentsIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatINR } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getInvestments } from "~/server/queries/investments";
 
 export default async function InvestmentsPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const investments = await getInvestments(session.user.id);
+  const scope = await requireScope();
+  const investments = await getInvestments(scope.householdId);
 
   return (
     <>

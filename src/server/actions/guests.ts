@@ -13,8 +13,8 @@ import { z } from "zod";
 import type { EventCategory, ReminderChannel } from "../../../generated/prisma";
 import { normalizeIndianMobile } from "~/lib/phone";
 import { REMINDER_CATEGORIES } from "~/lib/reminders";
-import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { requireScope } from "~/server/households";
 import { sendGuestWelcomeEmail } from "~/server/guests/emails";
 import { getGuestForOwner } from "~/server/queries/guests";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
@@ -118,17 +118,11 @@ function parseGuestForm(formData: FormData) {
   return result.data;
 }
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  return session;
-}
-
 /** Keeps only property ids the owner actually has. */
-async function ownedPropertyIds(ownerId: string, propertyIds: string[]) {
+async function ownedPropertyIds(householdId: string, propertyIds: string[]) {
   if (propertyIds.length === 0) return [];
   const owned = await db.property.findMany({
-    where: { id: { in: propertyIds }, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: { in: propertyIds }, householdId, ...NOT_SOFT_DELETED },
     select: { id: true },
   });
   if (owned.length !== new Set(propertyIds).size) {
@@ -154,15 +148,15 @@ function guestData(
 }
 
 export async function createGuest(formData: FormData) {
-  const session = await requireSession();
+  const scope = await requireScope();
   const guest = parseGuestForm(formData);
   const propertyIds = await ownedPropertyIds(
-    session.user.id,
+    scope.householdId,
     guest.propertyScope === "some" ? guest.propertyIds : [],
   );
 
   const created = await db.guest.create({
-    data: { ownerId: session.user.id, ...guestData(guest, propertyIds) },
+    data: { ownerId: scope.userId, ...guestData(guest, propertyIds) },
   });
 
   // Tell them before the first reminder arrives, with a way to stop.
@@ -171,7 +165,7 @@ export async function createGuest(formData: FormData) {
       guestId: created.id,
       to: created.email,
       guestName: created.name,
-      ownerName: session.user.name,
+      ownerName: scope.user.name,
       categories: created.categories,
     });
   }
@@ -181,13 +175,13 @@ export async function createGuest(formData: FormData) {
 }
 
 export async function updateGuest(guestId: string, formData: FormData) {
-  const session = await requireSession();
-  const existing = await getGuestForOwner(guestId, session.user.id);
+  const scope = await requireScope();
+  const existing = await getGuestForOwner(guestId, scope.userId);
   if (!existing) throw new Error("Guest not found");
 
   const guest = parseGuestForm(formData);
   const propertyIds = await ownedPropertyIds(
-    session.user.id,
+    scope.householdId,
     guest.propertyScope === "some" ? guest.propertyIds : [],
   );
 
@@ -201,8 +195,8 @@ export async function updateGuest(guestId: string, formData: FormData) {
 }
 
 export async function pauseGuest(guestId: string) {
-  const session = await requireSession();
-  if (!(await getGuestForOwner(guestId, session.user.id))) {
+  const scope = await requireScope();
+  if (!(await getGuestForOwner(guestId, scope.userId))) {
     throw new Error("Guest not found");
   }
   await db.guest.update({
@@ -214,8 +208,8 @@ export async function pauseGuest(guestId: string) {
 
 /** Resumes a paused guest — not one who opted out themselves. */
 export async function resumeGuest(guestId: string) {
-  const session = await requireSession();
-  const guest = await getGuestForOwner(guestId, session.user.id);
+  const scope = await requireScope();
+  const guest = await getGuestForOwner(guestId, scope.userId);
   if (!guest) throw new Error("Guest not found");
   if (guest.optedOutAt) {
     throw new Error("This guest stopped reminders themselves");
@@ -225,8 +219,8 @@ export async function resumeGuest(guestId: string) {
 }
 
 export async function removeGuest(guestId: string) {
-  const session = await requireSession();
-  if (!(await getGuestForOwner(guestId, session.user.id))) {
+  const scope = await requireScope();
+  if (!(await getGuestForOwner(guestId, scope.userId))) {
     throw new Error("Guest not found");
   }
   await db.guest.update({

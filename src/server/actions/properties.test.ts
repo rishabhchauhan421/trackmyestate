@@ -6,6 +6,11 @@ import { getSession } from "~/server/better-auth/server";
 import { createProperty, deleteProperty, updateProperty } from "./properties";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -121,6 +126,7 @@ describe("createProperty", () => {
     expect(dbMock.property.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         ownerId: "user-1",
+        householdId: "household-1",
         name: "Whitefield Apartment",
         type: "RENTED",
         city: "Bengaluru",

@@ -1,7 +1,5 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { Card, CardHeader, StatCard } from "~/app/_components/card";
 import {
@@ -18,7 +16,7 @@ import {
   formatINR,
   formatShortDate,
 } from "~/lib/format";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
 import { getDashboardData } from "~/server/queries/dashboard";
 
@@ -70,9 +68,8 @@ function plural(count: number, word: string) {
 }
 
 export default async function DashboardPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const timeZone = await getUserTimeZone(session.user.id);
+  const scope = await requireScope();
+  const timeZone = await getUserTimeZone(scope.userId);
   const {
     netWorth,
     propertyValue,
@@ -83,9 +80,9 @@ export default async function DashboardPage() {
     expectedInflows,
     attentionItems,
     upcoming,
-  } = await getDashboardData(session.user.id, timeZone);
+  } = await getDashboardData(scope.householdId, timeZone);
 
-  const firstName = session.user.name?.split(" ")[0];
+  const firstName = scope.user.name?.split(" ")[0];
   const overdueCount = attentionItems.filter(
     (item) => toneFor(item, timeZone) === "danger",
   ).length;

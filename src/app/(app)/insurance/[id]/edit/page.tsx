@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -7,9 +7,9 @@ import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from "~/lib/labels";
 import { deletePolicy, updatePolicy } from "~/server/actions/policies";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import {
-  getPolicyForOwner,
+  getPolicyForHousehold,
   hasBillsForPolicy,
 } from "~/server/queries/policies";
 
@@ -19,10 +19,9 @@ export default async function EditPolicyPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const policy = await getPolicyForOwner(id, session.user.id);
+  const policy = await getPolicyForHousehold(id, scope.householdId);
   if (!policy) {
     notFound();
   }

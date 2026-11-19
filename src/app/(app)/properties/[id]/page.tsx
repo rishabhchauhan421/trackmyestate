@@ -1,7 +1,7 @@
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import clsx from "clsx";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { Card, CardHeader, StatCard } from "~/app/_components/card";
@@ -21,11 +21,11 @@ import {
   PROPERTY_CATEGORY_LABELS,
   PROPERTY_TYPE_LABELS,
 } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
 import { getAllBillsForProperty } from "~/server/queries/bills";
 import { getLeasesForProperty } from "~/server/queries/leases";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
 const OPEN_STATUSES: readonly string[] = OPEN_PAYMENT_STATUSES;
@@ -36,10 +36,9 @@ export default async function PropertyDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const property = await getPropertyForOwner(id, session.user.id);
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
@@ -47,7 +46,7 @@ export default async function PropertyDetailPage({
   const [bills, leases, timeZone] = await Promise.all([
     getAllBillsForProperty(id),
     getLeasesForProperty(id),
-    getUserTimeZone(session.user.id),
+    getUserTimeZone(scope.userId),
   ]);
 
   const activeLeases = leases.filter((lease) => lease.active);

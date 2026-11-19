@@ -1,10 +1,10 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "~/app/_components/page-header";
 import { updateGuest } from "~/server/actions/guests";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getGuestForOwner } from "~/server/queries/guests";
-import { getPropertyOptionsForOwner } from "~/server/queries/properties";
+import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 import { GuestForm } from "../../guest-form";
 
 export default async function EditGuestPage({
@@ -13,11 +13,10 @@ export default async function EditGuestPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
   const [guest, properties] = await Promise.all([
-    getGuestForOwner(id, session.user.id),
-    getPropertyOptionsForOwner(session.user.id),
+    getGuestForOwner(id, scope.userId),
+    getPropertyOptionsForHousehold(scope.householdId),
   ]);
   if (!guest || guest.optedOutAt) notFound();
 

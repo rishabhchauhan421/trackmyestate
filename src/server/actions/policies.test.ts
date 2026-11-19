@@ -6,6 +6,11 @@ import { getSession } from "~/server/better-auth/server";
 import { createPolicy, deletePolicy, updatePolicy } from "./policies";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -123,6 +128,7 @@ describe("createPolicy", () => {
     expect(dbMock.policy.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         ownerId: "user-1",
+        householdId: "household-1",
         type: "TERM_LIFE",
         insurer: "LIC",
         policyNumber: "LIC-12345",

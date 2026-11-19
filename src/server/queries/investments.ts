@@ -7,24 +7,24 @@ import { NOT_SOFT_DELETED } from "~/server/queries/shared";
  * Investments for the Investments page. Deleted investments (see
  * `deleteInvestment` in `~/server/actions/investments`) are excluded.
  */
-export async function getInvestments(ownerId: string) {
+export async function getInvestments(householdId: string) {
   return db.investment.findMany({
-    where: { ownerId, ...NOT_SOFT_DELETED },
+    where: { householdId, ...NOT_SOFT_DELETED },
     orderBy: { createdAt: "asc" },
   });
 }
 
 /**
- * A single `Investment`, scoped to `ownerId` — for the edit page. Returns
+ * A single `Investment`, scoped to `householdId` — for the edit page. Returns
  * `null` for a nonexistent investment *or* one owned by someone else, same
- * rationale as `getPropertyForOwner`.
+ * rationale as `getPropertyForHousehold`.
  */
-export async function getInvestmentForOwner(
+export async function getInvestmentForHousehold(
   investmentId: string,
-  ownerId: string,
+  householdId: string,
 ) {
   return db.investment.findFirst({
-    where: { id: investmentId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: investmentId, householdId, ...NOT_SOFT_DELETED },
   });
 }
 

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { SubmitButton } from "~/app/_components/submit-button";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
@@ -17,9 +17,9 @@ import {
   deactivateUtility,
   removeUtilityRecipient,
 } from "~/server/actions/utilities";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 import {
   getActiveUtilitiesForProperty,
   getUtilityBillsForProperty,
@@ -31,9 +31,8 @@ export default async function PropertyUtilitiesPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const property = await getPropertyForOwner(id, session.user.id);
+  const scope = await requireScope();
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
@@ -41,7 +40,7 @@ export default async function PropertyUtilitiesPage({
   const [utilities, bills, timeZone] = await Promise.all([
     getActiveUtilitiesForProperty(id),
     getUtilityBillsForProperty(id),
-    getUserTimeZone(session.user.id),
+    getUserTimeZone(scope.userId),
   ]);
   const today = todayInTimeZone(timeZone);
   const OPEN = ["DUE", "OVERDUE", "PARTIALLY_PAID"];

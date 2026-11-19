@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
@@ -12,7 +12,7 @@ import {
 import { CURRENCY_LABELS } from "~/lib/labels";
 import { timeZoneOptions } from "~/lib/time-zone";
 import { updateGeneralSettings } from "~/server/actions/settings";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserSettings } from "~/server/queries/settings";
 import { TimeZoneField } from "./time-zone-field";
 
@@ -22,10 +22,9 @@ export default async function GeneralSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
   const [user, { saved }] = await Promise.all([
-    getUserSettings(session.user.id),
+    getUserSettings(scope.userId),
     searchParams,
   ]);
   if (!user) notFound();

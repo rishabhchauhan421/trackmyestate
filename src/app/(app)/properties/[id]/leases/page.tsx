@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getLeasesForProperty } from "~/server/queries/leases";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 
 export default async function PropertyLeasesPage({
   params,
@@ -15,10 +15,9 @@ export default async function PropertyLeasesPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const property = await getPropertyForOwner(id, session.user.id);
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }

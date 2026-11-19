@@ -111,7 +111,7 @@ describe("getDashboardData", () => {
     await getDashboardData(OWNER_ID);
 
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
-    expect(call?.where?.ownerId).toBe(OWNER_ID);
+    expect(call?.where?.householdId).toBe(OWNER_ID);
     expect(call?.where?.OR).toEqual([
       { status: "OVERDUE" },
       { status: "DUE", dueDate: { lte: expect.any(Date) as Date } },
@@ -165,7 +165,7 @@ describe("getDashboardData", () => {
 
     const outflowCallArgs = dbMock.bill.aggregate.mock.calls[0]?.[0];
     expect(outflowCallArgs?.where).toMatchObject({
-      ownerId: OWNER_ID,
+      householdId: OWNER_ID,
       direction: "OUTFLOW",
       status: { in: ["DUE", "OVERDUE", "PARTIALLY_PAID"] },
     });

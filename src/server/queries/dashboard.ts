@@ -12,7 +12,7 @@ import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
  * attention" list (overdue, or due within 7 days).
  */
 export async function getDashboardData(
-  ownerId: string,
+  householdId: string,
   timeZone: string = DEFAULT_TIME_ZONE,
   now: Date = new Date(),
 ) {
@@ -33,24 +33,24 @@ export async function getDashboardData(
     upcoming,
   ] = await Promise.all([
     db.property.aggregate({
-      where: { ownerId },
+      where: { householdId },
       _sum: { currentEstimatedValue: true },
     }),
     db.investment.aggregate({
-      where: { ownerId },
+      where: { householdId },
       _sum: { currentEstimatedValue: true },
     }),
     db.loan.aggregate({
-      where: { ownerId },
+      where: { householdId },
       _sum: { outstandingBalance: true },
     }),
     db.policy.aggregate({
-      where: { ownerId, status: "ACTIVE" },
+      where: { householdId, status: "ACTIVE" },
       _sum: { sumAssured: true },
     }),
     db.bill.aggregate({
       where: {
-        ownerId,
+        householdId,
         direction: "OUTFLOW",
         status: { in: [...OPEN_PAYMENT_STATUSES] },
         dueDate: { lte: in30Days },
@@ -59,7 +59,7 @@ export async function getDashboardData(
     }),
     db.bill.aggregate({
       where: {
-        ownerId,
+        householdId,
         direction: "INFLOW",
         status: { in: [...OPEN_PAYMENT_STATUSES] },
         dueDate: { lte: in30Days },
@@ -68,7 +68,7 @@ export async function getDashboardData(
     }),
     db.bill.findMany({
       where: {
-        ownerId,
+        householdId,
         OR: [
           { status: "OVERDUE" },
           { status: "DUE", dueDate: { lte: in7Days } },
@@ -81,7 +81,7 @@ export async function getDashboardData(
     // dashboard's "Coming up" strip.
     db.bill.findMany({
       where: {
-        ownerId,
+        householdId,
         status: { in: [...OPEN_PAYMENT_STATUSES] },
         dueDate: { gte: dateOnly(today) },
       },

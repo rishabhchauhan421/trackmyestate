@@ -1,14 +1,12 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PlusIcon, PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { daysUntil, formatINR, formatShortDate } from "~/lib/format";
 import { PROPERTY_CATEGORY_LABELS, PROPERTY_TYPE_LABELS } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
 import { getProperties } from "~/server/queries/properties";
 
@@ -31,12 +29,11 @@ export default async function PropertiesPage({
 }: {
   searchParams: Promise<{ type?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
   const [properties, timeZone, { type }] = await Promise.all([
-    getProperties(session.user.id),
-    getUserTimeZone(session.user.id),
+    getProperties(scope.householdId),
+    getUserTimeZone(scope.userId),
     searchParams,
   ]);
   const isPast = (date: Date) => daysUntil(date, new Date(), timeZone) < 0;

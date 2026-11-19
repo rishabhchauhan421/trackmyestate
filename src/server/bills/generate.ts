@@ -6,8 +6,8 @@ import { BILL_TYPE_LABELS, EVENT_CATEGORY_LABELS } from "~/lib/labels";
 import { reminderCategoryConfig } from "~/lib/reminders";
 import { occurrencesBetween } from "~/lib/schedule";
 import { resolveTimeZone, todayInTimeZone } from "~/lib/time-zone";
-import { generateBill } from "~/server/actions/bills";
 import { db } from "~/server/db";
+import { createBill, isUniqueConstraintError, scheduleBillKey } from "./create";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
 /**
@@ -19,9 +19,11 @@ import { NOT_SOFT_DELETED } from "~/server/queries/shared";
  * `LOOKBACK_DAYS` ago to `HORIZON_DAYS` ahead (in the owner's time zone):
  * far enough ahead for the earliest reminder (30 days before), and far
  * enough back to catch up after missed runs. A bill that already exists
- * for a schedule and day is never created twice, so the job can run as
- * often as needed — daily by `/api/cron/bills`, on demand from the admin
- * portal, and for a single schedule right after it's created.
+ * for a schedule and day is never created twice — each one's
+ * `generationKey` is unique in the database, so even two runs at the same
+ * moment can't both insert it — and the job can run as often as needed:
+ * daily by `/api/cron/bills`, on demand from the admin portal, and for a
+ * single schedule right after it's created.
  */
 
 export const HORIZON_DAYS = 35;
@@ -169,25 +171,32 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
       const key = `${schedule.id}:${dateOnly(day).toISOString()}`;
       if (alreadyBilled.has(key)) continue;
 
-      await generateBill({
-        ownerId: schedule.ownerId,
-        category: schedule.category,
-        direction: reminderCategoryConfig(schedule.category).incoming
-          ? "INFLOW"
-          : "OUTFLOW",
-        billScheduleId: schedule.id,
-        propertyId: schedule.propertyId ?? undefined,
-        leaseId: schedule.leaseId ?? undefined,
-        loanId: schedule.loanId ?? undefined,
-        policyId: schedule.policyId ?? undefined,
-        investmentId: schedule.investmentId ?? undefined,
-        amount: schedule.defaultAmount,
-        dueDay: day,
-        description: describe(schedule, names),
-        installmentNumber: schedule.tenureMonths ? installment : undefined,
-      });
+      try {
+        await createBill({
+          ownerId: schedule.ownerId,
+          householdId: schedule.householdId ?? undefined,
+          generationKey: scheduleBillKey(schedule.id, day),
+          category: schedule.category,
+          direction: reminderCategoryConfig(schedule.category).incoming
+            ? "INFLOW"
+            : "OUTFLOW",
+          billScheduleId: schedule.id,
+          propertyId: schedule.propertyId ?? undefined,
+          leaseId: schedule.leaseId ?? undefined,
+          loanId: schedule.loanId ?? undefined,
+          policyId: schedule.policyId ?? undefined,
+          investmentId: schedule.investmentId ?? undefined,
+          amount: schedule.defaultAmount,
+          dueDay: day,
+          description: describe(schedule, names),
+          installmentNumber: schedule.tenureMonths ? installment : undefined,
+        });
+        billsCreated += 1;
+      } catch (error) {
+        // Another run created this bill between our read and our insert.
+        if (!isUniqueConstraintError(error)) throw error;
+      }
       alreadyBilled.add(key);
-      billsCreated += 1;
     }
   }
 

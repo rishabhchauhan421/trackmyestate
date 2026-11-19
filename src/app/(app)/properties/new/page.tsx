@@ -1,16 +1,13 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { createProperty } from "~/server/actions/properties";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { PropertyFormFields } from "../_components/property-form-fields";
 
 export default async function NewPropertyPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  await requireScope();
 
   return (
     <>

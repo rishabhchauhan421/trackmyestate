@@ -3,7 +3,7 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
 import {
-  getLeaseForOwner,
+  getLeaseForHousehold,
   getLeasesForProperty,
   hasBillsForLease,
 } from "~/server/queries/leases";
@@ -68,21 +68,21 @@ describe("getLeasesForProperty", () => {
   });
 });
 
-describe("getLeaseForOwner", () => {
+describe("getLeaseForHousehold", () => {
   it("scopes the lookup to the owner through the lease's property relation", async () => {
     dbMock.lease.findFirst.mockResolvedValue(null);
 
-    await getLeaseForOwner("lease-1", "owner-1");
+    await getLeaseForHousehold("lease-1", "owner-1");
 
     expect(dbMock.lease.findFirst).toHaveBeenCalledWith({
-      where: { id: "lease-1", property: { ownerId: "owner-1" } },
+      where: { id: "lease-1", property: { householdId: "owner-1" } },
     });
   });
 
   it("returns null when the lease doesn't exist or belongs to another owner", async () => {
     dbMock.lease.findFirst.mockResolvedValue(null);
 
-    const result = await getLeaseForOwner("lease-1", "owner-1");
+    const result = await getLeaseForHousehold("lease-1", "owner-1");
 
     expect(result).toBeNull();
   });
@@ -91,7 +91,7 @@ describe("getLeaseForOwner", () => {
     const lease = { id: "lease-1", propertyId: "prop-1" };
     dbMock.lease.findFirst.mockResolvedValue(lease as never);
 
-    const result = await getLeaseForOwner("lease-1", "owner-1");
+    const result = await getLeaseForHousehold("lease-1", "owner-1");
 
     expect(result).toBe(lease);
   });

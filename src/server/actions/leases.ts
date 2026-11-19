@@ -29,8 +29,8 @@ import {
   parseFormData,
   text,
 } from "~/lib/form";
-import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { requireScope } from "~/server/households";
 
 /**
  * Loads a property, throwing if it doesn't exist, isn't owned by the
@@ -38,16 +38,15 @@ import { db } from "~/server/db";
  * no session at all).
  */
 async function requireRentableProperty(propertyId: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
+  const scope = await requireScope();
   const property = await db.property.findFirst({
-    where: { id: propertyId, ownerId: session.user.id },
+    where: { id: propertyId, householdId: scope.householdId },
   });
   if (!property) throw new Error("Property not found");
   if (property.type === "SELF_OCCUPIED") {
     throw new Error("Self-occupied properties can't have leases");
   }
-  return { session, property };
+  return { scope, property };
 }
 
 /**
@@ -56,9 +55,9 @@ async function requireRentableProperty(propertyId: string) {
  * all). `Lease` has no `ownerId` of its own, so ownership is checked
  * through the `property` relation.
  */
-async function requireOwnedLease(leaseId: string, ownerId: string) {
+async function requireOwnedLease(leaseId: string, householdId: string) {
   const lease = await db.lease.findFirst({
-    where: { id: leaseId, property: { ownerId } },
+    where: { id: leaseId, property: { householdId } },
   });
   if (!lease) throw new Error("Lease not found");
   return lease;
@@ -136,9 +135,8 @@ export async function createLease(formData: FormData) {
  * `endLease` to end the lease itself.
  */
 export async function updateLease(leaseId: string, formData: FormData) {
-  const session = await getSession();
-  if (!session) redirect("/");
-  const lease = await requireOwnedLease(leaseId, session.user.id);
+  const scope = await requireScope();
+  const lease = await requireOwnedLease(leaseId, scope.householdId);
   const { roomId, rentAmount, depositAmount, leaseEnd, rentDueDay } =
     parseFormData(leaseTermsSchema, formData);
 
@@ -165,9 +163,8 @@ export async function updateLease(leaseId: string, formData: FormData) {
  * callers already treat a past lease as.
  */
 export async function endLease(leaseId: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
-  const lease = await requireOwnedLease(leaseId, session.user.id);
+  const scope = await requireScope();
+  const lease = await requireOwnedLease(leaseId, scope.householdId);
 
   await db.lease.update({
     where: { id: leaseId },
@@ -185,9 +182,8 @@ export async function endLease(leaseId: string) {
  * instead; this is for removing a lease added by mistake.
  */
 export async function deleteLease(leaseId: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
-  const lease = await requireOwnedLease(leaseId, session.user.id);
+  const scope = await requireScope();
+  const lease = await requireOwnedLease(leaseId, scope.householdId);
 
   const existingBill = await db.bill.findFirst({
     where: { category: "RENT", leaseId },

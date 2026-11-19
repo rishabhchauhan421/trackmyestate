@@ -142,6 +142,59 @@ describe("generateBills", () => {
     expect(bills().find((b) => b.amount === 1720)).toBeDefined();
   });
 
+  it("skips a bill another run inserted at the same moment", async () => {
+    const user = await owner();
+    const s = await schedule(user.id, {
+      category: "UTILITY_BILL",
+      startDate: new Date("2026-01-10"),
+      dueDay: 10,
+      defaultAmount: 1500,
+    });
+    // The other run's insert lands after this run read the existing bills:
+    // only the unique generation key stops a duplicate.
+    const findMany = db.bill.findMany.bind(db.bill);
+    jest.spyOn(db.bill, "findMany").mockImplementationOnce((async (
+      args: unknown,
+    ) => {
+      const result = await findMany(args as never);
+      await db.bill.create({
+        data: {
+          ownerId: user.id,
+          billScheduleId: s.id,
+          category: "UTILITY_BILL",
+          dueDate: new Date("2026-10-10"),
+          amount: 1500,
+          status: "DUE",
+          generationKey: `${s.id}:2026-10-10`,
+        } as never,
+      });
+      return result;
+    }) as never);
+
+    const summary = await generateBills(NOW);
+
+    expect(dueDays(s.id)).toEqual(["2026-09-10", "2026-10-10"]);
+    expect(summary.billsCreated).toBe(1);
+  });
+
+  it("stores each bill's household and generation key", async () => {
+    const user = await owner();
+    const s = await schedule(user.id, {
+      category: "UTILITY_BILL",
+      householdId: "hh-1",
+      startDate: new Date("2026-01-10"),
+      dueDay: 10,
+      defaultAmount: 1500,
+    });
+
+    await generateBills(NOW);
+
+    expect(bills().map((b) => [b.householdId, b.generationKey])).toEqual([
+      ["hh-1", `${s.id}:2026-09-10`],
+      ["hh-1", `${s.id}:2026-10-10`],
+    ]);
+  });
+
   it("numbers EMI instalments and names the lender", async () => {
     const user = await owner();
     const loan = await db.loan.create({

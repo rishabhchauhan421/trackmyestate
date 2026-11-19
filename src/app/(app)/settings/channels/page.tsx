@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -11,7 +11,7 @@ import {
   sendTestEmail,
   updateChannelSettings,
 } from "~/server/actions/settings";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserSettings } from "~/server/queries/settings";
 import { SEND_HOUR } from "~/server/reminders/generate";
 
@@ -59,10 +59,9 @@ export default async function ChannelSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
   const [user, { saved }] = await Promise.all([
-    getUserSettings(session.user.id),
+    getUserSettings(scope.userId),
     searchParams,
   ]);
   if (!user) notFound();

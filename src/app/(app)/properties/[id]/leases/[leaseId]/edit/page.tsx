@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -6,10 +6,13 @@ import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { deleteLease, endLease, updateLease } from "~/server/actions/leases";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getDocumentsForLease } from "~/server/queries/documents";
-import { getLeaseForOwner, hasBillsForLease } from "~/server/queries/leases";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import {
+  getLeaseForHousehold,
+  hasBillsForLease,
+} from "~/server/queries/leases";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getRoomsForProperty } from "~/server/queries/rentals";
 
 export default async function EditLeasePage({
@@ -18,15 +21,14 @@ export default async function EditLeasePage({
   params: Promise<{ id: string; leaseId: string }>;
 }) {
   const { id, leaseId } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const property = await getPropertyForOwner(id, session.user.id);
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
 
-  const lease = await getLeaseForOwner(leaseId, session.user.id);
+  const lease = await getLeaseForHousehold(leaseId, scope.householdId);
   if (lease?.propertyId !== id) {
     notFound();
   }
@@ -34,7 +36,7 @@ export default async function EditLeasePage({
   const [rooms, canDelete, documents] = await Promise.all([
     getRoomsForProperty(id),
     hasBillsForLease(leaseId).then((hasBills) => !hasBills),
-    getDocumentsForLease(leaseId, session.user.id),
+    getDocumentsForLease(leaseId, scope.householdId),
   ]);
 
   return (

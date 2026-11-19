@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
@@ -10,7 +10,7 @@ import {
   resetCategoryReminders,
   updateReminderSettings,
 } from "~/server/actions/settings";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getGuests } from "~/server/queries/guests";
 import { getUserSettings } from "~/server/queries/settings";
 import { SEND_HOUR } from "~/server/reminders/generate";
@@ -26,12 +26,11 @@ export default async function ReminderSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
   const [user, settings, guests, { saved }] = await Promise.all([
-    getUserSettings(session.user.id),
-    getReminderSettings(session.user.id),
-    getGuests(session.user.id),
+    getUserSettings(scope.userId),
+    getReminderSettings(scope.userId),
+    getGuests(scope.userId),
     searchParams,
   ]);
   if (!user) notFound();

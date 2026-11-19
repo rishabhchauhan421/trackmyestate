@@ -36,7 +36,7 @@ export function rangeBounds(
  * optionally filtered to only inflows or only outflows.
  */
 export async function getTimelineEvents(
-  ownerId: string,
+  householdId: string,
   range: TimelineRange,
   filter: TimelineFilter,
   timeZone: string = DEFAULT_TIME_ZONE,
@@ -44,7 +44,7 @@ export async function getTimelineEvents(
   const { start, end } = rangeBounds(range, new Date(), timeZone);
   return db.bill.findMany({
     where: {
-      ownerId,
+      householdId,
       dueDate: { gte: start, lt: end },
       ...(filter === "inflow" && { direction: "INFLOW" }),
       ...(filter === "outflow" && { direction: "OUTFLOW" }),

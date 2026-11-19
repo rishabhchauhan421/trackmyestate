@@ -1,6 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { InsuranceIcon } from "~/app/_components/icons";
@@ -8,13 +6,12 @@ import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { formatDate, formatINR } from "~/lib/format";
 import { POLICY_TYPE_LABELS } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getPolicies } from "~/server/queries/policies";
 
 export default async function InsurancePage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const policies = await getPolicies(session.user.id);
+  const scope = await requireScope();
+  const policies = await getPolicies(scope.householdId);
 
   return (
     <>

@@ -13,6 +13,11 @@ import {
 } from "./guests";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({ getSession: jest.fn() }));
 jest.mock("~/server/guests/emails", () => ({
   sendGuestWelcomeEmail: jest.fn(),
@@ -124,7 +129,7 @@ describe("createGuest", () => {
 
     expect(dbMock.property.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: expect.objectContaining({ ownerId: "user-1" }),
+        where: expect.objectContaining({ householdId: "household-1" }),
       }),
     );
     expect(dbMock.guest.create).toHaveBeenCalledWith({

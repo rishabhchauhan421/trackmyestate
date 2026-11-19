@@ -1,5 +1,3 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { Card } from "~/app/_components/card";
 import { Notice } from "~/app/_components/form";
@@ -7,9 +5,9 @@ import { PlusIcon, ShieldIcon } from "~/app/_components/icons";
 import { formatPhone } from "~/lib/phone";
 import { reminderCategoryConfig } from "~/lib/reminders";
 import { pauseGuest, removeGuest, resumeGuest } from "~/server/actions/guests";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getGuests } from "~/server/queries/guests";
-import { getPropertyOptionsForOwner } from "~/server/queries/properties";
+import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 
 const CHANNEL_LABELS: Record<string, string> = {
   EMAIL: "Email",
@@ -47,11 +45,10 @@ export default async function GuestSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
   const [guests, properties, { saved }] = await Promise.all([
-    getGuests(session.user.id),
-    getPropertyOptionsForOwner(session.user.id),
+    getGuests(scope.userId),
+    getPropertyOptionsForHousehold(scope.householdId),
     searchParams,
   ]);
   const propertyName = new Map(properties.map((p) => [p.id, p.name]));
@@ -225,7 +222,7 @@ export default async function GuestSettingsPage({
             Electricity bill: ₹4,120 due in 3 days
           </p>
           <p className="mt-1 text-ink-2">
-            From {session.user.name}, via TrackMyEstate.
+            From {scope.user.name}, via TrackMyEstate.
             <br />
             Electricity bill — ₹4,120, due on 8 Oct 2026.
           </p>

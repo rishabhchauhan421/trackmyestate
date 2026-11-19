@@ -15,11 +15,11 @@ import {
  * `~/server/actions/loans`) are excluded.
  */
 export async function getLoans(
-  ownerId: string,
+  householdId: string,
   timeZone: string = DEFAULT_TIME_ZONE,
 ) {
   const loans = await db.loan.findMany({
-    where: { ownerId, ...NOT_SOFT_DELETED },
+    where: { householdId, ...NOT_SOFT_DELETED },
     orderBy: { createdAt: "asc" },
   });
 
@@ -89,17 +89,17 @@ export async function getLoans(
 }
 
 /**
- * A single `Loan`, scoped to `ownerId` — for the edit page. Returns `null`
+ * A single `Loan`, scoped to `householdId` — for the edit page. Returns `null`
  * for a nonexistent loan *or* one owned by someone else, same rationale as
- * `getPropertyForOwner`. Its EMI schedule lives on a separate `BillSchedule`
+ * `getPropertyForHousehold`. Its EMI schedule lives on a separate `BillSchedule`
  * row (category `"EMI"`) — see the model comment in `schema.prisma` — so
  * it's fetched and flattened back onto the returned loan under its old
  * field names (`tenureMonths`/`emiAmount`/`emiDueDay`), keeping the edit
  * page's field access unchanged.
  */
-export async function getLoanForOwner(loanId: string, ownerId: string) {
+export async function getLoanForHousehold(loanId: string, householdId: string) {
   const loan = await db.loan.findFirst({
-    where: { id: loanId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: loanId, householdId, ...NOT_SOFT_DELETED },
   });
   if (!loan) return null;
 

@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -7,9 +7,9 @@ import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { deleteLoan, updateLoan } from "~/server/actions/loans";
-import { getSession } from "~/server/better-auth/server";
-import { getLoanForOwner, hasBillsForLoan } from "~/server/queries/loans";
-import { getPropertyOptionsForOwner } from "~/server/queries/properties";
+import { requireScope } from "~/server/households";
+import { getLoanForHousehold, hasBillsForLoan } from "~/server/queries/loans";
+import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 
 export default async function EditLoanPage({
   params,
@@ -17,14 +17,13 @@ export default async function EditLoanPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const loan = await getLoanForOwner(id, session.user.id);
+  const loan = await getLoanForHousehold(id, scope.householdId);
   if (!loan) {
     notFound();
   }
-  const properties = await getPropertyOptionsForOwner(session.user.id);
+  const properties = await getPropertyOptionsForHousehold(scope.householdId);
   const canDelete = !(await hasBillsForLoan(id));
 
   return (

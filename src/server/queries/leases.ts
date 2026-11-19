@@ -19,17 +19,17 @@ export async function getLeasesForProperty(propertyId: string) {
 }
 
 /**
- * A single `Lease`, scoped to the signed-in owner through its property —
- * `Lease` has no `ownerId` of its own. Returns `null` for a nonexistent
- * lease *or* one belonging to someone else's property, same rationale as
- * `getPropertyForOwner`. Includes a soft-deleted lease too (unlike
- * `getLeasesForProperty`'s list), since a direct-by-id lookup like this is
- * only ever used right after a mutation on a lease the caller already
- * knows the id of.
+ * A single `Lease`, scoped to a household through its property — `Lease`
+ * has no `householdId` of its own. Returns `null` for a nonexistent or
+ * deleted lease, or one on another household's property, same rationale as
+ * `getPropertyForHousehold`.
  */
-export async function getLeaseForOwner(leaseId: string, ownerId: string) {
+export async function getLeaseForHousehold(
+  leaseId: string,
+  householdId: string,
+) {
   return db.lease.findFirst({
-    where: { id: leaseId, property: { ownerId } },
+    where: { id: leaseId, property: { householdId } },
   });
 }
 
