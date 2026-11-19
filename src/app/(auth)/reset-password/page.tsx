@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { type Metadata } from "next";
 
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Notice } from "~/app/_components/form";
 import { SlimLayout } from "~/app/_components/slim-layout";
+import { SlimLayoutSkeleton } from "~/app/_components/skeleton";
 import { TextField } from "~/app/_components/text-field";
 import { resetPassword } from "~/server/actions/password-reset";
 import {
@@ -21,7 +23,7 @@ export const metadata: Metadata = {
  * here with `?token=` when it's valid, or `?error=INVALID_TOKEN` when it's
  * expired or already used.
  */
-export default async function ResetPasswordPage({
+async function ResetPasswordPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ token?: string; error?: string }>;
@@ -82,5 +84,21 @@ export default async function ResetPasswordPage({
         </>
       )}
     </SlimLayout>
+  );
+}
+
+/**
+ * What this page shows depends on the address it was opened with, so the
+ * frame and title are prerendered and the rest streams in behind them.
+ */
+export default function ResetPasswordPage(
+  props: Parameters<typeof ResetPasswordPageContent>[0],
+) {
+  return (
+    <>
+      <Suspense fallback={<SlimLayoutSkeleton title="Choose a new password" />}>
+        <ResetPasswordPageContent {...props} />
+      </Suspense>
+    </>
   );
 }

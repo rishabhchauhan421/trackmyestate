@@ -1,6 +1,6 @@
 import { type Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 import { SubmitButton } from "~/app/_components/submit-button";
 import { SlimLayout } from "~/app/_components/slim-layout";
@@ -8,7 +8,7 @@ import { Notice } from "~/app/_components/form";
 import { GoogleIcon } from "~/app/_components/google-icon";
 import { TextField } from "~/app/_components/text-field";
 import { signInWithEmail, signInWithGoogle } from "~/server/actions/auth";
-import { getSession } from "~/server/better-auth/server";
+import { SignedInRedirect } from "../signed-in-redirect";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -23,29 +23,21 @@ const VERIFY_LINK_ERRORS: Record<string, string> = {
   USER_NOT_FOUND: "We couldn't find the account for that confirmation link.",
 };
 
-export default async function LoginPage({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    error?: string;
-    reset?: string;
-    unverified?: string;
-    verified?: string;
-  }>;
-}) {
-  const session = await getSession();
-  if (session) {
-    redirect("/dashboard");
-  }
+type LoginParams = Promise<{
+  error?: string;
+  reset?: string;
+  unverified?: string;
+  verified?: string;
+}>;
+
+/** The messages a redirect to this page carries in its address. */
+async function LoginNotices({ searchParams }: { searchParams: LoginParams }) {
   const { error, reset, unverified, verified } = await searchParams;
   const errorMessage =
     verified && error ? (VERIFY_LINK_ERRORS[error] ?? error) : error;
 
   return (
-    <SlimLayout
-      title="Welcome back"
-      description="Sign in to see what's due this week."
-    >
+    <>
       {reset && (
         <Notice tone="success">
           Your password has been changed. Sign in with your new password.
@@ -58,6 +50,32 @@ export default async function LoginPage({
         </Notice>
       )}
       {errorMessage && <Notice tone="error">{errorMessage}</Notice>}
+    </>
+  );
+}
+
+/**
+ * The sign-in form is the same for every visitor, so the page is
+ * prerendered and served at once. Only the notices (they depend on the
+ * address) and the redirect for people who are already signed in wait for
+ * the request, each behind its own boundary.
+ */
+export default function LoginPage({
+  searchParams,
+}: {
+  searchParams: LoginParams;
+}) {
+  return (
+    <SlimLayout
+      title="Welcome back"
+      description="Sign in to see what's due this week."
+    >
+      <Suspense fallback={null}>
+        <SignedInRedirect />
+      </Suspense>
+      <Suspense fallback={null}>
+        <LoginNotices searchParams={searchParams} />
+      </Suspense>
 
       <form action={signInWithGoogle} data-gtm-event="sign_in_google">
         <SubmitButton

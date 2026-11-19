@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { type Metadata } from "next";
 
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Notice } from "~/app/_components/form";
 import { SlimLayout } from "~/app/_components/slim-layout";
+import { SlimLayoutSkeleton } from "~/app/_components/skeleton";
 import { stopReminders, type StopLink } from "~/server/actions/guest-opt-out";
 import { db } from "~/server/db";
 import {
@@ -78,7 +80,7 @@ async function resolveLink(params: {
  * scanners that open links automatically can't unsubscribe someone by
  * accident.
  */
-export default async function StopRemindersPage({
+async function StopRemindersPageContent({
   searchParams,
 }: {
   searchParams: Promise<{
@@ -148,5 +150,21 @@ export default async function StopRemindersPage({
         Changed your mind? Ask {ownerName} to add you again.
       </p>
     </SlimLayout>
+  );
+}
+
+/**
+ * What this page shows depends on the address it was opened with, so the
+ * frame and title are prerendered and the rest streams in behind them.
+ */
+export default function StopRemindersPage(
+  props: Parameters<typeof StopRemindersPageContent>[0],
+) {
+  return (
+    <>
+      <Suspense fallback={<SlimLayoutSkeleton title="Stop reminders" />}>
+        <StopRemindersPageContent {...props} />
+      </Suspense>
+    </>
   );
 }

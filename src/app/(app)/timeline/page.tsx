@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ListSkeleton } from "~/app/_components/skeleton";
 import Link from "next/link";
 import { EmptyState } from "~/app/_components/empty-state";
 import { TimelineIcon } from "~/app/_components/icons";
@@ -43,7 +45,7 @@ function isFilter(value: string | undefined): value is TimelineFilter {
   return value === "all" || value === "inflow" || value === "outflow";
 }
 
-export default async function TimelinePage({
+async function TimelineContent({
   searchParams,
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -72,11 +74,6 @@ export default async function TimelinePage({
 
   return (
     <>
-      <PageHeader
-        title="Timeline"
-        description="What do I pay this month, and what money is coming back to me — and when. Projected items are bills your schedules will add closer to the date."
-      />
-
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="inline-flex rounded-lg border border-line bg-surface p-1">
           {RANGE_TABS.map((tab) => (
@@ -157,6 +154,27 @@ export default async function TimelinePage({
           </ul>
         </div>
       )}
+    </>
+  );
+}
+
+/**
+ * The header is the same for everyone, so it is prerendered and shows the
+ * moment the page is opened; the data streams in beneath it.
+ */
+export default function TimelinePage(
+  props: Parameters<typeof TimelineContent>[0],
+) {
+  return (
+    <>
+      <PageHeader
+        title="Timeline"
+        description="What do I pay this month, and what money is coming back to me — and when. Projected items are bills your schedules will add closer to the date."
+      />
+
+      <Suspense fallback={<ListSkeleton rows={6} />}>
+        <TimelineContent {...props} />
+      </Suspense>
     </>
   );
 }

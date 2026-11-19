@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ListSkeleton } from "~/app/_components/skeleton";
 import { Button } from "~/app/_components/button";
 import { DocumentsIcon } from "~/app/_components/icons";
 import { EmptyState } from "~/app/_components/empty-state";
@@ -18,23 +20,15 @@ const OWNER_TYPE_LABELS: Record<string, string> = {
   BILL: "Bill",
 };
 
-export default async function DocumentsPage() {
+async function DocumentsContent() {
   const scope = await requireScope();
-  const timeZone = await getUserTimeZone(scope.userId);
-  const documents = await getDocuments(scope.householdId);
+  const [timeZone, documents] = await Promise.all([
+    getUserTimeZone(scope.userId),
+    getDocuments(scope.householdId),
+  ]);
 
   return (
     <>
-      <PageHeader
-        title="Documents"
-        description="Policy PDFs, loan statements, property papers, receipts and KYC — encrypted, attached to the asset they belong to."
-        action={
-          <Button type="button" disabled title="Coming soon">
-            Upload document
-          </Button>
-        }
-      />
-
       {documents.length === 0 ? (
         <EmptyState
           Icon={DocumentsIcon}
@@ -64,6 +58,30 @@ export default async function DocumentsPage() {
           </ul>
         </div>
       )}
+    </>
+  );
+}
+
+/**
+ * The header is the same for everyone, so it is prerendered and shows the
+ * moment the page is opened; the data streams in beneath it.
+ */
+export default function DocumentsPage() {
+  return (
+    <>
+      <PageHeader
+        title="Documents"
+        description="Policy PDFs, loan statements, property papers, receipts and KYC — encrypted, attached to the asset they belong to."
+        action={
+          <Button type="button" disabled title="Coming soon">
+            Upload document
+          </Button>
+        }
+      />
+
+      <Suspense fallback={<ListSkeleton />}>
+        <DocumentsContent />
+      </Suspense>
     </>
   );
 }

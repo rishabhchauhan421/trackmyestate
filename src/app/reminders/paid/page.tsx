@@ -1,8 +1,10 @@
+import { Suspense } from "react";
 import { type Metadata } from "next";
 
 import { Button } from "~/app/_components/button";
 import { Field, Notice, Select } from "~/app/_components/form";
 import { SlimLayout } from "~/app/_components/slim-layout";
+import { SlimLayoutSkeleton } from "~/app/_components/skeleton";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { formatDate, formatMoney } from "~/lib/format";
 import { EVENT_CATEGORY_LABELS, PAYMENT_METHOD_LABELS } from "~/lib/labels";
@@ -22,7 +24,7 @@ export const metadata: Metadata = {
  * asks for a click instead of settling the bill on load, so email scanners
  * that open links automatically can't mark anything paid.
  */
-export default async function MarkPaidPage({
+async function MarkPaidPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ bill?: string; sig?: string; done?: string }>;
@@ -120,5 +122,21 @@ export default async function MarkPaidPage({
         .
       </p>
     </SlimLayout>
+  );
+}
+
+/**
+ * What this page shows depends on the address it was opened with, so the
+ * frame and title are prerendered and the rest streams in behind them.
+ */
+export default function MarkPaidPage(
+  props: Parameters<typeof MarkPaidPageContent>[0],
+) {
+  return (
+    <>
+      <Suspense fallback={<SlimLayoutSkeleton title="Mark as paid" />}>
+        <MarkPaidPageContent {...props} />
+      </Suspense>
+    </>
   );
 }

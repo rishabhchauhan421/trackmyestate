@@ -1,3 +1,4 @@
+import { requireAdminSession } from "~/server/better-auth/server";
 import Link from "next/link";
 import clsx from "clsx";
 
@@ -61,6 +62,7 @@ export default async function AdminNotificationsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
+  await requireAdminSession();
   const filters = parseFilters(await searchParams);
   const [log, stats] = await Promise.all([
     getNotificationLog(filters),

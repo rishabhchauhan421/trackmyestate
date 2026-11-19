@@ -94,9 +94,19 @@ Fonts: `font-display` = Bricolage Grotesque (headings, figures),
 - The app shell (`AppShell` → `SidebarLayout`) gives every signed-in page a
   264px dark sidebar and a content column capped at `max-w-300` (1200px) with
   `space-y-7` between sections. Don't add another page-level wrapper.
-- While a page loads its data, the content column shows the skeleton in
-  `src/app/(app)/loading.tsx` (pulsing `bg-sunken-2` bars in card outlines).
-  Add a section's own `loading.tsx` only if its layout differs a lot.
+- The app uses Next.js Cache Components (`cacheComponents` in
+  `next.config.js`): a page is prerendered up to its first `<Suspense>`
+  boundary and the rest streams in. Anything that reads the session, the
+  address (`searchParams`, `params`, `usePathname`), the database or the
+  clock must sit inside a boundary, or the build fails.
+- A list page's default export is a plain (not `async`) component: the
+  `PageHeader`, then `<Suspense fallback={<ListSkeleton />}>` around an
+  `async` component that loads and renders the data. Placeholders
+  (`Bone`, `ListSkeleton`, `StatRowSkeleton`, `CardSkeleton`,
+  `SlimLayoutSkeleton`) are in `src/app/_components/skeleton.tsx`.
+- A page that is still one `async` component shows the skeleton in
+  `src/app/(app)/loading.tsx` while it loads. Add a section's own
+  `loading.tsx` only if its layout differs a lot.
 - Card grids: `grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4` for
   stats; `md:grid-cols-2 xl:grid-cols-3` for item cards; main + aside is
   `grid-cols-1 lg:grid-cols-3` with the main column `lg:col-span-2`.

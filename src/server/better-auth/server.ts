@@ -5,7 +5,10 @@
  */
 import { auth } from ".";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { cache } from "react";
+
+import { isAdmin } from "./is-admin";
 
 /**
  * Reads the current session from the incoming request's cookies. Wrapped in
@@ -43,4 +46,17 @@ export async function refreshSessionCache() {
   });
 }
 
-export { isAdmin } from "./is-admin";
+/**
+ * The signed-in admin's session, read from the database, or a redirect
+ * away. The admin layout and every admin page call it before reading
+ * anything: a layout and its page render side by side, so the layout's
+ * check alone doesn't hold the page's queries back.
+ */
+export async function requireAdminSession() {
+  const session = await getFreshSession();
+  if (!session) redirect("/login");
+  if (!isAdmin(session.user)) redirect("/dashboard");
+  return session;
+}
+
+export { isAdmin };

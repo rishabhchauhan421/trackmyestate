@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ListSkeleton, StatRowSkeleton } from "~/app/_components/skeleton";
 import clsx from "clsx";
 import Link from "next/link";
 import { Button } from "~/app/_components/button";
@@ -31,7 +33,7 @@ function isPropertyType(value: string | undefined): value is PropertyType {
   return value !== undefined && value in PROPERTY_TYPE_LABELS;
 }
 
-export default async function PropertiesPage({
+async function PropertiesContent({
   searchParams,
 }: {
   searchParams: Promise<{ type?: string }>;
@@ -106,17 +108,6 @@ export default async function PropertiesPage({
 
   return (
     <>
-      <PageHeader
-        title="Properties"
-        description="Every home, rental and investment property — with its rent, bills, tenants and paper trail."
-        action={
-          <Button href="/properties/new">
-            <PlusIcon />
-            Add property
-          </Button>
-        }
-      />
-
       {properties.length === 0 ? (
         <EmptyState
           Icon={PropertiesIcon}
@@ -373,5 +364,39 @@ function PropertyCard({
         </div>
       </div>
     </article>
+  );
+}
+
+/**
+ * The header is the same for everyone, so it is prerendered and shows the
+ * moment the page is opened; the data streams in beneath it.
+ */
+export default function PropertiesPage(
+  props: Parameters<typeof PropertiesContent>[0],
+) {
+  return (
+    <>
+      <PageHeader
+        title="Properties"
+        description="Every home, rental and investment property — with its rent, bills, tenants and paper trail."
+        action={
+          <Button href="/properties/new">
+            <PlusIcon />
+            Add property
+          </Button>
+        }
+      />
+
+      <Suspense
+        fallback={
+          <>
+            <StatRowSkeleton />
+            <ListSkeleton />
+          </>
+        }
+      >
+        <PropertiesContent {...props} />
+      </Suspense>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
+import { cache, Suspense } from "react";
 import { Button } from "~/app/_components/button";
 import { Card, CardHeader, StatCard } from "~/app/_components/card";
 import {
@@ -10,6 +11,7 @@ import {
   UploadIcon,
 } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
+import { CardSkeleton, StatRowSkeleton } from "~/app/_components/skeleton";
 import type { Currency } from "../../../../generated/prisma";
 import {
   daysUntil,
@@ -25,7 +27,10 @@ import {
 } from "~/lib/money-totals";
 import { requireScope } from "~/server/households";
 import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
-import { getDashboardData } from "~/server/queries/dashboard";
+import {
+  getDashboardBills,
+  getDashboardTotals,
+} from "~/server/queries/dashboard";
 
 const CATEGORY_LABELS: Record<string, string> = {
   RENT: "Rent",
@@ -75,26 +80,96 @@ function signedAmount(
 function plural(count: number, word: string) {
   return `${count} ${word}${count === 1 ? "" : "s"}`;
 }
-
-export default async function DashboardPage() {
+/** Who is looking, and how to format dates and amounts for them. */
+const loadViewer = cache(async () => {
   const scope = await requireScope();
   const [timeZone, currency] = await Promise.all([
     getUserTimeZone(scope.userId),
     getUserCurrency(scope.userId),
   ]);
-  const money = (totals: MoneyTotals) => formatTotals(totals, currency);
-  const {
-    netWorth,
-    assets,
-    propertyValue,
-    investmentValue,
-    loanOutstanding,
-    totalCoverage,
-    upcomingOutflows,
-    expectedInflows,
-    attentionItems,
-    upcoming,
-  } = await getDashboardData(scope.householdId, timeZone, new Date(), currency);
+  return { scope, timeZone, currency };
+});
+
+// The dashboard's data comes from two groups of queries, each shared (via
+// `cache()`) by the sections that show it. The sections stream in on their
+// own, so the short lists of bills don't wait for the totals or the other
+// way round.
+const loadBills = cache(async () => {
+  const viewer = await loadViewer();
+  const bills = await getDashboardBills(
+    viewer.scope.householdId,
+    viewer.timeZone,
+  );
+  return { ...viewer, ...bills };
+});
+
+const loadTotals = cache(async () => {
+  const viewer = await loadViewer();
+  const totals = await getDashboardTotals(
+    viewer.scope.householdId,
+    viewer.timeZone,
+    new Date(),
+    viewer.currency,
+  );
+  return { ...viewer, ...totals };
+});
+
+const headerActions = (
+  <>
+    <Button href="/documents" variant="outline">
+      <UploadIcon />
+      Upload a document
+    </Button>
+    <Button href="/properties/new">
+      <PlusIcon />
+      Add asset
+    </Button>
+  </>
+);
+
+/**
+ * The page is prerendered as its frame: the header's buttons and the
+ * outline of each section. Every section then reads the session and its
+ * own data behind a `<Suspense>` boundary and streams in when ready.
+ */
+export default function DashboardPage() {
+  return (
+    <>
+      <Suspense
+        fallback={
+          <PageHeader
+            title="Dashboard"
+            description="Checking what's due…"
+            action={headerActions}
+          />
+        }
+      >
+        <DashboardHeader />
+      </Suspense>
+
+      <Suspense fallback={<StatRowSkeleton />}>
+        <SummaryStats />
+      </Suspense>
+
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
+        <Suspense fallback={<CardSkeleton className="lg:col-span-2" />}>
+          <NeedsAttention />
+        </Suspense>
+        <Suspense fallback={<CardSkeleton rows={6} />}>
+          <MoneyAndPortfolio />
+        </Suspense>
+      </div>
+
+      <Suspense fallback={null}>
+        <ComingUp />
+      </Suspense>
+    </>
+  );
+}
+
+/** "Welcome back" and the one-line summary of what needs attention. */
+async function DashboardHeader() {
+  const { scope, timeZone, attentionItems } = await loadBills();
 
   const firstName = scope.user.name?.split(" ")[0];
   const overdueCount = attentionItems.filter(
@@ -112,6 +187,147 @@ export default async function DashboardPage() {
           .filter(Boolean)
           .join(" and ") + ".";
 
+  return (
+    <PageHeader
+      title={firstName ? `Welcome back, ${firstName}` : "Dashboard"}
+      description={summary}
+      action={headerActions}
+    />
+  );
+}
+
+/** The four headline figures. */
+async function SummaryStats() {
+  const {
+    currency,
+    netWorth,
+    assets,
+    loanOutstanding,
+    totalCoverage,
+    upcomingOutflows,
+    expectedInflows,
+  } = await loadTotals();
+  const money = (totals: MoneyTotals) => formatTotals(totals, currency);
+
+  return (
+    <section
+      aria-label="Summary"
+      className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+    >
+      <StatCard
+        tone="dark"
+        label="Net worth"
+        value={money(netWorth)}
+        hint={`${money(assets)} assets − ${money(loanOutstanding)} loans`}
+      />
+      <StatCard
+        label="Insurance cover"
+        value={money(totalCoverage)}
+        hint="Across active policies"
+      />
+      <StatCard
+        label="Going out · next 30 days"
+        value={money(upcomingOutflows)}
+        hint="EMIs, premiums & bills"
+      />
+      <StatCard
+        label="Coming in · next 30 days"
+        value={money(expectedInflows)}
+        hint="Rent, payouts & returns"
+        valueClassName="text-accent"
+      />
+    </section>
+  );
+}
+
+/** Bills that are overdue or due within a week. */
+async function NeedsAttention() {
+  const { timeZone, currency, attentionItems } = await loadBills();
+
+  return (
+    <Card aria-labelledby="attention" className="lg:col-span-2">
+      <CardHeader
+        title={<span id="attention">Needs attention</span>}
+        action={
+          <Link href="/timeline" className="hover:text-accent-strong">
+            Open timeline →
+          </Link>
+        }
+      />
+      {attentionItems.length === 0 ? (
+        <div className="flex items-center gap-3 px-6 py-8 text-sm text-muted">
+          <CheckIcon className="size-5 text-ok" />
+          You&apos;re all caught up — nothing overdue or due in the next 7 days.
+        </div>
+      ) : (
+        <ul className="divide-y divide-line-soft">
+          {attentionItems.map((item) => {
+            const tone = TONE_STYLES[toneFor(item, timeZone)];
+            const Icon = item.direction === "INFLOW" ? InflowIcon : OutflowIcon;
+            return (
+              <li
+                key={item.id}
+                className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5 sm:px-6"
+              >
+                <span
+                  className={clsx(
+                    "flex size-10 shrink-0 items-center justify-center rounded-control",
+                    tone.icon,
+                  )}
+                >
+                  <Icon className="size-5" />
+                </span>
+                <div className="min-w-0 flex-1 basis-52">
+                  <p className="truncate text-sm font-medium text-ink">
+                    <Link
+                      href={`/bills/${item.id}`}
+                      className="hover:text-accent-strong"
+                    >
+                      {item.description ?? CATEGORY_LABELS[item.category]}
+                    </Link>
+                  </p>
+                  <p className="text-[0.8125rem] text-muted">
+                    Due {formatShortDate(item.dueDate)}
+                  </p>
+                </div>
+                <span
+                  className={clsx(
+                    "rounded-full px-2.5 py-1 text-xs font-semibold",
+                    tone.chip,
+                  )}
+                >
+                  {formatDueIn(item.dueDate, new Date(), timeZone)}
+                </span>
+                <span
+                  className={clsx(
+                    "w-24 text-right text-[0.9375rem] font-semibold",
+                    item.direction === "INFLOW" ? "text-accent" : "text-ink",
+                  )}
+                >
+                  {signedAmount(item, currency)}
+                </span>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Card>
+  );
+}
+
+/** The right-hand column: the next 30 days' cash flow and the asset mix. */
+async function MoneyAndPortfolio() {
+  const {
+    currency,
+    assets,
+    propertyValue,
+    investmentValue,
+    loanOutstanding,
+    upcomingOutflows,
+    expectedInflows,
+  } = await loadTotals();
+  const money = (totals: MoneyTotals) => formatTotals(totals, currency);
+
   // Bars compare amounts in the user's own currency (others can't be
   // compared without conversion); the figures beside them show them all.
   const inflowBar = amountIn(expectedInflows, currency);
@@ -120,242 +336,127 @@ export default async function DashboardPage() {
   const net = addTotals(expectedInflows, upcomingOutflows, -1);
 
   return (
-    <>
-      <PageHeader
-        title={firstName ? `Welcome back, ${firstName}` : "Dashboard"}
-        description={summary}
-        action={
-          <>
-            <Button href="/documents" variant="outline">
-              <UploadIcon />
-              Upload a document
-            </Button>
-            <Button href="/properties/new">
-              <PlusIcon />
-              Add asset
-            </Button>
-          </>
-        }
-      />
-
-      <section
-        aria-label="Summary"
-        className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
-      >
-        <StatCard
-          tone="dark"
-          label="Net worth"
-          value={money(netWorth)}
-          hint={`${money(assets)} assets − ${money(loanOutstanding)} loans`}
-        />
-        <StatCard
-          label="Insurance cover"
-          value={money(totalCoverage)}
-          hint="Across active policies"
-        />
-        <StatCard
-          label="Going out · next 30 days"
-          value={money(upcomingOutflows)}
-          hint="EMIs, premiums & bills"
-        />
-        <StatCard
-          label="Coming in · next 30 days"
+    <div className="space-y-4">
+      <Card aria-labelledby="cashflow" className="space-y-4 p-5 sm:p-6">
+        <h2 id="cashflow" className="text-base font-semibold text-ink">
+          Next 30 days
+        </h2>
+        <FlowBar
+          label="Coming in"
           value={money(expectedInflows)}
-          hint="Rent, payouts & returns"
-          valueClassName="text-accent"
+          amount={inflowBar}
+          max={flowMax}
+          barClassName="bg-accent"
+          amountClassName="text-accent"
         />
-      </section>
+        <FlowBar
+          label="Going out"
+          value={money(upcomingOutflows)}
+          amount={outflowBar}
+          max={flowMax}
+          barClassName="bg-ink"
+        />
+        <p className="text-[0.8125rem] text-muted">
+          Net{" "}
+          <strong className="font-semibold text-ink">
+            {formatTotals(net, currency, { signed: true })}
+          </strong>{" "}
+          over the next month.
+        </p>
+      </Card>
 
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3">
-        <Card aria-labelledby="attention" className="lg:col-span-2">
-          <CardHeader
-            title={<span id="attention">Needs attention</span>}
-            action={
-              <Link href="/timeline" className="hover:text-accent-strong">
-                Open timeline →
-              </Link>
-            }
-          />
-          {attentionItems.length === 0 ? (
-            <div className="flex items-center gap-3 px-6 py-8 text-sm text-muted">
-              <CheckIcon className="size-5 text-ok" />
-              You&apos;re all caught up — nothing overdue or due in the next 7
-              days.
-            </div>
-          ) : (
-            <ul className="divide-y divide-line-soft">
-              {attentionItems.map((item) => {
-                const tone = TONE_STYLES[toneFor(item, timeZone)];
-                const Icon =
-                  item.direction === "INFLOW" ? InflowIcon : OutflowIcon;
-                return (
-                  <li
-                    key={item.id}
-                    className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5 sm:px-6"
-                  >
-                    <span
-                      className={clsx(
-                        "flex size-10 shrink-0 items-center justify-center rounded-control",
-                        tone.icon,
-                      )}
-                    >
-                      <Icon className="size-5" />
-                    </span>
-                    <div className="min-w-0 flex-1 basis-52">
-                      <p className="truncate text-sm font-medium text-ink">
-                        <Link
-                          href={`/bills/${item.id}`}
-                          className="hover:text-accent-strong"
-                        >
-                          {item.description ?? CATEGORY_LABELS[item.category]}
-                        </Link>
-                      </p>
-                      <p className="text-[0.8125rem] text-muted">
-                        Due {formatShortDate(item.dueDate)}
-                      </p>
-                    </div>
-                    <span
-                      className={clsx(
-                        "rounded-full px-2.5 py-1 text-xs font-semibold",
-                        tone.chip,
-                      )}
-                    >
-                      {formatDueIn(item.dueDate, new Date(), timeZone)}
-                    </span>
-                    <span
-                      className={clsx(
-                        "w-24 text-right text-[0.9375rem] font-semibold",
-                        item.direction === "INFLOW"
-                          ? "text-accent"
-                          : "text-ink",
-                      )}
-                    >
-                      {signedAmount(item, currency)}
-                    </span>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </Card>
-
-        <div className="space-y-4">
-          <Card aria-labelledby="cashflow" className="space-y-4 p-5 sm:p-6">
-            <h2 id="cashflow" className="text-base font-semibold text-ink">
-              Next 30 days
-            </h2>
-            <FlowBar
-              label="Coming in"
-              value={money(expectedInflows)}
-              amount={inflowBar}
-              max={flowMax}
-              barClassName="bg-accent"
-              amountClassName="text-accent"
+      <Card aria-labelledby="mix" className="space-y-3.5 p-5 sm:p-6">
+        <h2 id="mix" className="text-base font-semibold text-ink">
+          Portfolio
+        </h2>
+        {amountIn(assets, currency) > 0 && (
+          <div className="flex h-3 gap-0.5 overflow-hidden rounded-full">
+            <div
+              className="bg-accent"
+              style={{ flexGrow: amountIn(propertyValue, currency) }}
             />
-            <FlowBar
-              label="Going out"
-              value={money(upcomingOutflows)}
-              amount={outflowBar}
-              max={flowMax}
-              barClassName="bg-ink"
+            <div
+              className="bg-mint"
+              style={{ flexGrow: amountIn(investmentValue, currency) }}
             />
-            <p className="text-[0.8125rem] text-muted">
-              Net{" "}
-              <strong className="font-semibold text-ink">
-                {formatTotals(net, currency, { signed: true })}
-              </strong>{" "}
-              over the next month.
-            </p>
-          </Card>
-
-          <Card aria-labelledby="mix" className="space-y-3.5 p-5 sm:p-6">
-            <h2 id="mix" className="text-base font-semibold text-ink">
-              Portfolio
-            </h2>
-            {amountIn(assets, currency) > 0 && (
-              <div className="flex h-3 gap-0.5 overflow-hidden rounded-full">
-                <div
-                  className="bg-accent"
-                  style={{ flexGrow: amountIn(propertyValue, currency) }}
-                />
-                <div
-                  className="bg-mint"
-                  style={{ flexGrow: amountIn(investmentValue, currency) }}
-                />
-              </div>
-            )}
-            <dl className="space-y-2.5 text-[0.8125rem]">
-              <MixRow
-                label="Properties"
-                value={money(propertyValue)}
-                swatch="bg-accent"
-              />
-              <MixRow
-                label="Investments"
-                value={money(investmentValue)}
-                swatch="bg-mint"
-              />
-              <MixRow
-                label="Loans"
-                value={`−${money(loanOutstanding)}`}
-                swatch="border-2 border-ink"
-              />
-            </dl>
-          </Card>
-        </div>
-      </div>
-
-      {upcoming.length > 0 && (
-        <Card aria-labelledby="upcoming" className="space-y-4 p-5 sm:p-6">
-          <div className="flex items-center justify-between gap-3">
-            <h2 id="upcoming" className="text-base font-semibold text-ink">
-              Coming up
-            </h2>
-            <Link
-              href="/timeline"
-              className="text-[0.8125rem] font-medium text-accent hover:text-accent-strong"
-            >
-              Full timeline →
-            </Link>
           </div>
-          <ol className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
-            {upcoming.map((bill) => {
-              const days = daysUntil(bill.dueDate, new Date(), timeZone);
-              return (
-                <li
-                  key={bill.id}
-                  className="flex flex-col gap-2 rounded-xl border border-line-soft p-3.5"
-                >
-                  <span
-                    className={clsx(
-                      "text-xs font-semibold uppercase",
-                      days === 0 ? "text-warn" : "text-muted",
-                    )}
-                  >
-                    {formatShortDate(bill.dueDate)}
-                    {days === 0 && " · Today"}
-                  </span>
-                  <Link
-                    href={`/bills/${bill.id}`}
-                    className="line-clamp-2 text-sm font-medium text-ink hover:text-accent-strong"
-                  >
-                    {bill.description ?? CATEGORY_LABELS[bill.category]}
-                  </Link>
-                  <span
-                    className={clsx(
-                      "mt-auto text-sm font-semibold",
-                      bill.direction === "INFLOW" ? "text-accent" : "text-ink",
-                    )}
-                  >
-                    {signedAmount(bill, currency)}
-                  </span>
-                </li>
-              );
-            })}
-          </ol>
-        </Card>
-      )}
-    </>
+        )}
+        <dl className="space-y-2.5 text-[0.8125rem]">
+          <MixRow
+            label="Properties"
+            value={money(propertyValue)}
+            swatch="bg-accent"
+          />
+          <MixRow
+            label="Investments"
+            value={money(investmentValue)}
+            swatch="bg-mint"
+          />
+          <MixRow
+            label="Loans"
+            value={`−${money(loanOutstanding)}`}
+            swatch="border-2 border-ink"
+          />
+        </dl>
+      </Card>
+    </div>
+  );
+}
+
+/** The next few open bills, in either direction. */
+async function ComingUp() {
+  const { timeZone, currency, upcoming } = await loadBills();
+  if (upcoming.length === 0) return null;
+
+  return (
+    <Card aria-labelledby="upcoming" className="space-y-4 p-5 sm:p-6">
+      <div className="flex items-center justify-between gap-3">
+        <h2 id="upcoming" className="text-base font-semibold text-ink">
+          Coming up
+        </h2>
+        <Link
+          href="/timeline"
+          className="text-[0.8125rem] font-medium text-accent hover:text-accent-strong"
+        >
+          Full timeline →
+        </Link>
+      </div>
+      <ol className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+        {upcoming.map((bill) => {
+          const days = daysUntil(bill.dueDate, new Date(), timeZone);
+          return (
+            <li
+              key={bill.id}
+              className="flex flex-col gap-2 rounded-xl border border-line-soft p-3.5"
+            >
+              <span
+                className={clsx(
+                  "text-xs font-semibold uppercase",
+                  days === 0 ? "text-warn" : "text-muted",
+                )}
+              >
+                {formatShortDate(bill.dueDate)}
+                {days === 0 && " · Today"}
+              </span>
+              <Link
+                href={`/bills/${bill.id}`}
+                className="line-clamp-2 text-sm font-medium text-ink hover:text-accent-strong"
+              >
+                {bill.description ?? CATEGORY_LABELS[bill.category]}
+              </Link>
+              <span
+                className={clsx(
+                  "mt-auto text-sm font-semibold",
+                  bill.direction === "INFLOW" ? "text-accent" : "text-ink",
+                )}
+              >
+                {signedAmount(bill, currency)}
+              </span>
+            </li>
+          );
+        })}
+      </ol>
+    </Card>
   );
 }
 

@@ -1,3 +1,4 @@
+import { requireAdminSession } from "~/server/better-auth/server";
 import { Avatar } from "~/app/_components/avatar";
 import { PageHeader } from "~/app/_components/page-header";
 import { DEFAULT_TIME_ZONE } from "~/lib/time-zone";
@@ -5,6 +6,7 @@ import { formatDate } from "~/lib/format";
 import { listUsers } from "~/server/queries/admin";
 
 export default async function AdminUsersPage() {
+  await requireAdminSession();
   const users = await listUsers();
 
   return (
