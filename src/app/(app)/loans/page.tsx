@@ -12,8 +12,10 @@ import { getLoans } from "~/server/queries/loans";
 
 export default async function LoansPage() {
   const scope = await requireScope();
-  const currency = await getUserCurrency(scope.userId);
-  const timeZone = await getUserTimeZone(scope.userId);
+  const [currency, timeZone] = await Promise.all([
+    getUserCurrency(scope.userId),
+    getUserTimeZone(scope.userId),
+  ]);
   const loans = await getLoans(scope.householdId, timeZone);
 
   return (

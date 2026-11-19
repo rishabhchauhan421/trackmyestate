@@ -12,8 +12,10 @@ import { getPolicies } from "~/server/queries/policies";
 
 export default async function InsurancePage() {
   const scope = await requireScope();
-  const currency = await getUserCurrency(scope.userId);
-  const policies = await getPolicies(scope.householdId);
+  const [currency, policies] = await Promise.all([
+    getUserCurrency(scope.userId),
+    getPolicies(scope.householdId),
+  ]);
 
   return (
     <>

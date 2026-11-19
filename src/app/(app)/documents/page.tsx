@@ -20,8 +20,10 @@ const OWNER_TYPE_LABELS: Record<string, string> = {
 
 export default async function DocumentsPage() {
   const scope = await requireScope();
-  const timeZone = await getUserTimeZone(scope.userId);
-  const documents = await getDocuments(scope.householdId);
+  const [timeZone, documents] = await Promise.all([
+    getUserTimeZone(scope.userId),
+    getDocuments(scope.householdId),
+  ]);
 
   return (
     <>

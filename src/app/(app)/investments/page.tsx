@@ -11,8 +11,10 @@ import { getInvestments } from "~/server/queries/investments";
 
 export default async function InvestmentsPage() {
   const scope = await requireScope();
-  const currency = await getUserCurrency(scope.userId);
-  const investments = await getInvestments(scope.householdId);
+  const [currency, investments] = await Promise.all([
+    getUserCurrency(scope.userId),
+    getInvestments(scope.householdId),
+  ]);
 
   return (
     <>
