@@ -10,6 +10,8 @@
  */
 import { z } from "zod";
 
+import { toMinorUnits } from "./money";
+
 /** Trims strings and turns blank strings / `null` into `undefined`. */
 function blankToUndefined(value: unknown) {
   if (typeof value !== "string") return value ?? undefined;
@@ -102,6 +104,25 @@ export function optionalNumber(message: string, rules: NumberRules = {}) {
     .transform((value) => value ?? null);
 }
 
+/**
+ * A required amount of money, typed in rupees and stored in minor units
+ * (paise) — see `~/lib/money`. Takes the same rules as `number`, in rupees.
+ */
+export function money(
+  message: string,
+  rules: NumberRules = {},
+  requiredMessage = message,
+) {
+  return number(message, rules, requiredMessage).transform(toMinorUnits);
+}
+
+/** An optional amount of money; blank becomes `null`. See `money`. */
+export function optionalMoney(message: string, rules: NumberRules = {}) {
+  return optionalNumber(message, rules).transform((value) =>
+    value == null ? null : toMinorUnits(value),
+  );
+}
+
 /** A required, valid date (from an `<input type="date">` value). */
 export function date(message: string, requiredMessage = message) {
   return z.preprocess(toDate, z.date(messages(message, requiredMessage)));
@@ -135,7 +156,23 @@ export function checkbox() {
 }
 
 /**
- * Parses `formData` against `schema`, throwing an `Error` with the first
+ * An error to show the person filling in a form: bad input, or a refusal
+ * such as "Cannot delete a loan that has EMI payments on record". Forms
+ * show its message; any other error is a bug and goes to the error page.
+ * `field` names the input it's about, when there is one.
+ */
+export class FormError extends Error {
+  constructor(
+    message: string,
+    readonly field?: string,
+  ) {
+    super(message);
+    this.name = "FormError";
+  }
+}
+
+/**
+ * Parses `formData` against `schema`, throwing a `FormError` with the first
  * invalid field's message — the same contract the actions had before
  * validation moved to zod, so callers and error UI don't change.
  */
@@ -145,7 +182,12 @@ export function parseFormData<T extends z.ZodType>(
 ): z.output<T> {
   const result = schema.safeParse(Object.fromEntries(formData));
   if (!result.success) {
-    throw new Error(result.error.issues[0]?.message ?? "Invalid form input");
+    const issue = result.error.issues[0];
+    const field = issue?.path[0];
+    throw new FormError(
+      issue?.message ?? "Invalid form input",
+      typeof field === "string" ? field : undefined,
+    );
   }
   return result.data;
 }

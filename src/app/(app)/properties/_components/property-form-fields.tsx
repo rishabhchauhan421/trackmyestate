@@ -8,6 +8,7 @@ import {
   Select,
 } from "~/app/_components/form";
 import { toDateInputValue } from "~/lib/format";
+import { optionalFromMinorUnits } from "~/lib/money";
 import {
   OWNERSHIP_TYPE_LABELS,
   PROPERTY_CATEGORY_LABELS,
@@ -23,7 +24,14 @@ function options(labels: Record<string, string>) {
  * `property` to prefill them for editing. Field names match the Server
  * Action's schema in `~/server/actions/properties`.
  */
-export function PropertyFormFields({ property }: { property?: Property }) {
+export function PropertyFormFields({
+  property,
+  symbol,
+}: {
+  property?: Property;
+  /** The currency symbol for amounts (see `currencySymbol`). */
+  symbol: string;
+}) {
   return (
     <>
       <FormSection title="Basics">
@@ -152,9 +160,10 @@ export function PropertyFormFields({ property }: { property?: Property }) {
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
           <Field label="Purchase price">
             <MoneyInput
+              symbol={symbol}
               name="purchasePrice"
               step="1"
-              defaultValue={property?.purchasePrice ?? undefined}
+              defaultValue={optionalFromMinorUnits(property?.purchasePrice)}
             />
           </Field>
           <Field label="Purchase date">
@@ -170,9 +179,12 @@ export function PropertyFormFields({ property }: { property?: Property }) {
           </Field>
           <Field label="Current estimated value">
             <MoneyInput
+              symbol={symbol}
               name="currentEstimatedValue"
               step="1"
-              defaultValue={property?.currentEstimatedValue ?? undefined}
+              defaultValue={optionalFromMinorUnits(
+                property?.currentEstimatedValue,
+              )}
             />
           </Field>
         </div>

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "~/server/db";
+import { hasPaymentHistory } from "~/server/schedules/lifecycle";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
 /**
@@ -19,29 +20,26 @@ export async function getLeasesForProperty(propertyId: string) {
 }
 
 /**
- * A single `Lease`, scoped to the signed-in owner through its property —
- * `Lease` has no `ownerId` of its own. Returns `null` for a nonexistent
- * lease *or* one belonging to someone else's property, same rationale as
- * `getPropertyForOwner`. Includes a soft-deleted lease too (unlike
- * `getLeasesForProperty`'s list), since a direct-by-id lookup like this is
- * only ever used right after a mutation on a lease the caller already
- * knows the id of.
+ * A single `Lease`, scoped to a household through its property — `Lease`
+ * has no `householdId` of its own. Returns `null` for a nonexistent or
+ * deleted lease, or one on another household's property, same rationale as
+ * `getPropertyForHousehold`.
  */
-export async function getLeaseForOwner(leaseId: string, ownerId: string) {
+export async function getLeaseForHousehold(
+  leaseId: string,
+  householdId: string,
+) {
   return db.lease.findFirst({
-    where: { id: leaseId, property: { ownerId } },
+    where: { id: leaseId, property: { householdId } },
   });
 }
 
 /**
- * Whether any rent `Bill` has ever been generated for this lease. A lease
- * with billing history can't be deleted — see `deleteLease` in
- * `~/server/actions/leases` — only have its lease ended.
+ * Whether money has been recorded against any of this lease's bills
+ * (rent). Such a lease can't be deleted — see `deleteLease` in
+ * `~/server/actions/leases` — because that history needs it; unpaid bills
+ * are removed along with it instead.
  */
-export async function hasBillsForLease(leaseId: string) {
-  const bill = await db.bill.findFirst({
-    where: { category: "RENT", leaseId },
-    select: { id: true },
-  });
-  return bill != null;
+export async function hasPaymentsForLease(leaseId: string) {
+  return hasPaymentHistory(db, { leaseId: leaseId });
 }

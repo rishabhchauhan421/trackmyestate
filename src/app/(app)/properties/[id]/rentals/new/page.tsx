@@ -1,12 +1,13 @@
 import { notFound, redirect } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
-import { createRental } from "~/server/actions/rentals";
-import { getSession } from "~/server/better-auth/server";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { createRentalForm } from "~/server/actions/rentals";
+import { requireScope } from "~/server/households";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 
 export default async function NewRentalPage({
   params,
@@ -14,9 +15,8 @@ export default async function NewRentalPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const property = await getPropertyForOwner(id, session.user.id);
+  const scope = await requireScope();
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
@@ -37,8 +37,8 @@ export default async function NewRentalPage({
         description="A room, floor or unit within this property that gets rented out on its own. Create a lease for it afterwards."
       />
 
-      <form
-        action={createRental}
+      <ActionForm
+        action={createRentalForm}
         data-gtm-event="rental_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -78,7 +78,7 @@ export default async function NewRentalPage({
           </Button>
           <SubmitButton>Save rental unit</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

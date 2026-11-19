@@ -6,8 +6,16 @@ import { getSession } from "~/server/better-auth/server";
 import { createLease, deleteLease, endLease, updateLease } from "./leases";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
+}));
+jest.mock("~/server/bills/generate", () => ({
+  generateBillsForSchedule: jest.fn(),
 }));
 jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
@@ -43,6 +51,17 @@ const SELF_OCCUPIED_PROPERTY = {
 
 beforeEach(() => {
   mockReset(dbMock);
+  // Interactive transactions run their callback against the same mock.
+  dbMock.lease.create.mockImplementation((async ({ data }: never) => ({
+    id: "lease-1",
+    ...(data as object),
+  })) as never);
+  dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
+  dbMock.billSchedule.findMany.mockResolvedValue([{ id: "sched-1" }] as never);
+  dbMock.bill.findMany.mockResolvedValue([]);
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
   revalidatePath.mockClear();
@@ -57,6 +76,7 @@ function buildLeaseForm(overrides: Record<string, string> = {}) {
     leaseStart: "2026-06-01",
     rentAmount: "25000",
     depositAmount: "50000",
+    rentDueDay: "5",
     ...overrides,
   };
 
@@ -160,9 +180,9 @@ describe("createLease", () => {
         tenantEmail: "asha@example.com",
         leaseStart: new Date("2026-06-01"),
         leaseEnd: null,
-        rentAmount: 25000,
-        rentDueDay: null,
-        depositAmount: 50000,
+        rentAmount: 2500000,
+        rentDueDay: 5,
+        depositAmount: 5000000,
         currency: "INR",
         active: true,
       },
@@ -244,6 +264,7 @@ const EXISTING_LEASE = {
   propertyId: "prop-1",
   roomId: null,
   active: true,
+  leaseStart: new Date("2026-06-01"),
   leaseEnd: null,
 };
 
@@ -251,6 +272,7 @@ function buildLeaseUpdateForm(overrides: Record<string, string> = {}) {
   const fields: Record<string, string> = {
     rentAmount: "27000",
     depositAmount: "54000",
+    rentDueDay: "5",
     ...overrides,
   };
 
@@ -260,6 +282,76 @@ function buildLeaseUpdateForm(overrides: Record<string, string> = {}) {
   }
   return formData;
 }
+
+describe("createLease rent schedule", () => {
+  beforeEach(() => {
+    dbMock.property.findFirst.mockResolvedValue(RENTED_PROPERTY as never);
+  });
+
+  it("creates a monthly RENT schedule from the first due day on or after the start", async () => {
+    await expect(
+      createLease(
+        buildLeaseForm({ leaseStart: "2026-06-10", leaseEnd: "2027-05-31" }),
+      ),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
+      data: {
+        ownerId: "user-1",
+        householdId: "household-1",
+        propertyId: "prop-1",
+        leaseId: "lease-1",
+        category: "RENT",
+        recurrence: "MONTHLY",
+        startDate: new Date("2026-07-05"),
+        nextDueDate: new Date("2026-07-05"),
+        dueDay: 5,
+        dueMonth: null,
+        endDate: new Date("2027-05-31"),
+        tenureMonths: null,
+        defaultAmount: 2500000,
+        active: true,
+      },
+    });
+    const { generateBillsForSchedule } = jest.requireMock<{
+      generateBillsForSchedule: jest.Mock;
+    }>("~/server/bills/generate");
+    expect(generateBillsForSchedule).toHaveBeenCalledWith("sched-1");
+  });
+
+  it("starts on the lease's first day when rent falls due that day", async () => {
+    await expect(
+      createLease(buildLeaseForm({ leaseStart: "2026-06-05" })),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({ startDate: new Date("2026-06-05") }),
+    });
+  });
+
+  it("refuses a lease that ends before it starts", async () => {
+    await expect(
+      createLease(
+        buildLeaseForm({ leaseStart: "2026-06-10", leaseEnd: "2026-06-09" }),
+      ),
+    ).rejects.toThrow("The lease can't end before it starts");
+    expect(dbMock.lease.create).not.toHaveBeenCalled();
+  });
+
+  it("refuses moving an existing lease's end before its start", async () => {
+    dbMock.lease.findFirst.mockResolvedValue(EXISTING_LEASE as never);
+    await expect(
+      updateLease("lease-1", buildLeaseUpdateForm({ leaseEnd: "2026-05-31" })),
+    ).rejects.toThrow("The lease can't end before it starts");
+    expect(dbMock.lease.update).not.toHaveBeenCalled();
+  });
+
+  it("requires a rent due day", async () => {
+    await expect(
+      createLease(buildLeaseForm({ rentDueDay: "" })),
+    ).rejects.toThrow("Enter the day of the month rent is due");
+  });
+});
 
 describe("updateLease", () => {
   it("redirects to / when there is no session", async () => {
@@ -328,9 +420,9 @@ describe("updateLease", () => {
       where: { id: "lease-1" },
       data: {
         roomId: null,
-        rentAmount: 27000,
-        rentDueDay: null,
-        depositAmount: 54000,
+        rentAmount: 2700000,
+        rentDueDay: 5,
+        depositAmount: 5400000,
         leaseEnd: null,
       },
     });
@@ -431,6 +523,19 @@ describe("endLease", () => {
       where: { id: "lease-1" },
       data: { active: false, leaseEnd: existingLeaseEnd },
     });
+    // Unpaid rent after the lease's last day is removed.
+    expect(dbMock.bill.findMany).toHaveBeenCalledWith({
+      where: {
+        billScheduleId: { in: ["sched-1"] },
+        status: { in: ["DUE", "OVERDUE"] },
+        dueDate: { gte: new Date("2026-08-16") },
+      },
+      select: { id: true },
+    });
+    expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["sched-1"] } },
+      data: { active: false },
+    });
   });
 });
 
@@ -448,17 +553,17 @@ describe("deleteLease", () => {
     expect(dbMock.lease.update).not.toHaveBeenCalled();
   });
 
-  it("refuses to delete a lease that has a rent bill on record", async () => {
+  it("refuses to delete a lease that has rent received on record", async () => {
     dbMock.lease.findFirst.mockResolvedValue(EXISTING_LEASE as never);
     dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
 
     await expect(deleteLease("lease-1")).rejects.toThrow(
-      "Cannot delete a lease that has bills on record",
+      "Cannot delete a lease that has rent received on record",
     );
     expect(dbMock.lease.update).not.toHaveBeenCalled();
   });
 
-  it("checks for RENT-category bills scoped to this lease's leaseId", async () => {
+  it("checks for paid rent bills scoped to this lease's leaseId", async () => {
     dbMock.lease.findFirst.mockResolvedValue(EXISTING_LEASE as never);
     dbMock.bill.findFirst.mockResolvedValue(null);
     dbMock.lease.update.mockResolvedValue({ id: "lease-1" } as never);
@@ -466,7 +571,10 @@ describe("deleteLease", () => {
     await expect(deleteLease("lease-1")).rejects.toThrow("REDIRECT:");
 
     expect(dbMock.bill.findFirst).toHaveBeenCalledWith({
-      where: { category: "RENT", leaseId: "lease-1" },
+      where: {
+        leaseId: "lease-1",
+        status: { in: ["PAID", "PARTIALLY_PAID", "REFUNDED"] },
+      },
       select: { id: true },
     });
   });
@@ -482,7 +590,12 @@ describe("deleteLease", () => {
 
     expect(dbMock.lease.update).toHaveBeenCalledWith({
       where: { id: "lease-1" },
-      data: { deletedAt: expect.any(Date) as Date },
+      data: { active: false, deletedAt: expect.any(Date) as Date },
+    });
+    // Its rent schedule goes too.
+    expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["sched-1"] } },
+      data: { active: false, deletedAt: expect.any(Date) },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/leases");
   });

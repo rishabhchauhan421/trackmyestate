@@ -12,7 +12,7 @@
 import { NextRequest } from "next/server";
 
 import { db, resetMemoryDb, rows } from "~/server/__testing__/memory-db";
-import { stopGuestReminders } from "~/server/actions/guest-opt-out";
+import { stopReminders } from "~/server/actions/guest-opt-out";
 import { signGuestOptOut } from "~/server/guests/opt-out";
 import { processDueNotificationJobs } from "~/server/notifications/process";
 import { BATCH_SIZE as GENERATOR_BATCH, generateReminders } from "./generate";
@@ -118,21 +118,21 @@ async function seedPortfolio(
     billScheduleId: schedule.id,
     propertyId: property.id,
     description: "BESCOM electricity",
-    amount: 4120,
+    amount: 412000,
     dueDate: dueOct(8),
   });
   const emi = await bill({
     category: "EMI",
     loanId: "loan-1",
     description: "Home loan EMI - SBI",
-    amount: 71250,
+    amount: 7125000,
     dueDate: dueOct(5),
   });
   const premium = await bill({
     category: "PREMIUM",
     policyId: "policy-1",
     description: "LIC Jeevan Anand",
-    amount: 42500,
+    amount: 4250000,
     status: "OVERDUE",
     dueDate: dueOct(4),
   });
@@ -142,7 +142,7 @@ async function seedPortfolio(
     propertyId: property.id,
     leaseId: "lease-1",
     description: "Rent · Whitefield",
-    amount: 32000,
+    amount: 3200000,
     dueDate: dueOct(5),
   });
   const paid = await bill({
@@ -150,7 +150,7 @@ async function seedPortfolio(
     billScheduleId: schedule.id,
     propertyId: property.id,
     description: "Water",
-    amount: 600,
+    amount: 60000,
     status: "PAID",
     dueDate: dueOct(8),
   });
@@ -158,14 +158,14 @@ async function seedPortfolio(
     category: "EMI",
     loanId: "loan-2",
     description: "Car loan EMI",
-    amount: 12000,
+    amount: 1200000,
     dueDate: dueOct(15),
   });
   const deleted = await bill({
     category: "UTILITY_BILL",
     propertyId: property.id,
     description: "Old gas bill",
-    amount: 900,
+    amount: 90000,
     dueDate: dueOct(8),
     deletedAt: new Date("2026-09-01T00:00:00Z"),
   });
@@ -354,7 +354,7 @@ describe("generating reminders", () => {
         status: "DUE",
         direction: "OUTFLOW",
         description: "NY EMI",
-        amount: 500,
+        amount: 50000,
         dueDate: new Date("2026-10-08"),
       } as never,
     });
@@ -378,7 +378,7 @@ describe("generating reminders", () => {
           status: "DUE",
           direction: "OUTFLOW",
           description: `EMI ${i}`,
-          amount: 1000,
+          amount: 100000,
           dueDate: dueOct(5),
         } as never,
       });
@@ -420,7 +420,7 @@ describe("sending reminders", () => {
       (e) => e.to === "ananya@example.in" && e.subject.startsWith("BESCOM"),
     )!;
     expect(toOwner.html).toContain(
-      `https://trackmyestate.app/properties/${s.property.id}/utilities/bills/${s.util.id}`,
+      `https://trackmyestate.app/bills/${s.util.id}`,
     );
     expect(toOwner.text).toContain("Mark it paid");
 
@@ -428,7 +428,51 @@ describe("sending reminders", () => {
     expect(toSpouse.subject).toBe("BESCOM electricity: ₹4,120 due in 3 days");
     expect(toSpouse.text).toContain("From Ananya Rao, via TrackMyEstate.");
     expect(toSpouse.text).not.toContain("Mark it paid");
-    expect(toSpouse.html).not.toContain("<a ");
+    // Their only link is a signed "stop these reminders".
+    expect(toSpouse.html).not.toContain("/bills/");
+    expect(toSpouse.text).toContain(
+      "Stop these reminders: https://trackmyestate.app/reminders/stop?owner=",
+    );
+  });
+
+  it("stops a recipient who unsubscribed, even after their reminder was queued", async () => {
+    const s = await seedPortfolio();
+    await generateReminders(at(EARLY_MORNING));
+    const job = jobs().find((j) => j.recipient === "spouse@example.in")!;
+    const link = new URL((job.metadata as { actionUrl: string }).actionUrl)
+      .searchParams;
+
+    at(BEFORE_NINE);
+    await expect(
+      stopReminders(
+        {
+          owner: link.get("owner")!,
+          email: link.get("email")!,
+          sig: link.get("sig")!,
+        },
+        false,
+      ),
+    ).rejects.toThrow("REDIRECT:/reminders/stop");
+    await processDueNotificationJobs(at(AFTER_NINE));
+
+    expect(
+      jobs().find((j) => j.recipient === "spouse@example.in"),
+    ).toMatchObject({
+      status: "CANCELLED",
+      failedReason: "Recipient unsubscribed",
+    });
+    expect(sentEmails().some((e) => e.to === "spouse@example.in")).toBe(false);
+    // The owner's own reminder still goes.
+    expect(sentEmails().some((e) => e.to === s.user.email)).toBe(true);
+
+    // And tomorrow's run doesn't queue them again.
+    const before = jobs().length;
+    await generateReminders(new Date("2026-10-08T01:00:00Z"));
+    expect(
+      jobs()
+        .slice(before)
+        .some((j) => j.recipient === "spouse@example.in"),
+    ).toBe(false);
   });
 
   it("stops when paid: a bill settled after queuing isn't reminded", async () => {
@@ -683,7 +727,7 @@ describe("guests", () => {
     // The guest clicks the link in their welcome email at 08:30.
     at(BEFORE_NINE);
     await expect(
-      stopGuestReminders(guest.id, signGuestOptOut(guest.id)),
+      stopReminders({ guest: guest.id, sig: signGuestOptOut(guest.id) }, false),
     ).rejects.toThrow("REDIRECT:/reminders/stop");
 
     const summary = await processDueNotificationJobs(at(AFTER_NINE));
@@ -695,6 +739,27 @@ describe("guests", () => {
     });
     expect(summary.outcomes.CANCELLED).toBe(1);
     expect(sentEmails().some((e) => e.to === "radha@example.in")).toBe(false);
+  });
+
+  it("doesn't start again when a guest who stopped is removed and re-added", async () => {
+    const s = await seedPortfolio();
+    const guest = await addGuest(s);
+    await expect(
+      stopReminders({ guest: guest.id, sig: signGuestOptOut(guest.id) }, false),
+    ).rejects.toThrow("REDIRECT:");
+    await db.guest.update({
+      where: { id: guest.id },
+      data: { deletedAt: new Date() } as never,
+    });
+    await addGuest(s, { email: "RADHA@example.in" });
+
+    await generateReminders(at(EARLY_MORNING));
+
+    expect(
+      jobs().some(
+        (j) => String(j.recipient).toLowerCase() === "radha@example.in",
+      ),
+    ).toBe(false);
   });
 
   it("cancels a queued reminder if the owner pauses the guest", async () => {

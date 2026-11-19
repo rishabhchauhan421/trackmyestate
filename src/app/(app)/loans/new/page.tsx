@@ -1,18 +1,19 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
-import { createLoan } from "~/server/actions/loans";
-import { getSession } from "~/server/better-auth/server";
-import { getPropertyOptionsForOwner } from "~/server/queries/properties";
+import { createLoanForm } from "~/server/actions/loans";
+import { currencySymbol } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
+import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 
 export default async function NewLoanPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const properties = await getPropertyOptionsForOwner(session.user.id);
+  const scope = await requireScope();
+  const symbol = currencySymbol(await getUserCurrency(scope.userId));
+  const properties = await getPropertyOptionsForHousehold(scope.householdId);
 
   return (
     <>
@@ -25,8 +26,8 @@ export default async function NewLoanPage() {
         description="Track a loan's principal, EMI and outstanding balance."
       />
 
-      <form
-        action={createLoan}
+      <ActionForm
+        action={createLoanForm}
         data-gtm-event="loan_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -60,7 +61,7 @@ export default async function NewLoanPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Principal (₹)</span>
+            <span className={labelClass}>Principal ({symbol})</span>
             <input
               type="number"
               name="principal"
@@ -96,7 +97,7 @@ export default async function NewLoanPage() {
             />
           </label>
           <label className="block">
-            <span className={labelClass}>EMI amount (₹)</span>
+            <span className={labelClass}>EMI amount ({symbol})</span>
             <input
               type="number"
               name="emiAmount"
@@ -133,7 +134,9 @@ export default async function NewLoanPage() {
         </div>
 
         <label className="block">
-          <span className={labelClass}>Outstanding balance (₹, optional)</span>
+          <span className={labelClass}>
+            Outstanding balance ({symbol}, optional)
+          </span>
           <input
             type="number"
             name="outstandingBalance"
@@ -170,7 +173,7 @@ export default async function NewLoanPage() {
           </Button>
           <SubmitButton>Save loan</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

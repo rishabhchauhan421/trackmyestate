@@ -8,7 +8,9 @@ import {
   runReminderGeneration,
 } from "~/server/actions/admin-jobs";
 import { HORIZON_DAYS, LOOKBACK_DAYS } from "~/server/bills/generate";
+import { cronHealth, type CronJobHealth } from "~/server/cron-runs";
 import { getJobsOverview } from "~/server/queries/admin";
+import { formatDateTime } from "../notifications/format";
 
 type SearchParams = Record<string, string | undefined>;
 
@@ -36,9 +38,12 @@ function JobCard({
   schedule,
   description,
   stats,
+  health,
   action,
 }: {
   title: string;
+  /** The last scheduled or manual run, from `CronRun`. */
+  health: CronJobHealth | undefined;
   schedule: string;
   description: string;
   stats: { label: string; value: number; tone?: "danger" }[];
@@ -71,6 +76,15 @@ function JobCard({
           </div>
         ))}
       </dl>
+      <p
+        className={`text-xs ${health?.late ? "font-semibold text-danger" : "text-muted"}`}
+      >
+        {health?.lastSucceededAt
+          ? `Last succeeded ${formatDateTime(health.lastSucceededAt)}`
+          : "Hasn't run yet"}
+        {health?.late && " · late: check Vercel Cron"}
+        {health?.lastError && ` · last error: ${health.lastError}`}
+      </p>
       <form action={action} className="mt-auto">
         <SubmitButton variant="outline" className="w-full">
           Run now
@@ -86,10 +100,13 @@ export default async function AdminJobsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const [overview, params] = await Promise.all([
+  const [overview, health, params] = await Promise.all([
     getJobsOverview(),
+    cronHealth(),
     searchParams,
   ]);
+  const healthOf = (job: CronJobHealth["job"]) =>
+    health.find((entry) => entry.job === job);
   const message = resultMessage(params);
 
   return (
@@ -97,7 +114,7 @@ export default async function AdminJobsPage({
       <PageHeader
         breadcrumbs={[{ label: "Admin", href: "/admin" }, { label: "Jobs" }]}
         title="Background jobs"
-        description="Vercel runs all three once a day (09:00 IST); GitHub Actions runs reminders hourly and sending every 15 minutes. Run one now to catch up or check a change — every job is safe to run any number of times."
+        description="Vercel Cron runs these on schedule; /api/health/cron reports any job that misses two runs, for an uptime monitor. Run one now to catch up or check a change — every job is safe to run any number of times."
       />
 
       {message && <Notice tone="success">{message}</Notice>}
@@ -105,27 +122,29 @@ export default async function AdminJobsPage({
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <JobCard
           title="1 · Generate bills"
-          schedule="Daily, 9:00 am IST"
+          schedule="Daily, 8:30 am IST"
           description={`Turns every active schedule (utilities, EMIs…) into bills due from ${LOOKBACK_DAYS} days ago to ${HORIZON_DAYS} days ahead. Never creates the same bill twice.`}
           stats={[
             { label: "Active schedules", value: overview.activeSchedules },
             { label: "Unpaid, next 35 days", value: overview.upcomingBills },
           ]}
+          health={healthOf("bills")}
           action={runBillGeneration}
         />
         <JobCard
           title="2 · Queue reminders"
-          schedule="Hourly + daily"
+          schedule="Hourly"
           description="Works out which reminders fall today for each unpaid bill, in each owner's time zone, and queues them for their send time."
           stats={[
             { label: "Queued, not yet due", value: overview.scheduledJobs },
             { label: "Due to send now", value: overview.dueJobs },
           ]}
+          health={healthOf("reminders")}
           action={runReminderGeneration}
         />
         <JobCard
           title="3 · Send reminders"
-          schedule="Every 15 min + daily"
+          schedule="Every 15 min"
           description="Sends queued reminders that are due, retries temporary failures, and cancels ones for bills that have been paid."
           stats={[
             { label: "Sent, last 24 h", value: overview.sentLast24h },
@@ -135,6 +154,7 @@ export default async function AdminJobsPage({
               tone: "danger",
             },
           ]}
+          health={healthOf("notifications")}
           action={runNotificationDrain}
         />
       </div>

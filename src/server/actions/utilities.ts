@@ -8,8 +8,8 @@
  * lead time) that can only be deactivated, not edited or deleted, once
  * created. `BillSchedule` is shared across every recurring-bill category
  * (see the model comment in `prisma/schema.prisma`); this file only ever
- * touches `category: "UTILITY_BILL"` rows. Its generated bill instances are `Bill` rows —
- * see `~/server/actions/bills` for `generateBill`/`markBillPaid`, shared
+ * touches `category: "UTILITY_BILL"` rows. Its generated bill instances are
+ * `Bill` rows — see `~/server/actions/bills` for `recordBillPayment`, shared
  * across every bill category. Every mutation below re-checks ownership
  * itself rather than trusting the caller, since these are invoked directly
  * from client forms.
@@ -30,17 +30,20 @@ import {
   date,
   email,
   enumValue,
-  number,
+  FormError,
+  money,
   optionalEnumValue,
   optionalText,
   parseFormData,
   text,
 } from "~/lib/form";
 import { todayInTimeZone } from "~/lib/time-zone";
-import { getSession } from "~/server/better-auth/server";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
+import { retireSchedules, todayFor } from "~/server/schedules/lifecycle";
 
 /** The "Add utility" form. */
 const utilitySchema = z.object({
@@ -53,7 +56,7 @@ const utilitySchema = z.object({
     "Choose a billing type",
   ).transform((billingType) => billingType ?? BillingType.VARIABLE),
   recurrence: enumValue(BillRecurrence, "Choose how often the bill recurs"),
-  defaultAmount: number("Enter a valid amount", { positive: true }),
+  defaultAmount: money("Enter a valid amount", { positive: true }),
   // Must be today or later — checked in `createUtility`, which knows the
   // user's time zone and so what "today" is for them.
   firstDueDate: date("Enter a valid first due date"),
@@ -70,25 +73,24 @@ const utilityRecipientSchema = z.object({
 
 /**
  * Loads a property, throwing if it doesn't exist or isn't owned by the
- * signed-in user (redirecting to `/` first if there's no session at all).
+ * signed-in user's household (redirecting to sign-in if there's no session).
  * Shared by every action that mutates something scoped to a property.
  */
 async function requireOwnedProperty(propertyId: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
+  const scope = await requireScope();
   const property = await db.property.findFirst({
-    where: { id: propertyId, ownerId: session.user.id },
+    where: { id: propertyId, householdId: scope.householdId },
   });
-  if (!property) throw new Error("Property not found");
-  return { session, property };
+  if (!property) throw new FormError("Property not found");
+  return { scope, property };
 }
 
 /** Same as `requireOwnedProperty`, but for a utility `BillSchedule` row. */
-async function requireOwnedUtility(utilityId: string, ownerId: string) {
+async function requireOwnedUtility(utilityId: string, householdId: string) {
   const utility = await db.billSchedule.findFirst({
-    where: { id: utilityId, category: "UTILITY_BILL", ownerId },
+    where: { id: utilityId, category: "UTILITY_BILL", householdId },
   });
-  if (!utility) throw new Error("Utility not found");
+  if (!utility) throw new FormError("Utility not found");
   return utility;
 }
 
@@ -110,19 +112,20 @@ export async function createUtility(formData: FormData) {
     defaultAmount,
     firstDueDate,
   } = parseFormData(utilitySchema, formData);
-  const { session } = await requireOwnedProperty(propertyId);
+  const { scope } = await requireOwnedProperty(propertyId);
 
   // A new schedule starts today or later — a past first due date would
   // describe bills that were never generated. Compared as calendar days:
   // the input's date (parsed as UTC midnight) vs. today where the user is.
-  const today = todayInTimeZone(await getUserTimeZone(session.user.id));
+  const today = todayInTimeZone(await getUserTimeZone(scope.userId));
   if (firstDueDate.toISOString().slice(0, 10) < today) {
-    throw new Error("The first due date can't be in the past");
+    throw new FormError("The first due date can't be in the past");
   }
 
   const schedule = await db.billSchedule.create({
     data: {
-      ownerId: session.user.id,
+      ownerId: scope.userId,
+      householdId: scope.householdId,
       category: "UTILITY_BILL",
       propertyId,
       billType,
@@ -144,19 +147,19 @@ export async function createUtility(formData: FormData) {
 }
 
 /**
- * Marks a utility inactive. The only mutation a utility template allows
- * post-creation — there is no edit, and deliberately no "reactivate".
+ * Marks a utility inactive and removes its upcoming unpaid bills (and
+ * their reminders); bills already overdue stay, since they're still owed.
+ * The only mutation a utility template allows post-creation — there is no
+ * edit, and deliberately no "reactivate".
  */
 export async function deactivateUtility(utilityId: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
+  const scope = await requireScope();
+  const utility = await requireOwnedUtility(utilityId, scope.householdId);
 
-  const utility = await requireOwnedUtility(utilityId, session.user.id);
-
-  await db.billSchedule.update({
-    where: { id: utility.id },
-    data: { active: false },
-  });
+  const today = await todayFor(scope.userId);
+  await db.$transaction((tx) =>
+    retireSchedules(tx, { id: utility.id }, { from: today }),
+  );
 
   revalidatePath(`/properties/${utility.propertyId}/utilities`);
 }
@@ -169,10 +172,8 @@ export async function addUtilityRecipient(
   utilityId: string,
   formData: FormData,
 ) {
-  const session = await getSession();
-  if (!session) redirect("/");
-
-  const utility = await requireOwnedUtility(utilityId, session.user.id);
+  const scope = await requireScope();
+  const utility = await requireOwnedUtility(utilityId, scope.householdId);
 
   const { name, email, phone, notifyOnDue, notifyOnPaid } = parseFormData(
     utilityRecipientSchema,
@@ -197,10 +198,8 @@ export async function addUtilityRecipient(
  * identified by email — unique within one utility's recipient list.
  */
 export async function removeUtilityRecipient(utilityId: string, email: string) {
-  const session = await getSession();
-  if (!session) redirect("/");
-
-  const utility = await requireOwnedUtility(utilityId, session.user.id);
+  const scope = await requireScope();
+  const utility = await requireOwnedUtility(utilityId, scope.householdId);
 
   await db.billSchedule.update({
     where: { id: utility.id },
@@ -208,4 +207,21 @@ export async function removeUtilityRecipient(utilityId: string, email: string) {
   });
 
   revalidatePath(`/properties/${utility.propertyId}/utilities`);
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createUtilityForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createUtility(formData));
+}
+
+export async function addUtilityRecipientForm(
+  utilityId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => addUtilityRecipient(utilityId, formData));
 }

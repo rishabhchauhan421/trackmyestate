@@ -1,6 +1,9 @@
 import "server-only";
 
+import type { PremiumFrequency } from "../../../generated/prisma";
+
 import { db } from "~/server/db";
+import { hasPaymentHistory } from "~/server/schedules/lifecycle";
 import {
   NOT_SOFT_DELETED,
   OPEN_PAYMENT_STATUSES,
@@ -12,9 +15,9 @@ import {
  * `getProperties`. Deleted policies (see `deletePolicy` in
  * `~/server/actions/policies`) are excluded.
  */
-export async function getPolicies(ownerId: string) {
+export async function getPolicies(householdId: string) {
   const policies = await db.policy.findMany({
-    where: { ownerId, ...NOT_SOFT_DELETED },
+    where: { householdId, ...NOT_SOFT_DELETED },
     orderBy: { createdAt: "asc" },
   });
 
@@ -44,26 +47,74 @@ export async function getPolicies(ownerId: string) {
 }
 
 /**
- * A single `Policy`, scoped to `ownerId` — for the edit page. Returns
+ * A single `Policy`, scoped to `householdId` — for the edit page. Returns
  * `null` for a nonexistent policy *or* one owned by someone else, same
- * rationale as `getPropertyForOwner`.
+ * rationale as `getPropertyForHousehold`.
  */
-export async function getPolicyForOwner(policyId: string, ownerId: string) {
+export async function getPolicyForHousehold(
+  policyId: string,
+  householdId: string,
+) {
   return db.policy.findFirst({
-    where: { id: policyId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: policyId, householdId, ...NOT_SOFT_DELETED },
   });
 }
 
 /**
- * Whether any `Bill` has ever been generated for this policy (a premium or
- * claim settlement on record). A policy with billing history can't be
- * deleted — see `deletePolicy` in `~/server/actions/policies` — same
- * rationale as `hasBillsForLease`.
+ * Whether money has been recorded against any of this policy's bills
+ * (a premium, payout or claim). Such a policy can't be deleted — see `deletePolicy` in
+ * `~/server/actions/policies` — because that history needs it; unpaid bills
+ * are removed along with it instead.
  */
-export async function hasBillsForPolicy(policyId: string) {
-  const bill = await db.bill.findFirst({
-    where: { policyId },
-    select: { id: true },
+export async function hasPaymentsForPolicy(policyId: string) {
+  return hasPaymentHistory(db, { policyId: policyId });
+}
+
+/** A policy's premium and payout, for the edit form (amounts in paise). */
+export interface PolicyPaymentDefaults {
+  premiumAmount: number | null;
+  premiumFrequency: PremiumFrequency | null;
+  premiumDueDate: Date | null;
+  payoutAmount: number | null;
+  payoutDate: Date | null;
+}
+
+/**
+ * The policy's current premium and payout (from its active PREMIUM and
+ * PAYOUT schedules), as the edit form's starting values. A yearly
+ * schedule capped at one occurrence is a one-time premium.
+ */
+export async function getPolicyPaymentDefaults(
+  policyId: string,
+): Promise<PolicyPaymentDefaults> {
+  const schedules = await db.billSchedule.findMany({
+    where: {
+      policyId,
+      category: { in: ["PREMIUM", "PAYOUT"] },
+      active: true,
+    },
   });
-  return bill != null;
+  const premium = schedules.find((s) => s.category === "PREMIUM");
+  const payout = schedules.find((s) => s.category === "PAYOUT");
+
+  let premiumFrequency: PremiumFrequency | null = null;
+  if (premium) {
+    premiumFrequency =
+      premium.recurrence === "YEARLY" && premium.tenureMonths === 12
+        ? "SINGLE"
+        : premium.recurrence === "MONTHLY" ||
+            premium.recurrence === "QUARTERLY" ||
+            premium.recurrence === "HALF_YEARLY" ||
+            premium.recurrence === "YEARLY"
+          ? premium.recurrence
+          : null;
+  }
+
+  return {
+    premiumAmount: premium?.defaultAmount ?? null,
+    premiumFrequency,
+    premiumDueDate: premium?.startDate ?? null,
+    payoutAmount: payout?.defaultAmount ?? null,
+    payoutDate: payout?.startDate ?? null,
+  };
 }

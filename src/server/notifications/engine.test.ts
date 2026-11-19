@@ -192,6 +192,25 @@ describe("stop when paid", () => {
     });
   });
 
+  it.each([
+    [{ status: "DUE", deletedAt: new Date() }, "Bill was removed"],
+    [null, "Bill no longer exists"],
+  ])("cancels a reminder for a removed bill (%p)", async (bill, reason) => {
+    dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
+    dbMock.bill.findUnique.mockResolvedValue(bill as never);
+
+    const outcome = await dispatchNotificationJob(
+      buildJob({ billId: "bill-1" }),
+    );
+
+    expect(outcome).toBe("CANCELLED");
+    expect(sendEmailMock).not.toHaveBeenCalled();
+    expect(dbMock.notificationJob.update).toHaveBeenCalledWith({
+      where: { id: "job-1" },
+      data: { status: "CANCELLED", failedReason: reason },
+    });
+  });
+
   it("sends a reminder whose bill is still unpaid", async () => {
     dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
     dbMock.bill.findUnique.mockResolvedValue({ status: "OVERDUE" } as never);
@@ -218,6 +237,7 @@ describe("stop when paid", () => {
 describe("guest reminders", () => {
   beforeEach(() => {
     dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
+    dbMock.emailSuppression.findMany.mockResolvedValue([]);
     sendEmailMock.mockResolvedValue({ ok: true });
   });
 
@@ -264,8 +284,36 @@ describe("guest reminders", () => {
     expect(outcome).toBe("SENT");
   });
 
-  it("doesn't look up a guest for an owner's reminder", async () => {
+  it("doesn't look up a guest, or the suppression list, for an owner's reminder", async () => {
     await dispatchNotificationJob(buildJob({ metadata: { actionUrl: "x" } }));
     expect(dbMock.guest.findUnique).not.toHaveBeenCalled();
+    expect(dbMock.emailSuppression.findMany).not.toHaveBeenCalled();
+  });
+
+  it("cancels an email to someone who unsubscribed", async () => {
+    dbMock.emailSuppression.findMany.mockResolvedValue([
+      { email: "spouse@example.com" },
+    ] as never);
+
+    const outcome = await dispatchNotificationJob(
+      buildJob({
+        ownerId: "owner-1",
+        recipient: "Spouse@Example.com",
+        metadata: { thirdParty: true },
+      }),
+    );
+
+    expect(outcome).toBe("CANCELLED");
+    expect(sendEmailMock).not.toHaveBeenCalled();
+    expect(dbMock.emailSuppression.findMany).toHaveBeenCalledWith({
+      where: {
+        key: { in: ["owner-1:spouse@example.com", "*:spouse@example.com"] },
+      },
+      select: { email: true },
+    });
+    expect(dbMock.notificationJob.update).toHaveBeenCalledWith({
+      where: { id: "job-1" },
+      data: { status: "CANCELLED", failedReason: "Recipient unsubscribed" },
+    });
   });
 });

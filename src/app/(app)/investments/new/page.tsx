@@ -1,16 +1,17 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
-import { createInvestment } from "~/server/actions/investments";
-import { getSession } from "~/server/better-auth/server";
+import { createInvestmentForm } from "~/server/actions/investments";
+import { currencySymbol } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 
 export default async function NewInvestmentPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
+  const symbol = currencySymbol(await getUserCurrency(scope.userId));
 
   return (
     <>
@@ -23,8 +24,8 @@ export default async function NewInvestmentPage() {
         description="Log a new investment to track its capital deployed and current value over time."
       />
 
-      <form
-        action={createInvestment}
+      <ActionForm
+        action={createInvestmentForm}
         data-gtm-event="investment_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -79,7 +80,7 @@ export default async function NewInvestmentPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Capital deployed (₹)</span>
+            <span className={labelClass}>Capital deployed ({symbol})</span>
             <input
               type="number"
               name="capitalDeployed"
@@ -91,7 +92,7 @@ export default async function NewInvestmentPage() {
           </label>
           <label className="block">
             <span className={labelClass}>
-              Current estimated value (₹, optional)
+              Current estimated value ({symbol}, optional)
             </span>
             <input
               type="number"
@@ -140,7 +141,7 @@ export default async function NewInvestmentPage() {
           </Button>
           <SubmitButton>Save investment</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

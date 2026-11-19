@@ -6,6 +6,7 @@ import {
   LoanType,
   NotificationStatus,
   OwnershipType,
+  PaymentMethod,
   PolicyStatus,
   PolicyType,
   PremiumFrequency,
@@ -20,6 +21,7 @@ import {
   LOAN_TYPE_LABELS,
   NOTIFICATION_STATUS_LABELS,
   OWNERSHIP_TYPE_LABELS,
+  PAYMENT_METHOD_LABELS,
   POLICY_STATUS_LABELS,
   POLICY_TYPE_LABELS,
   PROPERTY_CATEGORY_LABELS,
@@ -105,6 +107,12 @@ describe("label maps stay in sync with their Prisma enums", () => {
     );
   });
 
+  it("PAYMENT_METHOD_LABELS covers every PaymentMethod value", () => {
+    expect(Object.keys(PAYMENT_METHOD_LABELS).sort()).toEqual(
+      Object.values(PaymentMethod).sort(),
+    );
+  });
+
   // A copy-paste slip (e.g. two keys sharing one label, or a label left as
   // an empty string) wouldn't be caught by the key-coverage checks above.
   it.each([
@@ -120,6 +128,7 @@ describe("label maps stay in sync with their Prisma enums", () => {
     ["POLICY_STATUS_LABELS", POLICY_STATUS_LABELS],
     ["EVENT_CATEGORY_LABELS", EVENT_CATEGORY_LABELS],
     ["NOTIFICATION_STATUS_LABELS", NOTIFICATION_STATUS_LABELS],
+    ["PAYMENT_METHOD_LABELS", PAYMENT_METHOD_LABELS],
   ] as const)("%s has no blank or duplicate label values", (_name, map) => {
     const values = Object.values(map);
     for (const value of values) {

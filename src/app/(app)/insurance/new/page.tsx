@@ -1,16 +1,18 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
+import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-payment-fields";
 import { POLICY_TYPE_LABELS } from "~/lib/labels";
-import { createPolicy } from "~/server/actions/policies";
-import { getSession } from "~/server/better-auth/server";
+import { createPolicyForm } from "~/server/actions/policies";
+import { currencySymbol } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 
 export default async function NewPolicyPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
+  const symbol = currencySymbol(await getUserCurrency(scope.userId));
 
   return (
     <>
@@ -23,8 +25,8 @@ export default async function NewPolicyPage() {
         description="Track a policy's premium due dates, sum assured, maturity payouts and claims."
       />
 
-      <form
-        action={createPolicy}
+      <ActionForm
+        action={createPolicyForm}
         data-gtm-event="policy_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -113,7 +115,7 @@ export default async function NewPolicyPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Sum assured (₹, optional)</span>
+            <span className={labelClass}>Sum assured ({symbol}, optional)</span>
             <input
               type="number"
               name="sumAssured"
@@ -123,7 +125,9 @@ export default async function NewPolicyPage() {
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Room rent limit (₹, optional)</span>
+            <span className={labelClass}>
+              Room rent limit ({symbol}, optional)
+            </span>
             <input
               type="number"
               name="roomRentLimit"
@@ -159,13 +163,15 @@ export default async function NewPolicyPage() {
           </label>
         </div>
 
+        <PolicyPaymentFields symbol={symbol} />
+
         <FormActions>
           <Button href="/insurance" variant="outline">
             Cancel
           </Button>
           <SubmitButton>Save policy</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

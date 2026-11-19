@@ -1,12 +1,15 @@
 import { notFound, redirect } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
-import { createLease } from "~/server/actions/leases";
-import { getSession } from "~/server/better-auth/server";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { createLeaseForm } from "~/server/actions/leases";
+import { currencySymbol } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getRoomsForProperty } from "~/server/queries/rentals";
 
 export default async function NewLeasePage({
@@ -18,12 +21,14 @@ export default async function NewLeasePage({
 }) {
   const { id } = await params;
   const { roomId } = await searchParams;
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const property = await getPropertyForOwner(id, session.user.id);
+  const scope = await requireScope();
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
+  const symbol = currencySymbol(
+    property.currency ?? (await getUserCurrency(scope.userId)),
+  );
   // Self-occupied properties can't be rented out — the link to this page
   // is disabled, but a direct visit still needs to be turned away.
   if (property.type === "SELF_OCCUPIED") {
@@ -44,8 +49,8 @@ export default async function NewLeasePage({
         description="Start a new lease for this property — the whole property, or one of its rental units."
       />
 
-      <form
-        action={createLease}
+      <ActionForm
+        action={createLeaseForm}
         data-gtm-event="lease_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -113,7 +118,7 @@ export default async function NewLeasePage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Rent amount (₹/month)</span>
+            <span className={labelClass}>Rent amount ({symbol}/month)</span>
             <input
               type="number"
               name="rentAmount"
@@ -124,7 +129,7 @@ export default async function NewLeasePage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Deposit amount (₹)</span>
+            <span className={labelClass}>Deposit amount ({symbol})</span>
             <input
               type="number"
               name="depositAmount"
@@ -137,7 +142,7 @@ export default async function NewLeasePage({
         </div>
 
         <label className="block">
-          <span className={labelClass}>Rent due day (optional)</span>
+          <span className={labelClass}>Rent due day</span>
           <input
             type="number"
             name="rentDueDay"
@@ -145,10 +150,12 @@ export default async function NewLeasePage({
             max="31"
             step="1"
             placeholder="e.g. 5"
+            required
             className={`${controlClass} sm:w-40`}
           />
           <span className="mt-1.5 block text-xs text-muted">
-            Day of the month rent is due — for display only.
+            Day of the month rent is due. We&apos;ll add each month&apos;s rent
+            to your timeline and remind you if it hasn&apos;t arrived.
           </span>
         </label>
 
@@ -158,7 +165,7 @@ export default async function NewLeasePage({
           </Button>
           <SubmitButton>Save lease</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

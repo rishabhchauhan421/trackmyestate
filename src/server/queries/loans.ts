@@ -3,6 +3,7 @@ import "server-only";
 import { nextBillFor } from "~/lib/schedule";
 import { DEFAULT_TIME_ZONE, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
+import { hasPaymentHistory } from "~/server/schedules/lifecycle";
 import {
   NOT_SOFT_DELETED,
   OPEN_PAYMENT_STATUSES,
@@ -15,11 +16,11 @@ import {
  * `~/server/actions/loans`) are excluded.
  */
 export async function getLoans(
-  ownerId: string,
+  householdId: string,
   timeZone: string = DEFAULT_TIME_ZONE,
 ) {
   const loans = await db.loan.findMany({
-    where: { ownerId, ...NOT_SOFT_DELETED },
+    where: { householdId, ...NOT_SOFT_DELETED },
     orderBy: { createdAt: "asc" },
   });
 
@@ -89,17 +90,17 @@ export async function getLoans(
 }
 
 /**
- * A single `Loan`, scoped to `ownerId` — for the edit page. Returns `null`
+ * A single `Loan`, scoped to `householdId` — for the edit page. Returns `null`
  * for a nonexistent loan *or* one owned by someone else, same rationale as
- * `getPropertyForOwner`. Its EMI schedule lives on a separate `BillSchedule`
+ * `getPropertyForHousehold`. Its EMI schedule lives on a separate `BillSchedule`
  * row (category `"EMI"`) — see the model comment in `schema.prisma` — so
  * it's fetched and flattened back onto the returned loan under its old
  * field names (`tenureMonths`/`emiAmount`/`emiDueDay`), keeping the edit
  * page's field access unchanged.
  */
-export async function getLoanForOwner(loanId: string, ownerId: string) {
+export async function getLoanForHousehold(loanId: string, householdId: string) {
   const loan = await db.loan.findFirst({
-    where: { id: loanId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: loanId, householdId, ...NOT_SOFT_DELETED },
   });
   if (!loan) return null;
 
@@ -118,15 +119,11 @@ export async function getLoanForOwner(loanId: string, ownerId: string) {
 }
 
 /**
- * Whether any `Bill` has ever been generated for this loan (an EMI payment
- * on record). A loan with billing history can't be deleted — see
- * `deleteLoan` in `~/server/actions/loans` — same rationale as
- * `hasBillsForLease`.
+ * Whether money has been recorded against any of this loan's bills
+ * (an EMI). Such a loan can't be deleted — see `deleteLoan` in
+ * `~/server/actions/loans` — because that history needs it; unpaid bills
+ * are removed along with it instead.
  */
-export async function hasBillsForLoan(loanId: string) {
-  const bill = await db.bill.findFirst({
-    where: { loanId },
-    select: { id: true },
-  });
-  return bill != null;
+export async function hasPaymentsForLoan(loanId: string) {
+  return hasPaymentHistory(db, { loanId: loanId });
 }

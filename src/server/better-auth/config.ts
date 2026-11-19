@@ -12,11 +12,14 @@ import { after } from "next/server";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
-import { sendPasswordResetEmail } from "./emails";
+import { sendPasswordResetEmail, sendVerificationEmail } from "./emails";
 
 /** Password length limits, enforced by better-auth and our own forms. */
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 128;
+
+/** How long an emailed "confirm your email" link stays valid. */
+export const VERIFICATION_LINK_TTL_SECONDS = 24 * 60 * 60;
 
 /** better-auth instance, configured for MongoDB + Google OAuth + email/password. */
 export const auth = betterAuth({
@@ -48,6 +51,48 @@ export const auth = betterAuth({
     // A reset usually means the old password may be compromised, so sign
     // out every existing session.
     revokeSessionsOnPasswordReset: true,
+    // No session until the address is confirmed. Signing up with an email
+    // that already has an account answers exactly like a new sign-up, so the
+    // form can't be used to find out who's registered.
+    requireEmailVerification: true,
+  },
+  emailVerification: {
+    // Sent via `after()` for the same reason as the reset email.
+    sendVerificationEmail: async ({ user, url }) => {
+      after(() =>
+        sendVerificationEmail({ to: user.email, name: user.name, url }),
+      );
+    },
+    sendOnSignUp: true,
+    // An unverified account that tries to sign in gets a fresh link (the
+    // sign-in action limits how often).
+    sendOnSignIn: true,
+    autoSignInAfterVerification: true,
+    expiresIn: VERIFICATION_LINK_TTL_SECONDS,
+  },
+  account: {
+    accountLinking: {
+      // Google sign-in only joins an existing account whose email has been
+      // confirmed (better-auth's default, kept explicit): otherwise someone
+      // could sign up with another person's address, wait for them to use
+      // Google, and share their account.
+      requireLocalEmailVerified: true,
+    },
+  },
+  rateLimit: {
+    // Limits for the `/api/auth/*` HTTP endpoints, stored in MongoDB so
+    // they hold across serverless instances. Server Actions call
+    // `auth.api.*` directly and are limited in `~/server/rate-limit`.
+    enabled: true,
+    storage: "database",
+    window: 60,
+    max: 60,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 3600, max: 5 },
+      "/request-password-reset": { window: 3600, max: 5 },
+      "/send-verification-email": { window: 3600, max: 5 },
+    },
   },
   socialProviders: {
     google: {

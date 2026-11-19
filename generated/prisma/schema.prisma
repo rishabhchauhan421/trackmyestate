@@ -15,18 +15,6 @@ datasource db {
 // Core / Auth Models
 // ---------------------------------------------------------------------------
 
-model Post {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String @db.ObjectId
-
-  @@index([name])
-}
-
 model User {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   name          String
@@ -62,9 +50,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  sessions Session[]
-  accounts Account[]
-  posts    Post[]
+  sessions   Session[]
+  households HouseholdMember[]
+  accounts   Account[]
 
   // Domain relations
   guests            Guest[]
@@ -326,9 +314,16 @@ enum NotificationStatus {
 // ---------------------------------------------------------------------------
 
 model Property {
-  id               String            @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId          String            @db.ObjectId
-  owner            User              @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
+
   name             String
   type             PropertyType
   uniquePropertyId String?
@@ -363,6 +358,7 @@ model Property {
   notificationJobs  NotificationJob[]
 
   @@index([ownerId, deletedAt])
+  @@index([householdId])
 }
 
 model Room {
@@ -424,9 +420,15 @@ model Lease {
 // ---------------------------------------------------------------------------
 
 model BillSchedule {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId String @db.ObjectId
-  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
 
   category EventCategory
 
@@ -457,6 +459,13 @@ model BillSchedule {
   startDate     DateTime?
   dueDay        Int
   dueMonth      Int?
+  // Last day a bill can fall on (e.g. a lease's end date). No end if unset.
+  endDate       DateTime?
+  // The first due day the generator hasn't billed yet (date-only), so each
+  // run reads only schedules with something due soon. Set to `startDate`
+  // whenever the terms change; null once there's nothing left to bill. A
+  // schedule without one yet is always read (and gets one).
+  nextDueDate   DateTime?
   defaultAmount Float?
   currency      Currency?
   tenureMonths  Int?
@@ -478,12 +487,20 @@ model BillSchedule {
   @@index([leaseId])
   @@index([loanId])
   @@index([policyId])
+  @@index([householdId])
+  @@index([active, nextDueDate])
 }
 
 model Bill {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId String @db.ObjectId
-  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
 
   category  EventCategory
   direction FinancialEventType
@@ -501,6 +518,13 @@ model Bill {
   policy         Policy?       @relation(fields: [policyId], references: [id], onDelete: Cascade)
   investmentId   String?       @db.ObjectId
   investment     Investment?   @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+
+  // One key per bill a schedule generates ("<scheduleId>:<YYYY-MM-DD>"), so
+  // two overlapping generator runs can't both create it: the second insert
+  // fails on the unique index and is skipped. Bills not made by a schedule
+  // get a random uuid. Required (with a default) because MongoDB's unique
+  // index treats a missing key as a value, so two keyless bills would clash.
+  generationKey String @unique @default(uuid())
 
   dueDate    DateTime
   amount     Float
@@ -539,6 +563,7 @@ model Bill {
   @@index([propertyId])
   @@index([leaseId])
   @@index([loanId])
+  @@index([householdId])
 }
 
 // ---------------------------------------------------------------------------
@@ -546,9 +571,16 @@ model Bill {
 // ---------------------------------------------------------------------------
 
 model Policy {
-  id                  String       @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId             String       @db.ObjectId
-  owner               User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
+
   type                PolicyType
   insurer             String
   policyNumber        String
@@ -582,12 +614,20 @@ model Policy {
 
   @@index([ownerId, deletedAt])
   @@index([propertyId])
+  @@index([householdId])
 }
 
 model Investment {
-  id                    String         @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId               String         @db.ObjectId
-  owner                 User           @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
+
   name                  String
   type                  InvestmentType
   institution           String?
@@ -612,12 +652,20 @@ model Investment {
   notificationJobs  NotificationJob[]
 
   @@index([ownerId, deletedAt])
+  @@index([householdId])
 }
 
 model Loan {
-  id                  String    @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId             String    @db.ObjectId
-  owner               User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
+
   lender              String
   type                LoanType
   principal           Float
@@ -646,6 +694,7 @@ model Loan {
   notificationJobs  NotificationJob[]
 
   @@index([ownerId, deletedAt])
+  @@index([householdId])
 }
 
 // ---------------------------------------------------------------------------
@@ -653,9 +702,15 @@ model Loan {
 // ---------------------------------------------------------------------------
 
 model PaymentTransaction {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId String @db.ObjectId
-  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
 
   category EventCategory
 
@@ -687,6 +742,7 @@ model PaymentTransaction {
 
   @@index([ownerId, deletedAt])
   @@index([billId])
+  @@index([householdId])
 }
 
 model AuditLog {
@@ -822,9 +878,15 @@ model NotificationJob {
 // ---------------------------------------------------------------------------
 
 model Document {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  ownerId String @db.ObjectId
-  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  ownerId     String     @db.ObjectId
+  owner       User       @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  // Who can see and change this record: everyone in the household (see
+  // `Household`). `ownerId` stays as the person who created it. Optional
+  // only so records saved before households existed still load; every write
+  // sets it, and `ensureHousehold` backfills older ones.
+  householdId String?    @db.ObjectId
+  household   Household? @relation(fields: [householdId], references: [id])
 
   // Exclusive Arcs
   propertyId     String?       @db.ObjectId
@@ -852,6 +914,7 @@ model Document {
   uploadedAt DateTime  @default(now())
 
   @@index([ownerId, deletedAt])
+  @@index([householdId])
 }
 
 // Someone the owner wants reminded about some of their payments — a family
@@ -889,4 +952,108 @@ model Guest {
   updatedAt DateTime  @updatedAt
 
   @@index([ownerId])
+}
+
+// ---------------------------------------------------------------------------
+// Households — the unit that owns a portfolio, so it can later be shared
+// (a spouse, an advisor). Every user gets a personal household on first use
+// (`ensureHousehold` in `src/server/households.ts`).
+// ---------------------------------------------------------------------------
+
+enum HouseholdRole {
+  OWNER
+  MEMBER
+}
+
+model Household {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  // The user whose personal household this is, so creating it twice in a
+  // race is impossible (the second insert fails on the unique index).
+  personalForUserId String?  @unique @db.ObjectId
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  members             HouseholdMember[]
+  properties          Property[]
+  policies            Policy[]
+  investments         Investment[]
+  loans               Loan[]
+  billSchedules       BillSchedule[]
+  bills               Bill[]
+  documents           Document[]
+  paymentTransactions PaymentTransaction[]
+}
+
+model HouseholdMember {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  householdId String        @db.ObjectId
+  household   Household     @relation(fields: [householdId], references: [id], onDelete: Cascade)
+  userId      String        @db.ObjectId
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role        HouseholdRole @default(MEMBER)
+  createdAt   DateTime      @default(now())
+
+  @@unique([householdId, userId])
+  @@index([userId])
+}
+
+// One-off data migrations that have run (see `scripts/migrate-data.ts`), so
+// re-running the script never applies one twice.
+model AppMigration {
+  id    String   @id @default(auto()) @map("_id") @db.ObjectId
+  name  String   @unique
+  ranAt DateTime @default(now())
+}
+
+/// better-auth's own rate limiter for the `/api/auth/*` HTTP endpoints
+/// (`rateLimit.storage: "database"` in `src/server/better-auth/config.ts`),
+/// so limits hold across serverless instances.
+model RateLimit {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+}
+
+/// Fixed-window attempt counters for the sign-in, sign-up, password reset
+/// and verification-email Server Actions (`src/server/rate-limit.ts`).
+/// `key` is "<action>:ip:<address>" or "<action>:email:<address>".
+model AuthThrottle {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
+  count       Int
+  windowStart DateTime
+}
+
+// Addresses that asked not to be emailed on someone's behalf: a guest who
+// used "stop these reminders", a utility recipient who unsubscribed. Keyed
+// by address (lower-cased), so deleting and re-adding the guest, or adding
+// them to another utility, doesn't start the emails again. `ownerId` is the
+// user whose emails they stopped; null means every user's. Only emails sent
+// on a user's behalf to other people are checked — never a user's own.
+model EmailSuppression {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  // `${ownerId ?? "*"}:${email}`, so each (owner, address) is stored once.
+  key       String   @unique
+  email     String
+  ownerId   String?  @db.ObjectId
+  // GUEST_OPT_OUT, RECIPIENT_UNSUBSCRIBE or ALL_USERS.
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
+// The last run of each background job (see `src/server/cron-runs.ts`), so a
+// missed or failing run shows up: `/api/health/cron` reports a job that
+// hasn't succeeded on time, for an uptime monitor to alert on.
+model CronRun {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  // "notifications", "reminders" or "bills".
+  job             String    @unique
+  lastStartedAt   DateTime?
+  lastSucceededAt DateTime?
+  lastFailedAt    DateTime?
+  lastError       String?
 }

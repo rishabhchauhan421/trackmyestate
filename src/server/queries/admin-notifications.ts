@@ -146,6 +146,7 @@ export async function getNotificationDetail(jobId: string) {
             id: true,
             description: true,
             amount: true,
+            currency: true,
             dueDate: true,
             status: true,
             propertyId: true,

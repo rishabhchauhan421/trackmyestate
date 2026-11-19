@@ -3,9 +3,9 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
 import {
-  getLeaseForOwner,
+  getLeaseForHousehold,
   getLeasesForProperty,
-  hasBillsForLease,
+  hasPaymentsForLease,
 } from "~/server/queries/leases";
 
 jest.mock("~/server/db");
@@ -68,21 +68,21 @@ describe("getLeasesForProperty", () => {
   });
 });
 
-describe("getLeaseForOwner", () => {
+describe("getLeaseForHousehold", () => {
   it("scopes the lookup to the owner through the lease's property relation", async () => {
     dbMock.lease.findFirst.mockResolvedValue(null);
 
-    await getLeaseForOwner("lease-1", "owner-1");
+    await getLeaseForHousehold("lease-1", "owner-1");
 
     expect(dbMock.lease.findFirst).toHaveBeenCalledWith({
-      where: { id: "lease-1", property: { ownerId: "owner-1" } },
+      where: { id: "lease-1", property: { householdId: "owner-1" } },
     });
   });
 
   it("returns null when the lease doesn't exist or belongs to another owner", async () => {
     dbMock.lease.findFirst.mockResolvedValue(null);
 
-    const result = await getLeaseForOwner("lease-1", "owner-1");
+    const result = await getLeaseForHousehold("lease-1", "owner-1");
 
     expect(result).toBeNull();
   });
@@ -91,28 +91,31 @@ describe("getLeaseForOwner", () => {
     const lease = { id: "lease-1", propertyId: "prop-1" };
     dbMock.lease.findFirst.mockResolvedValue(lease as never);
 
-    const result = await getLeaseForOwner("lease-1", "owner-1");
+    const result = await getLeaseForHousehold("lease-1", "owner-1");
 
     expect(result).toBe(lease);
   });
 });
 
-describe("hasBillsForLease", () => {
-  it("queries RENT-category bills scoped to the lease's leaseId", async () => {
+describe("hasPaymentsForLease", () => {
+  it("looks for the lease's paid or part-paid bills", async () => {
     dbMock.bill.findFirst.mockResolvedValue(null);
 
-    await hasBillsForLease("lease-1");
+    await hasPaymentsForLease("lease-1");
 
     expect(dbMock.bill.findFirst).toHaveBeenCalledWith({
-      where: { category: "RENT", leaseId: "lease-1" },
+      where: {
+        leaseId: "lease-1",
+        status: { in: ["PAID", "PARTIALLY_PAID", "REFUNDED"] },
+      },
       select: { id: true },
     });
   });
 
-  it("returns true when a rent bill exists", async () => {
+  it("returns true when rent has been received", async () => {
     dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
 
-    const result = await hasBillsForLease("lease-1");
+    const result = await hasPaymentsForLease("lease-1");
 
     expect(result).toBe(true);
   });
@@ -120,7 +123,7 @@ describe("hasBillsForLease", () => {
   it("returns false when no rent bill exists", async () => {
     dbMock.bill.findFirst.mockResolvedValue(null);
 
-    const result = await hasBillsForLease("lease-1");
+    const result = await hasPaymentsForLease("lease-1");
 
     expect(result).toBe(false);
   });

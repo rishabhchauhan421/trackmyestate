@@ -1,13 +1,11 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { EmptyState } from "~/app/_components/empty-state";
 import { TimelineIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
-import { formatDate, formatINR } from "~/lib/format";
-import { getSession } from "~/server/better-auth/server";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { formatDate, formatMoney } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import {
   getTimelineEvents,
   type TimelineFilter,
@@ -60,11 +58,13 @@ export default async function TimelinePage({
     ? (rawFilter as TimelineFilter)
     : "all";
 
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const timeZone = await getUserTimeZone(session.user.id);
+  const scope = await requireScope();
+  const [timeZone, currency] = await Promise.all([
+    getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
+  ]);
   const events = await getTimelineEvents(
-    session.user.id,
+    scope.householdId,
     range,
     filter,
     timeZone,
@@ -74,7 +74,7 @@ export default async function TimelinePage({
     <>
       <PageHeader
         title="Timeline"
-        description="What do I pay this month, and what money is coming back to me — and when."
+        description="What do I pay this month, and what money is coming back to me — and when. Projected items are bills your schedules will add closer to the date."
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -125,7 +125,16 @@ export default async function TimelinePage({
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-ink">
-                    {event.description ?? CATEGORY_LABELS[event.category]}
+                    {event.billId ? (
+                      <Link
+                        href={`/bills/${event.billId}`}
+                        className="hover:text-accent-strong"
+                      >
+                        {event.description}
+                      </Link>
+                    ) : (
+                      event.description
+                    )}
                   </p>
                   <p className="mt-0.5 text-xs text-muted">
                     {formatDate(event.dueDate)} ·{" "}
@@ -140,7 +149,7 @@ export default async function TimelinePage({
                     }`}
                   >
                     {event.direction === "INFLOW" ? "+" : "-"}
-                    {formatINR(event.amount)}
+                    {formatMoney(event.amount, event.currency ?? currency)}
                   </span>
                 </div>
               </li>

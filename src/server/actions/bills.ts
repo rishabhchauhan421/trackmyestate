@@ -4,131 +4,154 @@
  * Server Actions for `Bill` — the shared "amount due on a date, later
  * paid/received" record behind every asset (utility bills, EMIs, premiums,
  * rent, and so on; see `prisma/schema.prisma`'s `Bill` model comment).
- * Owners never create a bill directly — that's the job of a (not-yet-built)
- * background job per `BillSchedule` template (a utility, a loan's EMI
- * schedule, a policy premium, a lease's rent) that calls `generateBill` on
- * the date of each cycle's first notification, or once for a one-time event
- * (a payout, a claim, a return).
- * `markBillPaid` is the one mutation an owner does trigger directly, from a
- * bill's own edit page.
+ * Owners never create a bill directly — that's the bill generator's job
+ * (`~/server/bills/generate`, via `createBill` in `~/server/bills/create`,
+ * which deliberately lives outside this `"use server"` file so it can't
+ * become a public endpoint).
+ * `recordBillPayment` is the one mutation an owner does trigger directly,
+ * from the bill's page (`/bills/[id]`).
  */
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import type {
-  EventCategory,
-  FinancialEventType,
-} from "../../../generated/prisma";
 import { z } from "zod";
 
-import { date, parseFormData } from "~/lib/form";
-import { dateOnly, type CalendarDay } from "~/lib/calendar-day";
-import { getSession } from "~/server/better-auth/server";
+import { PaymentMethod } from "../../../generated/prisma";
+import {
+  checkbox,
+  date,
+  enumValue,
+  FormError,
+  money,
+  optionalText,
+  parseFormData,
+} from "~/lib/form";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
+import { requireScope } from "~/server/households";
+import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
-/** The "mark paid" form on a bill's edit page. */
-const markBillPaidSchema = z.object({
-  paidOn: date("Enter a valid paid date", "Enter the date the bill was paid"),
+/** The "record a payment" form on a bill's page. */
+const recordPaymentSchema = z.object({
+  paidOn: date("Enter a valid date", "Enter the date it was paid"),
+  amount: money(
+    "Enter an amount greater than zero",
+    { positive: true },
+    "Enter the amount paid",
+  ),
+  method: enumValue(PaymentMethod, "Choose how it was paid"),
+  reference: optionalText(),
+  // Ticked: this payment closes the bill even if the amount differs from
+  // what was due (a variable bill came in lower, a discount, rounding).
+  settles: checkbox(),
 });
 
-async function requireOwnedBill(billId: string, ownerId: string) {
-  const bill = await db.bill.findFirst({ where: { id: billId, ownerId } });
-  if (!bill) throw new Error("Bill not found");
+async function requireOwnedBill(billId: string, householdId: string) {
+  const bill = await db.bill.findFirst({ where: { id: billId, householdId } });
+  if (!bill) throw new FormError("Bill not found");
   return bill;
 }
 
-/**
- * Creates one `Bill`. `category`/`direction` say what kind of bill this is
- * and which way the money moves; exactly one of `propertyId`/`leaseId`/
- * `loanId`/`policyId`/`investmentId` should be set, matching `category`
- * (see the `Bill` model comment in `schema.prisma`), and `billScheduleId`
- * is set only when a recurring `BillSchedule` generated this instance.
- * `description` is caller-built, since how you'd label a bill (utility type
- * + provider, "Home loan EMI - SBI", an annual premium, ...) is
- * domain-specific.
- */
-export async function generateBill(args: {
-  ownerId: string;
-  category: EventCategory;
-  direction: FinancialEventType;
-  billScheduleId?: string;
-  propertyId?: string;
-  leaseId?: string;
-  loanId?: string;
-  policyId?: string;
-  investmentId?: string;
-  amount: number;
-  /**
-   * The due date as a calendar day, "YYYY-MM-DD" — not a `Date`, so a
-   * caller can't hand over an instant that lands on a different day in
-   * some time zone. Stored as midnight UTC (see `~/lib/calendar-day`).
-   */
-  dueDay: CalendarDay;
-  description: string;
-  /** For instalment schedules (EMIs): 1 for the first, and so on. */
-  installmentNumber?: number;
-}) {
-  const {
-    ownerId,
-    category,
-    direction,
-    billScheduleId,
-    propertyId,
-    leaseId,
-    loanId,
-    policyId,
-    investmentId,
-    amount,
-    dueDay,
-    description,
-    installmentNumber,
-  } = args;
+const isOpen = (status: string) =>
+  (OPEN_PAYMENT_STATUSES as readonly string[]).includes(status);
 
-  return db.bill.create({
-    data: {
-      ownerId,
-      category,
-      direction,
-      billScheduleId,
-      propertyId,
-      leaseId,
-      loanId,
-      policyId,
-      investmentId,
-      dueDate: dateOnly(dueDay),
-      amount,
-      status: "DUE",
-      description,
-      installmentNumber,
-    },
+/**
+ * Records a payment against a bill: a `PaymentTransaction` for the money
+ * that moved, and the bill's running `paidAmount` and status. The bill is
+ * PAID once the payments cover what was due, or when the owner says this
+ * payment settles it; otherwise it's PARTIALLY_PAID. Settling an EMI also
+ * takes its principal share off the loan's outstanding balance. The writes
+ * happen in one transaction so the totals can't drift from the payments.
+ */
+export async function recordBillPayment(billId: string, formData: FormData) {
+  const scope = await requireScope();
+  const bill = await requireOwnedBill(billId, scope.householdId);
+  if (!isOpen(bill.status)) {
+    throw new FormError("This bill is already closed");
+  }
+
+  const fields = parseFormData(recordPaymentSchema, formData);
+
+  await db.$transaction(async (tx) => {
+    // Read again inside the transaction so two payments saved at once
+    // can't both start from the same total.
+    const current = await tx.bill.findFirst({
+      where: { id: bill.id, householdId: scope.householdId },
+    });
+    if (!current || !isOpen(current.status)) {
+      throw new FormError("This bill is already closed");
+    }
+
+    await tx.paymentTransaction.create({
+      data: {
+        ownerId: scope.userId,
+        householdId: scope.householdId,
+        category: current.category,
+        billId: current.id,
+        propertyId: current.propertyId,
+        leaseId: current.leaseId,
+        loanId: current.loanId,
+        policyId: current.policyId,
+        investmentId: current.investmentId,
+        amount: fields.amount,
+        currency: current.currency,
+        paymentMethod: fields.method,
+        referenceNumber: fields.reference,
+        paidAt: fields.paidOn,
+      },
+    });
+
+    const paidSoFar =
+      current.status === "PARTIALLY_PAID" ? (current.paidAmount ?? 0) : 0;
+    const totalPaid = paidSoFar + fields.amount;
+    const settled = fields.settles || totalPaid >= current.amount;
+
+    await tx.bill.update({
+      where: { id: current.id },
+      data: {
+        paidAmount: totalPaid,
+        status: settled ? "PAID" : "PARTIALLY_PAID",
+        paidDate: settled ? fields.paidOn : null,
+      },
+    });
+
+    // A paid EMI repays its principal share of the loan.
+    if (settled && current.loanId && current.principalComponent) {
+      const loan = await tx.loan.findFirst({
+        where: { id: current.loanId },
+        select: { outstandingBalance: true },
+      });
+      if (loan) {
+        await tx.loan.update({
+          where: { id: current.loanId },
+          data: {
+            outstandingBalance: Math.max(
+              loan.outstandingBalance - current.principalComponent,
+              0,
+            ),
+          },
+        });
+      }
+    }
   });
+
+  revalidatePath(`/bills/${bill.id}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/timeline");
+  if (bill.propertyId) {
+    revalidatePath(`/properties/${bill.propertyId}`);
+    revalidatePath(`/properties/${bill.propertyId}/utilities`);
+  }
+  redirect(`/bills/${bill.id}?saved=1`);
 }
 
-/**
- * Marks a bill paid. Called from the bill's own edit page, where `paidOn`
- * is a required date input — the bill was actually paid on that date, not
- * necessarily today. Idempotent: marking an already-PAID bill paid again
- * just re-applies the same update.
- */
-export async function markBillPaid(billId: string, formData: FormData) {
-  const session = await getSession();
-  if (!session) redirect("/");
+// Form twins for `ActionForm` (see `~/server/form-state`).
 
-  const bill = await requireOwnedBill(billId, session.user.id);
-
-  const { paidOn: paidDate } = parseFormData(markBillPaidSchema, formData);
-
-  await db.bill.update({
-    where: { id: billId },
-    data: { status: "PAID", paidDate, paidAmount: bill.amount },
-  });
-
-  // Only property-scoped categories (utility bills, rent) have a bills list
-  // page to bounce back to today — other categories just get their status
-  // synced above until their own page exists.
-  if (bill.propertyId) {
-    revalidatePath(`/properties/${bill.propertyId}/utilities`);
-    redirect(`/properties/${bill.propertyId}/utilities`);
-  }
+export async function recordBillPaymentForm(
+  billId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => recordBillPayment(billId, formData));
 }

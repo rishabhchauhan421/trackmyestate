@@ -1,19 +1,18 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { InvestmentsIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
-import { formatINR } from "~/lib/format";
+import { formatMoney } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import { getInvestments } from "~/server/queries/investments";
 
 export default async function InvestmentsPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const investments = await getInvestments(session.user.id);
+  const scope = await requireScope();
+  const currency = await getUserCurrency(scope.userId);
+  const investments = await getInvestments(scope.householdId);
 
   return (
     <>
@@ -53,16 +52,26 @@ export default async function InvestmentsPage() {
                 </div>
                 <p className="mt-4 text-xl font-semibold text-ink">
                   {investment.currentEstimatedValue
-                    ? formatINR(investment.currentEstimatedValue)
-                    : formatINR(investment.capitalDeployed)}
+                    ? formatMoney(
+                        investment.currentEstimatedValue,
+                        investment.currency ?? currency,
+                      )
+                    : formatMoney(
+                        investment.capitalDeployed,
+                        investment.currency ?? currency,
+                      )}
                 </p>
                 <p className="text-xs text-muted">
-                  {formatINR(investment.capitalDeployed)} deployed
+                  {formatMoney(
+                    investment.capitalDeployed,
+                    investment.currency ?? currency,
+                  )}{" "}
+                  deployed
                   {gain != null && (
                     <span className={gain >= 0 ? "text-ok" : "text-danger"}>
                       {" "}
                       ({gain >= 0 ? "+" : ""}
-                      {formatINR(gain)})
+                      {formatMoney(gain, investment.currency ?? currency)})
                     </span>
                   )}
                 </p>

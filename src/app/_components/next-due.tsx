@@ -1,5 +1,6 @@
 import clsx from "clsx";
 
+import type { Currency } from "../../../generated/prisma";
 import { formatBillAmount, formatDueIn, formatShortDate } from "~/lib/format";
 
 /**
@@ -11,6 +12,7 @@ export function NextDue({
   dueDate,
   amount,
   approx = false,
+  currency,
   timeZone,
   className,
 }: {
@@ -18,6 +20,7 @@ export function NextDue({
   dueDate: Date;
   amount?: number | null;
   approx?: boolean;
+  currency: Currency;
   timeZone: string;
   className?: string;
 }) {
@@ -46,7 +49,7 @@ export function NextDue({
       {amount != null && (
         <>
           <span aria-hidden="true">·</span>
-          <span>{formatBillAmount(amount, approx)}</span>
+          <span>{formatBillAmount(amount, approx, currency)}</span>
         </>
       )}
     </p>

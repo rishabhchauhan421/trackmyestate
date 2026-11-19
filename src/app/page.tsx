@@ -231,7 +231,7 @@ export default async function Home() {
               they slip.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Button href="/login" size="lg">
+              <Button href="/sign-up" size="lg">
                 Start tracking — it&apos;s free →
               </Button>
               <Button href="#features" variant="outline" size="lg">
@@ -371,7 +371,7 @@ export default async function Home() {
                   checkClassName="text-mint"
                 />
                 <Link
-                  href="/login"
+                  href="/sign-up"
                   className="mt-auto inline-flex h-12 items-center justify-center rounded-control border border-mint text-[0.9375rem] font-semibold text-mint transition-colors hover:bg-mint hover:text-night"
                 >
                   Get started for free
@@ -443,7 +443,7 @@ export default async function Home() {
                 Start with names and dates. Your timeline fills in as you go.
               </p>
             </div>
-            <Button href="/login" color="white" size="lg">
+            <Button href="/sign-up" color="white" size="lg">
               Start tracking — it&apos;s free →
             </Button>
           </div>

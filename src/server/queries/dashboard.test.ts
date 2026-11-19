@@ -8,10 +8,46 @@ jest.mock("~/server/db");
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 
-const OWNER_ID = "owner-1";
+const HOUSEHOLD_ID = "household-1";
 
-function aggregateResult(sum: Record<string, number | null>) {
-  return { _sum: sum } as never;
+/** `groupBy`'s overloads are too deep for jest-mock-extended's types. */
+type Model = "property" | "investment" | "loan" | "policy" | "bill";
+const groupBy = (model: Model) => dbMock[model].groupBy as unknown as jest.Mock;
+
+/** `groupBy({ by: ["currency"] })` rows: one per currency. */
+function groups(
+  field: string,
+  sums: [currency: string | null, amount: number | null][],
+) {
+  return sums.map(([currency, amount]) => ({
+    currency,
+    _sum: { [field]: amount },
+  })) as never;
+}
+
+/** Every figure in rupees, unless a test overrides one. */
+function mockSums({
+  property = 0,
+  investment = 0,
+  loan = 0,
+  cover = 0,
+  outflows = 0,
+  inflows = 0,
+}: Partial<Record<string, number>> = {}) {
+  groupBy("property").mockResolvedValue(
+    groups("currentEstimatedValue", [["INR", property]]),
+  );
+  groupBy("investment").mockResolvedValue(
+    groups("currentEstimatedValue", [["INR", investment]]),
+  );
+  groupBy("loan").mockResolvedValue(
+    groups("outstandingBalance", [["INR", loan]]),
+  );
+  groupBy("policy").mockResolvedValue(groups("sumAssured", [["INR", cover]]));
+  groupBy("bill")
+    .mockResolvedValueOnce(groups("amount", [["INR", outflows]]))
+    .mockResolvedValueOnce(groups("amount", [["INR", inflows]]));
+  dbMock.bill.findMany.mockResolvedValue([]);
 }
 
 beforeEach(() => {
@@ -20,98 +56,80 @@ beforeEach(() => {
 
 describe("getDashboardData", () => {
   it("computes net worth as property + investment value minus loan outstanding", async () => {
-    dbMock.property.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 10_000_000 }),
-    );
-    dbMock.investment.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 2_000_000 }),
-    );
-    dbMock.loan.aggregate.mockResolvedValue(
-      aggregateResult({ outstandingBalance: 3_000_000 }),
-    );
-    dbMock.policy.aggregate.mockResolvedValue(
-      aggregateResult({ sumAssured: 1_500_000 }),
-    );
-    dbMock.bill.aggregate
-      .mockResolvedValueOnce(aggregateResult({ amount: 50_000 })) // outflows
-      .mockResolvedValueOnce(aggregateResult({ amount: 20_000 })); // inflows
-    dbMock.bill.findMany.mockResolvedValue([]);
+    mockSums({
+      property: 10_000_000,
+      investment: 2_000_000,
+      loan: 3_000_000,
+      cover: 1_500_000,
+      outflows: 50_000,
+      inflows: 20_000,
+    });
 
-    const result = await getDashboardData(OWNER_ID);
+    const result = await getDashboardData(HOUSEHOLD_ID);
 
-    expect(result.netWorth).toBe(10_000_000 + 2_000_000 - 3_000_000);
-    expect(result.totalCoverage).toBe(1_500_000);
-    expect(result.upcomingOutflows).toBe(50_000);
-    expect(result.expectedInflows).toBe(20_000);
+    expect(result.netWorth).toEqual({
+      INR: 10_000_000 + 2_000_000 - 3_000_000,
+    });
+    expect(result.assets).toEqual({ INR: 12_000_000 });
+    expect(result.totalCoverage).toEqual({ INR: 1_500_000 });
+    expect(result.upcomingOutflows).toEqual({ INR: 50_000 });
+    expect(result.expectedInflows).toEqual({ INR: 20_000 });
     expect(result.attentionItems).toEqual([]);
   });
 
-  it("treats missing aggregate sums (no rows) as zero", async () => {
-    dbMock.property.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: null }),
+  it("keeps currencies apart, counting records without one in the user's", async () => {
+    mockSums();
+    groupBy("property").mockResolvedValue(
+      groups("currentEstimatedValue", [
+        ["INR", 5_000_000],
+        [null, 1_000_000],
+        ["USD", 300_000],
+      ]),
     );
-    dbMock.investment.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: null }),
+    groupBy("loan").mockResolvedValue(
+      groups("outstandingBalance", [["USD", 100_000]]),
     );
-    dbMock.loan.aggregate.mockResolvedValue(
-      aggregateResult({ outstandingBalance: null }),
-    );
-    dbMock.policy.aggregate.mockResolvedValue(
-      aggregateResult({ sumAssured: null }),
-    );
-    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: null }));
-    dbMock.bill.findMany.mockResolvedValue([]);
 
-    const result = await getDashboardData(OWNER_ID);
+    const result = await getDashboardData(
+      HOUSEHOLD_ID,
+      undefined,
+      undefined,
+      "INR",
+    );
 
-    expect(result.netWorth).toBe(0);
-    expect(result.totalCoverage).toBe(0);
-    expect(result.upcomingOutflows).toBe(0);
-    expect(result.expectedInflows).toBe(0);
+    expect(result.propertyValue).toEqual({ INR: 6_000_000, USD: 300_000 });
+    expect(result.netWorth).toEqual({ INR: 6_000_000, USD: 200_000 });
+    expect(groupBy("property")).toHaveBeenCalledWith(
+      expect.objectContaining({ by: ["currency"] }),
+    );
+  });
+
+  it("treats missing sums (no rows) as nothing", async () => {
+    mockSums();
+    groupBy("property").mockResolvedValue([] as never);
+    groupBy("policy").mockResolvedValue(groups("sumAssured", [["INR", null]]));
+
+    const result = await getDashboardData(HOUSEHOLD_ID);
+
+    expect(result.propertyValue).toEqual({});
+    expect(result.totalCoverage).toEqual({});
   });
 
   it("allows net worth to go negative when liabilities exceed assets", async () => {
-    dbMock.property.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 500_000 }),
-    );
-    dbMock.investment.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 0 }),
-    );
-    dbMock.loan.aggregate.mockResolvedValue(
-      aggregateResult({ outstandingBalance: 2_000_000 }),
-    );
-    dbMock.policy.aggregate.mockResolvedValue(
-      aggregateResult({ sumAssured: 0 }),
-    );
-    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
-    dbMock.bill.findMany.mockResolvedValue([]);
+    mockSums({ property: 500_000, loan: 2_000_000 });
 
-    const result = await getDashboardData(OWNER_ID);
+    const result = await getDashboardData(HOUSEHOLD_ID);
 
-    expect(result.netWorth).toBe(500_000 - 2_000_000);
-    expect(result.netWorth).toBeLessThan(0);
+    expect(result.netWorth).toEqual({ INR: 500_000 - 2_000_000 });
   });
 
-  it("queries attention items as overdue OR due-within-7-days, newest first, capped at 5", async () => {
-    dbMock.property.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 0 }),
-    );
-    dbMock.investment.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 0 }),
-    );
-    dbMock.loan.aggregate.mockResolvedValue(
-      aggregateResult({ outstandingBalance: 0 }),
-    );
-    dbMock.policy.aggregate.mockResolvedValue(
-      aggregateResult({ sumAssured: 0 }),
-    );
-    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
-    dbMock.bill.findMany.mockResolvedValue([]);
+  it("queries attention items as overdue OR due-within-7-days, soonest first, capped at 5", async () => {
+    mockSums();
 
-    await getDashboardData(OWNER_ID);
+    await getDashboardData(HOUSEHOLD_ID);
 
     const call = dbMock.bill.findMany.mock.calls[0]?.[0];
-    expect(call?.where?.ownerId).toBe(OWNER_ID);
+    expect(call?.where?.householdId).toBe(HOUSEHOLD_ID);
     expect(call?.where?.OR).toEqual([
       { status: "OVERDUE" },
       { status: "DUE", dueDate: { lte: expect.any(Date) as Date } },
@@ -121,51 +139,28 @@ describe("getDashboardData", () => {
   });
 
   it("returns whatever attentionItems the DB gives back, unmodified", async () => {
-    dbMock.property.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 0 }),
-    );
-    dbMock.investment.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 0 }),
-    );
-    dbMock.loan.aggregate.mockResolvedValue(
-      aggregateResult({ outstandingBalance: 0 }),
-    );
-    dbMock.policy.aggregate.mockResolvedValue(
-      aggregateResult({ sumAssured: 0 }),
-    );
-    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
+    mockSums();
     const items = [
       { id: "e1", status: "OVERDUE" },
       { id: "e2", status: "DUE" },
     ];
     dbMock.bill.findMany.mockResolvedValue(items as never);
 
-    const result = await getDashboardData(OWNER_ID);
+    const result = await getDashboardData(HOUSEHOLD_ID);
 
     expect(result.attentionItems).toBe(items);
   });
 
-  it("scopes the upcoming-outflows aggregate to open OUTFLOW statuses", async () => {
-    dbMock.property.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 0 }),
-    );
-    dbMock.investment.aggregate.mockResolvedValue(
-      aggregateResult({ currentEstimatedValue: 0 }),
-    );
-    dbMock.loan.aggregate.mockResolvedValue(
-      aggregateResult({ outstandingBalance: 0 }),
-    );
-    dbMock.policy.aggregate.mockResolvedValue(
-      aggregateResult({ sumAssured: 0 }),
-    );
-    dbMock.bill.aggregate.mockResolvedValue(aggregateResult({ amount: 0 }));
-    dbMock.bill.findMany.mockResolvedValue([]);
+  it("scopes the upcoming-outflows sum to open OUTFLOW statuses", async () => {
+    mockSums();
 
-    await getDashboardData(OWNER_ID);
+    await getDashboardData(HOUSEHOLD_ID);
 
-    const outflowCallArgs = dbMock.bill.aggregate.mock.calls[0]?.[0];
+    const [outflowCallArgs] = groupBy("bill").mock.calls[0] as [
+      { where: unknown },
+    ];
     expect(outflowCallArgs?.where).toMatchObject({
-      ownerId: OWNER_ID,
+      householdId: HOUSEHOLD_ID,
       direction: "OUTFLOW",
       status: { in: ["DUE", "OVERDUE", "PARTIALLY_PAID"] },
     });

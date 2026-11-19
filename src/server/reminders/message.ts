@@ -1,4 +1,5 @@
-import { formatINR } from "~/lib/format";
+import type { Currency } from "../../../generated/prisma";
+import { formatMoney } from "~/lib/format";
 
 /** "5 Oct 2026" for a calendar day "YYYY-MM-DD", independent of server zone. */
 function formatDay(day: string) {
@@ -25,14 +26,17 @@ export function reminderMessage({
   dueDay,
   offsetDays,
   incoming,
+  currency,
 }: {
   name: string;
   amount: number;
   dueDay: string;
   offsetDays: number;
   incoming: boolean;
+  /** The bill's currency, else the owner's. */
+  currency?: Currency | null;
 }) {
-  const money = formatINR(amount);
+  const money = formatMoney(amount, currency);
   const days = Math.abs(offsetDays);
 
   let title: string;

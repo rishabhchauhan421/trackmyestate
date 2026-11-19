@@ -1,19 +1,22 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
-import { toDateInputValue } from "~/lib/format";
+import { currencySymbol, toDateInputValue } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
+import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
 import {
-  deleteInvestment,
-  updateInvestment,
+  deleteInvestmentForm,
+  updateInvestmentForm,
 } from "~/server/actions/investments";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import {
-  getInvestmentForOwner,
-  hasBillsForInvestment,
+  getInvestmentForHousehold,
+  hasPaymentsForInvestment,
 } from "~/server/queries/investments";
 
 export default async function EditInvestmentPage({
@@ -22,14 +25,16 @@ export default async function EditInvestmentPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const investment = await getInvestmentForOwner(id, session.user.id);
+  const investment = await getInvestmentForHousehold(id, scope.householdId);
   if (!investment) {
     notFound();
   }
-  const canDelete = !(await hasBillsForInvestment(id));
+  const symbol = currencySymbol(
+    investment.currency ?? (await getUserCurrency(scope.userId)),
+  );
+  const canDelete = !(await hasPaymentsForInvestment(id));
 
   return (
     <>
@@ -43,8 +48,8 @@ export default async function EditInvestmentPage({
         description="Update this investment's details, including its current estimated value."
       />
 
-      <form
-        action={updateInvestment.bind(null, investment.id)}
+      <ActionForm
+        action={updateInvestmentForm.bind(null, investment.id)}
         data-gtm-event="investment_updated"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -100,27 +105,29 @@ export default async function EditInvestmentPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Capital deployed (₹)</span>
+            <span className={labelClass}>Capital deployed ({symbol})</span>
             <input
               type="number"
               name="capitalDeployed"
               min="1"
               step="1"
               required
-              defaultValue={investment.capitalDeployed}
+              defaultValue={fromMinorUnits(investment.capitalDeployed)}
               className={controlClass}
             />
           </label>
           <label className="block">
             <span className={labelClass}>
-              Current estimated value (₹, optional)
+              Current estimated value ({symbol}, optional)
             </span>
             <input
               type="number"
               name="currentEstimatedValue"
               min="0"
               step="1"
-              defaultValue={investment.currentEstimatedValue ?? ""}
+              defaultValue={
+                optionalFromMinorUnits(investment.currentEstimatedValue) ?? ""
+              }
               className={controlClass}
             />
           </label>
@@ -169,19 +176,19 @@ export default async function EditInvestmentPage({
           </Button>
           <SubmitButton>Save changes</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
           <p className="text-sm font-semibold text-ink">Delete investment</p>
           <p className="mt-1 text-xs text-muted">
             {canDelete
-              ? "Permanently removes this investment. Only possible when it has no bills on record."
-              : "This investment has bills on record, so it can't be deleted."}
+              ? "Permanently removes this investment. Only possible while nothing has been received on it; unpaid returns are removed with it."
+              : "Returns have been received on this investment, so it can't be deleted."}
           </p>
         </div>
-        <form
-          action={deleteInvestment.bind(null, investment.id)}
+        <ActionForm
+          action={deleteInvestmentForm.bind(null, investment.id)}
           data-gtm-event="investment_deleted"
         >
           <SubmitButton
@@ -192,7 +199,7 @@ export default async function EditInvestmentPage({
           >
             Delete investment
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
     </>
   );

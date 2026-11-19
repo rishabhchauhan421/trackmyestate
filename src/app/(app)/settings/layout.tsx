@@ -1,7 +1,5 @@
-import { redirect } from "next/navigation";
-
 import { PageHeader } from "~/app/_components/page-header";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getGuests } from "~/server/queries/guests";
 import { SettingsNav } from "./settings-nav";
 
@@ -11,9 +9,8 @@ export default async function SettingsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const guests = await getGuests(session.user.id);
+  const scope = await requireScope();
+  const guests = await getGuests(scope.userId);
 
   return (
     <>

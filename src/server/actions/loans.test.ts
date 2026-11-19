@@ -4,12 +4,23 @@ import type { PrismaClient } from "../../../generated/prisma";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
-import { createLoan, deleteLoan, updateLoan } from "./loans";
+import {
+  createLoan,
+  createLoanForm,
+  deleteLoan,
+  deleteLoanForm,
+  updateLoan,
+} from "./loans";
 
 jest.mock("~/server/db");
 jest.mock("~/server/bills/generate", () => ({
   generateBillsForSchedule: jest.fn(),
 }));
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -20,6 +31,10 @@ jest.mock("next/navigation", () => ({
   redirect: jest.fn((path: string) => {
     throw new Error(`REDIRECT:${path}`);
   }),
+  // Lets the test's stand-in redirect through `toFormState`.
+  unstable_rethrow: (err: unknown) => {
+    if (err instanceof Error && err.message.startsWith("REDIRECT:")) throw err;
+  },
 }));
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
@@ -35,6 +50,10 @@ const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
 beforeEach(() => {
   mockReset(dbMock);
+  // Interactive transactions run their callback against the same mock.
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
@@ -83,10 +102,10 @@ describe("createLoan", () => {
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
-  it("rejects a negative interest rate", async () => {
+  it.each(["-1", "101"])("rejects an interest rate of %s%%", async (rate) => {
     await expect(
-      createLoan(buildLoanForm({ interestRatePercent: "-1" })),
-    ).rejects.toThrow("Enter a valid interest rate");
+      createLoan(buildLoanForm({ interestRatePercent: rate })),
+    ).rejects.toThrow("Enter an interest rate from 0 to 100%");
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
@@ -137,8 +156,8 @@ describe("createLoan", () => {
 
     expect(dbMock.loan.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        principal: 5000000,
-        outstandingBalance: 5000000,
+        principal: 500000000,
+        outstandingBalance: 500000000,
       }),
     });
   });
@@ -153,12 +172,13 @@ describe("createLoan", () => {
     expect(dbMock.loan.create).toHaveBeenCalledWith({
       data: {
         ownerId: "user-1",
+        householdId: "household-1",
         lender: "HDFC Bank",
         type: "HOME_LOAN",
-        principal: 5000000,
+        principal: 500000000,
         interestRatePercent: 8.5,
         startDate: new Date("2024-04-05"),
-        outstandingBalance: 4800000,
+        outstandingBalance: 480000000,
         linkedPropertyId: null,
       },
     });
@@ -184,15 +204,20 @@ describe("createLoan", () => {
     expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
       data: {
         ownerId: "user-1",
+        householdId: "household-1",
         category: "EMI",
         loanId: "loan-1",
         recurrence: "MONTHLY",
         // Loan starts 5 Apr 2024 with EMIs on the 5th: the first is a month
         // later, stored as a date-only value.
         startDate: new Date("2024-05-05"),
+        nextDueDate: new Date("2024-05-05"),
         dueDay: 5,
-        defaultAmount: 43000,
+        dueMonth: null,
+        endDate: null,
+        defaultAmount: 4300000,
         tenureMonths: 240,
+        active: true,
       },
     });
   });
@@ -206,7 +231,7 @@ describe("createLoan", () => {
     ).rejects.toThrow("REDIRECT:/loans");
 
     expect(dbMock.property.findFirst).toHaveBeenCalledWith({
-      where: { id: "prop-1", ownerId: "user-1" },
+      where: { id: "prop-1", householdId: "household-1" },
     });
     expect(dbMock.loan.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ linkedPropertyId: "prop-1" }),
@@ -267,7 +292,7 @@ describe("updateLoan", () => {
 
     expect(dbMock.loan.update).toHaveBeenCalledWith({
       where: { id: "loan-1" },
-      data: expect.objectContaining({ outstandingBalance: 4700000 }),
+      data: expect.objectContaining({ outstandingBalance: 470000000 }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/loans");
   });
@@ -280,6 +305,18 @@ describe("updateLoan", () => {
       ownerId: "user-1",
     } as never);
     dbMock.loan.update.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.billSchedule.findFirst.mockResolvedValue({
+      id: "sched-1",
+      recurrence: "MONTHLY",
+      startDate: new Date("2024-05-05"),
+      dueDay: 5,
+      dueMonth: null,
+      endDate: null,
+      tenureMonths: 240,
+      defaultAmount: 4300000,
+      active: true,
+    } as never);
+    dbMock.bill.findMany.mockResolvedValue([]);
 
     await expect(
       updateLoan(
@@ -292,16 +329,30 @@ describe("updateLoan", () => {
       ),
     ).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
-      where: { category: "EMI", loanId: "loan-1" },
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
+      where: { id: "sched-1" },
       data: {
+        recurrence: "MONTHLY",
         // Still starts 5 Apr 2024; EMIs moved to the 10th → first on 10 Apr.
         startDate: new Date("2024-04-10"),
+        nextDueDate: new Date("2024-04-10"),
         dueDay: 10,
-        defaultAmount: 44000,
+        dueMonth: null,
+        endDate: null,
+        defaultAmount: 4400000,
         tenureMonths: 180,
+        active: true,
       },
     });
+    // The upcoming unpaid EMIs at the old terms are looked up for removal.
+    expect(dbMock.bill.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          billScheduleId: { in: ["sched-1"] },
+          status: { in: ["DUE", "OVERDUE"] },
+        }),
+      }),
+    );
   });
 
   it("re-links the loan to a different owned property and revalidates both", async () => {
@@ -357,6 +408,21 @@ describe("deleteLoan", () => {
     expect(dbMock.loan.update).not.toHaveBeenCalled();
   });
 
+  it("checks for paid EMIs, not just any EMI bill", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.bill.findFirst.mockResolvedValue(null);
+    dbMock.billSchedule.findMany.mockResolvedValue([]);
+
+    await expect(deleteLoan("loan-1")).rejects.toThrow("REDIRECT:/loans");
+    expect(dbMock.bill.findFirst).toHaveBeenCalledWith({
+      where: {
+        loanId: "loan-1",
+        status: { in: ["PAID", "PARTIALLY_PAID", "REFUNDED"] },
+      },
+      select: { id: true },
+    });
+  });
+
   it("refuses to delete a loan that has EMI payments on record", async () => {
     dbMock.loan.findFirst.mockResolvedValue({
       id: "loan-1",
@@ -378,6 +444,10 @@ describe("deleteLoan", () => {
     } as never);
     dbMock.bill.findFirst.mockResolvedValue(null);
     dbMock.loan.update.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      { id: "sched-1" },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValue([]);
 
     await expect(deleteLoan("loan-1")).rejects.toThrow("REDIRECT:/loans");
 
@@ -386,10 +456,45 @@ describe("deleteLoan", () => {
       data: { deletedAt: expect.any(Date) },
     });
     expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
-      where: { category: "EMI", loanId: "loan-1" },
-      data: { deletedAt: expect.any(Date) },
+      where: { id: { in: ["sched-1"] } },
+      data: { active: false, deletedAt: expect.any(Date) },
+    });
+    // Every unpaid EMI goes with it, overdue ones included.
+    expect(dbMock.bill.findMany).toHaveBeenCalledWith({
+      where: {
+        billScheduleId: { in: ["sched-1"] },
+        status: { in: ["DUE", "OVERDUE"] },
+      },
+      select: { id: true },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/loans");
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
+  });
+});
+
+describe("form twins", () => {
+  it("returns a validation error to the form instead of throwing", async () => {
+    await expect(
+      createLoanForm({ error: null }, buildLoanForm({ lender: "" })),
+    ).resolves.toEqual({ error: "Enter a lender", field: "lender" });
+    expect(dbMock.loan.create).not.toHaveBeenCalled();
+  });
+
+  it("returns a refusal to the form", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
+
+    await expect(
+      deleteLoanForm("loan-1", { error: null }, new FormData()),
+    ).resolves.toEqual({
+      error: "Cannot delete a loan that has EMI payments on record",
+    });
+  });
+
+  it("still redirects on success", async () => {
+    dbMock.loan.create.mockResolvedValue({ id: "loan-1" } as never);
+    await expect(
+      createLoanForm({ error: null }, buildLoanForm()),
+    ).rejects.toThrow("REDIRECT:/loans");
   });
 });

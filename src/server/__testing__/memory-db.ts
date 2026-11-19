@@ -31,6 +31,10 @@ const MODELS = [
   "loan",
   "policy",
   "lease",
+  "investment",
+  "paymentTransaction",
+  "emailSuppression",
+  "cronRun",
 ] as const;
 type Model = (typeof MODELS)[number];
 
@@ -49,7 +53,10 @@ const DEFAULTS: Partial<Record<Model, Record<string, unknown>>> = {
 /** Fields with a unique index, per model (besides `id`). */
 const UNIQUE: Partial<Record<Model, string[]>> = {
   notificationJob: ["idempotencyKey"],
+  bill: ["generationKey"],
   user: ["email"],
+  emailSuppression: ["key"],
+  cronRun: ["job"],
 };
 
 const store: Record<Model, Doc[]> = Object.fromEntries(
@@ -245,6 +252,10 @@ function makeDelegate(model: Model) {
         updatedAt: now,
       };
       applyData(doc, args.data);
+      // `Bill.generationKey` is `@default(uuid())` in the schema.
+      if (model === "bill" && doc.generationKey === undefined) {
+        doc.generationKey = `uuid-${doc.id as string}`;
+      }
       checkUnique(model, doc);
       all().push(doc);
       return clone(doc);
@@ -263,6 +274,15 @@ function makeDelegate(model: Model) {
       checkUnique(model, doc, doc.id);
       all()[index] = doc;
       return clone(doc);
+    },
+    async upsert(args: {
+      where: Where;
+      create: Record<string, unknown>;
+      update: Record<string, unknown>;
+    }) {
+      return findIndex(args.where) === -1
+        ? this.create({ data: args.create })
+        : this.update({ where: args.where, data: args.update });
     },
     async updateMany(args: { where?: Where; data: Record<string, unknown> }) {
       let count = 0;
@@ -285,6 +305,12 @@ function makeDelegate(model: Model) {
   };
 }
 
-export const db = Object.fromEntries(
+const delegates: Record<string, unknown> = Object.fromEntries(
   MODELS.map((model) => [model, makeDelegate(model)]),
-) as unknown as PrismaClient;
+);
+// An interactive transaction just runs against the same store (no
+// rollback): enough for code that wraps its writes in one.
+delegates.$transaction = async (fn: (tx: unknown) => Promise<unknown>) =>
+  fn(delegates);
+
+export const db = delegates as unknown as PrismaClient;

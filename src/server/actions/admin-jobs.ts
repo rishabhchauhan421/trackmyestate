@@ -10,6 +10,7 @@ import { redirect } from "next/navigation";
 
 import { getSession, isAdmin } from "~/server/better-auth/server";
 import { generateBills } from "~/server/bills/generate";
+import { recordCronRun } from "~/server/cron-runs";
 import { processDueNotificationJobs } from "~/server/notifications/process";
 import { generateReminders } from "~/server/reminders/generate";
 
@@ -29,7 +30,7 @@ function done(job: string, result: Record<string, string | number | boolean>) {
 
 export async function runBillGeneration() {
   await requireAdmin();
-  const summary = await generateBills();
+  const summary = await recordCronRun("bills", () => generateBills());
   done("bills", {
     created: summary.billsCreated,
     scanned: summary.schedulesScanned,
@@ -40,7 +41,7 @@ export async function runBillGeneration() {
 
 export async function runReminderGeneration() {
   await requireAdmin();
-  const summary = await generateReminders();
+  const summary = await recordCronRun("reminders", () => generateReminders());
   done("reminders", {
     queued: summary.queued,
     scanned: summary.scanned,
@@ -50,7 +51,9 @@ export async function runReminderGeneration() {
 
 export async function runNotificationDrain() {
   await requireAdmin();
-  const summary = await processDueNotificationJobs();
+  const summary = await recordCronRun("notifications", () =>
+    processDueNotificationJobs(),
+  );
   done("notifications", {
     total: summary.total,
     sent: summary.outcomes.SENT,

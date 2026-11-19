@@ -10,8 +10,16 @@ import {
 } from "./investments";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
+}));
+jest.mock("~/server/bills/generate", () => ({
+  generateBillsForSchedule: jest.fn(),
 }));
 jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
@@ -35,6 +43,17 @@ const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.findMany.mockResolvedValue([]);
+  dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
+  dbMock.bill.findMany.mockResolvedValue([]);
+  dbMock.investment.create.mockResolvedValue({
+    id: "inv-1",
+    ownerId: "user-1",
+  } as never);
+  // Interactive transactions run their callback against the same mock.
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
   revalidatePath.mockClear();
@@ -100,12 +119,15 @@ describe("createInvestment", () => {
     expect(dbMock.investment.create).not.toHaveBeenCalled();
   });
 
-  it("rejects a non-numeric target ROI", async () => {
-    await expect(
-      createInvestment(buildInvestmentForm({ targetRoiPercent: "abc" })),
-    ).rejects.toThrow("Enter a valid target ROI");
-    expect(dbMock.investment.create).not.toHaveBeenCalled();
-  });
+  it.each(["abc", "-101", "1001"])(
+    "rejects a target ROI of %s",
+    async (roi) => {
+      await expect(
+        createInvestment(buildInvestmentForm({ targetRoiPercent: roi })),
+      ).rejects.toThrow("Enter a target return from -100% to 1000%");
+      expect(dbMock.investment.create).not.toHaveBeenCalled();
+    },
+  );
 
   it("rejects a non-numeric current estimated value", async () => {
     await expect(
@@ -124,12 +146,13 @@ describe("createInvestment", () => {
     expect(dbMock.investment.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         ownerId: "user-1",
+        householdId: "household-1",
         name: "HDFC Flexicap Fund",
         type: "MUTUAL_FUND",
         institution: "HDFC Mutual Fund",
-        capitalDeployed: 50000,
+        capitalDeployed: 5000000,
         targetRoiPercent: 12,
-        currentEstimatedValue: 55000,
+        currentEstimatedValue: 5500000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/investments");
@@ -158,6 +181,53 @@ describe("createInvestment", () => {
         targetRoiPercent: null,
         currentEstimatedValue: null,
       }),
+    });
+  });
+});
+
+describe("investment returns", () => {
+  it("bills the expected return once, on its date", async () => {
+    await expect(createInvestment(buildInvestmentForm())).rejects.toThrow(
+      "REDIRECT:/investments",
+    );
+
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
+      data: {
+        ownerId: "user-1",
+        householdId: "household-1",
+        investmentId: "inv-1",
+        category: "INVESTMENT_RETURN",
+        recurrence: "YEARLY",
+        startDate: new Date("2030-01-10"),
+        nextDueDate: new Date("2030-01-10"),
+        dueDay: 10,
+        dueMonth: 1,
+        endDate: null,
+        tenureMonths: 12,
+        // The current estimate, ₹55,000.
+        defaultAmount: 5500000,
+        active: true,
+      },
+    });
+  });
+
+  it("retires the return when the date is cleared", async () => {
+    dbMock.investment.findFirst.mockResolvedValue({
+      id: "inv-1",
+      ownerId: "user-1",
+    } as never);
+
+    await expect(
+      updateInvestment(
+        "inv-1",
+        buildInvestmentForm({ expectedReturnDate: "" }),
+      ),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.findMany).toHaveBeenCalledWith({
+      where: { investmentId: "inv-1", category: "INVESTMENT_RETURN" },
+      select: { id: true },
     });
   });
 });
@@ -210,7 +280,7 @@ describe("updateInvestment", () => {
       where: { id: "inv-1" },
       data: expect.objectContaining({
         name: "Updated Fund",
-        capitalDeployed: 60000,
+        capitalDeployed: 6000000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/investments");
@@ -233,7 +303,7 @@ describe("deleteInvestment", () => {
     expect(dbMock.investment.update).not.toHaveBeenCalled();
   });
 
-  it("refuses to delete an investment that has bills on record", async () => {
+  it("refuses to delete an investment that has returns on record", async () => {
     dbMock.investment.findFirst.mockResolvedValue({
       id: "inv-1",
       ownerId: "user-1",
@@ -241,7 +311,7 @@ describe("deleteInvestment", () => {
     dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
 
     await expect(deleteInvestment("inv-1")).rejects.toThrow(
-      "Cannot delete an investment that has bills on record",
+      "Cannot delete an investment that has returns on record",
     );
     expect(dbMock.investment.update).not.toHaveBeenCalled();
   });

@@ -1,20 +1,19 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { InsuranceIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
-import { formatDate, formatINR } from "~/lib/format";
+import { formatDate, formatMoney } from "~/lib/format";
 import { POLICY_TYPE_LABELS } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import { getPolicies } from "~/server/queries/policies";
 
 export default async function InsurancePage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const policies = await getPolicies(session.user.id);
+  const scope = await requireScope();
+  const currency = await getUserCurrency(scope.userId);
+  const policies = await getPolicies(scope.householdId);
 
   return (
     <>
@@ -52,14 +51,22 @@ export default async function InsurancePage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-ink">
-                      {policy.sumAssured ? formatINR(policy.sumAssured) : "—"}
+                      {policy.sumAssured
+                        ? formatMoney(
+                            policy.sumAssured,
+                            policy.currency ?? currency,
+                          )
+                        : "—"}
                     </p>
                     <p className="text-xs text-muted">sum assured</p>
                   </div>
                   {nextPremium ? (
                     <div className="text-right">
                       <p className="text-sm font-medium text-ink-2">
-                        {formatINR(nextPremium.amount)}
+                        {formatMoney(
+                          nextPremium.amount,
+                          nextPremium.currency ?? policy.currency ?? currency,
+                        )}
                       </p>
                       <p className="text-xs text-muted">
                         due {formatDate(nextPremium.dueDate)}

@@ -1,15 +1,20 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PlusIcon, PropertiesIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
-import { daysUntil, formatINR, formatShortDate } from "~/lib/format";
+import type { Currency } from "../../../../generated/prisma";
+import { daysUntil, formatMoney, formatShortDate } from "~/lib/format";
+import {
+  formatTotals,
+  hasNegative,
+  isZeroTotal,
+  sumByCurrency,
+} from "~/lib/money-totals";
 import { PROPERTY_CATEGORY_LABELS, PROPERTY_TYPE_LABELS } from "~/lib/labels";
-import { getSession } from "~/server/better-auth/server";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { requireScope } from "~/server/households";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getProperties } from "~/server/queries/properties";
 
 type PropertyType = keyof typeof PROPERTY_TYPE_LABELS;
@@ -31,12 +36,12 @@ export default async function PropertiesPage({
 }: {
   searchParams: Promise<{ type?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const [properties, timeZone, { type }] = await Promise.all([
-    getProperties(session.user.id),
-    getUserTimeZone(session.user.id),
+  const [properties, timeZone, currency, { type }] = await Promise.all([
+    getProperties(scope.householdId),
+    getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
     searchParams,
   ]);
   const isPast = (date: Date) => daysUntil(date, new Date(), timeZone) < 0;
@@ -45,28 +50,43 @@ export default async function PropertiesPage({
     ? properties.filter((property) => property.type === activeType)
     : properties;
 
-  const totalValue = properties.reduce(
-    (sum, p) => sum + (p.currentEstimatedValue ?? 0),
-    0,
+  // Totals per currency: a property's figures are in its own currency.
+  const totalValue = sumByCurrency(
+    properties.map((p) => ({
+      amount: p.currentEstimatedValue,
+      currency: p.currency,
+    })),
+    currency,
   );
-  const totalGain = properties.reduce(
-    (sum, p) =>
-      p.currentEstimatedValue != null && p.purchasePrice != null
-        ? sum + (p.currentEstimatedValue - p.purchasePrice)
-        : sum,
-    0,
+  const totalGain = sumByCurrency(
+    properties.map((p) => ({
+      amount:
+        p.currentEstimatedValue != null && p.purchasePrice != null
+          ? p.currentEstimatedValue - p.purchasePrice
+          : null,
+      currency: p.currency,
+    })),
+    currency,
   );
-  const monthlyRent = properties.reduce(
-    (sum, p) => sum + p.leases.reduce((s, lease) => s + lease.rentAmount, 0),
-    0,
+  const monthlyRent = sumByCurrency(
+    properties.flatMap((p) =>
+      p.leases.map((lease) => ({
+        amount: lease.rentAmount,
+        currency: lease.currency ?? p.currency,
+      })),
+    ),
+    currency,
   );
-  const overdueTotal = properties.reduce(
-    (sum, p) =>
-      sum +
+  const overdueTotal = sumByCurrency(
+    properties.flatMap((p) =>
       p.openBills
         .filter((bill) => isPast(bill.dueDate))
-        .reduce((s, bill) => s + bill.amount, 0),
-    0,
+        .map((bill) => ({
+          amount: bill.amount,
+          currency: bill.currency ?? p.currency,
+        })),
+    ),
+    currency,
   );
 
   const tabs = [
@@ -111,17 +131,27 @@ export default async function PropertiesPage({
             aria-label="Totals"
             className="grid grid-cols-2 divide-line-soft overflow-hidden rounded-card border border-line bg-surface lg:grid-cols-4 lg:divide-x"
           >
-            <Total label="Total value" value={formatINR(totalValue)} />
+            <Total
+              label="Total value"
+              value={formatTotals(totalValue, currency)}
+            />
             <Total
               label="Gain since purchase"
-              value={`${totalGain >= 0 ? "+" : "−"}${formatINR(Math.abs(totalGain))}`}
-              valueClassName={totalGain >= 0 ? "text-accent" : "text-danger"}
+              value={formatTotals(totalGain, currency, { signed: true })}
+              valueClassName={
+                hasNegative(totalGain) ? "text-danger" : "text-accent"
+              }
             />
-            <Total label="Monthly rent" value={formatINR(monthlyRent)} />
+            <Total
+              label="Monthly rent"
+              value={formatTotals(monthlyRent, currency)}
+            />
             <Total
               label="Overdue"
-              value={formatINR(overdueTotal)}
-              valueClassName={overdueTotal > 0 ? "text-danger" : undefined}
+              value={formatTotals(overdueTotal, currency)}
+              valueClassName={
+                isZeroTotal(overdueTotal) ? undefined : "text-danger"
+              }
             />
           </section>
 
@@ -155,6 +185,7 @@ export default async function PropertiesPage({
                 key={property.id}
                 property={property}
                 timeZone={timeZone}
+                currency={currency}
               />
             ))}
             <Link
@@ -205,10 +236,13 @@ function Total({
 function PropertyCard({
   property,
   timeZone,
+  currency: userCurrency,
 }: {
   property: Awaited<ReturnType<typeof getProperties>>[number];
   timeZone: string;
+  currency: Currency;
 }) {
+  const currency = property.currency ?? userCurrency;
   const lease = property.leases[0];
   const overdue = property.openBills.filter(
     (bill) => daysUntil(bill.dueDate, new Date(), timeZone) < 0,
@@ -216,7 +250,7 @@ function PropertyCard({
   const nextBill = property.openBills.find(
     (bill) => daysUntil(bill.dueDate, new Date(), timeZone) >= 0,
   );
-  const openTotal = property.openBills.reduce((s, b) => s + b.amount, 0);
+  const openTotal = sumByCurrency(property.openBills, currency);
   const gainPercent =
     property.currentEstimatedValue != null && property.purchasePrice
       ? ((property.currentEstimatedValue - property.purchasePrice) /
@@ -261,7 +295,7 @@ function PropertyCard({
         <div className="flex items-baseline gap-2.5">
           <span className="font-display text-2xl font-semibold text-ink">
             {property.currentEstimatedValue != null
-              ? formatINR(property.currentEstimatedValue)
+              ? formatMoney(property.currentEstimatedValue, currency)
               : "—"}
           </span>
           {gainPercent != null && (
@@ -287,7 +321,9 @@ function PropertyCard({
           <div>
             <dt className="text-muted">Rent</dt>
             <dd className="mt-0.5 font-medium text-ink">
-              {lease ? `${formatINR(lease.rentAmount)} / month` : "—"}
+              {lease
+                ? `${formatMoney(lease.rentAmount, lease.currency ?? currency)} / month`
+                : "—"}
             </dd>
           </div>
           <div>
@@ -304,7 +340,9 @@ function PropertyCard({
                 overdue.length > 0 ? "text-danger" : "text-ink",
               )}
             >
-              {openTotal > 0 ? formatINR(openTotal) : "None"}
+              {isZeroTotal(openTotal)
+                ? "None"
+                : formatTotals(openTotal, currency)}
             </dd>
           </div>
         </dl>

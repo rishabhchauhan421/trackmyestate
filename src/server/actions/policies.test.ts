@@ -6,8 +6,16 @@ import { getSession } from "~/server/better-auth/server";
 import { createPolicy, deletePolicy, updatePolicy } from "./policies";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
+}));
+jest.mock("~/server/bills/generate", () => ({
+  generateBillsForSchedule: jest.fn(),
 }));
 jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
@@ -31,6 +39,18 @@ const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.findMany.mockResolvedValue([]);
+  dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
+  dbMock.bill.findMany.mockResolvedValue([]);
+  dbMock.policy.create.mockImplementation((async ({ data }: never) => ({
+    id: "policy-1",
+    status: "ACTIVE",
+    ...(data as object),
+  })) as never);
+  // Interactive transactions run their callback against the same mock.
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
   revalidatePath.mockClear();
@@ -123,11 +143,12 @@ describe("createPolicy", () => {
     expect(dbMock.policy.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         ownerId: "user-1",
+        householdId: "household-1",
         type: "TERM_LIFE",
         insurer: "LIC",
         policyNumber: "LIC-12345",
         holderName: "Jane Doe",
-        sumAssured: 5000000,
+        sumAssured: 500000000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/insurance");
@@ -158,6 +179,116 @@ describe("createPolicy", () => {
         coPayPercent: null,
         waitingPeriodMonths: null,
       }),
+    });
+  });
+});
+
+describe("policy validation", () => {
+  it.each(["-1", "101"])("rejects a co-pay of %s%%", async (coPay) => {
+    await expect(
+      createPolicy(buildPolicyForm({ coPayPercent: coPay })),
+    ).rejects.toThrow("Enter a co-pay percent from 0 to 100");
+    expect(dbMock.policy.create).not.toHaveBeenCalled();
+  });
+});
+
+describe("policy premiums and payouts", () => {
+  it("creates a premium schedule until the policy's term ends", async () => {
+    await expect(
+      createPolicy(
+        buildPolicyForm({
+          premiumAmount: "24000",
+          premiumFrequency: "YEARLY",
+          premiumDueDate: "2026-01-10",
+        }),
+      ),
+    ).rejects.toThrow("REDIRECT:/insurance");
+
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
+      data: {
+        ownerId: "user-1",
+        householdId: "household-1",
+        policyId: "policy-1",
+        category: "PREMIUM",
+        recurrence: "YEARLY",
+        startDate: new Date("2026-01-10"),
+        nextDueDate: new Date("2026-01-10"),
+        dueDay: 10,
+        dueMonth: 1,
+        // A 20-year policy from 10 Jan 2022.
+        endDate: new Date("2042-01-09"),
+        tenureMonths: null,
+        defaultAmount: 2400000,
+        active: true,
+      },
+    });
+    // The premium fields aren't Policy columns.
+    expect(dbMock.policy.create).toHaveBeenCalledWith({
+      data: expect.not.objectContaining({ premiumAmount: expect.anything() }),
+    });
+  });
+
+  it("creates a one-off payout", async () => {
+    await expect(
+      createPolicy(
+        buildPolicyForm({ payoutAmount: "1000000", payoutDate: "2042-01-10" }),
+      ),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        category: "PAYOUT",
+        startDate: new Date("2042-01-10"),
+        recurrence: "YEARLY",
+        tenureMonths: 12,
+        defaultAmount: 100000000,
+      }),
+    });
+  });
+
+  it.each([
+    [{ premiumAmount: "24000" }, "or leave all three blank"],
+    [
+      { premiumFrequency: "YEARLY", premiumDueDate: "2026-01-10" },
+      "or leave all three blank",
+    ],
+    [{ payoutDate: "2042-01-10" }, "Enter both the payout amount"],
+  ])("rejects a half-filled group %p", async (fields, message) => {
+    await expect(createPolicy(buildPolicyForm(fields))).rejects.toThrow(
+      message,
+    );
+    expect(dbMock.policy.create).not.toHaveBeenCalled();
+  });
+
+  it("stops premiums once the policy isn't active", async () => {
+    dbMock.policy.findFirst.mockResolvedValue({
+      id: "policy-1",
+      ownerId: "user-1",
+    } as never);
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      { id: "sched-1" },
+    ] as never);
+
+    await expect(
+      updatePolicy(
+        "policy-1",
+        buildPolicyForm({
+          status: "LAPSED",
+          premiumAmount: "24000",
+          premiumFrequency: "YEARLY",
+          premiumDueDate: "2026-01-10",
+        }),
+      ),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.findMany).toHaveBeenCalledWith({
+      where: { policyId: "policy-1", category: "PREMIUM" },
+      select: { id: true },
+    });
+    expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["sched-1"] } },
+      data: { active: false },
     });
   });
 });
@@ -219,7 +350,7 @@ describe("deletePolicy", () => {
     expect(dbMock.policy.update).not.toHaveBeenCalled();
   });
 
-  it("refuses to delete a policy that has premiums or claims on record", async () => {
+  it("refuses to delete a policy that has premiums or payouts on record", async () => {
     dbMock.policy.findFirst.mockResolvedValue({
       id: "policy-1",
       ownerId: "user-1",
@@ -227,7 +358,7 @@ describe("deletePolicy", () => {
     dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
 
     await expect(deletePolicy("policy-1")).rejects.toThrow(
-      "Cannot delete a policy that has premiums or claims on record",
+      "Cannot delete a policy that has premiums or payouts on record",
     );
     expect(dbMock.policy.update).not.toHaveBeenCalled();
   });

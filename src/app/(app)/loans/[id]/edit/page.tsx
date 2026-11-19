@@ -1,15 +1,21 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
-import { toDateInputValue } from "~/lib/format";
+import { currencySymbol, toDateInputValue } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
-import { deleteLoan, updateLoan } from "~/server/actions/loans";
-import { getSession } from "~/server/better-auth/server";
-import { getLoanForOwner, hasBillsForLoan } from "~/server/queries/loans";
-import { getPropertyOptionsForOwner } from "~/server/queries/properties";
+import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
+import { deleteLoanForm, updateLoanForm } from "~/server/actions/loans";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
+import {
+  getLoanForHousehold,
+  hasPaymentsForLoan,
+} from "~/server/queries/loans";
+import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 
 export default async function EditLoanPage({
   params,
@@ -17,15 +23,17 @@ export default async function EditLoanPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const loan = await getLoanForOwner(id, session.user.id);
+  const loan = await getLoanForHousehold(id, scope.householdId);
   if (!loan) {
     notFound();
   }
-  const properties = await getPropertyOptionsForOwner(session.user.id);
-  const canDelete = !(await hasBillsForLoan(id));
+  const symbol = currencySymbol(
+    loan.currency ?? (await getUserCurrency(scope.userId)),
+  );
+  const properties = await getPropertyOptionsForHousehold(scope.householdId);
+  const canDelete = !(await hasPaymentsForLoan(id));
 
   return (
     <>
@@ -39,8 +47,8 @@ export default async function EditLoanPage({
         description="Update this loan's terms and outstanding balance."
       />
 
-      <form
-        action={updateLoan.bind(null, loan.id)}
+      <ActionForm
+        action={updateLoanForm.bind(null, loan.id)}
         data-gtm-event="loan_updated"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -74,14 +82,14 @@ export default async function EditLoanPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Principal (₹)</span>
+            <span className={labelClass}>Principal ({symbol})</span>
             <input
               type="number"
               name="principal"
               min="1"
               step="1"
               required
-              defaultValue={loan.principal}
+              defaultValue={fromMinorUnits(loan.principal)}
               className={controlClass}
             />
           </label>
@@ -113,14 +121,14 @@ export default async function EditLoanPage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>EMI amount (₹)</span>
+            <span className={labelClass}>EMI amount ({symbol})</span>
             <input
               type="number"
               name="emiAmount"
               min="1"
               step="1"
               required
-              defaultValue={loan.emiAmount}
+              defaultValue={optionalFromMinorUnits(loan.emiAmount)}
               className={controlClass}
             />
           </label>
@@ -153,13 +161,13 @@ export default async function EditLoanPage({
         </div>
 
         <label className="block">
-          <span className={labelClass}>Outstanding balance (₹)</span>
+          <span className={labelClass}>Outstanding balance ({symbol})</span>
           <input
             type="number"
             name="outstandingBalance"
             min="0"
             step="1"
-            defaultValue={loan.outstandingBalance}
+            defaultValue={fromMinorUnits(loan.outstandingBalance)}
             className={`${controlClass} sm:w-56`}
           />
         </label>
@@ -190,19 +198,19 @@ export default async function EditLoanPage({
           </Button>
           <SubmitButton>Save changes</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
           <p className="text-sm font-semibold text-ink">Delete loan</p>
           <p className="mt-1 text-xs text-muted">
             {canDelete
-              ? "Permanently removes this loan and its EMI schedule. Only possible when it has no EMI payments on record."
-              : "This loan has EMI payments on record, so it can't be deleted."}
+              ? "Permanently removes this loan and its EMI schedule. Only possible while no EMI has been paid; unpaid EMIs are removed with it."
+              : "EMIs have been paid on this loan, so it can't be deleted."}
           </p>
         </div>
-        <form
-          action={deleteLoan.bind(null, loan.id)}
+        <ActionForm
+          action={deleteLoanForm.bind(null, loan.id)}
           data-gtm-event="loan_deleted"
         >
           <SubmitButton
@@ -213,7 +221,7 @@ export default async function EditLoanPage({
           >
             Delete loan
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
     </>
   );

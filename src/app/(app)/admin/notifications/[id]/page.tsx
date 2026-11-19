@@ -8,7 +8,7 @@ import { Card, CardHeader } from "~/app/_components/card";
 import { Notice } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
-import { formatDate, formatINR } from "~/lib/format";
+import { formatDate, formatMoney } from "~/lib/format";
 import {
   cancelNotification,
   retryNotification,
@@ -294,7 +294,8 @@ export default async function AdminNotificationPage({
                 <Row label="Bill">
                   {bill.description ?? "Bill"}
                   <span className="mt-1 flex flex-wrap items-center gap-2 text-xs text-muted">
-                    {formatINR(bill.amount)} · due {formatDate(bill.dueDate)}
+                    {formatMoney(bill.amount, bill.currency)} · due{" "}
+                    {formatDate(bill.dueDate)}
                     <StatusBadge status={bill.status} />
                   </span>
                 </Row>

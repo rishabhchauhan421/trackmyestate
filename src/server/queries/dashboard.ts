@@ -1,6 +1,8 @@
 import "server-only";
 
+import type { Currency } from "../../../generated/prisma";
 import { addDays, dateOnly } from "~/lib/calendar-day";
+import { addTotals, sumByCurrency } from "~/lib/money-totals";
 import { DEFAULT_TIME_ZONE, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
 import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
@@ -10,11 +12,16 @@ import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
  * investment value, minus loan outstanding), total active-policy coverage,
  * upcoming outflows/inflows due within 30 days, and a short "needs
  * attention" list (overdue, or due within 7 days).
+ *
+ * Every figure is a `MoneyTotals` — one sum per currency — since amounts
+ * in different currencies can't be added; a record without a currency
+ * counts in the user's (`currency`).
  */
 export async function getDashboardData(
-  ownerId: string,
+  householdId: string,
   timeZone: string = DEFAULT_TIME_ZONE,
   now: Date = new Date(),
+  currency: Currency = "INR",
 ) {
   // Due dates are date-only values, so the windows are calendar days
   // counted from today where the user is.
@@ -32,34 +39,40 @@ export async function getDashboardData(
     attentionItems,
     upcoming,
   ] = await Promise.all([
-    db.property.aggregate({
-      where: { ownerId },
+    db.property.groupBy({
+      by: ["currency"],
+      where: { householdId },
       _sum: { currentEstimatedValue: true },
     }),
-    db.investment.aggregate({
-      where: { ownerId },
+    db.investment.groupBy({
+      by: ["currency"],
+      where: { householdId },
       _sum: { currentEstimatedValue: true },
     }),
-    db.loan.aggregate({
-      where: { ownerId },
+    db.loan.groupBy({
+      by: ["currency"],
+      where: { householdId },
       _sum: { outstandingBalance: true },
     }),
-    db.policy.aggregate({
-      where: { ownerId, status: "ACTIVE" },
+    db.policy.groupBy({
+      by: ["currency"],
+      where: { householdId, status: "ACTIVE" },
       _sum: { sumAssured: true },
     }),
-    db.bill.aggregate({
+    db.bill.groupBy({
+      by: ["currency"],
       where: {
-        ownerId,
+        householdId,
         direction: "OUTFLOW",
         status: { in: [...OPEN_PAYMENT_STATUSES] },
         dueDate: { lte: in30Days },
       },
       _sum: { amount: true },
     }),
-    db.bill.aggregate({
+    db.bill.groupBy({
+      by: ["currency"],
       where: {
-        ownerId,
+        householdId,
         direction: "INFLOW",
         status: { in: [...OPEN_PAYMENT_STATUSES] },
         dueDate: { lte: in30Days },
@@ -68,7 +81,7 @@ export async function getDashboardData(
     }),
     db.bill.findMany({
       where: {
-        ownerId,
+        householdId,
         OR: [
           { status: "OVERDUE" },
           { status: "DUE", dueDate: { lte: in7Days } },
@@ -81,7 +94,7 @@ export async function getDashboardData(
     // dashboard's "Coming up" strip.
     db.bill.findMany({
       where: {
-        ownerId,
+        householdId,
         status: { in: [...OPEN_PAYMENT_STATUSES] },
         dueDate: { gte: dateOnly(today) },
       },
@@ -90,20 +103,33 @@ export async function getDashboardData(
     }),
   ]);
 
+  const sum = <T extends { currency: Currency | null }>(
+    groups: T[],
+    amount: (group: T) => number | null,
+  ) =>
+    sumByCurrency(
+      groups.map((group) => ({
+        amount: amount(group),
+        currency: group.currency,
+      })),
+      currency,
+    );
+
   const totals = {
-    propertyValue: propertyValue._sum.currentEstimatedValue ?? 0,
-    investmentValue: investmentValue._sum.currentEstimatedValue ?? 0,
-    loanOutstanding: loanOutstanding._sum.outstandingBalance ?? 0,
+    propertyValue: sum(propertyValue, (g) => g._sum.currentEstimatedValue),
+    investmentValue: sum(investmentValue, (g) => g._sum.currentEstimatedValue),
+    loanOutstanding: sum(loanOutstanding, (g) => g._sum.outstandingBalance),
   };
-  const netWorth =
-    totals.propertyValue + totals.investmentValue - totals.loanOutstanding;
+  const assets = addTotals(totals.propertyValue, totals.investmentValue);
+  const netWorth = addTotals(assets, totals.loanOutstanding, -1);
 
   return {
     ...totals,
+    assets,
     netWorth,
-    totalCoverage: coverage._sum.sumAssured ?? 0,
-    upcomingOutflows: outflows._sum.amount ?? 0,
-    expectedInflows: inflows._sum.amount ?? 0,
+    totalCoverage: sum(coverage, (g) => g._sum.sumAssured),
+    upcomingOutflows: sum(outflows, (g) => g._sum.amount),
+    expectedInflows: sum(inflows, (g) => g._sum.amount),
     attentionItems,
     upcoming,
   };

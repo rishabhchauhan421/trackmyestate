@@ -19,11 +19,6 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  */
 export type Recipient = $Result.DefaultSelection<Prisma.$RecipientPayload>
 /**
- * Model Post
- * 
- */
-export type Post = $Result.DefaultSelection<Prisma.$PostPayload>
-/**
  * Model User
  * 
  */
@@ -113,6 +108,45 @@ export type Document = $Result.DefaultSelection<Prisma.$DocumentPayload>
  * 
  */
 export type Guest = $Result.DefaultSelection<Prisma.$GuestPayload>
+/**
+ * Model Household
+ * 
+ */
+export type Household = $Result.DefaultSelection<Prisma.$HouseholdPayload>
+/**
+ * Model HouseholdMember
+ * 
+ */
+export type HouseholdMember = $Result.DefaultSelection<Prisma.$HouseholdMemberPayload>
+/**
+ * Model AppMigration
+ * 
+ */
+export type AppMigration = $Result.DefaultSelection<Prisma.$AppMigrationPayload>
+/**
+ * Model RateLimit
+ * better-auth's own rate limiter for the `/api/auth/*` HTTP endpoints
+ * (`rateLimit.storage: "database"` in `src/server/better-auth/config.ts`),
+ * so limits hold across serverless instances.
+ */
+export type RateLimit = $Result.DefaultSelection<Prisma.$RateLimitPayload>
+/**
+ * Model AuthThrottle
+ * Fixed-window attempt counters for the sign-in, sign-up, password reset
+ * and verification-email Server Actions (`src/server/rate-limit.ts`).
+ * `key` is "<action>:ip:<address>" or "<action>:email:<address>".
+ */
+export type AuthThrottle = $Result.DefaultSelection<Prisma.$AuthThrottlePayload>
+/**
+ * Model EmailSuppression
+ * 
+ */
+export type EmailSuppression = $Result.DefaultSelection<Prisma.$EmailSuppressionPayload>
+/**
+ * Model CronRun
+ * 
+ */
+export type CronRun = $Result.DefaultSelection<Prisma.$CronRunPayload>
 
 /**
  * Enums
@@ -348,6 +382,14 @@ export const NotificationStatus: {
 
 export type NotificationStatus = (typeof NotificationStatus)[keyof typeof NotificationStatus]
 
+
+export const HouseholdRole: {
+  OWNER: 'OWNER',
+  MEMBER: 'MEMBER'
+};
+
+export type HouseholdRole = (typeof HouseholdRole)[keyof typeof HouseholdRole]
+
 }
 
 export type Currency = $Enums.Currency
@@ -430,6 +472,10 @@ export type NotificationStatus = $Enums.NotificationStatus
 
 export const NotificationStatus: typeof $Enums.NotificationStatus
 
+export type HouseholdRole = $Enums.HouseholdRole
+
+export const HouseholdRole: typeof $Enums.HouseholdRole
+
 /**
  * ##  Prisma Client ʲˢ
  *
@@ -437,8 +483,8 @@ export const NotificationStatus: typeof $Enums.NotificationStatus
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Posts
- * const posts = await prisma.post.findMany()
+ * // Fetch zero or more Users
+ * const users = await prisma.user.findMany()
  * ```
  *
  *
@@ -458,8 +504,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Posts
-   * const posts = await prisma.post.findMany()
+   * // Fetch zero or more Users
+   * const users = await prisma.user.findMany()
    * ```
    *
    *
@@ -516,16 +562,6 @@ export class PrismaClient<
   }>>
 
       /**
-   * `prisma.post`: Exposes CRUD operations for the **Post** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Posts
-    * const posts = await prisma.post.findMany()
-    * ```
-    */
-  get post(): Prisma.PostDelegate<ExtArgs, ClientOptions>;
-
-  /**
    * `prisma.user`: Exposes CRUD operations for the **User** model.
     * Example usage:
     * ```ts
@@ -704,6 +740,76 @@ export class PrismaClient<
     * ```
     */
   get guest(): Prisma.GuestDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.household`: Exposes CRUD operations for the **Household** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Households
+    * const households = await prisma.household.findMany()
+    * ```
+    */
+  get household(): Prisma.HouseholdDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.householdMember`: Exposes CRUD operations for the **HouseholdMember** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more HouseholdMembers
+    * const householdMembers = await prisma.householdMember.findMany()
+    * ```
+    */
+  get householdMember(): Prisma.HouseholdMemberDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.appMigration`: Exposes CRUD operations for the **AppMigration** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AppMigrations
+    * const appMigrations = await prisma.appMigration.findMany()
+    * ```
+    */
+  get appMigration(): Prisma.AppMigrationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.rateLimit`: Exposes CRUD operations for the **RateLimit** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RateLimits
+    * const rateLimits = await prisma.rateLimit.findMany()
+    * ```
+    */
+  get rateLimit(): Prisma.RateLimitDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.authThrottle`: Exposes CRUD operations for the **AuthThrottle** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more AuthThrottles
+    * const authThrottles = await prisma.authThrottle.findMany()
+    * ```
+    */
+  get authThrottle(): Prisma.AuthThrottleDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.emailSuppression`: Exposes CRUD operations for the **EmailSuppression** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more EmailSuppressions
+    * const emailSuppressions = await prisma.emailSuppression.findMany()
+    * ```
+    */
+  get emailSuppression(): Prisma.EmailSuppressionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.cronRun`: Exposes CRUD operations for the **CronRun** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CronRuns
+    * const cronRuns = await prisma.cronRun.findMany()
+    * ```
+    */
+  get cronRun(): Prisma.CronRunDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1145,7 +1251,6 @@ export namespace Prisma {
 
 
   export const ModelName: {
-    Post: 'Post',
     User: 'User',
     Session: 'Session',
     Account: 'Account',
@@ -1163,7 +1268,14 @@ export namespace Prisma {
     NotificationRule: 'NotificationRule',
     NotificationJob: 'NotificationJob',
     Document: 'Document',
-    Guest: 'Guest'
+    Guest: 'Guest',
+    Household: 'Household',
+    HouseholdMember: 'HouseholdMember',
+    AppMigration: 'AppMigration',
+    RateLimit: 'RateLimit',
+    AuthThrottle: 'AuthThrottle',
+    EmailSuppression: 'EmailSuppression',
+    CronRun: 'CronRun'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1182,84 +1294,10 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "post" | "user" | "session" | "account" | "verification" | "property" | "room" | "lease" | "billSchedule" | "bill" | "policy" | "investment" | "loan" | "paymentTransaction" | "auditLog" | "notificationRule" | "notificationJob" | "document" | "guest"
+      modelProps: "user" | "session" | "account" | "verification" | "property" | "room" | "lease" | "billSchedule" | "bill" | "policy" | "investment" | "loan" | "paymentTransaction" | "auditLog" | "notificationRule" | "notificationJob" | "document" | "guest" | "household" | "householdMember" | "appMigration" | "rateLimit" | "authThrottle" | "emailSuppression" | "cronRun"
       txIsolationLevel: never
     }
     model: {
-      Post: {
-        payload: Prisma.$PostPayload<ExtArgs>
-        fields: Prisma.PostFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.PostFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.PostFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload>
-          }
-          findFirst: {
-            args: Prisma.PostFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.PostFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload>
-          }
-          findMany: {
-            args: Prisma.PostFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload>[]
-          }
-          create: {
-            args: Prisma.PostCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload>
-          }
-          createMany: {
-            args: Prisma.PostCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          delete: {
-            args: Prisma.PostDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload>
-          }
-          update: {
-            args: Prisma.PostUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload>
-          }
-          deleteMany: {
-            args: Prisma.PostDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.PostUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          upsert: {
-            args: Prisma.PostUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$PostPayload>
-          }
-          aggregate: {
-            args: Prisma.PostAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregatePost>
-          }
-          groupBy: {
-            args: Prisma.PostGroupByArgs<ExtArgs>
-            result: $Utils.Optional<PostGroupByOutputType>[]
-          }
-          findRaw: {
-            args: Prisma.PostFindRawArgs<ExtArgs>
-            result: JsonObject
-          }
-          aggregateRaw: {
-            args: Prisma.PostAggregateRawArgs<ExtArgs>
-            result: JsonObject
-          }
-          count: {
-            args: Prisma.PostCountArgs<ExtArgs>
-            result: $Utils.Optional<PostCountAggregateOutputType> | number
-          }
-        }
-      }
       User: {
         payload: Prisma.$UserPayload<ExtArgs>
         fields: Prisma.UserFieldRefs
@@ -2592,6 +2630,524 @@ export namespace Prisma {
           }
         }
       }
+      Household: {
+        payload: Prisma.$HouseholdPayload<ExtArgs>
+        fields: Prisma.HouseholdFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.HouseholdFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.HouseholdFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload>
+          }
+          findFirst: {
+            args: Prisma.HouseholdFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.HouseholdFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload>
+          }
+          findMany: {
+            args: Prisma.HouseholdFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload>[]
+          }
+          create: {
+            args: Prisma.HouseholdCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload>
+          }
+          createMany: {
+            args: Prisma.HouseholdCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.HouseholdDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload>
+          }
+          update: {
+            args: Prisma.HouseholdUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload>
+          }
+          deleteMany: {
+            args: Prisma.HouseholdDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.HouseholdUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.HouseholdUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdPayload>
+          }
+          aggregate: {
+            args: Prisma.HouseholdAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHousehold>
+          }
+          groupBy: {
+            args: Prisma.HouseholdGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HouseholdGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.HouseholdFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.HouseholdAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.HouseholdCountArgs<ExtArgs>
+            result: $Utils.Optional<HouseholdCountAggregateOutputType> | number
+          }
+        }
+      }
+      HouseholdMember: {
+        payload: Prisma.$HouseholdMemberPayload<ExtArgs>
+        fields: Prisma.HouseholdMemberFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.HouseholdMemberFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.HouseholdMemberFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload>
+          }
+          findFirst: {
+            args: Prisma.HouseholdMemberFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.HouseholdMemberFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload>
+          }
+          findMany: {
+            args: Prisma.HouseholdMemberFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload>[]
+          }
+          create: {
+            args: Prisma.HouseholdMemberCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload>
+          }
+          createMany: {
+            args: Prisma.HouseholdMemberCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.HouseholdMemberDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload>
+          }
+          update: {
+            args: Prisma.HouseholdMemberUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload>
+          }
+          deleteMany: {
+            args: Prisma.HouseholdMemberDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.HouseholdMemberUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.HouseholdMemberUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$HouseholdMemberPayload>
+          }
+          aggregate: {
+            args: Prisma.HouseholdMemberAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateHouseholdMember>
+          }
+          groupBy: {
+            args: Prisma.HouseholdMemberGroupByArgs<ExtArgs>
+            result: $Utils.Optional<HouseholdMemberGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.HouseholdMemberFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.HouseholdMemberAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.HouseholdMemberCountArgs<ExtArgs>
+            result: $Utils.Optional<HouseholdMemberCountAggregateOutputType> | number
+          }
+        }
+      }
+      AppMigration: {
+        payload: Prisma.$AppMigrationPayload<ExtArgs>
+        fields: Prisma.AppMigrationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AppMigrationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AppMigrationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload>
+          }
+          findFirst: {
+            args: Prisma.AppMigrationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AppMigrationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload>
+          }
+          findMany: {
+            args: Prisma.AppMigrationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload>[]
+          }
+          create: {
+            args: Prisma.AppMigrationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload>
+          }
+          createMany: {
+            args: Prisma.AppMigrationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.AppMigrationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload>
+          }
+          update: {
+            args: Prisma.AppMigrationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload>
+          }
+          deleteMany: {
+            args: Prisma.AppMigrationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AppMigrationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AppMigrationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AppMigrationPayload>
+          }
+          aggregate: {
+            args: Prisma.AppMigrationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAppMigration>
+          }
+          groupBy: {
+            args: Prisma.AppMigrationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AppMigrationGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.AppMigrationFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.AppMigrationAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.AppMigrationCountArgs<ExtArgs>
+            result: $Utils.Optional<AppMigrationCountAggregateOutputType> | number
+          }
+        }
+      }
+      RateLimit: {
+        payload: Prisma.$RateLimitPayload<ExtArgs>
+        fields: Prisma.RateLimitFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RateLimitFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RateLimitFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload>
+          }
+          findFirst: {
+            args: Prisma.RateLimitFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RateLimitFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload>
+          }
+          findMany: {
+            args: Prisma.RateLimitFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload>[]
+          }
+          create: {
+            args: Prisma.RateLimitCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload>
+          }
+          createMany: {
+            args: Prisma.RateLimitCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.RateLimitDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload>
+          }
+          update: {
+            args: Prisma.RateLimitUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload>
+          }
+          deleteMany: {
+            args: Prisma.RateLimitDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RateLimitUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.RateLimitUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RateLimitPayload>
+          }
+          aggregate: {
+            args: Prisma.RateLimitAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRateLimit>
+          }
+          groupBy: {
+            args: Prisma.RateLimitGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RateLimitGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.RateLimitFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.RateLimitAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.RateLimitCountArgs<ExtArgs>
+            result: $Utils.Optional<RateLimitCountAggregateOutputType> | number
+          }
+        }
+      }
+      AuthThrottle: {
+        payload: Prisma.$AuthThrottlePayload<ExtArgs>
+        fields: Prisma.AuthThrottleFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.AuthThrottleFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.AuthThrottleFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload>
+          }
+          findFirst: {
+            args: Prisma.AuthThrottleFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.AuthThrottleFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload>
+          }
+          findMany: {
+            args: Prisma.AuthThrottleFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload>[]
+          }
+          create: {
+            args: Prisma.AuthThrottleCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload>
+          }
+          createMany: {
+            args: Prisma.AuthThrottleCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.AuthThrottleDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload>
+          }
+          update: {
+            args: Prisma.AuthThrottleUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload>
+          }
+          deleteMany: {
+            args: Prisma.AuthThrottleDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.AuthThrottleUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.AuthThrottleUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$AuthThrottlePayload>
+          }
+          aggregate: {
+            args: Prisma.AuthThrottleAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateAuthThrottle>
+          }
+          groupBy: {
+            args: Prisma.AuthThrottleGroupByArgs<ExtArgs>
+            result: $Utils.Optional<AuthThrottleGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.AuthThrottleFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.AuthThrottleAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.AuthThrottleCountArgs<ExtArgs>
+            result: $Utils.Optional<AuthThrottleCountAggregateOutputType> | number
+          }
+        }
+      }
+      EmailSuppression: {
+        payload: Prisma.$EmailSuppressionPayload<ExtArgs>
+        fields: Prisma.EmailSuppressionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.EmailSuppressionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.EmailSuppressionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload>
+          }
+          findFirst: {
+            args: Prisma.EmailSuppressionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.EmailSuppressionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload>
+          }
+          findMany: {
+            args: Prisma.EmailSuppressionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload>[]
+          }
+          create: {
+            args: Prisma.EmailSuppressionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload>
+          }
+          createMany: {
+            args: Prisma.EmailSuppressionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.EmailSuppressionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload>
+          }
+          update: {
+            args: Prisma.EmailSuppressionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload>
+          }
+          deleteMany: {
+            args: Prisma.EmailSuppressionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.EmailSuppressionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.EmailSuppressionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$EmailSuppressionPayload>
+          }
+          aggregate: {
+            args: Prisma.EmailSuppressionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateEmailSuppression>
+          }
+          groupBy: {
+            args: Prisma.EmailSuppressionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<EmailSuppressionGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.EmailSuppressionFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.EmailSuppressionAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.EmailSuppressionCountArgs<ExtArgs>
+            result: $Utils.Optional<EmailSuppressionCountAggregateOutputType> | number
+          }
+        }
+      }
+      CronRun: {
+        payload: Prisma.$CronRunPayload<ExtArgs>
+        fields: Prisma.CronRunFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CronRunFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CronRunFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          findFirst: {
+            args: Prisma.CronRunFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CronRunFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          findMany: {
+            args: Prisma.CronRunFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>[]
+          }
+          create: {
+            args: Prisma.CronRunCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          createMany: {
+            args: Prisma.CronRunCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.CronRunDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          update: {
+            args: Prisma.CronRunUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          deleteMany: {
+            args: Prisma.CronRunDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CronRunUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CronRunUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          aggregate: {
+            args: Prisma.CronRunAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCronRun>
+          }
+          groupBy: {
+            args: Prisma.CronRunGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CronRunGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.CronRunFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.CronRunAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.CronRunCountArgs<ExtArgs>
+            result: $Utils.Optional<CronRunCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2671,7 +3227,6 @@ export namespace Prisma {
     omit?: Prisma.GlobalOmitConfig
   }
   export type GlobalOmitConfig = {
-    post?: PostOmit
     user?: UserOmit
     session?: SessionOmit
     account?: AccountOmit
@@ -2690,6 +3245,13 @@ export namespace Prisma {
     notificationJob?: NotificationJobOmit
     document?: DocumentOmit
     guest?: GuestOmit
+    household?: HouseholdOmit
+    householdMember?: HouseholdMemberOmit
+    appMigration?: AppMigrationOmit
+    rateLimit?: RateLimitOmit
+    authThrottle?: AuthThrottleOmit
+    emailSuppression?: EmailSuppressionOmit
+    cronRun?: CronRunOmit
   }
 
   /* Types for Logging */
@@ -2771,8 +3333,8 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     sessions: number
+    households: number
     accounts: number
-    posts: number
     guests: number
     properties: number
     policies: number
@@ -2789,8 +3351,8 @@ export namespace Prisma {
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+    households?: boolean | UserCountOutputTypeCountHouseholdsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
-    posts?: boolean | UserCountOutputTypeCountPostsArgs
     guests?: boolean | UserCountOutputTypeCountGuestsArgs
     properties?: boolean | UserCountOutputTypeCountPropertiesArgs
     policies?: boolean | UserCountOutputTypeCountPoliciesArgs
@@ -2826,15 +3388,15 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: AccountWhereInput
+  export type UserCountOutputTypeCountHouseholdsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HouseholdMemberWhereInput
   }
 
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountPostsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PostWhereInput
+  export type UserCountOutputTypeCountAccountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AccountWhereInput
   }
 
   /**
@@ -3544,6 +4106,109 @@ export namespace Prisma {
 
 
   /**
+   * Count Type HouseholdCountOutputType
+   */
+
+  export type HouseholdCountOutputType = {
+    members: number
+    properties: number
+    policies: number
+    investments: number
+    loans: number
+    billSchedules: number
+    bills: number
+    documents: number
+    paymentTransactions: number
+  }
+
+  export type HouseholdCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    members?: boolean | HouseholdCountOutputTypeCountMembersArgs
+    properties?: boolean | HouseholdCountOutputTypeCountPropertiesArgs
+    policies?: boolean | HouseholdCountOutputTypeCountPoliciesArgs
+    investments?: boolean | HouseholdCountOutputTypeCountInvestmentsArgs
+    loans?: boolean | HouseholdCountOutputTypeCountLoansArgs
+    billSchedules?: boolean | HouseholdCountOutputTypeCountBillSchedulesArgs
+    bills?: boolean | HouseholdCountOutputTypeCountBillsArgs
+    documents?: boolean | HouseholdCountOutputTypeCountDocumentsArgs
+    paymentTransactions?: boolean | HouseholdCountOutputTypeCountPaymentTransactionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdCountOutputType
+     */
+    select?: HouseholdCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountMembersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HouseholdMemberWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountPropertiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PropertyWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountPoliciesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PolicyWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountInvestmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: InvestmentWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountLoansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: LoanWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountBillSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillScheduleWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountBillsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BillWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountDocumentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DocumentWhereInput
+  }
+
+  /**
+   * HouseholdCountOutputType without action
+   */
+  export type HouseholdCountOutputTypeCountPaymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: PaymentTransactionWhereInput
+  }
+
+
+  /**
    * Models
    */
 
@@ -3619,985 +4284,6 @@ export namespace Prisma {
      * Omit specific fields from the Recipient
      */
     omit?: RecipientOmit<ExtArgs> | null
-  }
-
-
-  /**
-   * Model Post
-   */
-
-  export type AggregatePost = {
-    _count: PostCountAggregateOutputType | null
-    _min: PostMinAggregateOutputType | null
-    _max: PostMaxAggregateOutputType | null
-  }
-
-  export type PostMinAggregateOutputType = {
-    id: string | null
-    name: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    createdById: string | null
-  }
-
-  export type PostMaxAggregateOutputType = {
-    id: string | null
-    name: string | null
-    createdAt: Date | null
-    updatedAt: Date | null
-    createdById: string | null
-  }
-
-  export type PostCountAggregateOutputType = {
-    id: number
-    name: number
-    createdAt: number
-    updatedAt: number
-    createdById: number
-    _all: number
-  }
-
-
-  export type PostMinAggregateInputType = {
-    id?: true
-    name?: true
-    createdAt?: true
-    updatedAt?: true
-    createdById?: true
-  }
-
-  export type PostMaxAggregateInputType = {
-    id?: true
-    name?: true
-    createdAt?: true
-    updatedAt?: true
-    createdById?: true
-  }
-
-  export type PostCountAggregateInputType = {
-    id?: true
-    name?: true
-    createdAt?: true
-    updatedAt?: true
-    createdById?: true
-    _all?: true
-  }
-
-  export type PostAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Post to aggregate.
-     */
-    where?: PostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Posts to fetch.
-     */
-    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: PostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Posts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Posts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned Posts
-    **/
-    _count?: true | PostCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: PostMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: PostMaxAggregateInputType
-  }
-
-  export type GetPostAggregateType<T extends PostAggregateArgs> = {
-        [P in keyof T & keyof AggregatePost]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregatePost[P]>
-      : GetScalarType<T[P], AggregatePost[P]>
-  }
-
-
-
-
-  export type PostGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: PostWhereInput
-    orderBy?: PostOrderByWithAggregationInput | PostOrderByWithAggregationInput[]
-    by: PostScalarFieldEnum[] | PostScalarFieldEnum
-    having?: PostScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: PostCountAggregateInputType | true
-    _min?: PostMinAggregateInputType
-    _max?: PostMaxAggregateInputType
-  }
-
-  export type PostGroupByOutputType = {
-    id: string
-    name: string
-    createdAt: Date
-    updatedAt: Date
-    createdById: string
-    _count: PostCountAggregateOutputType | null
-    _min: PostMinAggregateOutputType | null
-    _max: PostMaxAggregateOutputType | null
-  }
-
-  type GetPostGroupByPayload<T extends PostGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<PostGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof PostGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], PostGroupByOutputType[P]>
-            : GetScalarType<T[P], PostGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type PostSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    id?: boolean
-    name?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    createdById?: boolean
-    createdBy?: boolean | UserDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["post"]>
-
-
-
-  export type PostSelectScalar = {
-    id?: boolean
-    name?: boolean
-    createdAt?: boolean
-    updatedAt?: boolean
-    createdById?: boolean
-  }
-
-  export type PostOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "createdAt" | "updatedAt" | "createdById", ExtArgs["result"]["post"]>
-  export type PostInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    createdBy?: boolean | UserDefaultArgs<ExtArgs>
-  }
-
-  export type $PostPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "Post"
-    objects: {
-      createdBy: Prisma.$UserPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      id: string
-      name: string
-      createdAt: Date
-      updatedAt: Date
-      createdById: string
-    }, ExtArgs["result"]["post"]>
-    composites: {}
-  }
-
-  type PostGetPayload<S extends boolean | null | undefined | PostDefaultArgs> = $Result.GetResult<Prisma.$PostPayload, S>
-
-  type PostCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<PostFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: PostCountAggregateInputType | true
-    }
-
-  export interface PostDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Post'], meta: { name: 'Post' } }
-    /**
-     * Find zero or one Post that matches the filter.
-     * @param {PostFindUniqueArgs} args - Arguments to find a Post
-     * @example
-     * // Get one Post
-     * const post = await prisma.post.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends PostFindUniqueArgs>(args: SelectSubset<T, PostFindUniqueArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one Post that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {PostFindUniqueOrThrowArgs} args - Arguments to find a Post
-     * @example
-     * // Get one Post
-     * const post = await prisma.post.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends PostFindUniqueOrThrowArgs>(args: SelectSubset<T, PostFindUniqueOrThrowArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Post that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PostFindFirstArgs} args - Arguments to find a Post
-     * @example
-     * // Get one Post
-     * const post = await prisma.post.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends PostFindFirstArgs>(args?: SelectSubset<T, PostFindFirstArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first Post that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PostFindFirstOrThrowArgs} args - Arguments to find a Post
-     * @example
-     * // Get one Post
-     * const post = await prisma.post.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends PostFindFirstOrThrowArgs>(args?: SelectSubset<T, PostFindFirstOrThrowArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Posts that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PostFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all Posts
-     * const posts = await prisma.post.findMany()
-     * 
-     * // Get first 10 Posts
-     * const posts = await prisma.post.findMany({ take: 10 })
-     * 
-     * // Only select the `id`
-     * const postWithIdOnly = await prisma.post.findMany({ select: { id: true } })
-     * 
-     */
-    findMany<T extends PostFindManyArgs>(args?: SelectSubset<T, PostFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a Post.
-     * @param {PostCreateArgs} args - Arguments to create a Post.
-     * @example
-     * // Create one Post
-     * const Post = await prisma.post.create({
-     *   data: {
-     *     // ... data to create a Post
-     *   }
-     * })
-     * 
-     */
-    create<T extends PostCreateArgs>(args: SelectSubset<T, PostCreateArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many Posts.
-     * @param {PostCreateManyArgs} args - Arguments to create many Posts.
-     * @example
-     * // Create many Posts
-     * const post = await prisma.post.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends PostCreateManyArgs>(args?: SelectSubset<T, PostCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Delete a Post.
-     * @param {PostDeleteArgs} args - Arguments to delete one Post.
-     * @example
-     * // Delete one Post
-     * const Post = await prisma.post.delete({
-     *   where: {
-     *     // ... filter to delete one Post
-     *   }
-     * })
-     * 
-     */
-    delete<T extends PostDeleteArgs>(args: SelectSubset<T, PostDeleteArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one Post.
-     * @param {PostUpdateArgs} args - Arguments to update one Post.
-     * @example
-     * // Update one Post
-     * const post = await prisma.post.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends PostUpdateArgs>(args: SelectSubset<T, PostUpdateArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more Posts.
-     * @param {PostDeleteManyArgs} args - Arguments to filter Posts to delete.
-     * @example
-     * // Delete a few Posts
-     * const { count } = await prisma.post.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends PostDeleteManyArgs>(args?: SelectSubset<T, PostDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more Posts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PostUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many Posts
-     * const post = await prisma.post.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends PostUpdateManyArgs>(args: SelectSubset<T, PostUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create or update one Post.
-     * @param {PostUpsertArgs} args - Arguments to update or create a Post.
-     * @example
-     * // Update or create a Post
-     * const post = await prisma.post.upsert({
-     *   create: {
-     *     // ... data to create a Post
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the Post we want to update
-     *   }
-     * })
-     */
-    upsert<T extends PostUpsertArgs>(args: SelectSubset<T, PostUpsertArgs<ExtArgs>>): Prisma__PostClient<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more Posts that matches the filter.
-     * @param {PostFindRawArgs} args - Select which filters you would like to apply.
-     * @example
-     * const post = await prisma.post.findRaw({
-     *   filter: { age: { $gt: 25 } }
-     * })
-     */
-    findRaw(args?: PostFindRawArgs): Prisma.PrismaPromise<JsonObject>
-
-    /**
-     * Perform aggregation operations on a Post.
-     * @param {PostAggregateRawArgs} args - Select which aggregations you would like to apply.
-     * @example
-     * const post = await prisma.post.aggregateRaw({
-     *   pipeline: [
-     *     { $match: { status: "registered" } },
-     *     { $group: { _id: "$country", total: { $sum: 1 } } }
-     *   ]
-     * })
-     */
-    aggregateRaw(args?: PostAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
-
-
-    /**
-     * Count the number of Posts.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PostCountArgs} args - Arguments to filter Posts to count.
-     * @example
-     * // Count the number of Posts
-     * const count = await prisma.post.count({
-     *   where: {
-     *     // ... the filter for the Posts we want to count
-     *   }
-     * })
-    **/
-    count<T extends PostCountArgs>(
-      args?: Subset<T, PostCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], PostCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a Post.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PostAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends PostAggregateArgs>(args: Subset<T, PostAggregateArgs>): Prisma.PrismaPromise<GetPostAggregateType<T>>
-
-    /**
-     * Group by Post.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {PostGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends PostGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: PostGroupByArgs['orderBy'] }
-        : { orderBy?: PostGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, PostGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetPostGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the Post model
-   */
-  readonly fields: PostFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for Post.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__PostClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    createdBy<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the Post model
-   */
-  interface PostFieldRefs {
-    readonly id: FieldRef<"Post", 'String'>
-    readonly name: FieldRef<"Post", 'String'>
-    readonly createdAt: FieldRef<"Post", 'DateTime'>
-    readonly updatedAt: FieldRef<"Post", 'DateTime'>
-    readonly createdById: FieldRef<"Post", 'String'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * Post findUnique
-   */
-  export type PostFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * Filter, which Post to fetch.
-     */
-    where: PostWhereUniqueInput
-  }
-
-  /**
-   * Post findUniqueOrThrow
-   */
-  export type PostFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * Filter, which Post to fetch.
-     */
-    where: PostWhereUniqueInput
-  }
-
-  /**
-   * Post findFirst
-   */
-  export type PostFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * Filter, which Post to fetch.
-     */
-    where?: PostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Posts to fetch.
-     */
-    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Posts.
-     */
-    cursor?: PostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Posts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Posts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Posts.
-     */
-    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
-  }
-
-  /**
-   * Post findFirstOrThrow
-   */
-  export type PostFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * Filter, which Post to fetch.
-     */
-    where?: PostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Posts to fetch.
-     */
-    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for Posts.
-     */
-    cursor?: PostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Posts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Posts.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of Posts.
-     */
-    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
-  }
-
-  /**
-   * Post findMany
-   */
-  export type PostFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * Filter, which Posts to fetch.
-     */
-    where?: PostWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of Posts to fetch.
-     */
-    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing Posts.
-     */
-    cursor?: PostWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` Posts from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` Posts.
-     */
-    skip?: number
-    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
-  }
-
-  /**
-   * Post create
-   */
-  export type PostCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * The data needed to create a Post.
-     */
-    data: XOR<PostCreateInput, PostUncheckedCreateInput>
-  }
-
-  /**
-   * Post createMany
-   */
-  export type PostCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many Posts.
-     */
-    data: PostCreateManyInput | PostCreateManyInput[]
-  }
-
-  /**
-   * Post update
-   */
-  export type PostUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * The data needed to update a Post.
-     */
-    data: XOR<PostUpdateInput, PostUncheckedUpdateInput>
-    /**
-     * Choose, which Post to update.
-     */
-    where: PostWhereUniqueInput
-  }
-
-  /**
-   * Post updateMany
-   */
-  export type PostUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update Posts.
-     */
-    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyInput>
-    /**
-     * Filter which Posts to update
-     */
-    where?: PostWhereInput
-    /**
-     * Limit how many Posts to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * Post upsert
-   */
-  export type PostUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * The filter to search for the Post to update in case it exists.
-     */
-    where: PostWhereUniqueInput
-    /**
-     * In case the Post found by the `where` argument doesn't exist, create a new Post with this data.
-     */
-    create: XOR<PostCreateInput, PostUncheckedCreateInput>
-    /**
-     * In case the Post was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<PostUpdateInput, PostUncheckedUpdateInput>
-  }
-
-  /**
-   * Post delete
-   */
-  export type PostDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    /**
-     * Filter which Post to delete.
-     */
-    where: PostWhereUniqueInput
-  }
-
-  /**
-   * Post deleteMany
-   */
-  export type PostDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which Posts to delete
-     */
-    where?: PostWhereInput
-    /**
-     * Limit how many Posts to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * Post findRaw
-   */
-  export type PostFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
-     */
-    filter?: InputJsonValue
-    /**
-     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
-     */
-    options?: InputJsonValue
-  }
-
-  /**
-   * Post aggregateRaw
-   */
-  export type PostAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
-     */
-    pipeline?: InputJsonValue[]
-    /**
-     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
-     */
-    options?: InputJsonValue
-  }
-
-  /**
-   * Post without action
-   */
-  export type PostDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
   }
 
 
@@ -4880,8 +4566,8 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    households?: boolean | User$householdsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
-    posts?: boolean | User$postsArgs<ExtArgs>
     guests?: boolean | User$guestsArgs<ExtArgs>
     properties?: boolean | User$propertiesArgs<ExtArgs>
     policies?: boolean | User$policiesArgs<ExtArgs>
@@ -4920,8 +4606,8 @@ export namespace Prisma {
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "currency" | "timezone" | "phone" | "reminderHour" | "role" | "banned" | "banReason" | "banExpires" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
+    households?: boolean | User$householdsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
-    posts?: boolean | User$postsArgs<ExtArgs>
     guests?: boolean | User$guestsArgs<ExtArgs>
     properties?: boolean | User$propertiesArgs<ExtArgs>
     policies?: boolean | User$policiesArgs<ExtArgs>
@@ -4941,8 +4627,8 @@ export namespace Prisma {
     name: "User"
     objects: {
       sessions: Prisma.$SessionPayload<ExtArgs>[]
+      households: Prisma.$HouseholdMemberPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
-      posts: Prisma.$PostPayload<ExtArgs>[]
       guests: Prisma.$GuestPayload<ExtArgs>[]
       properties: Prisma.$PropertyPayload<ExtArgs>[]
       policies: Prisma.$PolicyPayload<ExtArgs>[]
@@ -5336,8 +5022,8 @@ export namespace Prisma {
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     sessions<T extends User$sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    households<T extends User$householdsArgs<ExtArgs> = {}>(args?: Subset<T, User$householdsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    posts<T extends User$postsArgs<ExtArgs> = {}>(args?: Subset<T, User$postsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     guests<T extends User$guestsArgs<ExtArgs> = {}>(args?: Subset<T, User$guestsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     properties<T extends User$propertiesArgs<ExtArgs> = {}>(args?: Subset<T, User$propertiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     policies<T extends User$policiesArgs<ExtArgs> = {}>(args?: Subset<T, User$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5788,6 +5474,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.households
+   */
+  export type User$householdsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    where?: HouseholdMemberWhereInput
+    orderBy?: HouseholdMemberOrderByWithRelationInput | HouseholdMemberOrderByWithRelationInput[]
+    cursor?: HouseholdMemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HouseholdMemberScalarFieldEnum | HouseholdMemberScalarFieldEnum[]
+  }
+
+  /**
    * User.accounts
    */
   export type User$accountsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5809,30 +5519,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AccountScalarFieldEnum | AccountScalarFieldEnum[]
-  }
-
-  /**
-   * User.posts
-   */
-  export type User$postsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Post
-     */
-    select?: PostSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Post
-     */
-    omit?: PostOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PostInclude<ExtArgs> | null
-    where?: PostWhereInput
-    orderBy?: PostOrderByWithRelationInput | PostOrderByWithRelationInput[]
-    cursor?: PostWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: PostScalarFieldEnum | PostScalarFieldEnum[]
   }
 
   /**
@@ -9200,6 +8886,7 @@ export namespace Prisma {
   export type PropertyMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     name: string | null
     type: $Enums.PropertyType | null
     uniquePropertyId: string | null
@@ -9223,6 +8910,7 @@ export namespace Prisma {
   export type PropertyMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     name: string | null
     type: $Enums.PropertyType | null
     uniquePropertyId: string | null
@@ -9246,6 +8934,7 @@ export namespace Prisma {
   export type PropertyCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     name: number
     type: number
     uniquePropertyId: number
@@ -9282,6 +8971,7 @@ export namespace Prisma {
   export type PropertyMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     name?: true
     type?: true
     uniquePropertyId?: true
@@ -9305,6 +8995,7 @@ export namespace Prisma {
   export type PropertyMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     name?: true
     type?: true
     uniquePropertyId?: true
@@ -9328,6 +9019,7 @@ export namespace Prisma {
   export type PropertyCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     name?: true
     type?: true
     uniquePropertyId?: true
@@ -9439,6 +9131,7 @@ export namespace Prisma {
   export type PropertyGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId: string | null
@@ -9482,6 +9175,7 @@ export namespace Prisma {
   export type PropertySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     name?: boolean
     type?: boolean
     uniquePropertyId?: boolean
@@ -9502,6 +9196,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Property$householdArgs<ExtArgs>
     rooms?: boolean | Property$roomsArgs<ExtArgs>
     leases?: boolean | Property$leasesArgs<ExtArgs>
     policies?: boolean | Property$policiesArgs<ExtArgs>
@@ -9520,6 +9215,7 @@ export namespace Prisma {
   export type PropertySelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     name?: boolean
     type?: boolean
     uniquePropertyId?: boolean
@@ -9541,9 +9237,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PropertyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "name" | "type" | "uniquePropertyId" | "propertyCategory" | "ownershipType" | "addressLine1" | "addressLine2" | "city" | "state" | "pinCode" | "country" | "currency" | "purchasePrice" | "currentEstimatedValue" | "purchaseDate" | "photos" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["property"]>
+  export type PropertyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "name" | "type" | "uniquePropertyId" | "propertyCategory" | "ownershipType" | "addressLine1" | "addressLine2" | "city" | "state" | "pinCode" | "country" | "currency" | "purchasePrice" | "currentEstimatedValue" | "purchaseDate" | "photos" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["property"]>
   export type PropertyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Property$householdArgs<ExtArgs>
     rooms?: boolean | Property$roomsArgs<ExtArgs>
     leases?: boolean | Property$leasesArgs<ExtArgs>
     policies?: boolean | Property$policiesArgs<ExtArgs>
@@ -9561,6 +9258,7 @@ export namespace Prisma {
     name: "Property"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       rooms: Prisma.$RoomPayload<ExtArgs>[]
       leases: Prisma.$LeasePayload<ExtArgs>[]
       policies: Prisma.$PolicyPayload<ExtArgs>[]
@@ -9575,6 +9273,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       name: string
       type: $Enums.PropertyType
       uniquePropertyId: string | null
@@ -9958,6 +9657,7 @@ export namespace Prisma {
   export interface Prisma__PropertyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends Property$householdArgs<ExtArgs> = {}>(args?: Subset<T, Property$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     rooms<T extends Property$roomsArgs<ExtArgs> = {}>(args?: Subset<T, Property$roomsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     leases<T extends Property$leasesArgs<ExtArgs> = {}>(args?: Subset<T, Property$leasesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     policies<T extends Property$policiesArgs<ExtArgs> = {}>(args?: Subset<T, Property$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -9999,6 +9699,7 @@ export namespace Prisma {
   interface PropertyFieldRefs {
     readonly id: FieldRef<"Property", 'String'>
     readonly ownerId: FieldRef<"Property", 'String'>
+    readonly householdId: FieldRef<"Property", 'String'>
     readonly name: FieldRef<"Property", 'String'>
     readonly type: FieldRef<"Property", 'PropertyType'>
     readonly uniquePropertyId: FieldRef<"Property", 'String'>
@@ -10385,6 +10086,25 @@ export namespace Prisma {
      * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
      */
     options?: InputJsonValue
+  }
+
+  /**
+   * Property.household
+   */
+  export type Property$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
   }
 
   /**
@@ -13114,6 +12834,7 @@ export namespace Prisma {
   export type BillScheduleMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     category: $Enums.EventCategory | null
     propertyId: string | null
     leaseId: string | null
@@ -13130,6 +12851,8 @@ export namespace Prisma {
     startDate: Date | null
     dueDay: number | null
     dueMonth: number | null
+    endDate: Date | null
+    nextDueDate: Date | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -13142,6 +12865,7 @@ export namespace Prisma {
   export type BillScheduleMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     category: $Enums.EventCategory | null
     propertyId: string | null
     leaseId: string | null
@@ -13158,6 +12882,8 @@ export namespace Prisma {
     startDate: Date | null
     dueDay: number | null
     dueMonth: number | null
+    endDate: Date | null
+    nextDueDate: Date | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -13170,6 +12896,7 @@ export namespace Prisma {
   export type BillScheduleCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     category: number
     propertyId: number
     leaseId: number
@@ -13186,6 +12913,8 @@ export namespace Prisma {
     startDate: number
     dueDay: number
     dueMonth: number
+    endDate: number
+    nextDueDate: number
     defaultAmount: number
     currency: number
     tenureMonths: number
@@ -13214,6 +12943,7 @@ export namespace Prisma {
   export type BillScheduleMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     propertyId?: true
     leaseId?: true
@@ -13230,6 +12960,8 @@ export namespace Prisma {
     startDate?: true
     dueDay?: true
     dueMonth?: true
+    endDate?: true
+    nextDueDate?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -13242,6 +12974,7 @@ export namespace Prisma {
   export type BillScheduleMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     propertyId?: true
     leaseId?: true
@@ -13258,6 +12991,8 @@ export namespace Prisma {
     startDate?: true
     dueDay?: true
     dueMonth?: true
+    endDate?: true
+    nextDueDate?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -13270,6 +13005,7 @@ export namespace Prisma {
   export type BillScheduleCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     propertyId?: true
     leaseId?: true
@@ -13286,6 +13022,8 @@ export namespace Prisma {
     startDate?: true
     dueDay?: true
     dueMonth?: true
+    endDate?: true
+    nextDueDate?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -13385,6 +13123,7 @@ export namespace Prisma {
   export type BillScheduleGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     category: $Enums.EventCategory
     propertyId: string | null
     leaseId: string | null
@@ -13401,6 +13140,8 @@ export namespace Prisma {
     startDate: Date | null
     dueDay: number
     dueMonth: number | null
+    endDate: Date | null
+    nextDueDate: Date | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -13432,6 +13173,7 @@ export namespace Prisma {
   export type BillScheduleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     category?: boolean
     propertyId?: boolean
     leaseId?: boolean
@@ -13448,6 +13190,8 @@ export namespace Prisma {
     startDate?: boolean
     dueDay?: boolean
     dueMonth?: boolean
+    endDate?: boolean
+    nextDueDate?: boolean
     defaultAmount?: boolean
     currency?: boolean
     tenureMonths?: boolean
@@ -13457,6 +13201,7 @@ export namespace Prisma {
     updatedAt?: boolean
     recipients?: boolean | RecipientDefaultArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | BillSchedule$householdArgs<ExtArgs>
     property?: boolean | BillSchedule$propertyArgs<ExtArgs>
     lease?: boolean | BillSchedule$leaseArgs<ExtArgs>
     loan?: boolean | BillSchedule$loanArgs<ExtArgs>
@@ -13474,6 +13219,7 @@ export namespace Prisma {
   export type BillScheduleSelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     category?: boolean
     propertyId?: boolean
     leaseId?: boolean
@@ -13490,6 +13236,8 @@ export namespace Prisma {
     startDate?: boolean
     dueDay?: boolean
     dueMonth?: boolean
+    endDate?: boolean
+    nextDueDate?: boolean
     defaultAmount?: boolean
     currency?: boolean
     tenureMonths?: boolean
@@ -13499,9 +13247,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "startDate" | "dueDay" | "dueMonth" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
+  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "startDate" | "dueDay" | "dueMonth" | "endDate" | "nextDueDate" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
   export type BillScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | BillSchedule$householdArgs<ExtArgs>
     property?: boolean | BillSchedule$propertyArgs<ExtArgs>
     lease?: boolean | BillSchedule$leaseArgs<ExtArgs>
     loan?: boolean | BillSchedule$loanArgs<ExtArgs>
@@ -13518,6 +13267,7 @@ export namespace Prisma {
     name: "BillSchedule"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       property: Prisma.$PropertyPayload<ExtArgs> | null
       lease: Prisma.$LeasePayload<ExtArgs> | null
       loan: Prisma.$LoanPayload<ExtArgs> | null
@@ -13531,6 +13281,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       category: $Enums.EventCategory
       propertyId: string | null
       leaseId: string | null
@@ -13547,6 +13298,8 @@ export namespace Prisma {
       startDate: Date | null
       dueDay: number
       dueMonth: number | null
+      endDate: Date | null
+      nextDueDate: Date | null
       defaultAmount: number | null
       currency: $Enums.Currency | null
       tenureMonths: number | null
@@ -13920,6 +13673,7 @@ export namespace Prisma {
   export interface Prisma__BillScheduleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends BillSchedule$householdArgs<ExtArgs> = {}>(args?: Subset<T, BillSchedule$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     property<T extends BillSchedule$propertyArgs<ExtArgs> = {}>(args?: Subset<T, BillSchedule$propertyArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lease<T extends BillSchedule$leaseArgs<ExtArgs> = {}>(args?: Subset<T, BillSchedule$leaseArgs<ExtArgs>>): Prisma__LeaseClient<$Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     loan<T extends BillSchedule$loanArgs<ExtArgs> = {}>(args?: Subset<T, BillSchedule$loanArgs<ExtArgs>>): Prisma__LoanClient<$Result.GetResult<Prisma.$LoanPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -13960,6 +13714,7 @@ export namespace Prisma {
   interface BillScheduleFieldRefs {
     readonly id: FieldRef<"BillSchedule", 'String'>
     readonly ownerId: FieldRef<"BillSchedule", 'String'>
+    readonly householdId: FieldRef<"BillSchedule", 'String'>
     readonly category: FieldRef<"BillSchedule", 'EventCategory'>
     readonly propertyId: FieldRef<"BillSchedule", 'String'>
     readonly leaseId: FieldRef<"BillSchedule", 'String'>
@@ -13976,6 +13731,8 @@ export namespace Prisma {
     readonly startDate: FieldRef<"BillSchedule", 'DateTime'>
     readonly dueDay: FieldRef<"BillSchedule", 'Int'>
     readonly dueMonth: FieldRef<"BillSchedule", 'Int'>
+    readonly endDate: FieldRef<"BillSchedule", 'DateTime'>
+    readonly nextDueDate: FieldRef<"BillSchedule", 'DateTime'>
     readonly defaultAmount: FieldRef<"BillSchedule", 'Float'>
     readonly currency: FieldRef<"BillSchedule", 'Currency'>
     readonly tenureMonths: FieldRef<"BillSchedule", 'Int'>
@@ -14353,6 +14110,25 @@ export namespace Prisma {
   }
 
   /**
+   * BillSchedule.household
+   */
+  export type BillSchedule$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
+  }
+
+  /**
    * BillSchedule.property
    */
   export type BillSchedule$propertyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14599,6 +14375,7 @@ export namespace Prisma {
   export type BillMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     category: $Enums.EventCategory | null
     direction: $Enums.FinancialEventType | null
     billScheduleId: string | null
@@ -14607,6 +14384,7 @@ export namespace Prisma {
     loanId: string | null
     policyId: string | null
     investmentId: string | null
+    generationKey: string | null
     dueDate: Date | null
     amount: number | null
     currency: $Enums.Currency | null
@@ -14636,6 +14414,7 @@ export namespace Prisma {
   export type BillMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     category: $Enums.EventCategory | null
     direction: $Enums.FinancialEventType | null
     billScheduleId: string | null
@@ -14644,6 +14423,7 @@ export namespace Prisma {
     loanId: string | null
     policyId: string | null
     investmentId: string | null
+    generationKey: string | null
     dueDate: Date | null
     amount: number | null
     currency: $Enums.Currency | null
@@ -14673,6 +14453,7 @@ export namespace Prisma {
   export type BillCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     category: number
     direction: number
     billScheduleId: number
@@ -14681,6 +14462,7 @@ export namespace Prisma {
     loanId: number
     policyId: number
     investmentId: number
+    generationKey: number
     dueDate: number
     amount: number
     currency: number
@@ -14734,6 +14516,7 @@ export namespace Prisma {
   export type BillMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     direction?: true
     billScheduleId?: true
@@ -14742,6 +14525,7 @@ export namespace Prisma {
     loanId?: true
     policyId?: true
     investmentId?: true
+    generationKey?: true
     dueDate?: true
     amount?: true
     currency?: true
@@ -14771,6 +14555,7 @@ export namespace Prisma {
   export type BillMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     direction?: true
     billScheduleId?: true
@@ -14779,6 +14564,7 @@ export namespace Prisma {
     loanId?: true
     policyId?: true
     investmentId?: true
+    generationKey?: true
     dueDate?: true
     amount?: true
     currency?: true
@@ -14808,6 +14594,7 @@ export namespace Prisma {
   export type BillCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     direction?: true
     billScheduleId?: true
@@ -14816,6 +14603,7 @@ export namespace Prisma {
     loanId?: true
     policyId?: true
     investmentId?: true
+    generationKey?: true
     dueDate?: true
     amount?: true
     currency?: true
@@ -14932,6 +14720,7 @@ export namespace Prisma {
   export type BillGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId: string | null
@@ -14940,6 +14729,7 @@ export namespace Prisma {
     loanId: string | null
     policyId: string | null
     investmentId: string | null
+    generationKey: string
     dueDate: Date
     amount: number
     currency: $Enums.Currency | null
@@ -14988,6 +14778,7 @@ export namespace Prisma {
   export type BillSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     category?: boolean
     direction?: boolean
     billScheduleId?: boolean
@@ -14996,6 +14787,7 @@ export namespace Prisma {
     loanId?: boolean
     policyId?: boolean
     investmentId?: boolean
+    generationKey?: boolean
     dueDate?: boolean
     amount?: boolean
     currency?: boolean
@@ -15021,6 +14813,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Bill$householdArgs<ExtArgs>
     billSchedule?: boolean | Bill$billScheduleArgs<ExtArgs>
     property?: boolean | Bill$propertyArgs<ExtArgs>
     lease?: boolean | Bill$leaseArgs<ExtArgs>
@@ -15039,6 +14832,7 @@ export namespace Prisma {
   export type BillSelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     category?: boolean
     direction?: boolean
     billScheduleId?: boolean
@@ -15047,6 +14841,7 @@ export namespace Prisma {
     loanId?: boolean
     policyId?: boolean
     investmentId?: boolean
+    generationKey?: boolean
     dueDate?: boolean
     amount?: boolean
     currency?: boolean
@@ -15073,9 +14868,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "direction" | "billScheduleId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "dueDate" | "amount" | "currency" | "status" | "paidDate" | "paidAmount" | "notes" | "installmentNumber" | "principalComponent" | "interestComponent" | "previousMeterValue" | "currentMeterValue" | "billingPeriodStart" | "billingPeriodEnd" | "billDocumentUrl" | "receiptDocumentUrl" | "frequency" | "gracePeriodDays" | "label" | "claimStatus" | "description" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["bill"]>
+  export type BillOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "category" | "direction" | "billScheduleId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "generationKey" | "dueDate" | "amount" | "currency" | "status" | "paidDate" | "paidAmount" | "notes" | "installmentNumber" | "principalComponent" | "interestComponent" | "previousMeterValue" | "currentMeterValue" | "billingPeriodStart" | "billingPeriodEnd" | "billDocumentUrl" | "receiptDocumentUrl" | "frequency" | "gracePeriodDays" | "label" | "claimStatus" | "description" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["bill"]>
   export type BillInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Bill$householdArgs<ExtArgs>
     billSchedule?: boolean | Bill$billScheduleArgs<ExtArgs>
     property?: boolean | Bill$propertyArgs<ExtArgs>
     lease?: boolean | Bill$leaseArgs<ExtArgs>
@@ -15093,6 +14889,7 @@ export namespace Prisma {
     name: "Bill"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       billSchedule: Prisma.$BillSchedulePayload<ExtArgs> | null
       property: Prisma.$PropertyPayload<ExtArgs> | null
       lease: Prisma.$LeasePayload<ExtArgs> | null
@@ -15107,6 +14904,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       category: $Enums.EventCategory
       direction: $Enums.FinancialEventType
       billScheduleId: string | null
@@ -15115,6 +14913,7 @@ export namespace Prisma {
       loanId: string | null
       policyId: string | null
       investmentId: string | null
+      generationKey: string
       dueDate: Date
       amount: number
       currency: $Enums.Currency | null
@@ -15503,6 +15302,7 @@ export namespace Prisma {
   export interface Prisma__BillClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends Bill$householdArgs<ExtArgs> = {}>(args?: Subset<T, Bill$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     billSchedule<T extends Bill$billScheduleArgs<ExtArgs> = {}>(args?: Subset<T, Bill$billScheduleArgs<ExtArgs>>): Prisma__BillScheduleClient<$Result.GetResult<Prisma.$BillSchedulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     property<T extends Bill$propertyArgs<ExtArgs> = {}>(args?: Subset<T, Bill$propertyArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lease<T extends Bill$leaseArgs<ExtArgs> = {}>(args?: Subset<T, Bill$leaseArgs<ExtArgs>>): Prisma__LeaseClient<$Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -15544,6 +15344,7 @@ export namespace Prisma {
   interface BillFieldRefs {
     readonly id: FieldRef<"Bill", 'String'>
     readonly ownerId: FieldRef<"Bill", 'String'>
+    readonly householdId: FieldRef<"Bill", 'String'>
     readonly category: FieldRef<"Bill", 'EventCategory'>
     readonly direction: FieldRef<"Bill", 'FinancialEventType'>
     readonly billScheduleId: FieldRef<"Bill", 'String'>
@@ -15552,6 +15353,7 @@ export namespace Prisma {
     readonly loanId: FieldRef<"Bill", 'String'>
     readonly policyId: FieldRef<"Bill", 'String'>
     readonly investmentId: FieldRef<"Bill", 'String'>
+    readonly generationKey: FieldRef<"Bill", 'String'>
     readonly dueDate: FieldRef<"Bill", 'DateTime'>
     readonly amount: FieldRef<"Bill", 'Float'>
     readonly currency: FieldRef<"Bill", 'Currency'>
@@ -15946,6 +15748,25 @@ export namespace Prisma {
   }
 
   /**
+   * Bill.household
+   */
+  export type Bill$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
+  }
+
+  /**
    * Bill.billSchedule
    */
   export type Bill$billScheduleArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16205,6 +16026,7 @@ export namespace Prisma {
   export type PolicyMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     type: $Enums.PolicyType | null
     insurer: string | null
     policyNumber: string | null
@@ -16226,6 +16048,7 @@ export namespace Prisma {
   export type PolicyMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     type: $Enums.PolicyType | null
     insurer: string | null
     policyNumber: string | null
@@ -16247,6 +16070,7 @@ export namespace Prisma {
   export type PolicyCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     type: number
     insurer: number
     policyNumber: number
@@ -16288,6 +16112,7 @@ export namespace Prisma {
   export type PolicyMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     type?: true
     insurer?: true
     policyNumber?: true
@@ -16309,6 +16134,7 @@ export namespace Prisma {
   export type PolicyMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     type?: true
     insurer?: true
     policyNumber?: true
@@ -16330,6 +16156,7 @@ export namespace Prisma {
   export type PolicyCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     type?: true
     insurer?: true
     policyNumber?: true
@@ -16440,6 +16267,7 @@ export namespace Prisma {
   export type PolicyGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -16482,6 +16310,7 @@ export namespace Prisma {
   export type PolicySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     type?: boolean
     insurer?: boolean
     policyNumber?: boolean
@@ -16501,6 +16330,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Policy$householdArgs<ExtArgs>
     property?: boolean | Policy$propertyArgs<ExtArgs>
     billSchedules?: boolean | Policy$billSchedulesArgs<ExtArgs>
     bills?: boolean | Policy$billsArgs<ExtArgs>
@@ -16517,6 +16347,7 @@ export namespace Prisma {
   export type PolicySelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     type?: boolean
     insurer?: boolean
     policyNumber?: boolean
@@ -16537,9 +16368,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type PolicyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "type" | "insurer" | "policyNumber" | "holderName" | "nominees" | "startDate" | "tenureYears" | "status" | "sumAssured" | "currency" | "roomRentLimit" | "coPayPercent" | "waitingPeriodMonths" | "networkHospitals" | "propertyId" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["policy"]>
+  export type PolicyOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "type" | "insurer" | "policyNumber" | "holderName" | "nominees" | "startDate" | "tenureYears" | "status" | "sumAssured" | "currency" | "roomRentLimit" | "coPayPercent" | "waitingPeriodMonths" | "networkHospitals" | "propertyId" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["policy"]>
   export type PolicyInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Policy$householdArgs<ExtArgs>
     property?: boolean | Policy$propertyArgs<ExtArgs>
     billSchedules?: boolean | Policy$billSchedulesArgs<ExtArgs>
     bills?: boolean | Policy$billsArgs<ExtArgs>
@@ -16555,6 +16387,7 @@ export namespace Prisma {
     name: "Policy"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       property: Prisma.$PropertyPayload<ExtArgs> | null
       billSchedules: Prisma.$BillSchedulePayload<ExtArgs>[]
       bills: Prisma.$BillPayload<ExtArgs>[]
@@ -16567,6 +16400,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       type: $Enums.PolicyType
       insurer: string
       policyNumber: string
@@ -16949,6 +16783,7 @@ export namespace Prisma {
   export interface Prisma__PolicyClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends Policy$householdArgs<ExtArgs> = {}>(args?: Subset<T, Policy$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     property<T extends Policy$propertyArgs<ExtArgs> = {}>(args?: Subset<T, Policy$propertyArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     billSchedules<T extends Policy$billSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Policy$billSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bills<T extends Policy$billsArgs<ExtArgs> = {}>(args?: Subset<T, Policy$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -16988,6 +16823,7 @@ export namespace Prisma {
   interface PolicyFieldRefs {
     readonly id: FieldRef<"Policy", 'String'>
     readonly ownerId: FieldRef<"Policy", 'String'>
+    readonly householdId: FieldRef<"Policy", 'String'>
     readonly type: FieldRef<"Policy", 'PolicyType'>
     readonly insurer: FieldRef<"Policy", 'String'>
     readonly policyNumber: FieldRef<"Policy", 'String'>
@@ -17376,6 +17212,25 @@ export namespace Prisma {
   }
 
   /**
+   * Policy.household
+   */
+  export type Policy$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
+  }
+
+  /**
    * Policy.property
    */
   export type Policy$propertyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -17608,6 +17463,7 @@ export namespace Prisma {
   export type InvestmentMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     name: string | null
     type: $Enums.InvestmentType | null
     institution: string | null
@@ -17626,6 +17482,7 @@ export namespace Prisma {
   export type InvestmentMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     name: string | null
     type: $Enums.InvestmentType | null
     institution: string | null
@@ -17644,6 +17501,7 @@ export namespace Prisma {
   export type InvestmentCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     name: number
     type: number
     institution: number
@@ -17676,6 +17534,7 @@ export namespace Prisma {
   export type InvestmentMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     name?: true
     type?: true
     institution?: true
@@ -17694,6 +17553,7 @@ export namespace Prisma {
   export type InvestmentMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     name?: true
     type?: true
     institution?: true
@@ -17712,6 +17572,7 @@ export namespace Prisma {
   export type InvestmentCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     name?: true
     type?: true
     institution?: true
@@ -17817,6 +17678,7 @@ export namespace Prisma {
   export type InvestmentGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     name: string
     type: $Enums.InvestmentType
     institution: string | null
@@ -17854,6 +17716,7 @@ export namespace Prisma {
   export type InvestmentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     name?: boolean
     type?: boolean
     institution?: boolean
@@ -17868,6 +17731,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Investment$householdArgs<ExtArgs>
     billSchedules?: boolean | Investment$billSchedulesArgs<ExtArgs>
     bills?: boolean | Investment$billsArgs<ExtArgs>
     loans?: boolean | Investment$loansArgs<ExtArgs>
@@ -17883,6 +17747,7 @@ export namespace Prisma {
   export type InvestmentSelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     name?: boolean
     type?: boolean
     institution?: boolean
@@ -17898,9 +17763,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type InvestmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "name" | "type" | "institution" | "investedDate" | "capitalDeployed" | "currency" | "expectedReturnType" | "expectedReturnDate" | "targetRoiPercent" | "currentEstimatedValue" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["investment"]>
+  export type InvestmentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "name" | "type" | "institution" | "investedDate" | "capitalDeployed" | "currency" | "expectedReturnType" | "expectedReturnDate" | "targetRoiPercent" | "currentEstimatedValue" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["investment"]>
   export type InvestmentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Investment$householdArgs<ExtArgs>
     billSchedules?: boolean | Investment$billSchedulesArgs<ExtArgs>
     bills?: boolean | Investment$billsArgs<ExtArgs>
     loans?: boolean | Investment$loansArgs<ExtArgs>
@@ -17915,6 +17781,7 @@ export namespace Prisma {
     name: "Investment"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       billSchedules: Prisma.$BillSchedulePayload<ExtArgs>[]
       bills: Prisma.$BillPayload<ExtArgs>[]
       loans: Prisma.$LoanPayload<ExtArgs>[]
@@ -17926,6 +17793,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       name: string
       type: $Enums.InvestmentType
       institution: string | null
@@ -18303,6 +18171,7 @@ export namespace Prisma {
   export interface Prisma__InvestmentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends Investment$householdArgs<ExtArgs> = {}>(args?: Subset<T, Investment$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     billSchedules<T extends Investment$billSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Investment$billSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bills<T extends Investment$billsArgs<ExtArgs> = {}>(args?: Subset<T, Investment$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     loans<T extends Investment$loansArgs<ExtArgs> = {}>(args?: Subset<T, Investment$loansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -18341,6 +18210,7 @@ export namespace Prisma {
   interface InvestmentFieldRefs {
     readonly id: FieldRef<"Investment", 'String'>
     readonly ownerId: FieldRef<"Investment", 'String'>
+    readonly householdId: FieldRef<"Investment", 'String'>
     readonly name: FieldRef<"Investment", 'String'>
     readonly type: FieldRef<"Investment", 'InvestmentType'>
     readonly institution: FieldRef<"Investment", 'String'>
@@ -18724,6 +18594,25 @@ export namespace Prisma {
   }
 
   /**
+   * Investment.household
+   */
+  export type Investment$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
+  }
+
+  /**
    * Investment.billSchedules
    */
   export type Investment$billSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18937,6 +18826,7 @@ export namespace Prisma {
   export type LoanMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     lender: string | null
     type: $Enums.LoanType | null
     principal: number | null
@@ -18955,6 +18845,7 @@ export namespace Prisma {
   export type LoanMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     lender: string | null
     type: $Enums.LoanType | null
     principal: number | null
@@ -18973,6 +18864,7 @@ export namespace Prisma {
   export type LoanCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     lender: number
     type: number
     principal: number
@@ -19005,6 +18897,7 @@ export namespace Prisma {
   export type LoanMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     lender?: true
     type?: true
     principal?: true
@@ -19023,6 +18916,7 @@ export namespace Prisma {
   export type LoanMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     lender?: true
     type?: true
     principal?: true
@@ -19041,6 +18935,7 @@ export namespace Prisma {
   export type LoanCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     lender?: true
     type?: true
     principal?: true
@@ -19146,6 +19041,7 @@ export namespace Prisma {
   export type LoanGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -19183,6 +19079,7 @@ export namespace Prisma {
   export type LoanSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     lender?: boolean
     type?: boolean
     principal?: boolean
@@ -19197,6 +19094,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Loan$householdArgs<ExtArgs>
     linkedProperty?: boolean | Loan$linkedPropertyArgs<ExtArgs>
     linkedPolicy?: boolean | Loan$linkedPolicyArgs<ExtArgs>
     linkedInvestment?: boolean | Loan$linkedInvestmentArgs<ExtArgs>
@@ -19214,6 +19112,7 @@ export namespace Prisma {
   export type LoanSelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     lender?: boolean
     type?: boolean
     principal?: boolean
@@ -19229,9 +19128,10 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type LoanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "lender" | "type" | "principal" | "currency" | "interestRatePercent" | "startDate" | "outstandingBalance" | "linkedPropertyId" | "linkedPolicyId" | "linkedInvestmentId" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["loan"]>
+  export type LoanOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "lender" | "type" | "principal" | "currency" | "interestRatePercent" | "startDate" | "outstandingBalance" | "linkedPropertyId" | "linkedPolicyId" | "linkedInvestmentId" | "deletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["loan"]>
   export type LoanInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Loan$householdArgs<ExtArgs>
     linkedProperty?: boolean | Loan$linkedPropertyArgs<ExtArgs>
     linkedPolicy?: boolean | Loan$linkedPolicyArgs<ExtArgs>
     linkedInvestment?: boolean | Loan$linkedInvestmentArgs<ExtArgs>
@@ -19248,6 +19148,7 @@ export namespace Prisma {
     name: "Loan"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       linkedProperty: Prisma.$PropertyPayload<ExtArgs> | null
       linkedPolicy: Prisma.$PolicyPayload<ExtArgs> | null
       linkedInvestment: Prisma.$InvestmentPayload<ExtArgs> | null
@@ -19261,6 +19162,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       lender: string
       type: $Enums.LoanType
       principal: number
@@ -19638,6 +19540,7 @@ export namespace Prisma {
   export interface Prisma__LoanClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends Loan$householdArgs<ExtArgs> = {}>(args?: Subset<T, Loan$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     linkedProperty<T extends Loan$linkedPropertyArgs<ExtArgs> = {}>(args?: Subset<T, Loan$linkedPropertyArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     linkedPolicy<T extends Loan$linkedPolicyArgs<ExtArgs> = {}>(args?: Subset<T, Loan$linkedPolicyArgs<ExtArgs>>): Prisma__PolicyClient<$Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     linkedInvestment<T extends Loan$linkedInvestmentArgs<ExtArgs> = {}>(args?: Subset<T, Loan$linkedInvestmentArgs<ExtArgs>>): Prisma__InvestmentClient<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -19678,6 +19581,7 @@ export namespace Prisma {
   interface LoanFieldRefs {
     readonly id: FieldRef<"Loan", 'String'>
     readonly ownerId: FieldRef<"Loan", 'String'>
+    readonly householdId: FieldRef<"Loan", 'String'>
     readonly lender: FieldRef<"Loan", 'String'>
     readonly type: FieldRef<"Loan", 'LoanType'>
     readonly principal: FieldRef<"Loan", 'Float'>
@@ -20061,6 +19965,25 @@ export namespace Prisma {
   }
 
   /**
+   * Loan.household
+   */
+  export type Loan$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
+  }
+
+  /**
    * Loan.linkedProperty
    */
   export type Loan$linkedPropertyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -20303,6 +20226,7 @@ export namespace Prisma {
   export type PaymentTransactionMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     category: $Enums.EventCategory | null
     billId: string | null
     propertyId: string | null
@@ -20324,6 +20248,7 @@ export namespace Prisma {
   export type PaymentTransactionMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     category: $Enums.EventCategory | null
     billId: string | null
     propertyId: string | null
@@ -20345,6 +20270,7 @@ export namespace Prisma {
   export type PaymentTransactionCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     category: number
     billId: number
     propertyId: number
@@ -20376,6 +20302,7 @@ export namespace Prisma {
   export type PaymentTransactionMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     billId?: true
     propertyId?: true
@@ -20397,6 +20324,7 @@ export namespace Prisma {
   export type PaymentTransactionMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     billId?: true
     propertyId?: true
@@ -20418,6 +20346,7 @@ export namespace Prisma {
   export type PaymentTransactionCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     category?: true
     billId?: true
     propertyId?: true
@@ -20526,6 +20455,7 @@ export namespace Prisma {
   export type PaymentTransactionGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     category: $Enums.EventCategory
     billId: string | null
     propertyId: string | null
@@ -20566,6 +20496,7 @@ export namespace Prisma {
   export type PaymentTransactionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     category?: boolean
     billId?: boolean
     propertyId?: boolean
@@ -20583,6 +20514,7 @@ export namespace Prisma {
     deletedAt?: boolean
     createdAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | PaymentTransaction$householdArgs<ExtArgs>
     bill?: boolean | PaymentTransaction$billArgs<ExtArgs>
     property?: boolean | PaymentTransaction$propertyArgs<ExtArgs>
     lease?: boolean | PaymentTransaction$leaseArgs<ExtArgs>
@@ -20596,6 +20528,7 @@ export namespace Prisma {
   export type PaymentTransactionSelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     category?: boolean
     billId?: boolean
     propertyId?: boolean
@@ -20614,9 +20547,10 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type PaymentTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "category" | "billId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "amount" | "currency" | "paymentMethod" | "referenceNumber" | "receiptUrl" | "paidAt" | "notes" | "deletedAt" | "createdAt", ExtArgs["result"]["paymentTransaction"]>
+  export type PaymentTransactionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "category" | "billId" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "amount" | "currency" | "paymentMethod" | "referenceNumber" | "receiptUrl" | "paidAt" | "notes" | "deletedAt" | "createdAt", ExtArgs["result"]["paymentTransaction"]>
   export type PaymentTransactionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | PaymentTransaction$householdArgs<ExtArgs>
     bill?: boolean | PaymentTransaction$billArgs<ExtArgs>
     property?: boolean | PaymentTransaction$propertyArgs<ExtArgs>
     lease?: boolean | PaymentTransaction$leaseArgs<ExtArgs>
@@ -20629,6 +20563,7 @@ export namespace Prisma {
     name: "PaymentTransaction"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       bill: Prisma.$BillPayload<ExtArgs> | null
       property: Prisma.$PropertyPayload<ExtArgs> | null
       lease: Prisma.$LeasePayload<ExtArgs> | null
@@ -20639,6 +20574,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       category: $Enums.EventCategory
       billId: string | null
       propertyId: string | null
@@ -21019,6 +20955,7 @@ export namespace Prisma {
   export interface Prisma__PaymentTransactionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends PaymentTransaction$householdArgs<ExtArgs> = {}>(args?: Subset<T, PaymentTransaction$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     bill<T extends PaymentTransaction$billArgs<ExtArgs> = {}>(args?: Subset<T, PaymentTransaction$billArgs<ExtArgs>>): Prisma__BillClient<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     property<T extends PaymentTransaction$propertyArgs<ExtArgs> = {}>(args?: Subset<T, PaymentTransaction$propertyArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lease<T extends PaymentTransaction$leaseArgs<ExtArgs> = {}>(args?: Subset<T, PaymentTransaction$leaseArgs<ExtArgs>>): Prisma__LeaseClient<$Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -21056,6 +20993,7 @@ export namespace Prisma {
   interface PaymentTransactionFieldRefs {
     readonly id: FieldRef<"PaymentTransaction", 'String'>
     readonly ownerId: FieldRef<"PaymentTransaction", 'String'>
+    readonly householdId: FieldRef<"PaymentTransaction", 'String'>
     readonly category: FieldRef<"PaymentTransaction", 'EventCategory'>
     readonly billId: FieldRef<"PaymentTransaction", 'String'>
     readonly propertyId: FieldRef<"PaymentTransaction", 'String'>
@@ -21439,6 +21377,25 @@ export namespace Prisma {
      * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
      */
     options?: InputJsonValue
+  }
+
+  /**
+   * PaymentTransaction.household
+   */
+  export type PaymentTransaction$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
   }
 
   /**
@@ -25370,6 +25327,7 @@ export namespace Prisma {
   export type DocumentMinAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     propertyId: string | null
     roomId: string | null
     leaseId: string | null
@@ -25388,6 +25346,7 @@ export namespace Prisma {
   export type DocumentMaxAggregateOutputType = {
     id: string | null
     ownerId: string | null
+    householdId: string | null
     propertyId: string | null
     roomId: string | null
     leaseId: string | null
@@ -25406,6 +25365,7 @@ export namespace Prisma {
   export type DocumentCountAggregateOutputType = {
     id: number
     ownerId: number
+    householdId: number
     propertyId: number
     roomId: number
     leaseId: number
@@ -25426,6 +25386,7 @@ export namespace Prisma {
   export type DocumentMinAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     propertyId?: true
     roomId?: true
     leaseId?: true
@@ -25444,6 +25405,7 @@ export namespace Prisma {
   export type DocumentMaxAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     propertyId?: true
     roomId?: true
     leaseId?: true
@@ -25462,6 +25424,7 @@ export namespace Prisma {
   export type DocumentCountAggregateInputType = {
     id?: true
     ownerId?: true
+    householdId?: true
     propertyId?: true
     roomId?: true
     leaseId?: true
@@ -25553,6 +25516,7 @@ export namespace Prisma {
   export type DocumentGroupByOutputType = {
     id: string
     ownerId: string
+    householdId: string | null
     propertyId: string | null
     roomId: string | null
     leaseId: string | null
@@ -25588,6 +25552,7 @@ export namespace Prisma {
   export type DocumentSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     propertyId?: boolean
     roomId?: boolean
     leaseId?: boolean
@@ -25602,6 +25567,7 @@ export namespace Prisma {
     deletedAt?: boolean
     uploadedAt?: boolean
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Document$householdArgs<ExtArgs>
     property?: boolean | Document$propertyArgs<ExtArgs>
     room?: boolean | Document$roomArgs<ExtArgs>
     lease?: boolean | Document$leaseArgs<ExtArgs>
@@ -25617,6 +25583,7 @@ export namespace Prisma {
   export type DocumentSelectScalar = {
     id?: boolean
     ownerId?: boolean
+    householdId?: boolean
     propertyId?: boolean
     roomId?: boolean
     leaseId?: boolean
@@ -25632,9 +25599,10 @@ export namespace Prisma {
     uploadedAt?: boolean
   }
 
-  export type DocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "propertyId" | "roomId" | "leaseId" | "policyId" | "investmentId" | "loanId" | "billScheduleId" | "billId" | "fileName" | "fileUrl" | "mimeType" | "deletedAt" | "uploadedAt", ExtArgs["result"]["document"]>
+  export type DocumentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "propertyId" | "roomId" | "leaseId" | "policyId" | "investmentId" | "loanId" | "billScheduleId" | "billId" | "fileName" | "fileUrl" | "mimeType" | "deletedAt" | "uploadedAt", ExtArgs["result"]["document"]>
   export type DocumentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
+    household?: boolean | Document$householdArgs<ExtArgs>
     property?: boolean | Document$propertyArgs<ExtArgs>
     room?: boolean | Document$roomArgs<ExtArgs>
     lease?: boolean | Document$leaseArgs<ExtArgs>
@@ -25649,6 +25617,7 @@ export namespace Prisma {
     name: "Document"
     objects: {
       owner: Prisma.$UserPayload<ExtArgs>
+      household: Prisma.$HouseholdPayload<ExtArgs> | null
       property: Prisma.$PropertyPayload<ExtArgs> | null
       room: Prisma.$RoomPayload<ExtArgs> | null
       lease: Prisma.$LeasePayload<ExtArgs> | null
@@ -25661,6 +25630,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       ownerId: string
+      householdId: string | null
       propertyId: string | null
       roomId: string | null
       leaseId: string | null
@@ -26038,6 +26008,7 @@ export namespace Prisma {
   export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    household<T extends Document$householdArgs<ExtArgs> = {}>(args?: Subset<T, Document$householdArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     property<T extends Document$propertyArgs<ExtArgs> = {}>(args?: Subset<T, Document$propertyArgs<ExtArgs>>): Prisma__PropertyClient<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     room<T extends Document$roomArgs<ExtArgs> = {}>(args?: Subset<T, Document$roomArgs<ExtArgs>>): Prisma__RoomClient<$Result.GetResult<Prisma.$RoomPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     lease<T extends Document$leaseArgs<ExtArgs> = {}>(args?: Subset<T, Document$leaseArgs<ExtArgs>>): Prisma__LeaseClient<$Result.GetResult<Prisma.$LeasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -26077,6 +26048,7 @@ export namespace Prisma {
   interface DocumentFieldRefs {
     readonly id: FieldRef<"Document", 'String'>
     readonly ownerId: FieldRef<"Document", 'String'>
+    readonly householdId: FieldRef<"Document", 'String'>
     readonly propertyId: FieldRef<"Document", 'String'>
     readonly roomId: FieldRef<"Document", 'String'>
     readonly leaseId: FieldRef<"Document", 'String'>
@@ -26457,6 +26429,25 @@ export namespace Prisma {
      * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
      */
     options?: InputJsonValue
+  }
+
+  /**
+   * Document.household
+   */
+  export type Document$householdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    where?: HouseholdWhereInput
   }
 
   /**
@@ -27708,19 +27699,6930 @@ export namespace Prisma {
 
 
   /**
-   * Enums
+   * Model Household
    */
 
-  export const PostScalarFieldEnum: {
-    id: 'id',
-    name: 'name',
-    createdAt: 'createdAt',
-    updatedAt: 'updatedAt',
-    createdById: 'createdById'
-  };
+  export type AggregateHousehold = {
+    _count: HouseholdCountAggregateOutputType | null
+    _min: HouseholdMinAggregateOutputType | null
+    _max: HouseholdMaxAggregateOutputType | null
+  }
 
-  export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+  export type HouseholdMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    personalForUserId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
 
+  export type HouseholdMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    personalForUserId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type HouseholdCountAggregateOutputType = {
+    id: number
+    name: number
+    personalForUserId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type HouseholdMinAggregateInputType = {
+    id?: true
+    name?: true
+    personalForUserId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HouseholdMaxAggregateInputType = {
+    id?: true
+    name?: true
+    personalForUserId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type HouseholdCountAggregateInputType = {
+    id?: true
+    name?: true
+    personalForUserId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type HouseholdAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Household to aggregate.
+     */
+    where?: HouseholdWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Households to fetch.
+     */
+    orderBy?: HouseholdOrderByWithRelationInput | HouseholdOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: HouseholdWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Households from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Households.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Households
+    **/
+    _count?: true | HouseholdCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HouseholdMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HouseholdMaxAggregateInputType
+  }
+
+  export type GetHouseholdAggregateType<T extends HouseholdAggregateArgs> = {
+        [P in keyof T & keyof AggregateHousehold]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHousehold[P]>
+      : GetScalarType<T[P], AggregateHousehold[P]>
+  }
+
+
+
+
+  export type HouseholdGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HouseholdWhereInput
+    orderBy?: HouseholdOrderByWithAggregationInput | HouseholdOrderByWithAggregationInput[]
+    by: HouseholdScalarFieldEnum[] | HouseholdScalarFieldEnum
+    having?: HouseholdScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HouseholdCountAggregateInputType | true
+    _min?: HouseholdMinAggregateInputType
+    _max?: HouseholdMaxAggregateInputType
+  }
+
+  export type HouseholdGroupByOutputType = {
+    id: string
+    name: string
+    personalForUserId: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: HouseholdCountAggregateOutputType | null
+    _min: HouseholdMinAggregateOutputType | null
+    _max: HouseholdMaxAggregateOutputType | null
+  }
+
+  type GetHouseholdGroupByPayload<T extends HouseholdGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HouseholdGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HouseholdGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HouseholdGroupByOutputType[P]>
+            : GetScalarType<T[P], HouseholdGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type HouseholdSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    personalForUserId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    members?: boolean | Household$membersArgs<ExtArgs>
+    properties?: boolean | Household$propertiesArgs<ExtArgs>
+    policies?: boolean | Household$policiesArgs<ExtArgs>
+    investments?: boolean | Household$investmentsArgs<ExtArgs>
+    loans?: boolean | Household$loansArgs<ExtArgs>
+    billSchedules?: boolean | Household$billSchedulesArgs<ExtArgs>
+    bills?: boolean | Household$billsArgs<ExtArgs>
+    documents?: boolean | Household$documentsArgs<ExtArgs>
+    paymentTransactions?: boolean | Household$paymentTransactionsArgs<ExtArgs>
+    _count?: boolean | HouseholdCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["household"]>
+
+
+
+  export type HouseholdSelectScalar = {
+    id?: boolean
+    name?: boolean
+    personalForUserId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type HouseholdOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "personalForUserId" | "createdAt" | "updatedAt", ExtArgs["result"]["household"]>
+  export type HouseholdInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    members?: boolean | Household$membersArgs<ExtArgs>
+    properties?: boolean | Household$propertiesArgs<ExtArgs>
+    policies?: boolean | Household$policiesArgs<ExtArgs>
+    investments?: boolean | Household$investmentsArgs<ExtArgs>
+    loans?: boolean | Household$loansArgs<ExtArgs>
+    billSchedules?: boolean | Household$billSchedulesArgs<ExtArgs>
+    bills?: boolean | Household$billsArgs<ExtArgs>
+    documents?: boolean | Household$documentsArgs<ExtArgs>
+    paymentTransactions?: boolean | Household$paymentTransactionsArgs<ExtArgs>
+    _count?: boolean | HouseholdCountOutputTypeDefaultArgs<ExtArgs>
+  }
+
+  export type $HouseholdPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Household"
+    objects: {
+      members: Prisma.$HouseholdMemberPayload<ExtArgs>[]
+      properties: Prisma.$PropertyPayload<ExtArgs>[]
+      policies: Prisma.$PolicyPayload<ExtArgs>[]
+      investments: Prisma.$InvestmentPayload<ExtArgs>[]
+      loans: Prisma.$LoanPayload<ExtArgs>[]
+      billSchedules: Prisma.$BillSchedulePayload<ExtArgs>[]
+      bills: Prisma.$BillPayload<ExtArgs>[]
+      documents: Prisma.$DocumentPayload<ExtArgs>[]
+      paymentTransactions: Prisma.$PaymentTransactionPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      personalForUserId: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["household"]>
+    composites: {}
+  }
+
+  type HouseholdGetPayload<S extends boolean | null | undefined | HouseholdDefaultArgs> = $Result.GetResult<Prisma.$HouseholdPayload, S>
+
+  type HouseholdCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<HouseholdFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: HouseholdCountAggregateInputType | true
+    }
+
+  export interface HouseholdDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Household'], meta: { name: 'Household' } }
+    /**
+     * Find zero or one Household that matches the filter.
+     * @param {HouseholdFindUniqueArgs} args - Arguments to find a Household
+     * @example
+     * // Get one Household
+     * const household = await prisma.household.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends HouseholdFindUniqueArgs>(args: SelectSubset<T, HouseholdFindUniqueArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Household that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {HouseholdFindUniqueOrThrowArgs} args - Arguments to find a Household
+     * @example
+     * // Get one Household
+     * const household = await prisma.household.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends HouseholdFindUniqueOrThrowArgs>(args: SelectSubset<T, HouseholdFindUniqueOrThrowArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Household that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdFindFirstArgs} args - Arguments to find a Household
+     * @example
+     * // Get one Household
+     * const household = await prisma.household.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends HouseholdFindFirstArgs>(args?: SelectSubset<T, HouseholdFindFirstArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Household that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdFindFirstOrThrowArgs} args - Arguments to find a Household
+     * @example
+     * // Get one Household
+     * const household = await prisma.household.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends HouseholdFindFirstOrThrowArgs>(args?: SelectSubset<T, HouseholdFindFirstOrThrowArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Households that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Households
+     * const households = await prisma.household.findMany()
+     * 
+     * // Get first 10 Households
+     * const households = await prisma.household.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const householdWithIdOnly = await prisma.household.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends HouseholdFindManyArgs>(args?: SelectSubset<T, HouseholdFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Household.
+     * @param {HouseholdCreateArgs} args - Arguments to create a Household.
+     * @example
+     * // Create one Household
+     * const Household = await prisma.household.create({
+     *   data: {
+     *     // ... data to create a Household
+     *   }
+     * })
+     * 
+     */
+    create<T extends HouseholdCreateArgs>(args: SelectSubset<T, HouseholdCreateArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Households.
+     * @param {HouseholdCreateManyArgs} args - Arguments to create many Households.
+     * @example
+     * // Create many Households
+     * const household = await prisma.household.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends HouseholdCreateManyArgs>(args?: SelectSubset<T, HouseholdCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a Household.
+     * @param {HouseholdDeleteArgs} args - Arguments to delete one Household.
+     * @example
+     * // Delete one Household
+     * const Household = await prisma.household.delete({
+     *   where: {
+     *     // ... filter to delete one Household
+     *   }
+     * })
+     * 
+     */
+    delete<T extends HouseholdDeleteArgs>(args: SelectSubset<T, HouseholdDeleteArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Household.
+     * @param {HouseholdUpdateArgs} args - Arguments to update one Household.
+     * @example
+     * // Update one Household
+     * const household = await prisma.household.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends HouseholdUpdateArgs>(args: SelectSubset<T, HouseholdUpdateArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Households.
+     * @param {HouseholdDeleteManyArgs} args - Arguments to filter Households to delete.
+     * @example
+     * // Delete a few Households
+     * const { count } = await prisma.household.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends HouseholdDeleteManyArgs>(args?: SelectSubset<T, HouseholdDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Households.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Households
+     * const household = await prisma.household.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends HouseholdUpdateManyArgs>(args: SelectSubset<T, HouseholdUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one Household.
+     * @param {HouseholdUpsertArgs} args - Arguments to update or create a Household.
+     * @example
+     * // Update or create a Household
+     * const household = await prisma.household.upsert({
+     *   create: {
+     *     // ... data to create a Household
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Household we want to update
+     *   }
+     * })
+     */
+    upsert<T extends HouseholdUpsertArgs>(args: SelectSubset<T, HouseholdUpsertArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Households that matches the filter.
+     * @param {HouseholdFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const household = await prisma.household.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: HouseholdFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a Household.
+     * @param {HouseholdAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const household = await prisma.household.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: HouseholdAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of Households.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdCountArgs} args - Arguments to filter Households to count.
+     * @example
+     * // Count the number of Households
+     * const count = await prisma.household.count({
+     *   where: {
+     *     // ... the filter for the Households we want to count
+     *   }
+     * })
+    **/
+    count<T extends HouseholdCountArgs>(
+      args?: Subset<T, HouseholdCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HouseholdCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Household.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HouseholdAggregateArgs>(args: Subset<T, HouseholdAggregateArgs>): Prisma.PrismaPromise<GetHouseholdAggregateType<T>>
+
+    /**
+     * Group by Household.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends HouseholdGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: HouseholdGroupByArgs['orderBy'] }
+        : { orderBy?: HouseholdGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, HouseholdGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHouseholdGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Household model
+   */
+  readonly fields: HouseholdFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Household.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__HouseholdClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    members<T extends Household$membersArgs<ExtArgs> = {}>(args?: Subset<T, Household$membersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    properties<T extends Household$propertiesArgs<ExtArgs> = {}>(args?: Subset<T, Household$propertiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PropertyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    policies<T extends Household$policiesArgs<ExtArgs> = {}>(args?: Subset<T, Household$policiesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PolicyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    investments<T extends Household$investmentsArgs<ExtArgs> = {}>(args?: Subset<T, Household$investmentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvestmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    loans<T extends Household$loansArgs<ExtArgs> = {}>(args?: Subset<T, Household$loansArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$LoanPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    billSchedules<T extends Household$billSchedulesArgs<ExtArgs> = {}>(args?: Subset<T, Household$billSchedulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillSchedulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    bills<T extends Household$billsArgs<ExtArgs> = {}>(args?: Subset<T, Household$billsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    documents<T extends Household$documentsArgs<ExtArgs> = {}>(args?: Subset<T, Household$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    paymentTransactions<T extends Household$paymentTransactionsArgs<ExtArgs> = {}>(args?: Subset<T, Household$paymentTransactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentTransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Household model
+   */
+  interface HouseholdFieldRefs {
+    readonly id: FieldRef<"Household", 'String'>
+    readonly name: FieldRef<"Household", 'String'>
+    readonly personalForUserId: FieldRef<"Household", 'String'>
+    readonly createdAt: FieldRef<"Household", 'DateTime'>
+    readonly updatedAt: FieldRef<"Household", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Household findUnique
+   */
+  export type HouseholdFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * Filter, which Household to fetch.
+     */
+    where: HouseholdWhereUniqueInput
+  }
+
+  /**
+   * Household findUniqueOrThrow
+   */
+  export type HouseholdFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * Filter, which Household to fetch.
+     */
+    where: HouseholdWhereUniqueInput
+  }
+
+  /**
+   * Household findFirst
+   */
+  export type HouseholdFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * Filter, which Household to fetch.
+     */
+    where?: HouseholdWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Households to fetch.
+     */
+    orderBy?: HouseholdOrderByWithRelationInput | HouseholdOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Households.
+     */
+    cursor?: HouseholdWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Households from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Households.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Households.
+     */
+    distinct?: HouseholdScalarFieldEnum | HouseholdScalarFieldEnum[]
+  }
+
+  /**
+   * Household findFirstOrThrow
+   */
+  export type HouseholdFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * Filter, which Household to fetch.
+     */
+    where?: HouseholdWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Households to fetch.
+     */
+    orderBy?: HouseholdOrderByWithRelationInput | HouseholdOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Households.
+     */
+    cursor?: HouseholdWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Households from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Households.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Households.
+     */
+    distinct?: HouseholdScalarFieldEnum | HouseholdScalarFieldEnum[]
+  }
+
+  /**
+   * Household findMany
+   */
+  export type HouseholdFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * Filter, which Households to fetch.
+     */
+    where?: HouseholdWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Households to fetch.
+     */
+    orderBy?: HouseholdOrderByWithRelationInput | HouseholdOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Households.
+     */
+    cursor?: HouseholdWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Households from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Households.
+     */
+    skip?: number
+    distinct?: HouseholdScalarFieldEnum | HouseholdScalarFieldEnum[]
+  }
+
+  /**
+   * Household create
+   */
+  export type HouseholdCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Household.
+     */
+    data: XOR<HouseholdCreateInput, HouseholdUncheckedCreateInput>
+  }
+
+  /**
+   * Household createMany
+   */
+  export type HouseholdCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Households.
+     */
+    data: HouseholdCreateManyInput | HouseholdCreateManyInput[]
+  }
+
+  /**
+   * Household update
+   */
+  export type HouseholdUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Household.
+     */
+    data: XOR<HouseholdUpdateInput, HouseholdUncheckedUpdateInput>
+    /**
+     * Choose, which Household to update.
+     */
+    where: HouseholdWhereUniqueInput
+  }
+
+  /**
+   * Household updateMany
+   */
+  export type HouseholdUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Households.
+     */
+    data: XOR<HouseholdUpdateManyMutationInput, HouseholdUncheckedUpdateManyInput>
+    /**
+     * Filter which Households to update
+     */
+    where?: HouseholdWhereInput
+    /**
+     * Limit how many Households to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Household upsert
+   */
+  export type HouseholdUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Household to update in case it exists.
+     */
+    where: HouseholdWhereUniqueInput
+    /**
+     * In case the Household found by the `where` argument doesn't exist, create a new Household with this data.
+     */
+    create: XOR<HouseholdCreateInput, HouseholdUncheckedCreateInput>
+    /**
+     * In case the Household was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<HouseholdUpdateInput, HouseholdUncheckedUpdateInput>
+  }
+
+  /**
+   * Household delete
+   */
+  export type HouseholdDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+    /**
+     * Filter which Household to delete.
+     */
+    where: HouseholdWhereUniqueInput
+  }
+
+  /**
+   * Household deleteMany
+   */
+  export type HouseholdDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Households to delete
+     */
+    where?: HouseholdWhereInput
+    /**
+     * Limit how many Households to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Household findRaw
+   */
+  export type HouseholdFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * Household aggregateRaw
+   */
+  export type HouseholdAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * Household.members
+   */
+  export type Household$membersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    where?: HouseholdMemberWhereInput
+    orderBy?: HouseholdMemberOrderByWithRelationInput | HouseholdMemberOrderByWithRelationInput[]
+    cursor?: HouseholdMemberWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HouseholdMemberScalarFieldEnum | HouseholdMemberScalarFieldEnum[]
+  }
+
+  /**
+   * Household.properties
+   */
+  export type Household$propertiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Property
+     */
+    select?: PropertySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Property
+     */
+    omit?: PropertyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PropertyInclude<ExtArgs> | null
+    where?: PropertyWhereInput
+    orderBy?: PropertyOrderByWithRelationInput | PropertyOrderByWithRelationInput[]
+    cursor?: PropertyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PropertyScalarFieldEnum | PropertyScalarFieldEnum[]
+  }
+
+  /**
+   * Household.policies
+   */
+  export type Household$policiesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Policy
+     */
+    select?: PolicySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Policy
+     */
+    omit?: PolicyOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PolicyInclude<ExtArgs> | null
+    where?: PolicyWhereInput
+    orderBy?: PolicyOrderByWithRelationInput | PolicyOrderByWithRelationInput[]
+    cursor?: PolicyWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PolicyScalarFieldEnum | PolicyScalarFieldEnum[]
+  }
+
+  /**
+   * Household.investments
+   */
+  export type Household$investmentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Investment
+     */
+    select?: InvestmentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Investment
+     */
+    omit?: InvestmentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: InvestmentInclude<ExtArgs> | null
+    where?: InvestmentWhereInput
+    orderBy?: InvestmentOrderByWithRelationInput | InvestmentOrderByWithRelationInput[]
+    cursor?: InvestmentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: InvestmentScalarFieldEnum | InvestmentScalarFieldEnum[]
+  }
+
+  /**
+   * Household.loans
+   */
+  export type Household$loansArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Loan
+     */
+    select?: LoanSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Loan
+     */
+    omit?: LoanOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: LoanInclude<ExtArgs> | null
+    where?: LoanWhereInput
+    orderBy?: LoanOrderByWithRelationInput | LoanOrderByWithRelationInput[]
+    cursor?: LoanWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: LoanScalarFieldEnum | LoanScalarFieldEnum[]
+  }
+
+  /**
+   * Household.billSchedules
+   */
+  export type Household$billSchedulesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BillSchedule
+     */
+    select?: BillScheduleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BillSchedule
+     */
+    omit?: BillScheduleOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillScheduleInclude<ExtArgs> | null
+    where?: BillScheduleWhereInput
+    orderBy?: BillScheduleOrderByWithRelationInput | BillScheduleOrderByWithRelationInput[]
+    cursor?: BillScheduleWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BillScheduleScalarFieldEnum | BillScheduleScalarFieldEnum[]
+  }
+
+  /**
+   * Household.bills
+   */
+  export type Household$billsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Bill
+     */
+    select?: BillSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Bill
+     */
+    omit?: BillOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BillInclude<ExtArgs> | null
+    where?: BillWhereInput
+    orderBy?: BillOrderByWithRelationInput | BillOrderByWithRelationInput[]
+    cursor?: BillWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BillScalarFieldEnum | BillScalarFieldEnum[]
+  }
+
+  /**
+   * Household.documents
+   */
+  export type Household$documentsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Document
+     */
+    select?: DocumentSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Document
+     */
+    omit?: DocumentOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: DocumentInclude<ExtArgs> | null
+    where?: DocumentWhereInput
+    orderBy?: DocumentOrderByWithRelationInput | DocumentOrderByWithRelationInput[]
+    cursor?: DocumentWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: DocumentScalarFieldEnum | DocumentScalarFieldEnum[]
+  }
+
+  /**
+   * Household.paymentTransactions
+   */
+  export type Household$paymentTransactionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the PaymentTransaction
+     */
+    select?: PaymentTransactionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the PaymentTransaction
+     */
+    omit?: PaymentTransactionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: PaymentTransactionInclude<ExtArgs> | null
+    where?: PaymentTransactionWhereInput
+    orderBy?: PaymentTransactionOrderByWithRelationInput | PaymentTransactionOrderByWithRelationInput[]
+    cursor?: PaymentTransactionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: PaymentTransactionScalarFieldEnum | PaymentTransactionScalarFieldEnum[]
+  }
+
+  /**
+   * Household without action
+   */
+  export type HouseholdDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Household
+     */
+    select?: HouseholdSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Household
+     */
+    omit?: HouseholdOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model HouseholdMember
+   */
+
+  export type AggregateHouseholdMember = {
+    _count: HouseholdMemberCountAggregateOutputType | null
+    _min: HouseholdMemberMinAggregateOutputType | null
+    _max: HouseholdMemberMaxAggregateOutputType | null
+  }
+
+  export type HouseholdMemberMinAggregateOutputType = {
+    id: string | null
+    householdId: string | null
+    userId: string | null
+    role: $Enums.HouseholdRole | null
+    createdAt: Date | null
+  }
+
+  export type HouseholdMemberMaxAggregateOutputType = {
+    id: string | null
+    householdId: string | null
+    userId: string | null
+    role: $Enums.HouseholdRole | null
+    createdAt: Date | null
+  }
+
+  export type HouseholdMemberCountAggregateOutputType = {
+    id: number
+    householdId: number
+    userId: number
+    role: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type HouseholdMemberMinAggregateInputType = {
+    id?: true
+    householdId?: true
+    userId?: true
+    role?: true
+    createdAt?: true
+  }
+
+  export type HouseholdMemberMaxAggregateInputType = {
+    id?: true
+    householdId?: true
+    userId?: true
+    role?: true
+    createdAt?: true
+  }
+
+  export type HouseholdMemberCountAggregateInputType = {
+    id?: true
+    householdId?: true
+    userId?: true
+    role?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type HouseholdMemberAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HouseholdMember to aggregate.
+     */
+    where?: HouseholdMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HouseholdMembers to fetch.
+     */
+    orderBy?: HouseholdMemberOrderByWithRelationInput | HouseholdMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: HouseholdMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HouseholdMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HouseholdMembers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned HouseholdMembers
+    **/
+    _count?: true | HouseholdMemberCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: HouseholdMemberMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: HouseholdMemberMaxAggregateInputType
+  }
+
+  export type GetHouseholdMemberAggregateType<T extends HouseholdMemberAggregateArgs> = {
+        [P in keyof T & keyof AggregateHouseholdMember]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateHouseholdMember[P]>
+      : GetScalarType<T[P], AggregateHouseholdMember[P]>
+  }
+
+
+
+
+  export type HouseholdMemberGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HouseholdMemberWhereInput
+    orderBy?: HouseholdMemberOrderByWithAggregationInput | HouseholdMemberOrderByWithAggregationInput[]
+    by: HouseholdMemberScalarFieldEnum[] | HouseholdMemberScalarFieldEnum
+    having?: HouseholdMemberScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: HouseholdMemberCountAggregateInputType | true
+    _min?: HouseholdMemberMinAggregateInputType
+    _max?: HouseholdMemberMaxAggregateInputType
+  }
+
+  export type HouseholdMemberGroupByOutputType = {
+    id: string
+    householdId: string
+    userId: string
+    role: $Enums.HouseholdRole
+    createdAt: Date
+    _count: HouseholdMemberCountAggregateOutputType | null
+    _min: HouseholdMemberMinAggregateOutputType | null
+    _max: HouseholdMemberMaxAggregateOutputType | null
+  }
+
+  type GetHouseholdMemberGroupByPayload<T extends HouseholdMemberGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<HouseholdMemberGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof HouseholdMemberGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], HouseholdMemberGroupByOutputType[P]>
+            : GetScalarType<T[P], HouseholdMemberGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type HouseholdMemberSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    householdId?: boolean
+    userId?: boolean
+    role?: boolean
+    createdAt?: boolean
+    household?: boolean | HouseholdDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["householdMember"]>
+
+
+
+  export type HouseholdMemberSelectScalar = {
+    id?: boolean
+    householdId?: boolean
+    userId?: boolean
+    role?: boolean
+    createdAt?: boolean
+  }
+
+  export type HouseholdMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "householdId" | "userId" | "role" | "createdAt", ExtArgs["result"]["householdMember"]>
+  export type HouseholdMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    household?: boolean | HouseholdDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $HouseholdMemberPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "HouseholdMember"
+    objects: {
+      household: Prisma.$HouseholdPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      householdId: string
+      userId: string
+      role: $Enums.HouseholdRole
+      createdAt: Date
+    }, ExtArgs["result"]["householdMember"]>
+    composites: {}
+  }
+
+  type HouseholdMemberGetPayload<S extends boolean | null | undefined | HouseholdMemberDefaultArgs> = $Result.GetResult<Prisma.$HouseholdMemberPayload, S>
+
+  type HouseholdMemberCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<HouseholdMemberFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: HouseholdMemberCountAggregateInputType | true
+    }
+
+  export interface HouseholdMemberDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['HouseholdMember'], meta: { name: 'HouseholdMember' } }
+    /**
+     * Find zero or one HouseholdMember that matches the filter.
+     * @param {HouseholdMemberFindUniqueArgs} args - Arguments to find a HouseholdMember
+     * @example
+     * // Get one HouseholdMember
+     * const householdMember = await prisma.householdMember.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends HouseholdMemberFindUniqueArgs>(args: SelectSubset<T, HouseholdMemberFindUniqueArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one HouseholdMember that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {HouseholdMemberFindUniqueOrThrowArgs} args - Arguments to find a HouseholdMember
+     * @example
+     * // Get one HouseholdMember
+     * const householdMember = await prisma.householdMember.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends HouseholdMemberFindUniqueOrThrowArgs>(args: SelectSubset<T, HouseholdMemberFindUniqueOrThrowArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HouseholdMember that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdMemberFindFirstArgs} args - Arguments to find a HouseholdMember
+     * @example
+     * // Get one HouseholdMember
+     * const householdMember = await prisma.householdMember.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends HouseholdMemberFindFirstArgs>(args?: SelectSubset<T, HouseholdMemberFindFirstArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first HouseholdMember that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdMemberFindFirstOrThrowArgs} args - Arguments to find a HouseholdMember
+     * @example
+     * // Get one HouseholdMember
+     * const householdMember = await prisma.householdMember.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends HouseholdMemberFindFirstOrThrowArgs>(args?: SelectSubset<T, HouseholdMemberFindFirstOrThrowArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more HouseholdMembers that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdMemberFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all HouseholdMembers
+     * const householdMembers = await prisma.householdMember.findMany()
+     * 
+     * // Get first 10 HouseholdMembers
+     * const householdMembers = await prisma.householdMember.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const householdMemberWithIdOnly = await prisma.householdMember.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends HouseholdMemberFindManyArgs>(args?: SelectSubset<T, HouseholdMemberFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a HouseholdMember.
+     * @param {HouseholdMemberCreateArgs} args - Arguments to create a HouseholdMember.
+     * @example
+     * // Create one HouseholdMember
+     * const HouseholdMember = await prisma.householdMember.create({
+     *   data: {
+     *     // ... data to create a HouseholdMember
+     *   }
+     * })
+     * 
+     */
+    create<T extends HouseholdMemberCreateArgs>(args: SelectSubset<T, HouseholdMemberCreateArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many HouseholdMembers.
+     * @param {HouseholdMemberCreateManyArgs} args - Arguments to create many HouseholdMembers.
+     * @example
+     * // Create many HouseholdMembers
+     * const householdMember = await prisma.householdMember.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends HouseholdMemberCreateManyArgs>(args?: SelectSubset<T, HouseholdMemberCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a HouseholdMember.
+     * @param {HouseholdMemberDeleteArgs} args - Arguments to delete one HouseholdMember.
+     * @example
+     * // Delete one HouseholdMember
+     * const HouseholdMember = await prisma.householdMember.delete({
+     *   where: {
+     *     // ... filter to delete one HouseholdMember
+     *   }
+     * })
+     * 
+     */
+    delete<T extends HouseholdMemberDeleteArgs>(args: SelectSubset<T, HouseholdMemberDeleteArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one HouseholdMember.
+     * @param {HouseholdMemberUpdateArgs} args - Arguments to update one HouseholdMember.
+     * @example
+     * // Update one HouseholdMember
+     * const householdMember = await prisma.householdMember.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends HouseholdMemberUpdateArgs>(args: SelectSubset<T, HouseholdMemberUpdateArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more HouseholdMembers.
+     * @param {HouseholdMemberDeleteManyArgs} args - Arguments to filter HouseholdMembers to delete.
+     * @example
+     * // Delete a few HouseholdMembers
+     * const { count } = await prisma.householdMember.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends HouseholdMemberDeleteManyArgs>(args?: SelectSubset<T, HouseholdMemberDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more HouseholdMembers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdMemberUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many HouseholdMembers
+     * const householdMember = await prisma.householdMember.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends HouseholdMemberUpdateManyArgs>(args: SelectSubset<T, HouseholdMemberUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one HouseholdMember.
+     * @param {HouseholdMemberUpsertArgs} args - Arguments to update or create a HouseholdMember.
+     * @example
+     * // Update or create a HouseholdMember
+     * const householdMember = await prisma.householdMember.upsert({
+     *   create: {
+     *     // ... data to create a HouseholdMember
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the HouseholdMember we want to update
+     *   }
+     * })
+     */
+    upsert<T extends HouseholdMemberUpsertArgs>(args: SelectSubset<T, HouseholdMemberUpsertArgs<ExtArgs>>): Prisma__HouseholdMemberClient<$Result.GetResult<Prisma.$HouseholdMemberPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more HouseholdMembers that matches the filter.
+     * @param {HouseholdMemberFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const householdMember = await prisma.householdMember.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: HouseholdMemberFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a HouseholdMember.
+     * @param {HouseholdMemberAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const householdMember = await prisma.householdMember.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: HouseholdMemberAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of HouseholdMembers.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdMemberCountArgs} args - Arguments to filter HouseholdMembers to count.
+     * @example
+     * // Count the number of HouseholdMembers
+     * const count = await prisma.householdMember.count({
+     *   where: {
+     *     // ... the filter for the HouseholdMembers we want to count
+     *   }
+     * })
+    **/
+    count<T extends HouseholdMemberCountArgs>(
+      args?: Subset<T, HouseholdMemberCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], HouseholdMemberCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a HouseholdMember.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdMemberAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends HouseholdMemberAggregateArgs>(args: Subset<T, HouseholdMemberAggregateArgs>): Prisma.PrismaPromise<GetHouseholdMemberAggregateType<T>>
+
+    /**
+     * Group by HouseholdMember.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {HouseholdMemberGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends HouseholdMemberGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: HouseholdMemberGroupByArgs['orderBy'] }
+        : { orderBy?: HouseholdMemberGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, HouseholdMemberGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetHouseholdMemberGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the HouseholdMember model
+   */
+  readonly fields: HouseholdMemberFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for HouseholdMember.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__HouseholdMemberClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    household<T extends HouseholdDefaultArgs<ExtArgs> = {}>(args?: Subset<T, HouseholdDefaultArgs<ExtArgs>>): Prisma__HouseholdClient<$Result.GetResult<Prisma.$HouseholdPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the HouseholdMember model
+   */
+  interface HouseholdMemberFieldRefs {
+    readonly id: FieldRef<"HouseholdMember", 'String'>
+    readonly householdId: FieldRef<"HouseholdMember", 'String'>
+    readonly userId: FieldRef<"HouseholdMember", 'String'>
+    readonly role: FieldRef<"HouseholdMember", 'HouseholdRole'>
+    readonly createdAt: FieldRef<"HouseholdMember", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * HouseholdMember findUnique
+   */
+  export type HouseholdMemberFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which HouseholdMember to fetch.
+     */
+    where: HouseholdMemberWhereUniqueInput
+  }
+
+  /**
+   * HouseholdMember findUniqueOrThrow
+   */
+  export type HouseholdMemberFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which HouseholdMember to fetch.
+     */
+    where: HouseholdMemberWhereUniqueInput
+  }
+
+  /**
+   * HouseholdMember findFirst
+   */
+  export type HouseholdMemberFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which HouseholdMember to fetch.
+     */
+    where?: HouseholdMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HouseholdMembers to fetch.
+     */
+    orderBy?: HouseholdMemberOrderByWithRelationInput | HouseholdMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HouseholdMembers.
+     */
+    cursor?: HouseholdMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HouseholdMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HouseholdMembers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HouseholdMembers.
+     */
+    distinct?: HouseholdMemberScalarFieldEnum | HouseholdMemberScalarFieldEnum[]
+  }
+
+  /**
+   * HouseholdMember findFirstOrThrow
+   */
+  export type HouseholdMemberFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which HouseholdMember to fetch.
+     */
+    where?: HouseholdMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HouseholdMembers to fetch.
+     */
+    orderBy?: HouseholdMemberOrderByWithRelationInput | HouseholdMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for HouseholdMembers.
+     */
+    cursor?: HouseholdMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HouseholdMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HouseholdMembers.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of HouseholdMembers.
+     */
+    distinct?: HouseholdMemberScalarFieldEnum | HouseholdMemberScalarFieldEnum[]
+  }
+
+  /**
+   * HouseholdMember findMany
+   */
+  export type HouseholdMemberFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * Filter, which HouseholdMembers to fetch.
+     */
+    where?: HouseholdMemberWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of HouseholdMembers to fetch.
+     */
+    orderBy?: HouseholdMemberOrderByWithRelationInput | HouseholdMemberOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing HouseholdMembers.
+     */
+    cursor?: HouseholdMemberWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` HouseholdMembers from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` HouseholdMembers.
+     */
+    skip?: number
+    distinct?: HouseholdMemberScalarFieldEnum | HouseholdMemberScalarFieldEnum[]
+  }
+
+  /**
+   * HouseholdMember create
+   */
+  export type HouseholdMemberCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * The data needed to create a HouseholdMember.
+     */
+    data: XOR<HouseholdMemberCreateInput, HouseholdMemberUncheckedCreateInput>
+  }
+
+  /**
+   * HouseholdMember createMany
+   */
+  export type HouseholdMemberCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many HouseholdMembers.
+     */
+    data: HouseholdMemberCreateManyInput | HouseholdMemberCreateManyInput[]
+  }
+
+  /**
+   * HouseholdMember update
+   */
+  export type HouseholdMemberUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * The data needed to update a HouseholdMember.
+     */
+    data: XOR<HouseholdMemberUpdateInput, HouseholdMemberUncheckedUpdateInput>
+    /**
+     * Choose, which HouseholdMember to update.
+     */
+    where: HouseholdMemberWhereUniqueInput
+  }
+
+  /**
+   * HouseholdMember updateMany
+   */
+  export type HouseholdMemberUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update HouseholdMembers.
+     */
+    data: XOR<HouseholdMemberUpdateManyMutationInput, HouseholdMemberUncheckedUpdateManyInput>
+    /**
+     * Filter which HouseholdMembers to update
+     */
+    where?: HouseholdMemberWhereInput
+    /**
+     * Limit how many HouseholdMembers to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * HouseholdMember upsert
+   */
+  export type HouseholdMemberUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * The filter to search for the HouseholdMember to update in case it exists.
+     */
+    where: HouseholdMemberWhereUniqueInput
+    /**
+     * In case the HouseholdMember found by the `where` argument doesn't exist, create a new HouseholdMember with this data.
+     */
+    create: XOR<HouseholdMemberCreateInput, HouseholdMemberUncheckedCreateInput>
+    /**
+     * In case the HouseholdMember was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<HouseholdMemberUpdateInput, HouseholdMemberUncheckedUpdateInput>
+  }
+
+  /**
+   * HouseholdMember delete
+   */
+  export type HouseholdMemberDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+    /**
+     * Filter which HouseholdMember to delete.
+     */
+    where: HouseholdMemberWhereUniqueInput
+  }
+
+  /**
+   * HouseholdMember deleteMany
+   */
+  export type HouseholdMemberDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which HouseholdMembers to delete
+     */
+    where?: HouseholdMemberWhereInput
+    /**
+     * Limit how many HouseholdMembers to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * HouseholdMember findRaw
+   */
+  export type HouseholdMemberFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * HouseholdMember aggregateRaw
+   */
+  export type HouseholdMemberAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * HouseholdMember without action
+   */
+  export type HouseholdMemberDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the HouseholdMember
+     */
+    select?: HouseholdMemberSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the HouseholdMember
+     */
+    omit?: HouseholdMemberOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HouseholdMemberInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AppMigration
+   */
+
+  export type AggregateAppMigration = {
+    _count: AppMigrationCountAggregateOutputType | null
+    _min: AppMigrationMinAggregateOutputType | null
+    _max: AppMigrationMaxAggregateOutputType | null
+  }
+
+  export type AppMigrationMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    ranAt: Date | null
+  }
+
+  export type AppMigrationMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    ranAt: Date | null
+  }
+
+  export type AppMigrationCountAggregateOutputType = {
+    id: number
+    name: number
+    ranAt: number
+    _all: number
+  }
+
+
+  export type AppMigrationMinAggregateInputType = {
+    id?: true
+    name?: true
+    ranAt?: true
+  }
+
+  export type AppMigrationMaxAggregateInputType = {
+    id?: true
+    name?: true
+    ranAt?: true
+  }
+
+  export type AppMigrationCountAggregateInputType = {
+    id?: true
+    name?: true
+    ranAt?: true
+    _all?: true
+  }
+
+  export type AppMigrationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AppMigration to aggregate.
+     */
+    where?: AppMigrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AppMigrations to fetch.
+     */
+    orderBy?: AppMigrationOrderByWithRelationInput | AppMigrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AppMigrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AppMigrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AppMigrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AppMigrations
+    **/
+    _count?: true | AppMigrationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AppMigrationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AppMigrationMaxAggregateInputType
+  }
+
+  export type GetAppMigrationAggregateType<T extends AppMigrationAggregateArgs> = {
+        [P in keyof T & keyof AggregateAppMigration]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAppMigration[P]>
+      : GetScalarType<T[P], AggregateAppMigration[P]>
+  }
+
+
+
+
+  export type AppMigrationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AppMigrationWhereInput
+    orderBy?: AppMigrationOrderByWithAggregationInput | AppMigrationOrderByWithAggregationInput[]
+    by: AppMigrationScalarFieldEnum[] | AppMigrationScalarFieldEnum
+    having?: AppMigrationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AppMigrationCountAggregateInputType | true
+    _min?: AppMigrationMinAggregateInputType
+    _max?: AppMigrationMaxAggregateInputType
+  }
+
+  export type AppMigrationGroupByOutputType = {
+    id: string
+    name: string
+    ranAt: Date
+    _count: AppMigrationCountAggregateOutputType | null
+    _min: AppMigrationMinAggregateOutputType | null
+    _max: AppMigrationMaxAggregateOutputType | null
+  }
+
+  type GetAppMigrationGroupByPayload<T extends AppMigrationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AppMigrationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AppMigrationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AppMigrationGroupByOutputType[P]>
+            : GetScalarType<T[P], AppMigrationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AppMigrationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    ranAt?: boolean
+  }, ExtArgs["result"]["appMigration"]>
+
+
+
+  export type AppMigrationSelectScalar = {
+    id?: boolean
+    name?: boolean
+    ranAt?: boolean
+  }
+
+  export type AppMigrationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "ranAt", ExtArgs["result"]["appMigration"]>
+
+  export type $AppMigrationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AppMigration"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string
+      ranAt: Date
+    }, ExtArgs["result"]["appMigration"]>
+    composites: {}
+  }
+
+  type AppMigrationGetPayload<S extends boolean | null | undefined | AppMigrationDefaultArgs> = $Result.GetResult<Prisma.$AppMigrationPayload, S>
+
+  type AppMigrationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AppMigrationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AppMigrationCountAggregateInputType | true
+    }
+
+  export interface AppMigrationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AppMigration'], meta: { name: 'AppMigration' } }
+    /**
+     * Find zero or one AppMigration that matches the filter.
+     * @param {AppMigrationFindUniqueArgs} args - Arguments to find a AppMigration
+     * @example
+     * // Get one AppMigration
+     * const appMigration = await prisma.appMigration.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AppMigrationFindUniqueArgs>(args: SelectSubset<T, AppMigrationFindUniqueArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AppMigration that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AppMigrationFindUniqueOrThrowArgs} args - Arguments to find a AppMigration
+     * @example
+     * // Get one AppMigration
+     * const appMigration = await prisma.appMigration.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AppMigrationFindUniqueOrThrowArgs>(args: SelectSubset<T, AppMigrationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AppMigration that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppMigrationFindFirstArgs} args - Arguments to find a AppMigration
+     * @example
+     * // Get one AppMigration
+     * const appMigration = await prisma.appMigration.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AppMigrationFindFirstArgs>(args?: SelectSubset<T, AppMigrationFindFirstArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AppMigration that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppMigrationFindFirstOrThrowArgs} args - Arguments to find a AppMigration
+     * @example
+     * // Get one AppMigration
+     * const appMigration = await prisma.appMigration.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AppMigrationFindFirstOrThrowArgs>(args?: SelectSubset<T, AppMigrationFindFirstOrThrowArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AppMigrations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppMigrationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AppMigrations
+     * const appMigrations = await prisma.appMigration.findMany()
+     * 
+     * // Get first 10 AppMigrations
+     * const appMigrations = await prisma.appMigration.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const appMigrationWithIdOnly = await prisma.appMigration.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AppMigrationFindManyArgs>(args?: SelectSubset<T, AppMigrationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AppMigration.
+     * @param {AppMigrationCreateArgs} args - Arguments to create a AppMigration.
+     * @example
+     * // Create one AppMigration
+     * const AppMigration = await prisma.appMigration.create({
+     *   data: {
+     *     // ... data to create a AppMigration
+     *   }
+     * })
+     * 
+     */
+    create<T extends AppMigrationCreateArgs>(args: SelectSubset<T, AppMigrationCreateArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AppMigrations.
+     * @param {AppMigrationCreateManyArgs} args - Arguments to create many AppMigrations.
+     * @example
+     * // Create many AppMigrations
+     * const appMigration = await prisma.appMigration.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AppMigrationCreateManyArgs>(args?: SelectSubset<T, AppMigrationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a AppMigration.
+     * @param {AppMigrationDeleteArgs} args - Arguments to delete one AppMigration.
+     * @example
+     * // Delete one AppMigration
+     * const AppMigration = await prisma.appMigration.delete({
+     *   where: {
+     *     // ... filter to delete one AppMigration
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AppMigrationDeleteArgs>(args: SelectSubset<T, AppMigrationDeleteArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AppMigration.
+     * @param {AppMigrationUpdateArgs} args - Arguments to update one AppMigration.
+     * @example
+     * // Update one AppMigration
+     * const appMigration = await prisma.appMigration.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AppMigrationUpdateArgs>(args: SelectSubset<T, AppMigrationUpdateArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AppMigrations.
+     * @param {AppMigrationDeleteManyArgs} args - Arguments to filter AppMigrations to delete.
+     * @example
+     * // Delete a few AppMigrations
+     * const { count } = await prisma.appMigration.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AppMigrationDeleteManyArgs>(args?: SelectSubset<T, AppMigrationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AppMigrations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppMigrationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AppMigrations
+     * const appMigration = await prisma.appMigration.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AppMigrationUpdateManyArgs>(args: SelectSubset<T, AppMigrationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AppMigration.
+     * @param {AppMigrationUpsertArgs} args - Arguments to update or create a AppMigration.
+     * @example
+     * // Update or create a AppMigration
+     * const appMigration = await prisma.appMigration.upsert({
+     *   create: {
+     *     // ... data to create a AppMigration
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AppMigration we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AppMigrationUpsertArgs>(args: SelectSubset<T, AppMigrationUpsertArgs<ExtArgs>>): Prisma__AppMigrationClient<$Result.GetResult<Prisma.$AppMigrationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AppMigrations that matches the filter.
+     * @param {AppMigrationFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const appMigration = await prisma.appMigration.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: AppMigrationFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a AppMigration.
+     * @param {AppMigrationAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const appMigration = await prisma.appMigration.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: AppMigrationAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of AppMigrations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppMigrationCountArgs} args - Arguments to filter AppMigrations to count.
+     * @example
+     * // Count the number of AppMigrations
+     * const count = await prisma.appMigration.count({
+     *   where: {
+     *     // ... the filter for the AppMigrations we want to count
+     *   }
+     * })
+    **/
+    count<T extends AppMigrationCountArgs>(
+      args?: Subset<T, AppMigrationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AppMigrationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AppMigration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppMigrationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AppMigrationAggregateArgs>(args: Subset<T, AppMigrationAggregateArgs>): Prisma.PrismaPromise<GetAppMigrationAggregateType<T>>
+
+    /**
+     * Group by AppMigration.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AppMigrationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AppMigrationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AppMigrationGroupByArgs['orderBy'] }
+        : { orderBy?: AppMigrationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AppMigrationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAppMigrationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AppMigration model
+   */
+  readonly fields: AppMigrationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AppMigration.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AppMigrationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AppMigration model
+   */
+  interface AppMigrationFieldRefs {
+    readonly id: FieldRef<"AppMigration", 'String'>
+    readonly name: FieldRef<"AppMigration", 'String'>
+    readonly ranAt: FieldRef<"AppMigration", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AppMigration findUnique
+   */
+  export type AppMigrationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * Filter, which AppMigration to fetch.
+     */
+    where: AppMigrationWhereUniqueInput
+  }
+
+  /**
+   * AppMigration findUniqueOrThrow
+   */
+  export type AppMigrationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * Filter, which AppMigration to fetch.
+     */
+    where: AppMigrationWhereUniqueInput
+  }
+
+  /**
+   * AppMigration findFirst
+   */
+  export type AppMigrationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * Filter, which AppMigration to fetch.
+     */
+    where?: AppMigrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AppMigrations to fetch.
+     */
+    orderBy?: AppMigrationOrderByWithRelationInput | AppMigrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AppMigrations.
+     */
+    cursor?: AppMigrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AppMigrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AppMigrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AppMigrations.
+     */
+    distinct?: AppMigrationScalarFieldEnum | AppMigrationScalarFieldEnum[]
+  }
+
+  /**
+   * AppMigration findFirstOrThrow
+   */
+  export type AppMigrationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * Filter, which AppMigration to fetch.
+     */
+    where?: AppMigrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AppMigrations to fetch.
+     */
+    orderBy?: AppMigrationOrderByWithRelationInput | AppMigrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AppMigrations.
+     */
+    cursor?: AppMigrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AppMigrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AppMigrations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AppMigrations.
+     */
+    distinct?: AppMigrationScalarFieldEnum | AppMigrationScalarFieldEnum[]
+  }
+
+  /**
+   * AppMigration findMany
+   */
+  export type AppMigrationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * Filter, which AppMigrations to fetch.
+     */
+    where?: AppMigrationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AppMigrations to fetch.
+     */
+    orderBy?: AppMigrationOrderByWithRelationInput | AppMigrationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AppMigrations.
+     */
+    cursor?: AppMigrationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AppMigrations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AppMigrations.
+     */
+    skip?: number
+    distinct?: AppMigrationScalarFieldEnum | AppMigrationScalarFieldEnum[]
+  }
+
+  /**
+   * AppMigration create
+   */
+  export type AppMigrationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AppMigration.
+     */
+    data: XOR<AppMigrationCreateInput, AppMigrationUncheckedCreateInput>
+  }
+
+  /**
+   * AppMigration createMany
+   */
+  export type AppMigrationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AppMigrations.
+     */
+    data: AppMigrationCreateManyInput | AppMigrationCreateManyInput[]
+  }
+
+  /**
+   * AppMigration update
+   */
+  export type AppMigrationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AppMigration.
+     */
+    data: XOR<AppMigrationUpdateInput, AppMigrationUncheckedUpdateInput>
+    /**
+     * Choose, which AppMigration to update.
+     */
+    where: AppMigrationWhereUniqueInput
+  }
+
+  /**
+   * AppMigration updateMany
+   */
+  export type AppMigrationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AppMigrations.
+     */
+    data: XOR<AppMigrationUpdateManyMutationInput, AppMigrationUncheckedUpdateManyInput>
+    /**
+     * Filter which AppMigrations to update
+     */
+    where?: AppMigrationWhereInput
+    /**
+     * Limit how many AppMigrations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AppMigration upsert
+   */
+  export type AppMigrationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AppMigration to update in case it exists.
+     */
+    where: AppMigrationWhereUniqueInput
+    /**
+     * In case the AppMigration found by the `where` argument doesn't exist, create a new AppMigration with this data.
+     */
+    create: XOR<AppMigrationCreateInput, AppMigrationUncheckedCreateInput>
+    /**
+     * In case the AppMigration was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AppMigrationUpdateInput, AppMigrationUncheckedUpdateInput>
+  }
+
+  /**
+   * AppMigration delete
+   */
+  export type AppMigrationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+    /**
+     * Filter which AppMigration to delete.
+     */
+    where: AppMigrationWhereUniqueInput
+  }
+
+  /**
+   * AppMigration deleteMany
+   */
+  export type AppMigrationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AppMigrations to delete
+     */
+    where?: AppMigrationWhereInput
+    /**
+     * Limit how many AppMigrations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AppMigration findRaw
+   */
+  export type AppMigrationFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * AppMigration aggregateRaw
+   */
+  export type AppMigrationAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * AppMigration without action
+   */
+  export type AppMigrationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AppMigration
+     */
+    select?: AppMigrationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AppMigration
+     */
+    omit?: AppMigrationOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RateLimit
+   */
+
+  export type AggregateRateLimit = {
+    _count: RateLimitCountAggregateOutputType | null
+    _avg: RateLimitAvgAggregateOutputType | null
+    _sum: RateLimitSumAggregateOutputType | null
+    _min: RateLimitMinAggregateOutputType | null
+    _max: RateLimitMaxAggregateOutputType | null
+  }
+
+  export type RateLimitAvgAggregateOutputType = {
+    count: number | null
+    lastRequest: number | null
+  }
+
+  export type RateLimitSumAggregateOutputType = {
+    count: number | null
+    lastRequest: bigint | null
+  }
+
+  export type RateLimitMinAggregateOutputType = {
+    id: string | null
+    key: string | null
+    count: number | null
+    lastRequest: bigint | null
+  }
+
+  export type RateLimitMaxAggregateOutputType = {
+    id: string | null
+    key: string | null
+    count: number | null
+    lastRequest: bigint | null
+  }
+
+  export type RateLimitCountAggregateOutputType = {
+    id: number
+    key: number
+    count: number
+    lastRequest: number
+    _all: number
+  }
+
+
+  export type RateLimitAvgAggregateInputType = {
+    count?: true
+    lastRequest?: true
+  }
+
+  export type RateLimitSumAggregateInputType = {
+    count?: true
+    lastRequest?: true
+  }
+
+  export type RateLimitMinAggregateInputType = {
+    id?: true
+    key?: true
+    count?: true
+    lastRequest?: true
+  }
+
+  export type RateLimitMaxAggregateInputType = {
+    id?: true
+    key?: true
+    count?: true
+    lastRequest?: true
+  }
+
+  export type RateLimitCountAggregateInputType = {
+    id?: true
+    key?: true
+    count?: true
+    lastRequest?: true
+    _all?: true
+  }
+
+  export type RateLimitAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RateLimit to aggregate.
+     */
+    where?: RateLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimits to fetch.
+     */
+    orderBy?: RateLimitOrderByWithRelationInput | RateLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RateLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RateLimits
+    **/
+    _count?: true | RateLimitCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RateLimitAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RateLimitSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RateLimitMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RateLimitMaxAggregateInputType
+  }
+
+  export type GetRateLimitAggregateType<T extends RateLimitAggregateArgs> = {
+        [P in keyof T & keyof AggregateRateLimit]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRateLimit[P]>
+      : GetScalarType<T[P], AggregateRateLimit[P]>
+  }
+
+
+
+
+  export type RateLimitGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RateLimitWhereInput
+    orderBy?: RateLimitOrderByWithAggregationInput | RateLimitOrderByWithAggregationInput[]
+    by: RateLimitScalarFieldEnum[] | RateLimitScalarFieldEnum
+    having?: RateLimitScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RateLimitCountAggregateInputType | true
+    _avg?: RateLimitAvgAggregateInputType
+    _sum?: RateLimitSumAggregateInputType
+    _min?: RateLimitMinAggregateInputType
+    _max?: RateLimitMaxAggregateInputType
+  }
+
+  export type RateLimitGroupByOutputType = {
+    id: string
+    key: string
+    count: number
+    lastRequest: bigint
+    _count: RateLimitCountAggregateOutputType | null
+    _avg: RateLimitAvgAggregateOutputType | null
+    _sum: RateLimitSumAggregateOutputType | null
+    _min: RateLimitMinAggregateOutputType | null
+    _max: RateLimitMaxAggregateOutputType | null
+  }
+
+  type GetRateLimitGroupByPayload<T extends RateLimitGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RateLimitGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RateLimitGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RateLimitGroupByOutputType[P]>
+            : GetScalarType<T[P], RateLimitGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RateLimitSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    key?: boolean
+    count?: boolean
+    lastRequest?: boolean
+  }, ExtArgs["result"]["rateLimit"]>
+
+
+
+  export type RateLimitSelectScalar = {
+    id?: boolean
+    key?: boolean
+    count?: boolean
+    lastRequest?: boolean
+  }
+
+  export type RateLimitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "count" | "lastRequest", ExtArgs["result"]["rateLimit"]>
+
+  export type $RateLimitPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RateLimit"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      key: string
+      count: number
+      lastRequest: bigint
+    }, ExtArgs["result"]["rateLimit"]>
+    composites: {}
+  }
+
+  type RateLimitGetPayload<S extends boolean | null | undefined | RateLimitDefaultArgs> = $Result.GetResult<Prisma.$RateLimitPayload, S>
+
+  type RateLimitCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RateLimitFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RateLimitCountAggregateInputType | true
+    }
+
+  export interface RateLimitDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RateLimit'], meta: { name: 'RateLimit' } }
+    /**
+     * Find zero or one RateLimit that matches the filter.
+     * @param {RateLimitFindUniqueArgs} args - Arguments to find a RateLimit
+     * @example
+     * // Get one RateLimit
+     * const rateLimit = await prisma.rateLimit.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RateLimitFindUniqueArgs>(args: SelectSubset<T, RateLimitFindUniqueArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RateLimit that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RateLimitFindUniqueOrThrowArgs} args - Arguments to find a RateLimit
+     * @example
+     * // Get one RateLimit
+     * const rateLimit = await prisma.rateLimit.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RateLimitFindUniqueOrThrowArgs>(args: SelectSubset<T, RateLimitFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RateLimit that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitFindFirstArgs} args - Arguments to find a RateLimit
+     * @example
+     * // Get one RateLimit
+     * const rateLimit = await prisma.rateLimit.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RateLimitFindFirstArgs>(args?: SelectSubset<T, RateLimitFindFirstArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RateLimit that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitFindFirstOrThrowArgs} args - Arguments to find a RateLimit
+     * @example
+     * // Get one RateLimit
+     * const rateLimit = await prisma.rateLimit.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RateLimitFindFirstOrThrowArgs>(args?: SelectSubset<T, RateLimitFindFirstOrThrowArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RateLimits that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RateLimits
+     * const rateLimits = await prisma.rateLimit.findMany()
+     * 
+     * // Get first 10 RateLimits
+     * const rateLimits = await prisma.rateLimit.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const rateLimitWithIdOnly = await prisma.rateLimit.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RateLimitFindManyArgs>(args?: SelectSubset<T, RateLimitFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RateLimit.
+     * @param {RateLimitCreateArgs} args - Arguments to create a RateLimit.
+     * @example
+     * // Create one RateLimit
+     * const RateLimit = await prisma.rateLimit.create({
+     *   data: {
+     *     // ... data to create a RateLimit
+     *   }
+     * })
+     * 
+     */
+    create<T extends RateLimitCreateArgs>(args: SelectSubset<T, RateLimitCreateArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RateLimits.
+     * @param {RateLimitCreateManyArgs} args - Arguments to create many RateLimits.
+     * @example
+     * // Create many RateLimits
+     * const rateLimit = await prisma.rateLimit.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RateLimitCreateManyArgs>(args?: SelectSubset<T, RateLimitCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a RateLimit.
+     * @param {RateLimitDeleteArgs} args - Arguments to delete one RateLimit.
+     * @example
+     * // Delete one RateLimit
+     * const RateLimit = await prisma.rateLimit.delete({
+     *   where: {
+     *     // ... filter to delete one RateLimit
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RateLimitDeleteArgs>(args: SelectSubset<T, RateLimitDeleteArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RateLimit.
+     * @param {RateLimitUpdateArgs} args - Arguments to update one RateLimit.
+     * @example
+     * // Update one RateLimit
+     * const rateLimit = await prisma.rateLimit.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RateLimitUpdateArgs>(args: SelectSubset<T, RateLimitUpdateArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RateLimits.
+     * @param {RateLimitDeleteManyArgs} args - Arguments to filter RateLimits to delete.
+     * @example
+     * // Delete a few RateLimits
+     * const { count } = await prisma.rateLimit.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RateLimitDeleteManyArgs>(args?: SelectSubset<T, RateLimitDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RateLimits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RateLimits
+     * const rateLimit = await prisma.rateLimit.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RateLimitUpdateManyArgs>(args: SelectSubset<T, RateLimitUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one RateLimit.
+     * @param {RateLimitUpsertArgs} args - Arguments to update or create a RateLimit.
+     * @example
+     * // Update or create a RateLimit
+     * const rateLimit = await prisma.rateLimit.upsert({
+     *   create: {
+     *     // ... data to create a RateLimit
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RateLimit we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RateLimitUpsertArgs>(args: SelectSubset<T, RateLimitUpsertArgs<ExtArgs>>): Prisma__RateLimitClient<$Result.GetResult<Prisma.$RateLimitPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RateLimits that matches the filter.
+     * @param {RateLimitFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const rateLimit = await prisma.rateLimit.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: RateLimitFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a RateLimit.
+     * @param {RateLimitAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const rateLimit = await prisma.rateLimit.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: RateLimitAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of RateLimits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitCountArgs} args - Arguments to filter RateLimits to count.
+     * @example
+     * // Count the number of RateLimits
+     * const count = await prisma.rateLimit.count({
+     *   where: {
+     *     // ... the filter for the RateLimits we want to count
+     *   }
+     * })
+    **/
+    count<T extends RateLimitCountArgs>(
+      args?: Subset<T, RateLimitCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RateLimitCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RateLimit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RateLimitAggregateArgs>(args: Subset<T, RateLimitAggregateArgs>): Prisma.PrismaPromise<GetRateLimitAggregateType<T>>
+
+    /**
+     * Group by RateLimit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RateLimitGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RateLimitGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RateLimitGroupByArgs['orderBy'] }
+        : { orderBy?: RateLimitGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RateLimitGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRateLimitGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RateLimit model
+   */
+  readonly fields: RateLimitFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RateLimit.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RateLimitClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RateLimit model
+   */
+  interface RateLimitFieldRefs {
+    readonly id: FieldRef<"RateLimit", 'String'>
+    readonly key: FieldRef<"RateLimit", 'String'>
+    readonly count: FieldRef<"RateLimit", 'Int'>
+    readonly lastRequest: FieldRef<"RateLimit", 'BigInt'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RateLimit findUnique
+   */
+  export type RateLimitFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * Filter, which RateLimit to fetch.
+     */
+    where: RateLimitWhereUniqueInput
+  }
+
+  /**
+   * RateLimit findUniqueOrThrow
+   */
+  export type RateLimitFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * Filter, which RateLimit to fetch.
+     */
+    where: RateLimitWhereUniqueInput
+  }
+
+  /**
+   * RateLimit findFirst
+   */
+  export type RateLimitFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * Filter, which RateLimit to fetch.
+     */
+    where?: RateLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimits to fetch.
+     */
+    orderBy?: RateLimitOrderByWithRelationInput | RateLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RateLimits.
+     */
+    cursor?: RateLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RateLimits.
+     */
+    distinct?: RateLimitScalarFieldEnum | RateLimitScalarFieldEnum[]
+  }
+
+  /**
+   * RateLimit findFirstOrThrow
+   */
+  export type RateLimitFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * Filter, which RateLimit to fetch.
+     */
+    where?: RateLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimits to fetch.
+     */
+    orderBy?: RateLimitOrderByWithRelationInput | RateLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RateLimits.
+     */
+    cursor?: RateLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RateLimits.
+     */
+    distinct?: RateLimitScalarFieldEnum | RateLimitScalarFieldEnum[]
+  }
+
+  /**
+   * RateLimit findMany
+   */
+  export type RateLimitFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * Filter, which RateLimits to fetch.
+     */
+    where?: RateLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RateLimits to fetch.
+     */
+    orderBy?: RateLimitOrderByWithRelationInput | RateLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RateLimits.
+     */
+    cursor?: RateLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RateLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RateLimits.
+     */
+    skip?: number
+    distinct?: RateLimitScalarFieldEnum | RateLimitScalarFieldEnum[]
+  }
+
+  /**
+   * RateLimit create
+   */
+  export type RateLimitCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * The data needed to create a RateLimit.
+     */
+    data: XOR<RateLimitCreateInput, RateLimitUncheckedCreateInput>
+  }
+
+  /**
+   * RateLimit createMany
+   */
+  export type RateLimitCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RateLimits.
+     */
+    data: RateLimitCreateManyInput | RateLimitCreateManyInput[]
+  }
+
+  /**
+   * RateLimit update
+   */
+  export type RateLimitUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * The data needed to update a RateLimit.
+     */
+    data: XOR<RateLimitUpdateInput, RateLimitUncheckedUpdateInput>
+    /**
+     * Choose, which RateLimit to update.
+     */
+    where: RateLimitWhereUniqueInput
+  }
+
+  /**
+   * RateLimit updateMany
+   */
+  export type RateLimitUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RateLimits.
+     */
+    data: XOR<RateLimitUpdateManyMutationInput, RateLimitUncheckedUpdateManyInput>
+    /**
+     * Filter which RateLimits to update
+     */
+    where?: RateLimitWhereInput
+    /**
+     * Limit how many RateLimits to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RateLimit upsert
+   */
+  export type RateLimitUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * The filter to search for the RateLimit to update in case it exists.
+     */
+    where: RateLimitWhereUniqueInput
+    /**
+     * In case the RateLimit found by the `where` argument doesn't exist, create a new RateLimit with this data.
+     */
+    create: XOR<RateLimitCreateInput, RateLimitUncheckedCreateInput>
+    /**
+     * In case the RateLimit was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RateLimitUpdateInput, RateLimitUncheckedUpdateInput>
+  }
+
+  /**
+   * RateLimit delete
+   */
+  export type RateLimitDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+    /**
+     * Filter which RateLimit to delete.
+     */
+    where: RateLimitWhereUniqueInput
+  }
+
+  /**
+   * RateLimit deleteMany
+   */
+  export type RateLimitDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RateLimits to delete
+     */
+    where?: RateLimitWhereInput
+    /**
+     * Limit how many RateLimits to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RateLimit findRaw
+   */
+  export type RateLimitFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * RateLimit aggregateRaw
+   */
+  export type RateLimitAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * RateLimit without action
+   */
+  export type RateLimitDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RateLimit
+     */
+    select?: RateLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RateLimit
+     */
+    omit?: RateLimitOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model AuthThrottle
+   */
+
+  export type AggregateAuthThrottle = {
+    _count: AuthThrottleCountAggregateOutputType | null
+    _avg: AuthThrottleAvgAggregateOutputType | null
+    _sum: AuthThrottleSumAggregateOutputType | null
+    _min: AuthThrottleMinAggregateOutputType | null
+    _max: AuthThrottleMaxAggregateOutputType | null
+  }
+
+  export type AuthThrottleAvgAggregateOutputType = {
+    count: number | null
+  }
+
+  export type AuthThrottleSumAggregateOutputType = {
+    count: number | null
+  }
+
+  export type AuthThrottleMinAggregateOutputType = {
+    id: string | null
+    key: string | null
+    count: number | null
+    windowStart: Date | null
+  }
+
+  export type AuthThrottleMaxAggregateOutputType = {
+    id: string | null
+    key: string | null
+    count: number | null
+    windowStart: Date | null
+  }
+
+  export type AuthThrottleCountAggregateOutputType = {
+    id: number
+    key: number
+    count: number
+    windowStart: number
+    _all: number
+  }
+
+
+  export type AuthThrottleAvgAggregateInputType = {
+    count?: true
+  }
+
+  export type AuthThrottleSumAggregateInputType = {
+    count?: true
+  }
+
+  export type AuthThrottleMinAggregateInputType = {
+    id?: true
+    key?: true
+    count?: true
+    windowStart?: true
+  }
+
+  export type AuthThrottleMaxAggregateInputType = {
+    id?: true
+    key?: true
+    count?: true
+    windowStart?: true
+  }
+
+  export type AuthThrottleCountAggregateInputType = {
+    id?: true
+    key?: true
+    count?: true
+    windowStart?: true
+    _all?: true
+  }
+
+  export type AuthThrottleAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthThrottle to aggregate.
+     */
+    where?: AuthThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthThrottles to fetch.
+     */
+    orderBy?: AuthThrottleOrderByWithRelationInput | AuthThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: AuthThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthThrottles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned AuthThrottles
+    **/
+    _count?: true | AuthThrottleCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: AuthThrottleAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: AuthThrottleSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: AuthThrottleMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: AuthThrottleMaxAggregateInputType
+  }
+
+  export type GetAuthThrottleAggregateType<T extends AuthThrottleAggregateArgs> = {
+        [P in keyof T & keyof AggregateAuthThrottle]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateAuthThrottle[P]>
+      : GetScalarType<T[P], AggregateAuthThrottle[P]>
+  }
+
+
+
+
+  export type AuthThrottleGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuthThrottleWhereInput
+    orderBy?: AuthThrottleOrderByWithAggregationInput | AuthThrottleOrderByWithAggregationInput[]
+    by: AuthThrottleScalarFieldEnum[] | AuthThrottleScalarFieldEnum
+    having?: AuthThrottleScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: AuthThrottleCountAggregateInputType | true
+    _avg?: AuthThrottleAvgAggregateInputType
+    _sum?: AuthThrottleSumAggregateInputType
+    _min?: AuthThrottleMinAggregateInputType
+    _max?: AuthThrottleMaxAggregateInputType
+  }
+
+  export type AuthThrottleGroupByOutputType = {
+    id: string
+    key: string
+    count: number
+    windowStart: Date
+    _count: AuthThrottleCountAggregateOutputType | null
+    _avg: AuthThrottleAvgAggregateOutputType | null
+    _sum: AuthThrottleSumAggregateOutputType | null
+    _min: AuthThrottleMinAggregateOutputType | null
+    _max: AuthThrottleMaxAggregateOutputType | null
+  }
+
+  type GetAuthThrottleGroupByPayload<T extends AuthThrottleGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<AuthThrottleGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof AuthThrottleGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], AuthThrottleGroupByOutputType[P]>
+            : GetScalarType<T[P], AuthThrottleGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type AuthThrottleSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    key?: boolean
+    count?: boolean
+    windowStart?: boolean
+  }, ExtArgs["result"]["authThrottle"]>
+
+
+
+  export type AuthThrottleSelectScalar = {
+    id?: boolean
+    key?: boolean
+    count?: boolean
+    windowStart?: boolean
+  }
+
+  export type AuthThrottleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "count" | "windowStart", ExtArgs["result"]["authThrottle"]>
+
+  export type $AuthThrottlePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "AuthThrottle"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      key: string
+      count: number
+      windowStart: Date
+    }, ExtArgs["result"]["authThrottle"]>
+    composites: {}
+  }
+
+  type AuthThrottleGetPayload<S extends boolean | null | undefined | AuthThrottleDefaultArgs> = $Result.GetResult<Prisma.$AuthThrottlePayload, S>
+
+  type AuthThrottleCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<AuthThrottleFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: AuthThrottleCountAggregateInputType | true
+    }
+
+  export interface AuthThrottleDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['AuthThrottle'], meta: { name: 'AuthThrottle' } }
+    /**
+     * Find zero or one AuthThrottle that matches the filter.
+     * @param {AuthThrottleFindUniqueArgs} args - Arguments to find a AuthThrottle
+     * @example
+     * // Get one AuthThrottle
+     * const authThrottle = await prisma.authThrottle.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends AuthThrottleFindUniqueArgs>(args: SelectSubset<T, AuthThrottleFindUniqueArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one AuthThrottle that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {AuthThrottleFindUniqueOrThrowArgs} args - Arguments to find a AuthThrottle
+     * @example
+     * // Get one AuthThrottle
+     * const authThrottle = await prisma.authThrottle.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends AuthThrottleFindUniqueOrThrowArgs>(args: SelectSubset<T, AuthThrottleFindUniqueOrThrowArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuthThrottle that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthThrottleFindFirstArgs} args - Arguments to find a AuthThrottle
+     * @example
+     * // Get one AuthThrottle
+     * const authThrottle = await prisma.authThrottle.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends AuthThrottleFindFirstArgs>(args?: SelectSubset<T, AuthThrottleFindFirstArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first AuthThrottle that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthThrottleFindFirstOrThrowArgs} args - Arguments to find a AuthThrottle
+     * @example
+     * // Get one AuthThrottle
+     * const authThrottle = await prisma.authThrottle.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends AuthThrottleFindFirstOrThrowArgs>(args?: SelectSubset<T, AuthThrottleFindFirstOrThrowArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuthThrottles that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthThrottleFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all AuthThrottles
+     * const authThrottles = await prisma.authThrottle.findMany()
+     * 
+     * // Get first 10 AuthThrottles
+     * const authThrottles = await prisma.authThrottle.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const authThrottleWithIdOnly = await prisma.authThrottle.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends AuthThrottleFindManyArgs>(args?: SelectSubset<T, AuthThrottleFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a AuthThrottle.
+     * @param {AuthThrottleCreateArgs} args - Arguments to create a AuthThrottle.
+     * @example
+     * // Create one AuthThrottle
+     * const AuthThrottle = await prisma.authThrottle.create({
+     *   data: {
+     *     // ... data to create a AuthThrottle
+     *   }
+     * })
+     * 
+     */
+    create<T extends AuthThrottleCreateArgs>(args: SelectSubset<T, AuthThrottleCreateArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many AuthThrottles.
+     * @param {AuthThrottleCreateManyArgs} args - Arguments to create many AuthThrottles.
+     * @example
+     * // Create many AuthThrottles
+     * const authThrottle = await prisma.authThrottle.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends AuthThrottleCreateManyArgs>(args?: SelectSubset<T, AuthThrottleCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a AuthThrottle.
+     * @param {AuthThrottleDeleteArgs} args - Arguments to delete one AuthThrottle.
+     * @example
+     * // Delete one AuthThrottle
+     * const AuthThrottle = await prisma.authThrottle.delete({
+     *   where: {
+     *     // ... filter to delete one AuthThrottle
+     *   }
+     * })
+     * 
+     */
+    delete<T extends AuthThrottleDeleteArgs>(args: SelectSubset<T, AuthThrottleDeleteArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one AuthThrottle.
+     * @param {AuthThrottleUpdateArgs} args - Arguments to update one AuthThrottle.
+     * @example
+     * // Update one AuthThrottle
+     * const authThrottle = await prisma.authThrottle.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends AuthThrottleUpdateArgs>(args: SelectSubset<T, AuthThrottleUpdateArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more AuthThrottles.
+     * @param {AuthThrottleDeleteManyArgs} args - Arguments to filter AuthThrottles to delete.
+     * @example
+     * // Delete a few AuthThrottles
+     * const { count } = await prisma.authThrottle.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends AuthThrottleDeleteManyArgs>(args?: SelectSubset<T, AuthThrottleDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more AuthThrottles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthThrottleUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many AuthThrottles
+     * const authThrottle = await prisma.authThrottle.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends AuthThrottleUpdateManyArgs>(args: SelectSubset<T, AuthThrottleUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one AuthThrottle.
+     * @param {AuthThrottleUpsertArgs} args - Arguments to update or create a AuthThrottle.
+     * @example
+     * // Update or create a AuthThrottle
+     * const authThrottle = await prisma.authThrottle.upsert({
+     *   create: {
+     *     // ... data to create a AuthThrottle
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the AuthThrottle we want to update
+     *   }
+     * })
+     */
+    upsert<T extends AuthThrottleUpsertArgs>(args: SelectSubset<T, AuthThrottleUpsertArgs<ExtArgs>>): Prisma__AuthThrottleClient<$Result.GetResult<Prisma.$AuthThrottlePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more AuthThrottles that matches the filter.
+     * @param {AuthThrottleFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const authThrottle = await prisma.authThrottle.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: AuthThrottleFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a AuthThrottle.
+     * @param {AuthThrottleAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const authThrottle = await prisma.authThrottle.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: AuthThrottleAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of AuthThrottles.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthThrottleCountArgs} args - Arguments to filter AuthThrottles to count.
+     * @example
+     * // Count the number of AuthThrottles
+     * const count = await prisma.authThrottle.count({
+     *   where: {
+     *     // ... the filter for the AuthThrottles we want to count
+     *   }
+     * })
+    **/
+    count<T extends AuthThrottleCountArgs>(
+      args?: Subset<T, AuthThrottleCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], AuthThrottleCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a AuthThrottle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthThrottleAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends AuthThrottleAggregateArgs>(args: Subset<T, AuthThrottleAggregateArgs>): Prisma.PrismaPromise<GetAuthThrottleAggregateType<T>>
+
+    /**
+     * Group by AuthThrottle.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {AuthThrottleGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends AuthThrottleGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: AuthThrottleGroupByArgs['orderBy'] }
+        : { orderBy?: AuthThrottleGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, AuthThrottleGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetAuthThrottleGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the AuthThrottle model
+   */
+  readonly fields: AuthThrottleFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for AuthThrottle.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__AuthThrottleClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the AuthThrottle model
+   */
+  interface AuthThrottleFieldRefs {
+    readonly id: FieldRef<"AuthThrottle", 'String'>
+    readonly key: FieldRef<"AuthThrottle", 'String'>
+    readonly count: FieldRef<"AuthThrottle", 'Int'>
+    readonly windowStart: FieldRef<"AuthThrottle", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * AuthThrottle findUnique
+   */
+  export type AuthThrottleFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which AuthThrottle to fetch.
+     */
+    where: AuthThrottleWhereUniqueInput
+  }
+
+  /**
+   * AuthThrottle findUniqueOrThrow
+   */
+  export type AuthThrottleFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which AuthThrottle to fetch.
+     */
+    where: AuthThrottleWhereUniqueInput
+  }
+
+  /**
+   * AuthThrottle findFirst
+   */
+  export type AuthThrottleFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which AuthThrottle to fetch.
+     */
+    where?: AuthThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthThrottles to fetch.
+     */
+    orderBy?: AuthThrottleOrderByWithRelationInput | AuthThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthThrottles.
+     */
+    cursor?: AuthThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthThrottles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthThrottles.
+     */
+    distinct?: AuthThrottleScalarFieldEnum | AuthThrottleScalarFieldEnum[]
+  }
+
+  /**
+   * AuthThrottle findFirstOrThrow
+   */
+  export type AuthThrottleFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which AuthThrottle to fetch.
+     */
+    where?: AuthThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthThrottles to fetch.
+     */
+    orderBy?: AuthThrottleOrderByWithRelationInput | AuthThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for AuthThrottles.
+     */
+    cursor?: AuthThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthThrottles.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of AuthThrottles.
+     */
+    distinct?: AuthThrottleScalarFieldEnum | AuthThrottleScalarFieldEnum[]
+  }
+
+  /**
+   * AuthThrottle findMany
+   */
+  export type AuthThrottleFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * Filter, which AuthThrottles to fetch.
+     */
+    where?: AuthThrottleWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of AuthThrottles to fetch.
+     */
+    orderBy?: AuthThrottleOrderByWithRelationInput | AuthThrottleOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing AuthThrottles.
+     */
+    cursor?: AuthThrottleWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` AuthThrottles from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` AuthThrottles.
+     */
+    skip?: number
+    distinct?: AuthThrottleScalarFieldEnum | AuthThrottleScalarFieldEnum[]
+  }
+
+  /**
+   * AuthThrottle create
+   */
+  export type AuthThrottleCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * The data needed to create a AuthThrottle.
+     */
+    data: XOR<AuthThrottleCreateInput, AuthThrottleUncheckedCreateInput>
+  }
+
+  /**
+   * AuthThrottle createMany
+   */
+  export type AuthThrottleCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many AuthThrottles.
+     */
+    data: AuthThrottleCreateManyInput | AuthThrottleCreateManyInput[]
+  }
+
+  /**
+   * AuthThrottle update
+   */
+  export type AuthThrottleUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * The data needed to update a AuthThrottle.
+     */
+    data: XOR<AuthThrottleUpdateInput, AuthThrottleUncheckedUpdateInput>
+    /**
+     * Choose, which AuthThrottle to update.
+     */
+    where: AuthThrottleWhereUniqueInput
+  }
+
+  /**
+   * AuthThrottle updateMany
+   */
+  export type AuthThrottleUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update AuthThrottles.
+     */
+    data: XOR<AuthThrottleUpdateManyMutationInput, AuthThrottleUncheckedUpdateManyInput>
+    /**
+     * Filter which AuthThrottles to update
+     */
+    where?: AuthThrottleWhereInput
+    /**
+     * Limit how many AuthThrottles to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuthThrottle upsert
+   */
+  export type AuthThrottleUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * The filter to search for the AuthThrottle to update in case it exists.
+     */
+    where: AuthThrottleWhereUniqueInput
+    /**
+     * In case the AuthThrottle found by the `where` argument doesn't exist, create a new AuthThrottle with this data.
+     */
+    create: XOR<AuthThrottleCreateInput, AuthThrottleUncheckedCreateInput>
+    /**
+     * In case the AuthThrottle was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<AuthThrottleUpdateInput, AuthThrottleUncheckedUpdateInput>
+  }
+
+  /**
+   * AuthThrottle delete
+   */
+  export type AuthThrottleDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+    /**
+     * Filter which AuthThrottle to delete.
+     */
+    where: AuthThrottleWhereUniqueInput
+  }
+
+  /**
+   * AuthThrottle deleteMany
+   */
+  export type AuthThrottleDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which AuthThrottles to delete
+     */
+    where?: AuthThrottleWhereInput
+    /**
+     * Limit how many AuthThrottles to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * AuthThrottle findRaw
+   */
+  export type AuthThrottleFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * AuthThrottle aggregateRaw
+   */
+  export type AuthThrottleAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * AuthThrottle without action
+   */
+  export type AuthThrottleDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuthThrottle
+     */
+    select?: AuthThrottleSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuthThrottle
+     */
+    omit?: AuthThrottleOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model EmailSuppression
+   */
+
+  export type AggregateEmailSuppression = {
+    _count: EmailSuppressionCountAggregateOutputType | null
+    _min: EmailSuppressionMinAggregateOutputType | null
+    _max: EmailSuppressionMaxAggregateOutputType | null
+  }
+
+  export type EmailSuppressionMinAggregateOutputType = {
+    id: string | null
+    key: string | null
+    email: string | null
+    ownerId: string | null
+    reason: string | null
+    createdAt: Date | null
+  }
+
+  export type EmailSuppressionMaxAggregateOutputType = {
+    id: string | null
+    key: string | null
+    email: string | null
+    ownerId: string | null
+    reason: string | null
+    createdAt: Date | null
+  }
+
+  export type EmailSuppressionCountAggregateOutputType = {
+    id: number
+    key: number
+    email: number
+    ownerId: number
+    reason: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type EmailSuppressionMinAggregateInputType = {
+    id?: true
+    key?: true
+    email?: true
+    ownerId?: true
+    reason?: true
+    createdAt?: true
+  }
+
+  export type EmailSuppressionMaxAggregateInputType = {
+    id?: true
+    key?: true
+    email?: true
+    ownerId?: true
+    reason?: true
+    createdAt?: true
+  }
+
+  export type EmailSuppressionCountAggregateInputType = {
+    id?: true
+    key?: true
+    email?: true
+    ownerId?: true
+    reason?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type EmailSuppressionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmailSuppression to aggregate.
+     */
+    where?: EmailSuppressionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSuppressions to fetch.
+     */
+    orderBy?: EmailSuppressionOrderByWithRelationInput | EmailSuppressionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: EmailSuppressionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSuppressions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSuppressions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned EmailSuppressions
+    **/
+    _count?: true | EmailSuppressionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: EmailSuppressionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: EmailSuppressionMaxAggregateInputType
+  }
+
+  export type GetEmailSuppressionAggregateType<T extends EmailSuppressionAggregateArgs> = {
+        [P in keyof T & keyof AggregateEmailSuppression]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateEmailSuppression[P]>
+      : GetScalarType<T[P], AggregateEmailSuppression[P]>
+  }
+
+
+
+
+  export type EmailSuppressionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: EmailSuppressionWhereInput
+    orderBy?: EmailSuppressionOrderByWithAggregationInput | EmailSuppressionOrderByWithAggregationInput[]
+    by: EmailSuppressionScalarFieldEnum[] | EmailSuppressionScalarFieldEnum
+    having?: EmailSuppressionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: EmailSuppressionCountAggregateInputType | true
+    _min?: EmailSuppressionMinAggregateInputType
+    _max?: EmailSuppressionMaxAggregateInputType
+  }
+
+  export type EmailSuppressionGroupByOutputType = {
+    id: string
+    key: string
+    email: string
+    ownerId: string | null
+    reason: string
+    createdAt: Date
+    _count: EmailSuppressionCountAggregateOutputType | null
+    _min: EmailSuppressionMinAggregateOutputType | null
+    _max: EmailSuppressionMaxAggregateOutputType | null
+  }
+
+  type GetEmailSuppressionGroupByPayload<T extends EmailSuppressionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<EmailSuppressionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof EmailSuppressionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], EmailSuppressionGroupByOutputType[P]>
+            : GetScalarType<T[P], EmailSuppressionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type EmailSuppressionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    key?: boolean
+    email?: boolean
+    ownerId?: boolean
+    reason?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["emailSuppression"]>
+
+
+
+  export type EmailSuppressionSelectScalar = {
+    id?: boolean
+    key?: boolean
+    email?: boolean
+    ownerId?: boolean
+    reason?: boolean
+    createdAt?: boolean
+  }
+
+  export type EmailSuppressionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "email" | "ownerId" | "reason" | "createdAt", ExtArgs["result"]["emailSuppression"]>
+
+  export type $EmailSuppressionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "EmailSuppression"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      key: string
+      email: string
+      ownerId: string | null
+      reason: string
+      createdAt: Date
+    }, ExtArgs["result"]["emailSuppression"]>
+    composites: {}
+  }
+
+  type EmailSuppressionGetPayload<S extends boolean | null | undefined | EmailSuppressionDefaultArgs> = $Result.GetResult<Prisma.$EmailSuppressionPayload, S>
+
+  type EmailSuppressionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<EmailSuppressionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: EmailSuppressionCountAggregateInputType | true
+    }
+
+  export interface EmailSuppressionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['EmailSuppression'], meta: { name: 'EmailSuppression' } }
+    /**
+     * Find zero or one EmailSuppression that matches the filter.
+     * @param {EmailSuppressionFindUniqueArgs} args - Arguments to find a EmailSuppression
+     * @example
+     * // Get one EmailSuppression
+     * const emailSuppression = await prisma.emailSuppression.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends EmailSuppressionFindUniqueArgs>(args: SelectSubset<T, EmailSuppressionFindUniqueArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one EmailSuppression that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {EmailSuppressionFindUniqueOrThrowArgs} args - Arguments to find a EmailSuppression
+     * @example
+     * // Get one EmailSuppression
+     * const emailSuppression = await prisma.emailSuppression.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends EmailSuppressionFindUniqueOrThrowArgs>(args: SelectSubset<T, EmailSuppressionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EmailSuppression that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailSuppressionFindFirstArgs} args - Arguments to find a EmailSuppression
+     * @example
+     * // Get one EmailSuppression
+     * const emailSuppression = await prisma.emailSuppression.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends EmailSuppressionFindFirstArgs>(args?: SelectSubset<T, EmailSuppressionFindFirstArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first EmailSuppression that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailSuppressionFindFirstOrThrowArgs} args - Arguments to find a EmailSuppression
+     * @example
+     * // Get one EmailSuppression
+     * const emailSuppression = await prisma.emailSuppression.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends EmailSuppressionFindFirstOrThrowArgs>(args?: SelectSubset<T, EmailSuppressionFindFirstOrThrowArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EmailSuppressions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailSuppressionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all EmailSuppressions
+     * const emailSuppressions = await prisma.emailSuppression.findMany()
+     * 
+     * // Get first 10 EmailSuppressions
+     * const emailSuppressions = await prisma.emailSuppression.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const emailSuppressionWithIdOnly = await prisma.emailSuppression.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends EmailSuppressionFindManyArgs>(args?: SelectSubset<T, EmailSuppressionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a EmailSuppression.
+     * @param {EmailSuppressionCreateArgs} args - Arguments to create a EmailSuppression.
+     * @example
+     * // Create one EmailSuppression
+     * const EmailSuppression = await prisma.emailSuppression.create({
+     *   data: {
+     *     // ... data to create a EmailSuppression
+     *   }
+     * })
+     * 
+     */
+    create<T extends EmailSuppressionCreateArgs>(args: SelectSubset<T, EmailSuppressionCreateArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many EmailSuppressions.
+     * @param {EmailSuppressionCreateManyArgs} args - Arguments to create many EmailSuppressions.
+     * @example
+     * // Create many EmailSuppressions
+     * const emailSuppression = await prisma.emailSuppression.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends EmailSuppressionCreateManyArgs>(args?: SelectSubset<T, EmailSuppressionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a EmailSuppression.
+     * @param {EmailSuppressionDeleteArgs} args - Arguments to delete one EmailSuppression.
+     * @example
+     * // Delete one EmailSuppression
+     * const EmailSuppression = await prisma.emailSuppression.delete({
+     *   where: {
+     *     // ... filter to delete one EmailSuppression
+     *   }
+     * })
+     * 
+     */
+    delete<T extends EmailSuppressionDeleteArgs>(args: SelectSubset<T, EmailSuppressionDeleteArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one EmailSuppression.
+     * @param {EmailSuppressionUpdateArgs} args - Arguments to update one EmailSuppression.
+     * @example
+     * // Update one EmailSuppression
+     * const emailSuppression = await prisma.emailSuppression.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends EmailSuppressionUpdateArgs>(args: SelectSubset<T, EmailSuppressionUpdateArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more EmailSuppressions.
+     * @param {EmailSuppressionDeleteManyArgs} args - Arguments to filter EmailSuppressions to delete.
+     * @example
+     * // Delete a few EmailSuppressions
+     * const { count } = await prisma.emailSuppression.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends EmailSuppressionDeleteManyArgs>(args?: SelectSubset<T, EmailSuppressionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more EmailSuppressions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailSuppressionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many EmailSuppressions
+     * const emailSuppression = await prisma.emailSuppression.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends EmailSuppressionUpdateManyArgs>(args: SelectSubset<T, EmailSuppressionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one EmailSuppression.
+     * @param {EmailSuppressionUpsertArgs} args - Arguments to update or create a EmailSuppression.
+     * @example
+     * // Update or create a EmailSuppression
+     * const emailSuppression = await prisma.emailSuppression.upsert({
+     *   create: {
+     *     // ... data to create a EmailSuppression
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the EmailSuppression we want to update
+     *   }
+     * })
+     */
+    upsert<T extends EmailSuppressionUpsertArgs>(args: SelectSubset<T, EmailSuppressionUpsertArgs<ExtArgs>>): Prisma__EmailSuppressionClient<$Result.GetResult<Prisma.$EmailSuppressionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more EmailSuppressions that matches the filter.
+     * @param {EmailSuppressionFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const emailSuppression = await prisma.emailSuppression.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: EmailSuppressionFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a EmailSuppression.
+     * @param {EmailSuppressionAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const emailSuppression = await prisma.emailSuppression.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: EmailSuppressionAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of EmailSuppressions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailSuppressionCountArgs} args - Arguments to filter EmailSuppressions to count.
+     * @example
+     * // Count the number of EmailSuppressions
+     * const count = await prisma.emailSuppression.count({
+     *   where: {
+     *     // ... the filter for the EmailSuppressions we want to count
+     *   }
+     * })
+    **/
+    count<T extends EmailSuppressionCountArgs>(
+      args?: Subset<T, EmailSuppressionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], EmailSuppressionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a EmailSuppression.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailSuppressionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends EmailSuppressionAggregateArgs>(args: Subset<T, EmailSuppressionAggregateArgs>): Prisma.PrismaPromise<GetEmailSuppressionAggregateType<T>>
+
+    /**
+     * Group by EmailSuppression.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {EmailSuppressionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends EmailSuppressionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: EmailSuppressionGroupByArgs['orderBy'] }
+        : { orderBy?: EmailSuppressionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, EmailSuppressionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetEmailSuppressionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the EmailSuppression model
+   */
+  readonly fields: EmailSuppressionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for EmailSuppression.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__EmailSuppressionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the EmailSuppression model
+   */
+  interface EmailSuppressionFieldRefs {
+    readonly id: FieldRef<"EmailSuppression", 'String'>
+    readonly key: FieldRef<"EmailSuppression", 'String'>
+    readonly email: FieldRef<"EmailSuppression", 'String'>
+    readonly ownerId: FieldRef<"EmailSuppression", 'String'>
+    readonly reason: FieldRef<"EmailSuppression", 'String'>
+    readonly createdAt: FieldRef<"EmailSuppression", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * EmailSuppression findUnique
+   */
+  export type EmailSuppressionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailSuppression to fetch.
+     */
+    where: EmailSuppressionWhereUniqueInput
+  }
+
+  /**
+   * EmailSuppression findUniqueOrThrow
+   */
+  export type EmailSuppressionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailSuppression to fetch.
+     */
+    where: EmailSuppressionWhereUniqueInput
+  }
+
+  /**
+   * EmailSuppression findFirst
+   */
+  export type EmailSuppressionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailSuppression to fetch.
+     */
+    where?: EmailSuppressionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSuppressions to fetch.
+     */
+    orderBy?: EmailSuppressionOrderByWithRelationInput | EmailSuppressionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmailSuppressions.
+     */
+    cursor?: EmailSuppressionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSuppressions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSuppressions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmailSuppressions.
+     */
+    distinct?: EmailSuppressionScalarFieldEnum | EmailSuppressionScalarFieldEnum[]
+  }
+
+  /**
+   * EmailSuppression findFirstOrThrow
+   */
+  export type EmailSuppressionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailSuppression to fetch.
+     */
+    where?: EmailSuppressionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSuppressions to fetch.
+     */
+    orderBy?: EmailSuppressionOrderByWithRelationInput | EmailSuppressionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for EmailSuppressions.
+     */
+    cursor?: EmailSuppressionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSuppressions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSuppressions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of EmailSuppressions.
+     */
+    distinct?: EmailSuppressionScalarFieldEnum | EmailSuppressionScalarFieldEnum[]
+  }
+
+  /**
+   * EmailSuppression findMany
+   */
+  export type EmailSuppressionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * Filter, which EmailSuppressions to fetch.
+     */
+    where?: EmailSuppressionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of EmailSuppressions to fetch.
+     */
+    orderBy?: EmailSuppressionOrderByWithRelationInput | EmailSuppressionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing EmailSuppressions.
+     */
+    cursor?: EmailSuppressionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` EmailSuppressions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` EmailSuppressions.
+     */
+    skip?: number
+    distinct?: EmailSuppressionScalarFieldEnum | EmailSuppressionScalarFieldEnum[]
+  }
+
+  /**
+   * EmailSuppression create
+   */
+  export type EmailSuppressionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * The data needed to create a EmailSuppression.
+     */
+    data: XOR<EmailSuppressionCreateInput, EmailSuppressionUncheckedCreateInput>
+  }
+
+  /**
+   * EmailSuppression createMany
+   */
+  export type EmailSuppressionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many EmailSuppressions.
+     */
+    data: EmailSuppressionCreateManyInput | EmailSuppressionCreateManyInput[]
+  }
+
+  /**
+   * EmailSuppression update
+   */
+  export type EmailSuppressionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * The data needed to update a EmailSuppression.
+     */
+    data: XOR<EmailSuppressionUpdateInput, EmailSuppressionUncheckedUpdateInput>
+    /**
+     * Choose, which EmailSuppression to update.
+     */
+    where: EmailSuppressionWhereUniqueInput
+  }
+
+  /**
+   * EmailSuppression updateMany
+   */
+  export type EmailSuppressionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update EmailSuppressions.
+     */
+    data: XOR<EmailSuppressionUpdateManyMutationInput, EmailSuppressionUncheckedUpdateManyInput>
+    /**
+     * Filter which EmailSuppressions to update
+     */
+    where?: EmailSuppressionWhereInput
+    /**
+     * Limit how many EmailSuppressions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * EmailSuppression upsert
+   */
+  export type EmailSuppressionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * The filter to search for the EmailSuppression to update in case it exists.
+     */
+    where: EmailSuppressionWhereUniqueInput
+    /**
+     * In case the EmailSuppression found by the `where` argument doesn't exist, create a new EmailSuppression with this data.
+     */
+    create: XOR<EmailSuppressionCreateInput, EmailSuppressionUncheckedCreateInput>
+    /**
+     * In case the EmailSuppression was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<EmailSuppressionUpdateInput, EmailSuppressionUncheckedUpdateInput>
+  }
+
+  /**
+   * EmailSuppression delete
+   */
+  export type EmailSuppressionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+    /**
+     * Filter which EmailSuppression to delete.
+     */
+    where: EmailSuppressionWhereUniqueInput
+  }
+
+  /**
+   * EmailSuppression deleteMany
+   */
+  export type EmailSuppressionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which EmailSuppressions to delete
+     */
+    where?: EmailSuppressionWhereInput
+    /**
+     * Limit how many EmailSuppressions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * EmailSuppression findRaw
+   */
+  export type EmailSuppressionFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * EmailSuppression aggregateRaw
+   */
+  export type EmailSuppressionAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * EmailSuppression without action
+   */
+  export type EmailSuppressionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the EmailSuppression
+     */
+    select?: EmailSuppressionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the EmailSuppression
+     */
+    omit?: EmailSuppressionOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Model CronRun
+   */
+
+  export type AggregateCronRun = {
+    _count: CronRunCountAggregateOutputType | null
+    _min: CronRunMinAggregateOutputType | null
+    _max: CronRunMaxAggregateOutputType | null
+  }
+
+  export type CronRunMinAggregateOutputType = {
+    id: string | null
+    job: string | null
+    lastStartedAt: Date | null
+    lastSucceededAt: Date | null
+    lastFailedAt: Date | null
+    lastError: string | null
+  }
+
+  export type CronRunMaxAggregateOutputType = {
+    id: string | null
+    job: string | null
+    lastStartedAt: Date | null
+    lastSucceededAt: Date | null
+    lastFailedAt: Date | null
+    lastError: string | null
+  }
+
+  export type CronRunCountAggregateOutputType = {
+    id: number
+    job: number
+    lastStartedAt: number
+    lastSucceededAt: number
+    lastFailedAt: number
+    lastError: number
+    _all: number
+  }
+
+
+  export type CronRunMinAggregateInputType = {
+    id?: true
+    job?: true
+    lastStartedAt?: true
+    lastSucceededAt?: true
+    lastFailedAt?: true
+    lastError?: true
+  }
+
+  export type CronRunMaxAggregateInputType = {
+    id?: true
+    job?: true
+    lastStartedAt?: true
+    lastSucceededAt?: true
+    lastFailedAt?: true
+    lastError?: true
+  }
+
+  export type CronRunCountAggregateInputType = {
+    id?: true
+    job?: true
+    lastStartedAt?: true
+    lastSucceededAt?: true
+    lastFailedAt?: true
+    lastError?: true
+    _all?: true
+  }
+
+  export type CronRunAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CronRun to aggregate.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CronRuns
+    **/
+    _count?: true | CronRunCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CronRunMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CronRunMaxAggregateInputType
+  }
+
+  export type GetCronRunAggregateType<T extends CronRunAggregateArgs> = {
+        [P in keyof T & keyof AggregateCronRun]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCronRun[P]>
+      : GetScalarType<T[P], AggregateCronRun[P]>
+  }
+
+
+
+
+  export type CronRunGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CronRunWhereInput
+    orderBy?: CronRunOrderByWithAggregationInput | CronRunOrderByWithAggregationInput[]
+    by: CronRunScalarFieldEnum[] | CronRunScalarFieldEnum
+    having?: CronRunScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CronRunCountAggregateInputType | true
+    _min?: CronRunMinAggregateInputType
+    _max?: CronRunMaxAggregateInputType
+  }
+
+  export type CronRunGroupByOutputType = {
+    id: string
+    job: string
+    lastStartedAt: Date | null
+    lastSucceededAt: Date | null
+    lastFailedAt: Date | null
+    lastError: string | null
+    _count: CronRunCountAggregateOutputType | null
+    _min: CronRunMinAggregateOutputType | null
+    _max: CronRunMaxAggregateOutputType | null
+  }
+
+  type GetCronRunGroupByPayload<T extends CronRunGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CronRunGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CronRunGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CronRunGroupByOutputType[P]>
+            : GetScalarType<T[P], CronRunGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CronRunSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    job?: boolean
+    lastStartedAt?: boolean
+    lastSucceededAt?: boolean
+    lastFailedAt?: boolean
+    lastError?: boolean
+  }, ExtArgs["result"]["cronRun"]>
+
+
+
+  export type CronRunSelectScalar = {
+    id?: boolean
+    job?: boolean
+    lastStartedAt?: boolean
+    lastSucceededAt?: boolean
+    lastFailedAt?: boolean
+    lastError?: boolean
+  }
+
+  export type CronRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "job" | "lastStartedAt" | "lastSucceededAt" | "lastFailedAt" | "lastError", ExtArgs["result"]["cronRun"]>
+
+  export type $CronRunPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CronRun"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      job: string
+      lastStartedAt: Date | null
+      lastSucceededAt: Date | null
+      lastFailedAt: Date | null
+      lastError: string | null
+    }, ExtArgs["result"]["cronRun"]>
+    composites: {}
+  }
+
+  type CronRunGetPayload<S extends boolean | null | undefined | CronRunDefaultArgs> = $Result.GetResult<Prisma.$CronRunPayload, S>
+
+  type CronRunCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CronRunFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CronRunCountAggregateInputType | true
+    }
+
+  export interface CronRunDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CronRun'], meta: { name: 'CronRun' } }
+    /**
+     * Find zero or one CronRun that matches the filter.
+     * @param {CronRunFindUniqueArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CronRunFindUniqueArgs>(args: SelectSubset<T, CronRunFindUniqueArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CronRun that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CronRunFindUniqueOrThrowArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CronRunFindUniqueOrThrowArgs>(args: SelectSubset<T, CronRunFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CronRun that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunFindFirstArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CronRunFindFirstArgs>(args?: SelectSubset<T, CronRunFindFirstArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CronRun that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunFindFirstOrThrowArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CronRunFindFirstOrThrowArgs>(args?: SelectSubset<T, CronRunFindFirstOrThrowArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CronRuns that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CronRuns
+     * const cronRuns = await prisma.cronRun.findMany()
+     * 
+     * // Get first 10 CronRuns
+     * const cronRuns = await prisma.cronRun.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const cronRunWithIdOnly = await prisma.cronRun.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CronRunFindManyArgs>(args?: SelectSubset<T, CronRunFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CronRun.
+     * @param {CronRunCreateArgs} args - Arguments to create a CronRun.
+     * @example
+     * // Create one CronRun
+     * const CronRun = await prisma.cronRun.create({
+     *   data: {
+     *     // ... data to create a CronRun
+     *   }
+     * })
+     * 
+     */
+    create<T extends CronRunCreateArgs>(args: SelectSubset<T, CronRunCreateArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CronRuns.
+     * @param {CronRunCreateManyArgs} args - Arguments to create many CronRuns.
+     * @example
+     * // Create many CronRuns
+     * const cronRun = await prisma.cronRun.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CronRunCreateManyArgs>(args?: SelectSubset<T, CronRunCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a CronRun.
+     * @param {CronRunDeleteArgs} args - Arguments to delete one CronRun.
+     * @example
+     * // Delete one CronRun
+     * const CronRun = await prisma.cronRun.delete({
+     *   where: {
+     *     // ... filter to delete one CronRun
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CronRunDeleteArgs>(args: SelectSubset<T, CronRunDeleteArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CronRun.
+     * @param {CronRunUpdateArgs} args - Arguments to update one CronRun.
+     * @example
+     * // Update one CronRun
+     * const cronRun = await prisma.cronRun.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CronRunUpdateArgs>(args: SelectSubset<T, CronRunUpdateArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CronRuns.
+     * @param {CronRunDeleteManyArgs} args - Arguments to filter CronRuns to delete.
+     * @example
+     * // Delete a few CronRuns
+     * const { count } = await prisma.cronRun.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CronRunDeleteManyArgs>(args?: SelectSubset<T, CronRunDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CronRuns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CronRuns
+     * const cronRun = await prisma.cronRun.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CronRunUpdateManyArgs>(args: SelectSubset<T, CronRunUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CronRun.
+     * @param {CronRunUpsertArgs} args - Arguments to update or create a CronRun.
+     * @example
+     * // Update or create a CronRun
+     * const cronRun = await prisma.cronRun.upsert({
+     *   create: {
+     *     // ... data to create a CronRun
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CronRun we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CronRunUpsertArgs>(args: SelectSubset<T, CronRunUpsertArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CronRuns that matches the filter.
+     * @param {CronRunFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const cronRun = await prisma.cronRun.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: CronRunFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a CronRun.
+     * @param {CronRunAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const cronRun = await prisma.cronRun.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: CronRunAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of CronRuns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunCountArgs} args - Arguments to filter CronRuns to count.
+     * @example
+     * // Count the number of CronRuns
+     * const count = await prisma.cronRun.count({
+     *   where: {
+     *     // ... the filter for the CronRuns we want to count
+     *   }
+     * })
+    **/
+    count<T extends CronRunCountArgs>(
+      args?: Subset<T, CronRunCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CronRunCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CronRun.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CronRunAggregateArgs>(args: Subset<T, CronRunAggregateArgs>): Prisma.PrismaPromise<GetCronRunAggregateType<T>>
+
+    /**
+     * Group by CronRun.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CronRunGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CronRunGroupByArgs['orderBy'] }
+        : { orderBy?: CronRunGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CronRunGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCronRunGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CronRun model
+   */
+  readonly fields: CronRunFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CronRun.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CronRunClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CronRun model
+   */
+  interface CronRunFieldRefs {
+    readonly id: FieldRef<"CronRun", 'String'>
+    readonly job: FieldRef<"CronRun", 'String'>
+    readonly lastStartedAt: FieldRef<"CronRun", 'DateTime'>
+    readonly lastSucceededAt: FieldRef<"CronRun", 'DateTime'>
+    readonly lastFailedAt: FieldRef<"CronRun", 'DateTime'>
+    readonly lastError: FieldRef<"CronRun", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CronRun findUnique
+   */
+  export type CronRunFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun findUniqueOrThrow
+   */
+  export type CronRunFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun findFirst
+   */
+  export type CronRunFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CronRuns.
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CronRuns.
+     */
+    distinct?: CronRunScalarFieldEnum | CronRunScalarFieldEnum[]
+  }
+
+  /**
+   * CronRun findFirstOrThrow
+   */
+  export type CronRunFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CronRuns.
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CronRuns.
+     */
+    distinct?: CronRunScalarFieldEnum | CronRunScalarFieldEnum[]
+  }
+
+  /**
+   * CronRun findMany
+   */
+  export type CronRunFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRuns to fetch.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CronRuns.
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    distinct?: CronRunScalarFieldEnum | CronRunScalarFieldEnum[]
+  }
+
+  /**
+   * CronRun create
+   */
+  export type CronRunCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * The data needed to create a CronRun.
+     */
+    data: XOR<CronRunCreateInput, CronRunUncheckedCreateInput>
+  }
+
+  /**
+   * CronRun createMany
+   */
+  export type CronRunCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CronRuns.
+     */
+    data: CronRunCreateManyInput | CronRunCreateManyInput[]
+  }
+
+  /**
+   * CronRun update
+   */
+  export type CronRunUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * The data needed to update a CronRun.
+     */
+    data: XOR<CronRunUpdateInput, CronRunUncheckedUpdateInput>
+    /**
+     * Choose, which CronRun to update.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun updateMany
+   */
+  export type CronRunUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CronRuns.
+     */
+    data: XOR<CronRunUpdateManyMutationInput, CronRunUncheckedUpdateManyInput>
+    /**
+     * Filter which CronRuns to update
+     */
+    where?: CronRunWhereInput
+    /**
+     * Limit how many CronRuns to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CronRun upsert
+   */
+  export type CronRunUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * The filter to search for the CronRun to update in case it exists.
+     */
+    where: CronRunWhereUniqueInput
+    /**
+     * In case the CronRun found by the `where` argument doesn't exist, create a new CronRun with this data.
+     */
+    create: XOR<CronRunCreateInput, CronRunUncheckedCreateInput>
+    /**
+     * In case the CronRun was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CronRunUpdateInput, CronRunUncheckedUpdateInput>
+  }
+
+  /**
+   * CronRun delete
+   */
+  export type CronRunDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter which CronRun to delete.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun deleteMany
+   */
+  export type CronRunDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CronRuns to delete
+     */
+    where?: CronRunWhereInput
+    /**
+     * Limit how many CronRuns to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CronRun findRaw
+   */
+  export type CronRunFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * CronRun aggregateRaw
+   */
+  export type CronRunAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * CronRun without action
+   */
+  export type CronRunDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+  }
+
+
+  /**
+   * Enums
+   */
 
   export const UserScalarFieldEnum: {
     id: 'id',
@@ -27792,6 +34694,7 @@ export namespace Prisma {
   export const PropertyScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     name: 'name',
     type: 'type',
     uniquePropertyId: 'uniquePropertyId',
@@ -27855,6 +34758,7 @@ export namespace Prisma {
   export const BillScheduleScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     category: 'category',
     propertyId: 'propertyId',
     leaseId: 'leaseId',
@@ -27871,6 +34775,8 @@ export namespace Prisma {
     startDate: 'startDate',
     dueDay: 'dueDay',
     dueMonth: 'dueMonth',
+    endDate: 'endDate',
+    nextDueDate: 'nextDueDate',
     defaultAmount: 'defaultAmount',
     currency: 'currency',
     tenureMonths: 'tenureMonths',
@@ -27886,6 +34792,7 @@ export namespace Prisma {
   export const BillScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     category: 'category',
     direction: 'direction',
     billScheduleId: 'billScheduleId',
@@ -27894,6 +34801,7 @@ export namespace Prisma {
     loanId: 'loanId',
     policyId: 'policyId',
     investmentId: 'investmentId',
+    generationKey: 'generationKey',
     dueDate: 'dueDate',
     amount: 'amount',
     currency: 'currency',
@@ -27926,6 +34834,7 @@ export namespace Prisma {
   export const PolicyScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     type: 'type',
     insurer: 'insurer',
     policyNumber: 'policyNumber',
@@ -27952,6 +34861,7 @@ export namespace Prisma {
   export const InvestmentScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     name: 'name',
     type: 'type',
     institution: 'institution',
@@ -27973,6 +34883,7 @@ export namespace Prisma {
   export const LoanScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     lender: 'lender',
     type: 'type',
     principal: 'principal',
@@ -27994,6 +34905,7 @@ export namespace Prisma {
   export const PaymentTransactionScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     category: 'category',
     billId: 'billId',
     propertyId: 'propertyId',
@@ -28087,6 +34999,7 @@ export namespace Prisma {
   export const DocumentScalarFieldEnum: {
     id: 'id',
     ownerId: 'ownerId',
+    householdId: 'householdId',
     propertyId: 'propertyId',
     roomId: 'roomId',
     leaseId: 'leaseId',
@@ -28126,6 +35039,81 @@ export namespace Prisma {
   export type GuestScalarFieldEnum = (typeof GuestScalarFieldEnum)[keyof typeof GuestScalarFieldEnum]
 
 
+  export const HouseholdScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    personalForUserId: 'personalForUserId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type HouseholdScalarFieldEnum = (typeof HouseholdScalarFieldEnum)[keyof typeof HouseholdScalarFieldEnum]
+
+
+  export const HouseholdMemberScalarFieldEnum: {
+    id: 'id',
+    householdId: 'householdId',
+    userId: 'userId',
+    role: 'role',
+    createdAt: 'createdAt'
+  };
+
+  export type HouseholdMemberScalarFieldEnum = (typeof HouseholdMemberScalarFieldEnum)[keyof typeof HouseholdMemberScalarFieldEnum]
+
+
+  export const AppMigrationScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    ranAt: 'ranAt'
+  };
+
+  export type AppMigrationScalarFieldEnum = (typeof AppMigrationScalarFieldEnum)[keyof typeof AppMigrationScalarFieldEnum]
+
+
+  export const RateLimitScalarFieldEnum: {
+    id: 'id',
+    key: 'key',
+    count: 'count',
+    lastRequest: 'lastRequest'
+  };
+
+  export type RateLimitScalarFieldEnum = (typeof RateLimitScalarFieldEnum)[keyof typeof RateLimitScalarFieldEnum]
+
+
+  export const AuthThrottleScalarFieldEnum: {
+    id: 'id',
+    key: 'key',
+    count: 'count',
+    windowStart: 'windowStart'
+  };
+
+  export type AuthThrottleScalarFieldEnum = (typeof AuthThrottleScalarFieldEnum)[keyof typeof AuthThrottleScalarFieldEnum]
+
+
+  export const EmailSuppressionScalarFieldEnum: {
+    id: 'id',
+    key: 'key',
+    email: 'email',
+    ownerId: 'ownerId',
+    reason: 'reason',
+    createdAt: 'createdAt'
+  };
+
+  export type EmailSuppressionScalarFieldEnum = (typeof EmailSuppressionScalarFieldEnum)[keyof typeof EmailSuppressionScalarFieldEnum]
+
+
+  export const CronRunScalarFieldEnum: {
+    id: 'id',
+    job: 'job',
+    lastStartedAt: 'lastStartedAt',
+    lastSucceededAt: 'lastSucceededAt',
+    lastFailedAt: 'lastFailedAt',
+    lastError: 'lastError'
+  };
+
+  export type CronRunScalarFieldEnum = (typeof CronRunScalarFieldEnum)[keyof typeof CronRunScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
@@ -28162,20 +35150,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'DateTime'
-   */
-  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
-    
-
-
-  /**
-   * Reference to a field of type 'DateTime[]'
-   */
-  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Boolean'
    */
   export type BooleanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Boolean'>
@@ -28207,6 +35181,20 @@ export namespace Prisma {
    * Reference to a field of type 'Int[]'
    */
   export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime'
+   */
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime[]'
+   */
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
     
 
 
@@ -28495,65 +35483,38 @@ export namespace Prisma {
    */
   export type ListEnumNotificationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationStatus[]'>
     
+
+
+  /**
+   * Reference to a field of type 'HouseholdRole'
+   */
+  export type EnumHouseholdRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HouseholdRole'>
+    
+
+
+  /**
+   * Reference to a field of type 'HouseholdRole[]'
+   */
+  export type ListEnumHouseholdRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'HouseholdRole[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt'
+   */
+  export type BigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt'>
+    
+
+
+  /**
+   * Reference to a field of type 'BigInt[]'
+   */
+  export type ListBigIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BigInt[]'>
+    
   /**
    * Deep Input Types
    */
 
-
-  export type PostWhereInput = {
-    AND?: PostWhereInput | PostWhereInput[]
-    OR?: PostWhereInput[]
-    NOT?: PostWhereInput | PostWhereInput[]
-    id?: StringFilter<"Post"> | string
-    name?: StringFilter<"Post"> | string
-    createdAt?: DateTimeFilter<"Post"> | Date | string
-    updatedAt?: DateTimeFilter<"Post"> | Date | string
-    createdById?: StringFilter<"Post"> | string
-    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }
-
-  export type PostOrderByWithRelationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    createdById?: SortOrder
-    createdBy?: UserOrderByWithRelationInput
-  }
-
-  export type PostWhereUniqueInput = Prisma.AtLeast<{
-    id?: string
-    AND?: PostWhereInput | PostWhereInput[]
-    OR?: PostWhereInput[]
-    NOT?: PostWhereInput | PostWhereInput[]
-    name?: StringFilter<"Post"> | string
-    createdAt?: DateTimeFilter<"Post"> | Date | string
-    updatedAt?: DateTimeFilter<"Post"> | Date | string
-    createdById?: StringFilter<"Post"> | string
-    createdBy?: XOR<UserScalarRelationFilter, UserWhereInput>
-  }, "id">
-
-  export type PostOrderByWithAggregationInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    createdById?: SortOrder
-    _count?: PostCountOrderByAggregateInput
-    _max?: PostMaxOrderByAggregateInput
-    _min?: PostMinOrderByAggregateInput
-  }
-
-  export type PostScalarWhereWithAggregatesInput = {
-    AND?: PostScalarWhereWithAggregatesInput | PostScalarWhereWithAggregatesInput[]
-    OR?: PostScalarWhereWithAggregatesInput[]
-    NOT?: PostScalarWhereWithAggregatesInput | PostScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"Post"> | string
-    name?: StringWithAggregatesFilter<"Post"> | string
-    createdAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
-    updatedAt?: DateTimeWithAggregatesFilter<"Post"> | Date | string
-    createdById?: StringWithAggregatesFilter<"Post"> | string
-  }
 
   export type UserWhereInput = {
     AND?: UserWhereInput | UserWhereInput[]
@@ -28575,8 +35536,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
+    households?: HouseholdMemberListRelationFilter
     accounts?: AccountListRelationFilter
-    posts?: PostListRelationFilter
     guests?: GuestListRelationFilter
     properties?: PropertyListRelationFilter
     policies?: PolicyListRelationFilter
@@ -28608,8 +35569,8 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     sessions?: SessionOrderByRelationAggregateInput
+    households?: HouseholdMemberOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
-    posts?: PostOrderByRelationAggregateInput
     guests?: GuestOrderByRelationAggregateInput
     properties?: PropertyOrderByRelationAggregateInput
     policies?: PolicyOrderByRelationAggregateInput
@@ -28644,8 +35605,8 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     sessions?: SessionListRelationFilter
+    households?: HouseholdMemberListRelationFilter
     accounts?: AccountListRelationFilter
-    posts?: PostListRelationFilter
     guests?: GuestListRelationFilter
     properties?: PropertyListRelationFilter
     policies?: PolicyListRelationFilter
@@ -28937,6 +35898,7 @@ export namespace Prisma {
     NOT?: PropertyWhereInput | PropertyWhereInput[]
     id?: StringFilter<"Property"> | string
     ownerId?: StringFilter<"Property"> | string
+    householdId?: StringNullableFilter<"Property"> | string | null
     name?: StringFilter<"Property"> | string
     type?: EnumPropertyTypeFilter<"Property"> | $Enums.PropertyType
     uniquePropertyId?: StringNullableFilter<"Property"> | string | null
@@ -28957,6 +35919,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Property"> | Date | string
     updatedAt?: DateTimeFilter<"Property"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     rooms?: RoomListRelationFilter
     leases?: LeaseListRelationFilter
     policies?: PolicyListRelationFilter
@@ -28972,6 +35935,7 @@ export namespace Prisma {
   export type PropertyOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     uniquePropertyId?: SortOrder
@@ -28992,6 +35956,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     rooms?: RoomOrderByRelationAggregateInput
     leases?: LeaseOrderByRelationAggregateInput
     policies?: PolicyOrderByRelationAggregateInput
@@ -29010,6 +35975,7 @@ export namespace Prisma {
     OR?: PropertyWhereInput[]
     NOT?: PropertyWhereInput | PropertyWhereInput[]
     ownerId?: StringFilter<"Property"> | string
+    householdId?: StringNullableFilter<"Property"> | string | null
     name?: StringFilter<"Property"> | string
     type?: EnumPropertyTypeFilter<"Property"> | $Enums.PropertyType
     uniquePropertyId?: StringNullableFilter<"Property"> | string | null
@@ -29030,6 +35996,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Property"> | Date | string
     updatedAt?: DateTimeFilter<"Property"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     rooms?: RoomListRelationFilter
     leases?: LeaseListRelationFilter
     policies?: PolicyListRelationFilter
@@ -29045,6 +36012,7 @@ export namespace Prisma {
   export type PropertyOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     uniquePropertyId?: SortOrder
@@ -29077,6 +36045,7 @@ export namespace Prisma {
     NOT?: PropertyScalarWhereWithAggregatesInput | PropertyScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Property"> | string
     ownerId?: StringWithAggregatesFilter<"Property"> | string
+    householdId?: StringNullableWithAggregatesFilter<"Property"> | string | null
     name?: StringWithAggregatesFilter<"Property"> | string
     type?: EnumPropertyTypeWithAggregatesFilter<"Property"> | $Enums.PropertyType
     uniquePropertyId?: StringNullableWithAggregatesFilter<"Property"> | string | null
@@ -29315,6 +36284,7 @@ export namespace Prisma {
     NOT?: BillScheduleWhereInput | BillScheduleWhereInput[]
     id?: StringFilter<"BillSchedule"> | string
     ownerId?: StringFilter<"BillSchedule"> | string
+    householdId?: StringNullableFilter<"BillSchedule"> | string | null
     category?: EnumEventCategoryFilter<"BillSchedule"> | $Enums.EventCategory
     propertyId?: StringNullableFilter<"BillSchedule"> | string | null
     leaseId?: StringNullableFilter<"BillSchedule"> | string | null
@@ -29331,6 +36301,8 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
+    endDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -29340,6 +36312,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BillSchedule"> | Date | string
     recipients?: RecipientCompositeListFilter | RecipientObjectEqualityInput[]
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
     loan?: XOR<LoanNullableScalarRelationFilter, LoanWhereInput> | null
@@ -29354,6 +36327,7 @@ export namespace Prisma {
   export type BillScheduleOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     propertyId?: SortOrder
     leaseId?: SortOrder
@@ -29370,6 +36344,8 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
+    endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -29379,6 +36355,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     recipients?: RecipientOrderByCompositeAggregateInput
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     property?: PropertyOrderByWithRelationInput
     lease?: LeaseOrderByWithRelationInput
     loan?: LoanOrderByWithRelationInput
@@ -29396,6 +36373,7 @@ export namespace Prisma {
     OR?: BillScheduleWhereInput[]
     NOT?: BillScheduleWhereInput | BillScheduleWhereInput[]
     ownerId?: StringFilter<"BillSchedule"> | string
+    householdId?: StringNullableFilter<"BillSchedule"> | string | null
     category?: EnumEventCategoryFilter<"BillSchedule"> | $Enums.EventCategory
     propertyId?: StringNullableFilter<"BillSchedule"> | string | null
     leaseId?: StringNullableFilter<"BillSchedule"> | string | null
@@ -29412,6 +36390,8 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
+    endDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -29421,6 +36401,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BillSchedule"> | Date | string
     recipients?: RecipientCompositeListFilter | RecipientObjectEqualityInput[]
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
     loan?: XOR<LoanNullableScalarRelationFilter, LoanWhereInput> | null
@@ -29435,6 +36416,7 @@ export namespace Prisma {
   export type BillScheduleOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     propertyId?: SortOrder
     leaseId?: SortOrder
@@ -29451,6 +36433,8 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
+    endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -29471,6 +36455,7 @@ export namespace Prisma {
     NOT?: BillScheduleScalarWhereWithAggregatesInput | BillScheduleScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"BillSchedule"> | string
     ownerId?: StringWithAggregatesFilter<"BillSchedule"> | string
+    householdId?: StringNullableWithAggregatesFilter<"BillSchedule"> | string | null
     category?: EnumEventCategoryWithAggregatesFilter<"BillSchedule"> | $Enums.EventCategory
     propertyId?: StringNullableWithAggregatesFilter<"BillSchedule"> | string | null
     leaseId?: StringNullableWithAggregatesFilter<"BillSchedule"> | string | null
@@ -29487,6 +36472,8 @@ export namespace Prisma {
     startDate?: DateTimeNullableWithAggregatesFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntWithAggregatesFilter<"BillSchedule"> | number
     dueMonth?: IntNullableWithAggregatesFilter<"BillSchedule"> | number | null
+    endDate?: DateTimeNullableWithAggregatesFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableWithAggregatesFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableWithAggregatesFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableWithAggregatesFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableWithAggregatesFilter<"BillSchedule"> | number | null
@@ -29502,6 +36489,7 @@ export namespace Prisma {
     NOT?: BillWhereInput | BillWhereInput[]
     id?: StringFilter<"Bill"> | string
     ownerId?: StringFilter<"Bill"> | string
+    householdId?: StringNullableFilter<"Bill"> | string | null
     category?: EnumEventCategoryFilter<"Bill"> | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFilter<"Bill"> | $Enums.FinancialEventType
     billScheduleId?: StringNullableFilter<"Bill"> | string | null
@@ -29510,6 +36498,7 @@ export namespace Prisma {
     loanId?: StringNullableFilter<"Bill"> | string | null
     policyId?: StringNullableFilter<"Bill"> | string | null
     investmentId?: StringNullableFilter<"Bill"> | string | null
+    generationKey?: StringFilter<"Bill"> | string
     dueDate?: DateTimeFilter<"Bill"> | Date | string
     amount?: FloatFilter<"Bill"> | number
     currency?: EnumCurrencyNullableFilter<"Bill"> | $Enums.Currency | null
@@ -29535,6 +36524,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     billSchedule?: XOR<BillScheduleNullableScalarRelationFilter, BillScheduleWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
@@ -29550,6 +36540,7 @@ export namespace Prisma {
   export type BillOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     direction?: SortOrder
     billScheduleId?: SortOrder
@@ -29558,6 +36549,7 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
+    generationKey?: SortOrder
     dueDate?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -29583,6 +36575,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     billSchedule?: BillScheduleOrderByWithRelationInput
     property?: PropertyOrderByWithRelationInput
     lease?: LeaseOrderByWithRelationInput
@@ -29597,10 +36590,12 @@ export namespace Prisma {
 
   export type BillWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    generationKey?: string
     AND?: BillWhereInput | BillWhereInput[]
     OR?: BillWhereInput[]
     NOT?: BillWhereInput | BillWhereInput[]
     ownerId?: StringFilter<"Bill"> | string
+    householdId?: StringNullableFilter<"Bill"> | string | null
     category?: EnumEventCategoryFilter<"Bill"> | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFilter<"Bill"> | $Enums.FinancialEventType
     billScheduleId?: StringNullableFilter<"Bill"> | string | null
@@ -29634,6 +36629,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Bill"> | Date | string
     updatedAt?: DateTimeFilter<"Bill"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     billSchedule?: XOR<BillScheduleNullableScalarRelationFilter, BillScheduleWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
@@ -29644,11 +36640,12 @@ export namespace Prisma {
     documents?: DocumentListRelationFilter
     notificationRules?: NotificationRuleListRelationFilter
     notificationJobs?: NotificationJobListRelationFilter
-  }, "id">
+  }, "id" | "generationKey">
 
   export type BillOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     direction?: SortOrder
     billScheduleId?: SortOrder
@@ -29657,6 +36654,7 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
+    generationKey?: SortOrder
     dueDate?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -29694,6 +36692,7 @@ export namespace Prisma {
     NOT?: BillScalarWhereWithAggregatesInput | BillScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Bill"> | string
     ownerId?: StringWithAggregatesFilter<"Bill"> | string
+    householdId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     category?: EnumEventCategoryWithAggregatesFilter<"Bill"> | $Enums.EventCategory
     direction?: EnumFinancialEventTypeWithAggregatesFilter<"Bill"> | $Enums.FinancialEventType
     billScheduleId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
@@ -29702,6 +36701,7 @@ export namespace Prisma {
     loanId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     policyId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
     investmentId?: StringNullableWithAggregatesFilter<"Bill"> | string | null
+    generationKey?: StringWithAggregatesFilter<"Bill"> | string
     dueDate?: DateTimeWithAggregatesFilter<"Bill"> | Date | string
     amount?: FloatWithAggregatesFilter<"Bill"> | number
     currency?: EnumCurrencyNullableWithAggregatesFilter<"Bill"> | $Enums.Currency | null
@@ -29734,6 +36734,7 @@ export namespace Prisma {
     NOT?: PolicyWhereInput | PolicyWhereInput[]
     id?: StringFilter<"Policy"> | string
     ownerId?: StringFilter<"Policy"> | string
+    householdId?: StringNullableFilter<"Policy"> | string | null
     type?: EnumPolicyTypeFilter<"Policy"> | $Enums.PolicyType
     insurer?: StringFilter<"Policy"> | string
     policyNumber?: StringFilter<"Policy"> | string
@@ -29753,6 +36754,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Policy"> | Date | string
     updatedAt?: DateTimeFilter<"Policy"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
@@ -29766,6 +36768,7 @@ export namespace Prisma {
   export type PolicyOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     type?: SortOrder
     insurer?: SortOrder
     policyNumber?: SortOrder
@@ -29785,6 +36788,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     property?: PropertyOrderByWithRelationInput
     billSchedules?: BillScheduleOrderByRelationAggregateInput
     bills?: BillOrderByRelationAggregateInput
@@ -29801,6 +36805,7 @@ export namespace Prisma {
     OR?: PolicyWhereInput[]
     NOT?: PolicyWhereInput | PolicyWhereInput[]
     ownerId?: StringFilter<"Policy"> | string
+    householdId?: StringNullableFilter<"Policy"> | string | null
     type?: EnumPolicyTypeFilter<"Policy"> | $Enums.PolicyType
     insurer?: StringFilter<"Policy"> | string
     policyNumber?: StringFilter<"Policy"> | string
@@ -29820,6 +36825,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Policy"> | Date | string
     updatedAt?: DateTimeFilter<"Policy"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
@@ -29833,6 +36839,7 @@ export namespace Prisma {
   export type PolicyOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     type?: SortOrder
     insurer?: SortOrder
     policyNumber?: SortOrder
@@ -29864,6 +36871,7 @@ export namespace Prisma {
     NOT?: PolicyScalarWhereWithAggregatesInput | PolicyScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Policy"> | string
     ownerId?: StringWithAggregatesFilter<"Policy"> | string
+    householdId?: StringNullableWithAggregatesFilter<"Policy"> | string | null
     type?: EnumPolicyTypeWithAggregatesFilter<"Policy"> | $Enums.PolicyType
     insurer?: StringWithAggregatesFilter<"Policy"> | string
     policyNumber?: StringWithAggregatesFilter<"Policy"> | string
@@ -29890,6 +36898,7 @@ export namespace Prisma {
     NOT?: InvestmentWhereInput | InvestmentWhereInput[]
     id?: StringFilter<"Investment"> | string
     ownerId?: StringFilter<"Investment"> | string
+    householdId?: StringNullableFilter<"Investment"> | string | null
     name?: StringFilter<"Investment"> | string
     type?: EnumInvestmentTypeFilter<"Investment"> | $Enums.InvestmentType
     institution?: StringNullableFilter<"Investment"> | string | null
@@ -29904,6 +36913,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Investment"> | Date | string
     updatedAt?: DateTimeFilter<"Investment"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
     loans?: LoanListRelationFilter
@@ -29916,6 +36926,7 @@ export namespace Prisma {
   export type InvestmentOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     institution?: SortOrder
@@ -29930,6 +36941,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     billSchedules?: BillScheduleOrderByRelationAggregateInput
     bills?: BillOrderByRelationAggregateInput
     loans?: LoanOrderByRelationAggregateInput
@@ -29945,6 +36957,7 @@ export namespace Prisma {
     OR?: InvestmentWhereInput[]
     NOT?: InvestmentWhereInput | InvestmentWhereInput[]
     ownerId?: StringFilter<"Investment"> | string
+    householdId?: StringNullableFilter<"Investment"> | string | null
     name?: StringFilter<"Investment"> | string
     type?: EnumInvestmentTypeFilter<"Investment"> | $Enums.InvestmentType
     institution?: StringNullableFilter<"Investment"> | string | null
@@ -29959,6 +36972,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Investment"> | Date | string
     updatedAt?: DateTimeFilter<"Investment"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     billSchedules?: BillScheduleListRelationFilter
     bills?: BillListRelationFilter
     loans?: LoanListRelationFilter
@@ -29971,6 +36985,7 @@ export namespace Prisma {
   export type InvestmentOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     institution?: SortOrder
@@ -29997,6 +37012,7 @@ export namespace Prisma {
     NOT?: InvestmentScalarWhereWithAggregatesInput | InvestmentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Investment"> | string
     ownerId?: StringWithAggregatesFilter<"Investment"> | string
+    householdId?: StringNullableWithAggregatesFilter<"Investment"> | string | null
     name?: StringWithAggregatesFilter<"Investment"> | string
     type?: EnumInvestmentTypeWithAggregatesFilter<"Investment"> | $Enums.InvestmentType
     institution?: StringNullableWithAggregatesFilter<"Investment"> | string | null
@@ -30018,6 +37034,7 @@ export namespace Prisma {
     NOT?: LoanWhereInput | LoanWhereInput[]
     id?: StringFilter<"Loan"> | string
     ownerId?: StringFilter<"Loan"> | string
+    householdId?: StringNullableFilter<"Loan"> | string | null
     lender?: StringFilter<"Loan"> | string
     type?: EnumLoanTypeFilter<"Loan"> | $Enums.LoanType
     principal?: FloatFilter<"Loan"> | number
@@ -30032,6 +37049,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Loan"> | Date | string
     updatedAt?: DateTimeFilter<"Loan"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     linkedProperty?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     linkedPolicy?: XOR<PolicyNullableScalarRelationFilter, PolicyWhereInput> | null
     linkedInvestment?: XOR<InvestmentNullableScalarRelationFilter, InvestmentWhereInput> | null
@@ -30046,6 +37064,7 @@ export namespace Prisma {
   export type LoanOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     lender?: SortOrder
     type?: SortOrder
     principal?: SortOrder
@@ -30060,6 +37079,7 @@ export namespace Prisma {
     createdAt?: SortOrder
     updatedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     linkedProperty?: PropertyOrderByWithRelationInput
     linkedPolicy?: PolicyOrderByWithRelationInput
     linkedInvestment?: InvestmentOrderByWithRelationInput
@@ -30077,6 +37097,7 @@ export namespace Prisma {
     OR?: LoanWhereInput[]
     NOT?: LoanWhereInput | LoanWhereInput[]
     ownerId?: StringFilter<"Loan"> | string
+    householdId?: StringNullableFilter<"Loan"> | string | null
     lender?: StringFilter<"Loan"> | string
     type?: EnumLoanTypeFilter<"Loan"> | $Enums.LoanType
     principal?: FloatFilter<"Loan"> | number
@@ -30091,6 +37112,7 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Loan"> | Date | string
     updatedAt?: DateTimeFilter<"Loan"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     linkedProperty?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     linkedPolicy?: XOR<PolicyNullableScalarRelationFilter, PolicyWhereInput> | null
     linkedInvestment?: XOR<InvestmentNullableScalarRelationFilter, InvestmentWhereInput> | null
@@ -30105,6 +37127,7 @@ export namespace Prisma {
   export type LoanOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     lender?: SortOrder
     type?: SortOrder
     principal?: SortOrder
@@ -30131,6 +37154,7 @@ export namespace Prisma {
     NOT?: LoanScalarWhereWithAggregatesInput | LoanScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Loan"> | string
     ownerId?: StringWithAggregatesFilter<"Loan"> | string
+    householdId?: StringNullableWithAggregatesFilter<"Loan"> | string | null
     lender?: StringWithAggregatesFilter<"Loan"> | string
     type?: EnumLoanTypeWithAggregatesFilter<"Loan"> | $Enums.LoanType
     principal?: FloatWithAggregatesFilter<"Loan"> | number
@@ -30152,6 +37176,7 @@ export namespace Prisma {
     NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
     id?: StringFilter<"PaymentTransaction"> | string
     ownerId?: StringFilter<"PaymentTransaction"> | string
+    householdId?: StringNullableFilter<"PaymentTransaction"> | string | null
     category?: EnumEventCategoryFilter<"PaymentTransaction"> | $Enums.EventCategory
     billId?: StringNullableFilter<"PaymentTransaction"> | string | null
     propertyId?: StringNullableFilter<"PaymentTransaction"> | string | null
@@ -30169,6 +37194,7 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
     createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     bill?: XOR<BillNullableScalarRelationFilter, BillWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
@@ -30180,6 +37206,7 @@ export namespace Prisma {
   export type PaymentTransactionOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     billId?: SortOrder
     propertyId?: SortOrder
@@ -30197,6 +37224,7 @@ export namespace Prisma {
     deletedAt?: SortOrder
     createdAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     bill?: BillOrderByWithRelationInput
     property?: PropertyOrderByWithRelationInput
     lease?: LeaseOrderByWithRelationInput
@@ -30211,6 +37239,7 @@ export namespace Prisma {
     OR?: PaymentTransactionWhereInput[]
     NOT?: PaymentTransactionWhereInput | PaymentTransactionWhereInput[]
     ownerId?: StringFilter<"PaymentTransaction"> | string
+    householdId?: StringNullableFilter<"PaymentTransaction"> | string | null
     category?: EnumEventCategoryFilter<"PaymentTransaction"> | $Enums.EventCategory
     billId?: StringNullableFilter<"PaymentTransaction"> | string | null
     propertyId?: StringNullableFilter<"PaymentTransaction"> | string | null
@@ -30228,6 +37257,7 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"PaymentTransaction"> | Date | string | null
     createdAt?: DateTimeFilter<"PaymentTransaction"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     bill?: XOR<BillNullableScalarRelationFilter, BillWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
@@ -30239,6 +37269,7 @@ export namespace Prisma {
   export type PaymentTransactionOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     billId?: SortOrder
     propertyId?: SortOrder
@@ -30268,6 +37299,7 @@ export namespace Prisma {
     NOT?: PaymentTransactionScalarWhereWithAggregatesInput | PaymentTransactionScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"PaymentTransaction"> | string
     ownerId?: StringWithAggregatesFilter<"PaymentTransaction"> | string
+    householdId?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
     category?: EnumEventCategoryWithAggregatesFilter<"PaymentTransaction"> | $Enums.EventCategory
     billId?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
     propertyId?: StringNullableWithAggregatesFilter<"PaymentTransaction"> | string | null
@@ -30689,6 +37721,7 @@ export namespace Prisma {
     NOT?: DocumentWhereInput | DocumentWhereInput[]
     id?: StringFilter<"Document"> | string
     ownerId?: StringFilter<"Document"> | string
+    householdId?: StringNullableFilter<"Document"> | string | null
     propertyId?: StringNullableFilter<"Document"> | string | null
     roomId?: StringNullableFilter<"Document"> | string | null
     leaseId?: StringNullableFilter<"Document"> | string | null
@@ -30703,6 +37736,7 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"Document"> | Date | string | null
     uploadedAt?: DateTimeFilter<"Document"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     room?: XOR<RoomNullableScalarRelationFilter, RoomWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
@@ -30716,6 +37750,7 @@ export namespace Prisma {
   export type DocumentOrderByWithRelationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     propertyId?: SortOrder
     roomId?: SortOrder
     leaseId?: SortOrder
@@ -30730,6 +37765,7 @@ export namespace Prisma {
     deletedAt?: SortOrder
     uploadedAt?: SortOrder
     owner?: UserOrderByWithRelationInput
+    household?: HouseholdOrderByWithRelationInput
     property?: PropertyOrderByWithRelationInput
     room?: RoomOrderByWithRelationInput
     lease?: LeaseOrderByWithRelationInput
@@ -30746,6 +37782,7 @@ export namespace Prisma {
     OR?: DocumentWhereInput[]
     NOT?: DocumentWhereInput | DocumentWhereInput[]
     ownerId?: StringFilter<"Document"> | string
+    householdId?: StringNullableFilter<"Document"> | string | null
     propertyId?: StringNullableFilter<"Document"> | string | null
     roomId?: StringNullableFilter<"Document"> | string | null
     leaseId?: StringNullableFilter<"Document"> | string | null
@@ -30760,6 +37797,7 @@ export namespace Prisma {
     deletedAt?: DateTimeNullableFilter<"Document"> | Date | string | null
     uploadedAt?: DateTimeFilter<"Document"> | Date | string
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
+    household?: XOR<HouseholdNullableScalarRelationFilter, HouseholdWhereInput> | null
     property?: XOR<PropertyNullableScalarRelationFilter, PropertyWhereInput> | null
     room?: XOR<RoomNullableScalarRelationFilter, RoomWhereInput> | null
     lease?: XOR<LeaseNullableScalarRelationFilter, LeaseWhereInput> | null
@@ -30773,6 +37811,7 @@ export namespace Prisma {
   export type DocumentOrderByWithAggregationInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     propertyId?: SortOrder
     roomId?: SortOrder
     leaseId?: SortOrder
@@ -30797,6 +37836,7 @@ export namespace Prisma {
     NOT?: DocumentScalarWhereWithAggregatesInput | DocumentScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Document"> | string
     ownerId?: StringWithAggregatesFilter<"Document"> | string
+    householdId?: StringNullableWithAggregatesFilter<"Document"> | string | null
     propertyId?: StringNullableWithAggregatesFilter<"Document"> | string | null
     roomId?: StringNullableWithAggregatesFilter<"Document"> | string | null
     leaseId?: StringNullableWithAggregatesFilter<"Document"> | string | null
@@ -30917,55 +37957,396 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Guest"> | Date | string
   }
 
-  export type PostCreateInput = {
+  export type HouseholdWhereInput = {
+    AND?: HouseholdWhereInput | HouseholdWhereInput[]
+    OR?: HouseholdWhereInput[]
+    NOT?: HouseholdWhereInput | HouseholdWhereInput[]
+    id?: StringFilter<"Household"> | string
+    name?: StringFilter<"Household"> | string
+    personalForUserId?: StringNullableFilter<"Household"> | string | null
+    createdAt?: DateTimeFilter<"Household"> | Date | string
+    updatedAt?: DateTimeFilter<"Household"> | Date | string
+    members?: HouseholdMemberListRelationFilter
+    properties?: PropertyListRelationFilter
+    policies?: PolicyListRelationFilter
+    investments?: InvestmentListRelationFilter
+    loans?: LoanListRelationFilter
+    billSchedules?: BillScheduleListRelationFilter
+    bills?: BillListRelationFilter
+    documents?: DocumentListRelationFilter
+    paymentTransactions?: PaymentTransactionListRelationFilter
+  }
+
+  export type HouseholdOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    personalForUserId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    members?: HouseholdMemberOrderByRelationAggregateInput
+    properties?: PropertyOrderByRelationAggregateInput
+    policies?: PolicyOrderByRelationAggregateInput
+    investments?: InvestmentOrderByRelationAggregateInput
+    loans?: LoanOrderByRelationAggregateInput
+    billSchedules?: BillScheduleOrderByRelationAggregateInput
+    bills?: BillOrderByRelationAggregateInput
+    documents?: DocumentOrderByRelationAggregateInput
+    paymentTransactions?: PaymentTransactionOrderByRelationAggregateInput
+  }
+
+  export type HouseholdWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    createdBy: UserCreateNestedOneWithoutPostsInput
+    personalForUserId?: string
+    AND?: HouseholdWhereInput | HouseholdWhereInput[]
+    OR?: HouseholdWhereInput[]
+    NOT?: HouseholdWhereInput | HouseholdWhereInput[]
+    name?: StringFilter<"Household"> | string
+    createdAt?: DateTimeFilter<"Household"> | Date | string
+    updatedAt?: DateTimeFilter<"Household"> | Date | string
+    members?: HouseholdMemberListRelationFilter
+    properties?: PropertyListRelationFilter
+    policies?: PolicyListRelationFilter
+    investments?: InvestmentListRelationFilter
+    loans?: LoanListRelationFilter
+    billSchedules?: BillScheduleListRelationFilter
+    bills?: BillListRelationFilter
+    documents?: DocumentListRelationFilter
+    paymentTransactions?: PaymentTransactionListRelationFilter
+  }, "id" | "personalForUserId">
+
+  export type HouseholdOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    personalForUserId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: HouseholdCountOrderByAggregateInput
+    _max?: HouseholdMaxOrderByAggregateInput
+    _min?: HouseholdMinOrderByAggregateInput
   }
 
-  export type PostUncheckedCreateInput = {
+  export type HouseholdScalarWhereWithAggregatesInput = {
+    AND?: HouseholdScalarWhereWithAggregatesInput | HouseholdScalarWhereWithAggregatesInput[]
+    OR?: HouseholdScalarWhereWithAggregatesInput[]
+    NOT?: HouseholdScalarWhereWithAggregatesInput | HouseholdScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Household"> | string
+    name?: StringWithAggregatesFilter<"Household"> | string
+    personalForUserId?: StringNullableWithAggregatesFilter<"Household"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Household"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"Household"> | Date | string
+  }
+
+  export type HouseholdMemberWhereInput = {
+    AND?: HouseholdMemberWhereInput | HouseholdMemberWhereInput[]
+    OR?: HouseholdMemberWhereInput[]
+    NOT?: HouseholdMemberWhereInput | HouseholdMemberWhereInput[]
+    id?: StringFilter<"HouseholdMember"> | string
+    householdId?: StringFilter<"HouseholdMember"> | string
+    userId?: StringFilter<"HouseholdMember"> | string
+    role?: EnumHouseholdRoleFilter<"HouseholdMember"> | $Enums.HouseholdRole
+    createdAt?: DateTimeFilter<"HouseholdMember"> | Date | string
+    household?: XOR<HouseholdScalarRelationFilter, HouseholdWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type HouseholdMemberOrderByWithRelationInput = {
+    id?: SortOrder
+    householdId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    household?: HouseholdOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type HouseholdMemberWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    createdById: string
+    householdId_userId?: HouseholdMemberHouseholdIdUserIdCompoundUniqueInput
+    AND?: HouseholdMemberWhereInput | HouseholdMemberWhereInput[]
+    OR?: HouseholdMemberWhereInput[]
+    NOT?: HouseholdMemberWhereInput | HouseholdMemberWhereInput[]
+    householdId?: StringFilter<"HouseholdMember"> | string
+    userId?: StringFilter<"HouseholdMember"> | string
+    role?: EnumHouseholdRoleFilter<"HouseholdMember"> | $Enums.HouseholdRole
+    createdAt?: DateTimeFilter<"HouseholdMember"> | Date | string
+    household?: XOR<HouseholdScalarRelationFilter, HouseholdWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "householdId_userId">
+
+  export type HouseholdMemberOrderByWithAggregationInput = {
+    id?: SortOrder
+    householdId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+    _count?: HouseholdMemberCountOrderByAggregateInput
+    _max?: HouseholdMemberMaxOrderByAggregateInput
+    _min?: HouseholdMemberMinOrderByAggregateInput
   }
 
-  export type PostUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdBy?: UserUpdateOneRequiredWithoutPostsNestedInput
+  export type HouseholdMemberScalarWhereWithAggregatesInput = {
+    AND?: HouseholdMemberScalarWhereWithAggregatesInput | HouseholdMemberScalarWhereWithAggregatesInput[]
+    OR?: HouseholdMemberScalarWhereWithAggregatesInput[]
+    NOT?: HouseholdMemberScalarWhereWithAggregatesInput | HouseholdMemberScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"HouseholdMember"> | string
+    householdId?: StringWithAggregatesFilter<"HouseholdMember"> | string
+    userId?: StringWithAggregatesFilter<"HouseholdMember"> | string
+    role?: EnumHouseholdRoleWithAggregatesFilter<"HouseholdMember"> | $Enums.HouseholdRole
+    createdAt?: DateTimeWithAggregatesFilter<"HouseholdMember"> | Date | string
   }
 
-  export type PostUncheckedUpdateInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdById?: StringFieldUpdateOperationsInput | string
+  export type AppMigrationWhereInput = {
+    AND?: AppMigrationWhereInput | AppMigrationWhereInput[]
+    OR?: AppMigrationWhereInput[]
+    NOT?: AppMigrationWhereInput | AppMigrationWhereInput[]
+    id?: StringFilter<"AppMigration"> | string
+    name?: StringFilter<"AppMigration"> | string
+    ranAt?: DateTimeFilter<"AppMigration"> | Date | string
   }
 
-  export type PostCreateManyInput = {
+  export type AppMigrationOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    ranAt?: SortOrder
+  }
+
+  export type AppMigrationWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    createdById: string
+    name?: string
+    AND?: AppMigrationWhereInput | AppMigrationWhereInput[]
+    OR?: AppMigrationWhereInput[]
+    NOT?: AppMigrationWhereInput | AppMigrationWhereInput[]
+    ranAt?: DateTimeFilter<"AppMigration"> | Date | string
+  }, "id" | "name">
+
+  export type AppMigrationOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    ranAt?: SortOrder
+    _count?: AppMigrationCountOrderByAggregateInput
+    _max?: AppMigrationMaxOrderByAggregateInput
+    _min?: AppMigrationMinOrderByAggregateInput
   }
 
-  export type PostUpdateManyMutationInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  export type AppMigrationScalarWhereWithAggregatesInput = {
+    AND?: AppMigrationScalarWhereWithAggregatesInput | AppMigrationScalarWhereWithAggregatesInput[]
+    OR?: AppMigrationScalarWhereWithAggregatesInput[]
+    NOT?: AppMigrationScalarWhereWithAggregatesInput | AppMigrationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AppMigration"> | string
+    name?: StringWithAggregatesFilter<"AppMigration"> | string
+    ranAt?: DateTimeWithAggregatesFilter<"AppMigration"> | Date | string
   }
 
-  export type PostUncheckedUpdateManyInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    createdById?: StringFieldUpdateOperationsInput | string
+  export type RateLimitWhereInput = {
+    AND?: RateLimitWhereInput | RateLimitWhereInput[]
+    OR?: RateLimitWhereInput[]
+    NOT?: RateLimitWhereInput | RateLimitWhereInput[]
+    id?: StringFilter<"RateLimit"> | string
+    key?: StringFilter<"RateLimit"> | string
+    count?: IntFilter<"RateLimit"> | number
+    lastRequest?: BigIntFilter<"RateLimit"> | bigint | number
+  }
+
+  export type RateLimitOrderByWithRelationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    lastRequest?: SortOrder
+  }
+
+  export type RateLimitWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    key?: string
+    AND?: RateLimitWhereInput | RateLimitWhereInput[]
+    OR?: RateLimitWhereInput[]
+    NOT?: RateLimitWhereInput | RateLimitWhereInput[]
+    count?: IntFilter<"RateLimit"> | number
+    lastRequest?: BigIntFilter<"RateLimit"> | bigint | number
+  }, "id" | "key">
+
+  export type RateLimitOrderByWithAggregationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    lastRequest?: SortOrder
+    _count?: RateLimitCountOrderByAggregateInput
+    _avg?: RateLimitAvgOrderByAggregateInput
+    _max?: RateLimitMaxOrderByAggregateInput
+    _min?: RateLimitMinOrderByAggregateInput
+    _sum?: RateLimitSumOrderByAggregateInput
+  }
+
+  export type RateLimitScalarWhereWithAggregatesInput = {
+    AND?: RateLimitScalarWhereWithAggregatesInput | RateLimitScalarWhereWithAggregatesInput[]
+    OR?: RateLimitScalarWhereWithAggregatesInput[]
+    NOT?: RateLimitScalarWhereWithAggregatesInput | RateLimitScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RateLimit"> | string
+    key?: StringWithAggregatesFilter<"RateLimit"> | string
+    count?: IntWithAggregatesFilter<"RateLimit"> | number
+    lastRequest?: BigIntWithAggregatesFilter<"RateLimit"> | bigint | number
+  }
+
+  export type AuthThrottleWhereInput = {
+    AND?: AuthThrottleWhereInput | AuthThrottleWhereInput[]
+    OR?: AuthThrottleWhereInput[]
+    NOT?: AuthThrottleWhereInput | AuthThrottleWhereInput[]
+    id?: StringFilter<"AuthThrottle"> | string
+    key?: StringFilter<"AuthThrottle"> | string
+    count?: IntFilter<"AuthThrottle"> | number
+    windowStart?: DateTimeFilter<"AuthThrottle"> | Date | string
+  }
+
+  export type AuthThrottleOrderByWithRelationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    windowStart?: SortOrder
+  }
+
+  export type AuthThrottleWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    key?: string
+    AND?: AuthThrottleWhereInput | AuthThrottleWhereInput[]
+    OR?: AuthThrottleWhereInput[]
+    NOT?: AuthThrottleWhereInput | AuthThrottleWhereInput[]
+    count?: IntFilter<"AuthThrottle"> | number
+    windowStart?: DateTimeFilter<"AuthThrottle"> | Date | string
+  }, "id" | "key">
+
+  export type AuthThrottleOrderByWithAggregationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    windowStart?: SortOrder
+    _count?: AuthThrottleCountOrderByAggregateInput
+    _avg?: AuthThrottleAvgOrderByAggregateInput
+    _max?: AuthThrottleMaxOrderByAggregateInput
+    _min?: AuthThrottleMinOrderByAggregateInput
+    _sum?: AuthThrottleSumOrderByAggregateInput
+  }
+
+  export type AuthThrottleScalarWhereWithAggregatesInput = {
+    AND?: AuthThrottleScalarWhereWithAggregatesInput | AuthThrottleScalarWhereWithAggregatesInput[]
+    OR?: AuthThrottleScalarWhereWithAggregatesInput[]
+    NOT?: AuthThrottleScalarWhereWithAggregatesInput | AuthThrottleScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"AuthThrottle"> | string
+    key?: StringWithAggregatesFilter<"AuthThrottle"> | string
+    count?: IntWithAggregatesFilter<"AuthThrottle"> | number
+    windowStart?: DateTimeWithAggregatesFilter<"AuthThrottle"> | Date | string
+  }
+
+  export type EmailSuppressionWhereInput = {
+    AND?: EmailSuppressionWhereInput | EmailSuppressionWhereInput[]
+    OR?: EmailSuppressionWhereInput[]
+    NOT?: EmailSuppressionWhereInput | EmailSuppressionWhereInput[]
+    id?: StringFilter<"EmailSuppression"> | string
+    key?: StringFilter<"EmailSuppression"> | string
+    email?: StringFilter<"EmailSuppression"> | string
+    ownerId?: StringNullableFilter<"EmailSuppression"> | string | null
+    reason?: StringFilter<"EmailSuppression"> | string
+    createdAt?: DateTimeFilter<"EmailSuppression"> | Date | string
+  }
+
+  export type EmailSuppressionOrderByWithRelationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    email?: SortOrder
+    ownerId?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EmailSuppressionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    key?: string
+    AND?: EmailSuppressionWhereInput | EmailSuppressionWhereInput[]
+    OR?: EmailSuppressionWhereInput[]
+    NOT?: EmailSuppressionWhereInput | EmailSuppressionWhereInput[]
+    email?: StringFilter<"EmailSuppression"> | string
+    ownerId?: StringNullableFilter<"EmailSuppression"> | string | null
+    reason?: StringFilter<"EmailSuppression"> | string
+    createdAt?: DateTimeFilter<"EmailSuppression"> | Date | string
+  }, "id" | "key">
+
+  export type EmailSuppressionOrderByWithAggregationInput = {
+    id?: SortOrder
+    key?: SortOrder
+    email?: SortOrder
+    ownerId?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+    _count?: EmailSuppressionCountOrderByAggregateInput
+    _max?: EmailSuppressionMaxOrderByAggregateInput
+    _min?: EmailSuppressionMinOrderByAggregateInput
+  }
+
+  export type EmailSuppressionScalarWhereWithAggregatesInput = {
+    AND?: EmailSuppressionScalarWhereWithAggregatesInput | EmailSuppressionScalarWhereWithAggregatesInput[]
+    OR?: EmailSuppressionScalarWhereWithAggregatesInput[]
+    NOT?: EmailSuppressionScalarWhereWithAggregatesInput | EmailSuppressionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"EmailSuppression"> | string
+    key?: StringWithAggregatesFilter<"EmailSuppression"> | string
+    email?: StringWithAggregatesFilter<"EmailSuppression"> | string
+    ownerId?: StringNullableWithAggregatesFilter<"EmailSuppression"> | string | null
+    reason?: StringWithAggregatesFilter<"EmailSuppression"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"EmailSuppression"> | Date | string
+  }
+
+  export type CronRunWhereInput = {
+    AND?: CronRunWhereInput | CronRunWhereInput[]
+    OR?: CronRunWhereInput[]
+    NOT?: CronRunWhereInput | CronRunWhereInput[]
+    id?: StringFilter<"CronRun"> | string
+    job?: StringFilter<"CronRun"> | string
+    lastStartedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastSucceededAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastFailedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastError?: StringNullableFilter<"CronRun"> | string | null
+  }
+
+  export type CronRunOrderByWithRelationInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+  }
+
+  export type CronRunWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    job?: string
+    AND?: CronRunWhereInput | CronRunWhereInput[]
+    OR?: CronRunWhereInput[]
+    NOT?: CronRunWhereInput | CronRunWhereInput[]
+    lastStartedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastSucceededAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastFailedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastError?: StringNullableFilter<"CronRun"> | string | null
+  }, "id" | "job">
+
+  export type CronRunOrderByWithAggregationInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+    _count?: CronRunCountOrderByAggregateInput
+    _max?: CronRunMaxOrderByAggregateInput
+    _min?: CronRunMinOrderByAggregateInput
+  }
+
+  export type CronRunScalarWhereWithAggregatesInput = {
+    AND?: CronRunScalarWhereWithAggregatesInput | CronRunScalarWhereWithAggregatesInput[]
+    OR?: CronRunScalarWhereWithAggregatesInput[]
+    NOT?: CronRunScalarWhereWithAggregatesInput | CronRunScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CronRun"> | string
+    job?: StringWithAggregatesFilter<"CronRun"> | string
+    lastStartedAt?: DateTimeNullableWithAggregatesFilter<"CronRun"> | Date | string | null
+    lastSucceededAt?: DateTimeNullableWithAggregatesFilter<"CronRun"> | Date | string | null
+    lastFailedAt?: DateTimeNullableWithAggregatesFilter<"CronRun"> | Date | string | null
+    lastError?: StringNullableWithAggregatesFilter<"CronRun"> | string | null
   }
 
   export type UserCreateInput = {
@@ -30985,8 +38366,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -31018,8 +38399,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -31050,8 +38431,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -31082,8 +38463,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -31417,6 +38798,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -31432,6 +38814,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -31484,6 +38867,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -31498,6 +38882,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31532,6 +38917,7 @@ export namespace Prisma {
   export type PropertyCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -31577,6 +38963,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31842,6 +39229,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -31851,6 +39240,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -31865,6 +39255,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -31881,6 +39272,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -31907,6 +39300,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -31916,6 +39311,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -31929,6 +39325,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -31945,6 +39342,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -31962,6 +39361,7 @@ export namespace Prisma {
   export type BillScheduleCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -31978,6 +39378,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -32000,6 +39402,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -32012,6 +39416,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32028,6 +39433,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -32042,6 +39449,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -32067,6 +39475,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -32082,6 +39491,7 @@ export namespace Prisma {
   export type BillUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -32090,6 +39500,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -32123,6 +39534,7 @@ export namespace Prisma {
   export type BillUpdateInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -32148,6 +39560,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -32162,6 +39575,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32170,6 +39584,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -32203,6 +39618,7 @@ export namespace Prisma {
   export type BillCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -32211,6 +39627,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -32240,6 +39657,7 @@ export namespace Prisma {
   export type BillUpdateManyMutationInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -32268,6 +39686,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32276,6 +39695,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -32322,6 +39742,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
@@ -32335,6 +39756,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -32381,6 +39803,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
@@ -32393,6 +39816,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -32423,6 +39847,7 @@ export namespace Prisma {
   export type PolicyCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -32465,6 +39890,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -32501,6 +39927,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
@@ -32513,6 +39940,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -32550,6 +39978,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
@@ -32561,6 +39990,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32586,6 +40016,7 @@ export namespace Prisma {
   export type InvestmentCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -32619,6 +40050,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32647,6 +40079,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -32661,6 +40094,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -32694,6 +40128,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -32707,6 +40142,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -32731,6 +40167,7 @@ export namespace Prisma {
   export type LoanCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -32761,6 +40198,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -32789,6 +40227,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     owner: UserCreateNestedOneWithoutTransactionsInput
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     bill?: BillCreateNestedOneWithoutTransactionsInput
     property?: PropertyCreateNestedOneWithoutTransactionsInput
     lease?: LeaseCreateNestedOneWithoutTransactionsInput
@@ -32800,6 +40239,7 @@ export namespace Prisma {
   export type PaymentTransactionUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -32830,6 +40270,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     bill?: BillUpdateOneWithoutTransactionsNestedInput
     property?: PropertyUpdateOneWithoutTransactionsNestedInput
     lease?: LeaseUpdateOneWithoutTransactionsNestedInput
@@ -32840,6 +40281,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -32861,6 +40303,7 @@ export namespace Prisma {
   export type PaymentTransactionCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -32894,6 +40337,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33314,6 +40758,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
@@ -33327,6 +40772,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -33349,6 +40795,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
@@ -33361,6 +40808,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33379,6 +40827,7 @@ export namespace Prisma {
   export type DocumentCreateManyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -33404,6 +40853,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33540,6 +40990,390 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type HouseholdCreateInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdCreateManyInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HouseholdUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HouseholdUncheckedUpdateManyInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HouseholdMemberCreateInput = {
+    id?: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+    household: HouseholdCreateNestedOneWithoutMembersInput
+    user: UserCreateNestedOneWithoutHouseholdsInput
+  }
+
+  export type HouseholdMemberUncheckedCreateInput = {
+    id?: string
+    householdId: string
+    userId: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+  }
+
+  export type HouseholdMemberUpdateInput = {
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneRequiredWithoutMembersNestedInput
+    user?: UserUpdateOneRequiredWithoutHouseholdsNestedInput
+  }
+
+  export type HouseholdMemberUncheckedUpdateInput = {
+    householdId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HouseholdMemberCreateManyInput = {
+    id?: string
+    householdId: string
+    userId: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+  }
+
+  export type HouseholdMemberUpdateManyMutationInput = {
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HouseholdMemberUncheckedUpdateManyInput = {
+    householdId?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppMigrationCreateInput = {
+    id?: string
+    name: string
+    ranAt?: Date | string
+  }
+
+  export type AppMigrationUncheckedCreateInput = {
+    id?: string
+    name: string
+    ranAt?: Date | string
+  }
+
+  export type AppMigrationUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    ranAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppMigrationUncheckedUpdateInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    ranAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppMigrationCreateManyInput = {
+    id?: string
+    name: string
+    ranAt?: Date | string
+  }
+
+  export type AppMigrationUpdateManyMutationInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    ranAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AppMigrationUncheckedUpdateManyInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    ranAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RateLimitCreateInput = {
+    id?: string
+    key: string
+    count: number
+    lastRequest: bigint | number
+  }
+
+  export type RateLimitUncheckedCreateInput = {
+    id?: string
+    key: string
+    count: number
+    lastRequest: bigint | number
+  }
+
+  export type RateLimitUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    lastRequest?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type RateLimitUncheckedUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    lastRequest?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type RateLimitCreateManyInput = {
+    id?: string
+    key: string
+    count: number
+    lastRequest: bigint | number
+  }
+
+  export type RateLimitUpdateManyMutationInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    lastRequest?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type RateLimitUncheckedUpdateManyInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    lastRequest?: BigIntFieldUpdateOperationsInput | bigint | number
+  }
+
+  export type AuthThrottleCreateInput = {
+    id?: string
+    key: string
+    count: number
+    windowStart: Date | string
+  }
+
+  export type AuthThrottleUncheckedCreateInput = {
+    id?: string
+    key: string
+    count: number
+    windowStart: Date | string
+  }
+
+  export type AuthThrottleUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthThrottleUncheckedUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthThrottleCreateManyInput = {
+    id?: string
+    key: string
+    count: number
+    windowStart: Date | string
+  }
+
+  export type AuthThrottleUpdateManyMutationInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuthThrottleUncheckedUpdateManyInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    count?: IntFieldUpdateOperationsInput | number
+    windowStart?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailSuppressionCreateInput = {
+    id?: string
+    key: string
+    email: string
+    ownerId?: string | null
+    reason: string
+    createdAt?: Date | string
+  }
+
+  export type EmailSuppressionUncheckedCreateInput = {
+    id?: string
+    key: string
+    email: string
+    ownerId?: string | null
+    reason: string
+    createdAt?: Date | string
+  }
+
+  export type EmailSuppressionUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailSuppressionUncheckedUpdateInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailSuppressionCreateManyInput = {
+    id?: string
+    key: string
+    email: string
+    ownerId?: string | null
+    reason: string
+    createdAt?: Date | string
+  }
+
+  export type EmailSuppressionUpdateManyMutationInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type EmailSuppressionUncheckedUpdateManyInput = {
+    key?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    ownerId?: NullableStringFieldUpdateOperationsInput | string | null
+    reason?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CronRunCreateInput = {
+    id?: string
+    job: string
+    lastStartedAt?: Date | string | null
+    lastSucceededAt?: Date | string | null
+    lastFailedAt?: Date | string | null
+    lastError?: string | null
+  }
+
+  export type CronRunUncheckedCreateInput = {
+    id?: string
+    job: string
+    lastStartedAt?: Date | string | null
+    lastSucceededAt?: Date | string | null
+    lastFailedAt?: Date | string | null
+    lastError?: string | null
+  }
+
+  export type CronRunUpdateInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CronRunUncheckedUpdateInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CronRunCreateManyInput = {
+    id?: string
+    job: string
+    lastStartedAt?: Date | string | null
+    lastSucceededAt?: Date | string | null
+    lastFailedAt?: Date | string | null
+    lastError?: string | null
+  }
+
+  export type CronRunUpdateManyMutationInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CronRunUncheckedUpdateManyInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -33553,78 +41387,6 @@ export namespace Prisma {
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     mode?: QueryMode
     not?: NestedStringFilter<$PrismaModel> | string
-  }
-
-  export type DateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type UserScalarRelationFilter = {
-    is?: UserWhereInput
-    isNot?: UserWhereInput
-  }
-
-  export type PostCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    createdById?: SortOrder
-  }
-
-  export type PostMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    createdById?: SortOrder
-  }
-
-  export type PostMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-    createdById?: SortOrder
-  }
-
-  export type StringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type BoolFilter<$PrismaModel = never> = {
@@ -33685,22 +41447,33 @@ export namespace Prisma {
     isSet?: boolean
   }
 
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
   export type SessionListRelationFilter = {
     every?: SessionWhereInput
     some?: SessionWhereInput
     none?: SessionWhereInput
   }
 
+  export type HouseholdMemberListRelationFilter = {
+    every?: HouseholdMemberWhereInput
+    some?: HouseholdMemberWhereInput
+    none?: HouseholdMemberWhereInput
+  }
+
   export type AccountListRelationFilter = {
     every?: AccountWhereInput
     some?: AccountWhereInput
     none?: AccountWhereInput
-  }
-
-  export type PostListRelationFilter = {
-    every?: PostWhereInput
-    some?: PostWhereInput
-    none?: PostWhereInput
   }
 
   export type GuestListRelationFilter = {
@@ -33779,11 +41552,11 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type AccountOrderByRelationAggregateInput = {
+  export type HouseholdMemberOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type PostOrderByRelationAggregateInput = {
+  export type AccountOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -33897,6 +41670,24 @@ export namespace Prisma {
     reminderHour?: SortOrder
   }
 
+  export type StringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
   export type BoolWithAggregatesFilter<$PrismaModel = never> = {
     equals?: boolean | BooleanFieldRefInput<$PrismaModel>
     not?: NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
@@ -33973,6 +41764,25 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
     isSet?: boolean
+  }
+
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
   }
 
   export type SessionCountOrderByAggregateInput = {
@@ -34137,6 +41947,11 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type HouseholdNullableScalarRelationFilter = {
+    is?: HouseholdWhereInput | null
+    isNot?: HouseholdWhereInput | null
+  }
+
   export type RoomListRelationFilter = {
     every?: RoomWhereInput
     some?: RoomWhereInput
@@ -34160,6 +41975,7 @@ export namespace Prisma {
   export type PropertyCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     uniquePropertyId?: SortOrder
@@ -34189,6 +42005,7 @@ export namespace Prisma {
   export type PropertyMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     uniquePropertyId?: SortOrder
@@ -34212,6 +42029,7 @@ export namespace Prisma {
   export type PropertyMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     uniquePropertyId?: SortOrder
@@ -34534,6 +42352,7 @@ export namespace Prisma {
   export type BillScheduleCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     propertyId?: SortOrder
     leaseId?: SortOrder
@@ -34550,6 +42369,8 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
+    endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -34569,6 +42390,7 @@ export namespace Prisma {
   export type BillScheduleMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     propertyId?: SortOrder
     leaseId?: SortOrder
@@ -34585,6 +42407,8 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
+    endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -34597,6 +42421,7 @@ export namespace Prisma {
   export type BillScheduleMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     propertyId?: SortOrder
     leaseId?: SortOrder
@@ -34613,6 +42438,8 @@ export namespace Prisma {
     startDate?: SortOrder
     dueDay?: SortOrder
     dueMonth?: SortOrder
+    endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -34725,6 +42552,7 @@ export namespace Prisma {
   export type BillCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     direction?: SortOrder
     billScheduleId?: SortOrder
@@ -34733,6 +42561,7 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
+    generationKey?: SortOrder
     dueDate?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -34773,6 +42602,7 @@ export namespace Prisma {
   export type BillMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     direction?: SortOrder
     billScheduleId?: SortOrder
@@ -34781,6 +42611,7 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
+    generationKey?: SortOrder
     dueDate?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -34810,6 +42641,7 @@ export namespace Prisma {
   export type BillMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     direction?: SortOrder
     billScheduleId?: SortOrder
@@ -34818,6 +42650,7 @@ export namespace Prisma {
     loanId?: SortOrder
     policyId?: SortOrder
     investmentId?: SortOrder
+    generationKey?: SortOrder
     dueDate?: SortOrder
     amount?: SortOrder
     currency?: SortOrder
@@ -34914,6 +42747,7 @@ export namespace Prisma {
   export type PolicyCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     type?: SortOrder
     insurer?: SortOrder
     policyNumber?: SortOrder
@@ -34945,6 +42779,7 @@ export namespace Prisma {
   export type PolicyMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     type?: SortOrder
     insurer?: SortOrder
     policyNumber?: SortOrder
@@ -34966,6 +42801,7 @@ export namespace Prisma {
   export type PolicyMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     type?: SortOrder
     insurer?: SortOrder
     policyNumber?: SortOrder
@@ -35022,6 +42858,7 @@ export namespace Prisma {
   export type InvestmentCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     institution?: SortOrder
@@ -35046,6 +42883,7 @@ export namespace Prisma {
   export type InvestmentMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     institution?: SortOrder
@@ -35064,6 +42902,7 @@ export namespace Prisma {
   export type InvestmentMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     name?: SortOrder
     type?: SortOrder
     institution?: SortOrder
@@ -35105,6 +42944,7 @@ export namespace Prisma {
   export type LoanCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     lender?: SortOrder
     type?: SortOrder
     principal?: SortOrder
@@ -35129,6 +42969,7 @@ export namespace Prisma {
   export type LoanMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     lender?: SortOrder
     type?: SortOrder
     principal?: SortOrder
@@ -35147,6 +42988,7 @@ export namespace Prisma {
   export type LoanMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     lender?: SortOrder
     type?: SortOrder
     principal?: SortOrder
@@ -35193,6 +43035,7 @@ export namespace Prisma {
   export type PaymentTransactionCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     billId?: SortOrder
     propertyId?: SortOrder
@@ -35218,6 +43061,7 @@ export namespace Prisma {
   export type PaymentTransactionMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     billId?: SortOrder
     propertyId?: SortOrder
@@ -35239,6 +43083,7 @@ export namespace Prisma {
   export type PaymentTransactionMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     category?: SortOrder
     billId?: SortOrder
     propertyId?: SortOrder
@@ -35560,6 +43405,7 @@ export namespace Prisma {
   export type DocumentCountOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     propertyId?: SortOrder
     roomId?: SortOrder
     leaseId?: SortOrder
@@ -35578,6 +43424,7 @@ export namespace Prisma {
   export type DocumentMaxOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     propertyId?: SortOrder
     roomId?: SortOrder
     leaseId?: SortOrder
@@ -35596,6 +43443,7 @@ export namespace Prisma {
   export type DocumentMinOrderByAggregateInput = {
     id?: SortOrder
     ownerId?: SortOrder
+    householdId?: SortOrder
     propertyId?: SortOrder
     roomId?: SortOrder
     leaseId?: SortOrder
@@ -35667,26 +43515,238 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type UserCreateNestedOneWithoutPostsInput = {
-    create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPostsInput
-    connect?: UserWhereUniqueInput
+  export type HouseholdCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    personalForUserId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
+  export type HouseholdMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    personalForUserId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
+  export type HouseholdMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    personalForUserId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
-  export type UserUpdateOneRequiredWithoutPostsNestedInput = {
-    create?: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutPostsInput
-    upsert?: UserUpsertWithoutPostsInput
-    connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPostsInput, UserUpdateWithoutPostsInput>, UserUncheckedUpdateWithoutPostsInput>
+  export type EnumHouseholdRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.HouseholdRole | EnumHouseholdRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumHouseholdRoleFilter<$PrismaModel> | $Enums.HouseholdRole
+  }
+
+  export type HouseholdScalarRelationFilter = {
+    is?: HouseholdWhereInput
+    isNot?: HouseholdWhereInput
+  }
+
+  export type HouseholdMemberHouseholdIdUserIdCompoundUniqueInput = {
+    householdId: string
+    userId: string
+  }
+
+  export type HouseholdMemberCountOrderByAggregateInput = {
+    id?: SortOrder
+    householdId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HouseholdMemberMaxOrderByAggregateInput = {
+    id?: SortOrder
+    householdId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type HouseholdMemberMinOrderByAggregateInput = {
+    id?: SortOrder
+    householdId?: SortOrder
+    userId?: SortOrder
+    role?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumHouseholdRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.HouseholdRole | EnumHouseholdRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumHouseholdRoleWithAggregatesFilter<$PrismaModel> | $Enums.HouseholdRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumHouseholdRoleFilter<$PrismaModel>
+    _max?: NestedEnumHouseholdRoleFilter<$PrismaModel>
+  }
+
+  export type AppMigrationCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    ranAt?: SortOrder
+  }
+
+  export type AppMigrationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    ranAt?: SortOrder
+  }
+
+  export type AppMigrationMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    ranAt?: SortOrder
+  }
+
+  export type BigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
+  }
+
+  export type RateLimitCountOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    lastRequest?: SortOrder
+  }
+
+  export type RateLimitAvgOrderByAggregateInput = {
+    count?: SortOrder
+    lastRequest?: SortOrder
+  }
+
+  export type RateLimitMaxOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    lastRequest?: SortOrder
+  }
+
+  export type RateLimitMinOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    lastRequest?: SortOrder
+  }
+
+  export type RateLimitSumOrderByAggregateInput = {
+    count?: SortOrder
+    lastRequest?: SortOrder
+  }
+
+  export type BigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
+  }
+
+  export type AuthThrottleCountOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    windowStart?: SortOrder
+  }
+
+  export type AuthThrottleAvgOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
+  export type AuthThrottleMaxOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    windowStart?: SortOrder
+  }
+
+  export type AuthThrottleMinOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    count?: SortOrder
+    windowStart?: SortOrder
+  }
+
+  export type AuthThrottleSumOrderByAggregateInput = {
+    count?: SortOrder
+  }
+
+  export type EmailSuppressionCountOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    email?: SortOrder
+    ownerId?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EmailSuppressionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    email?: SortOrder
+    ownerId?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EmailSuppressionMinOrderByAggregateInput = {
+    id?: SortOrder
+    key?: SortOrder
+    email?: SortOrder
+    ownerId?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type CronRunCountOrderByAggregateInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+  }
+
+  export type CronRunMaxOrderByAggregateInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+  }
+
+  export type CronRunMinOrderByAggregateInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {
@@ -35696,18 +43756,18 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type HouseholdMemberCreateNestedManyWithoutUserInput = {
+    create?: XOR<HouseholdMemberCreateWithoutUserInput, HouseholdMemberUncheckedCreateWithoutUserInput> | HouseholdMemberCreateWithoutUserInput[] | HouseholdMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutUserInput | HouseholdMemberCreateOrConnectWithoutUserInput[]
+    createMany?: HouseholdMemberCreateManyUserInputEnvelope
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+  }
+
   export type AccountCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
     createMany?: AccountCreateManyUserInputEnvelope
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-  }
-
-  export type PostCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<PostCreateWithoutCreatedByInput, PostUncheckedCreateWithoutCreatedByInput> | PostCreateWithoutCreatedByInput[] | PostUncheckedCreateWithoutCreatedByInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutCreatedByInput | PostCreateOrConnectWithoutCreatedByInput[]
-    createMany?: PostCreateManyCreatedByInputEnvelope
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
   }
 
   export type GuestCreateNestedManyWithoutOwnerInput = {
@@ -35801,18 +43861,18 @@ export namespace Prisma {
     connect?: SessionWhereUniqueInput | SessionWhereUniqueInput[]
   }
 
+  export type HouseholdMemberUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<HouseholdMemberCreateWithoutUserInput, HouseholdMemberUncheckedCreateWithoutUserInput> | HouseholdMemberCreateWithoutUserInput[] | HouseholdMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutUserInput | HouseholdMemberCreateOrConnectWithoutUserInput[]
+    createMany?: HouseholdMemberCreateManyUserInputEnvelope
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+  }
+
   export type AccountUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
     createMany?: AccountCreateManyUserInputEnvelope
     connect?: AccountWhereUniqueInput | AccountWhereUniqueInput[]
-  }
-
-  export type PostUncheckedCreateNestedManyWithoutCreatedByInput = {
-    create?: XOR<PostCreateWithoutCreatedByInput, PostUncheckedCreateWithoutCreatedByInput> | PostCreateWithoutCreatedByInput[] | PostUncheckedCreateWithoutCreatedByInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutCreatedByInput | PostCreateOrConnectWithoutCreatedByInput[]
-    createMany?: PostCreateManyCreatedByInputEnvelope
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
   }
 
   export type GuestUncheckedCreateNestedManyWithoutOwnerInput = {
@@ -35899,6 +43959,10 @@ export namespace Prisma {
     connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
   }
 
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
   export type BoolFieldUpdateOperationsInput = {
     set?: boolean
   }
@@ -35931,6 +43995,10 @@ export namespace Prisma {
     unset?: boolean
   }
 
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
   export type SessionUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -35945,6 +44013,20 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type HouseholdMemberUpdateManyWithoutUserNestedInput = {
+    create?: XOR<HouseholdMemberCreateWithoutUserInput, HouseholdMemberUncheckedCreateWithoutUserInput> | HouseholdMemberCreateWithoutUserInput[] | HouseholdMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutUserInput | HouseholdMemberCreateOrConnectWithoutUserInput[]
+    upsert?: HouseholdMemberUpsertWithWhereUniqueWithoutUserInput | HouseholdMemberUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: HouseholdMemberCreateManyUserInputEnvelope
+    set?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    disconnect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    delete?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    update?: HouseholdMemberUpdateWithWhereUniqueWithoutUserInput | HouseholdMemberUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: HouseholdMemberUpdateManyWithWhereWithoutUserInput | HouseholdMemberUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: HouseholdMemberScalarWhereInput | HouseholdMemberScalarWhereInput[]
+  }
+
   export type AccountUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -35957,20 +44039,6 @@ export namespace Prisma {
     update?: AccountUpdateWithWhereUniqueWithoutUserInput | AccountUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AccountUpdateManyWithWhereWithoutUserInput | AccountUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
-  }
-
-  export type PostUpdateManyWithoutCreatedByNestedInput = {
-    create?: XOR<PostCreateWithoutCreatedByInput, PostUncheckedCreateWithoutCreatedByInput> | PostCreateWithoutCreatedByInput[] | PostUncheckedCreateWithoutCreatedByInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutCreatedByInput | PostCreateOrConnectWithoutCreatedByInput[]
-    upsert?: PostUpsertWithWhereUniqueWithoutCreatedByInput | PostUpsertWithWhereUniqueWithoutCreatedByInput[]
-    createMany?: PostCreateManyCreatedByInputEnvelope
-    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    update?: PostUpdateWithWhereUniqueWithoutCreatedByInput | PostUpdateWithWhereUniqueWithoutCreatedByInput[]
-    updateMany?: PostUpdateManyWithWhereWithoutCreatedByInput | PostUpdateManyWithWhereWithoutCreatedByInput[]
-    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
   }
 
   export type GuestUpdateManyWithoutOwnerNestedInput = {
@@ -36155,6 +44223,20 @@ export namespace Prisma {
     deleteMany?: SessionScalarWhereInput | SessionScalarWhereInput[]
   }
 
+  export type HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<HouseholdMemberCreateWithoutUserInput, HouseholdMemberUncheckedCreateWithoutUserInput> | HouseholdMemberCreateWithoutUserInput[] | HouseholdMemberUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutUserInput | HouseholdMemberCreateOrConnectWithoutUserInput[]
+    upsert?: HouseholdMemberUpsertWithWhereUniqueWithoutUserInput | HouseholdMemberUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: HouseholdMemberCreateManyUserInputEnvelope
+    set?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    disconnect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    delete?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    update?: HouseholdMemberUpdateWithWhereUniqueWithoutUserInput | HouseholdMemberUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: HouseholdMemberUpdateManyWithWhereWithoutUserInput | HouseholdMemberUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: HouseholdMemberScalarWhereInput | HouseholdMemberScalarWhereInput[]
+  }
+
   export type AccountUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<AccountCreateWithoutUserInput, AccountUncheckedCreateWithoutUserInput> | AccountCreateWithoutUserInput[] | AccountUncheckedCreateWithoutUserInput[]
     connectOrCreate?: AccountCreateOrConnectWithoutUserInput | AccountCreateOrConnectWithoutUserInput[]
@@ -36167,20 +44249,6 @@ export namespace Prisma {
     update?: AccountUpdateWithWhereUniqueWithoutUserInput | AccountUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: AccountUpdateManyWithWhereWithoutUserInput | AccountUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: AccountScalarWhereInput | AccountScalarWhereInput[]
-  }
-
-  export type PostUncheckedUpdateManyWithoutCreatedByNestedInput = {
-    create?: XOR<PostCreateWithoutCreatedByInput, PostUncheckedCreateWithoutCreatedByInput> | PostCreateWithoutCreatedByInput[] | PostUncheckedCreateWithoutCreatedByInput[]
-    connectOrCreate?: PostCreateOrConnectWithoutCreatedByInput | PostCreateOrConnectWithoutCreatedByInput[]
-    upsert?: PostUpsertWithWhereUniqueWithoutCreatedByInput | PostUpsertWithWhereUniqueWithoutCreatedByInput[]
-    createMany?: PostCreateManyCreatedByInputEnvelope
-    set?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    disconnect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    delete?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    connect?: PostWhereUniqueInput | PostWhereUniqueInput[]
-    update?: PostUpdateWithWhereUniqueWithoutCreatedByInput | PostUpdateWithWhereUniqueWithoutCreatedByInput[]
-    updateMany?: PostUpdateManyWithWhereWithoutCreatedByInput | PostUpdateManyWithWhereWithoutCreatedByInput[]
-    deleteMany?: PostScalarWhereInput | PostScalarWhereInput[]
   }
 
   export type GuestUncheckedUpdateManyWithoutOwnerNestedInput = {
@@ -36389,6 +44457,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutPropertiesInput = {
+    create?: XOR<HouseholdCreateWithoutPropertiesInput, HouseholdUncheckedCreateWithoutPropertiesInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutPropertiesInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type RoomCreateNestedManyWithoutPropertyInput = {
     create?: XOR<RoomCreateWithoutPropertyInput, RoomUncheckedCreateWithoutPropertyInput> | RoomCreateWithoutPropertyInput[] | RoomUncheckedCreateWithoutPropertyInput[]
     connectOrCreate?: RoomCreateOrConnectWithoutPropertyInput | RoomCreateOrConnectWithoutPropertyInput[]
@@ -36568,6 +44642,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPropertiesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPropertiesInput, UserUpdateWithoutPropertiesInput>, UserUncheckedUpdateWithoutPropertiesInput>
+  }
+
+  export type HouseholdUpdateOneWithoutPropertiesNestedInput = {
+    create?: XOR<HouseholdCreateWithoutPropertiesInput, HouseholdUncheckedCreateWithoutPropertiesInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutPropertiesInput
+    upsert?: HouseholdUpsertWithoutPropertiesInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutPropertiesInput, HouseholdUpdateWithoutPropertiesInput>, HouseholdUncheckedUpdateWithoutPropertiesInput>
   }
 
   export type RoomUpdateManyWithoutPropertyNestedInput = {
@@ -37256,6 +45340,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutBillSchedulesInput = {
+    create?: XOR<HouseholdCreateWithoutBillSchedulesInput, HouseholdUncheckedCreateWithoutBillSchedulesInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutBillSchedulesInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type PropertyCreateNestedOneWithoutBillSchedulesInput = {
     create?: XOR<PropertyCreateWithoutBillSchedulesInput, PropertyUncheckedCreateWithoutBillSchedulesInput>
     connectOrCreate?: PropertyCreateOrConnectWithoutBillSchedulesInput
@@ -37381,6 +45471,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutBillSchedulesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBillSchedulesInput, UserUpdateWithoutBillSchedulesInput>, UserUncheckedUpdateWithoutBillSchedulesInput>
+  }
+
+  export type HouseholdUpdateOneWithoutBillSchedulesNestedInput = {
+    create?: XOR<HouseholdCreateWithoutBillSchedulesInput, HouseholdUncheckedCreateWithoutBillSchedulesInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutBillSchedulesInput
+    upsert?: HouseholdUpsertWithoutBillSchedulesInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutBillSchedulesInput, HouseholdUpdateWithoutBillSchedulesInput>, HouseholdUncheckedUpdateWithoutBillSchedulesInput>
   }
 
   export type PropertyUpdateOneWithoutBillSchedulesNestedInput = {
@@ -37551,6 +45651,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutBillsInput = {
+    create?: XOR<HouseholdCreateWithoutBillsInput, HouseholdUncheckedCreateWithoutBillsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutBillsInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type BillScheduleCreateNestedOneWithoutBillsInput = {
     create?: XOR<BillScheduleCreateWithoutBillsInput, BillScheduleUncheckedCreateWithoutBillsInput>
     connectOrCreate?: BillScheduleCreateOrConnectWithoutBillsInput
@@ -37667,6 +45773,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutBillsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutBillsInput, UserUpdateWithoutBillsInput>, UserUncheckedUpdateWithoutBillsInput>
+  }
+
+  export type HouseholdUpdateOneWithoutBillsNestedInput = {
+    create?: XOR<HouseholdCreateWithoutBillsInput, HouseholdUncheckedCreateWithoutBillsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutBillsInput
+    upsert?: HouseholdUpsertWithoutBillsInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutBillsInput, HouseholdUpdateWithoutBillsInput>, HouseholdUncheckedUpdateWithoutBillsInput>
   }
 
   export type BillScheduleUpdateOneWithoutBillsNestedInput = {
@@ -37855,6 +45971,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutPoliciesInput = {
+    create?: XOR<HouseholdCreateWithoutPoliciesInput, HouseholdUncheckedCreateWithoutPoliciesInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutPoliciesInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type PropertyCreateNestedOneWithoutPoliciesInput = {
     create?: XOR<PropertyCreateWithoutPoliciesInput, PropertyUncheckedCreateWithoutPoliciesInput>
     connectOrCreate?: PropertyCreateOrConnectWithoutPoliciesInput
@@ -37983,6 +46105,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutPoliciesInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutPoliciesInput, UserUpdateWithoutPoliciesInput>, UserUncheckedUpdateWithoutPoliciesInput>
+  }
+
+  export type HouseholdUpdateOneWithoutPoliciesNestedInput = {
+    create?: XOR<HouseholdCreateWithoutPoliciesInput, HouseholdUncheckedCreateWithoutPoliciesInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutPoliciesInput
+    upsert?: HouseholdUpsertWithoutPoliciesInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutPoliciesInput, HouseholdUpdateWithoutPoliciesInput>, HouseholdUncheckedUpdateWithoutPoliciesInput>
   }
 
   export type PropertyUpdateOneWithoutPoliciesNestedInput = {
@@ -38197,6 +46329,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutInvestmentsInput = {
+    create?: XOR<HouseholdCreateWithoutInvestmentsInput, HouseholdUncheckedCreateWithoutInvestmentsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutInvestmentsInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type BillScheduleCreateNestedManyWithoutInvestmentInput = {
     create?: XOR<BillScheduleCreateWithoutInvestmentInput, BillScheduleUncheckedCreateWithoutInvestmentInput> | BillScheduleCreateWithoutInvestmentInput[] | BillScheduleUncheckedCreateWithoutInvestmentInput[]
     connectOrCreate?: BillScheduleCreateOrConnectWithoutInvestmentInput | BillScheduleCreateOrConnectWithoutInvestmentInput[]
@@ -38305,6 +46443,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutInvestmentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutInvestmentsInput, UserUpdateWithoutInvestmentsInput>, UserUncheckedUpdateWithoutInvestmentsInput>
+  }
+
+  export type HouseholdUpdateOneWithoutInvestmentsNestedInput = {
+    create?: XOR<HouseholdCreateWithoutInvestmentsInput, HouseholdUncheckedCreateWithoutInvestmentsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutInvestmentsInput
+    upsert?: HouseholdUpsertWithoutInvestmentsInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutInvestmentsInput, HouseholdUpdateWithoutInvestmentsInput>, HouseholdUncheckedUpdateWithoutInvestmentsInput>
   }
 
   export type BillScheduleUpdateManyWithoutInvestmentNestedInput = {
@@ -38509,6 +46657,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutLoansInput = {
+    create?: XOR<HouseholdCreateWithoutLoansInput, HouseholdUncheckedCreateWithoutLoansInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutLoansInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type PropertyCreateNestedOneWithoutLoansInput = {
     create?: XOR<PropertyCreateWithoutLoansInput, PropertyUncheckedCreateWithoutLoansInput>
     connectOrCreate?: PropertyCreateOrConnectWithoutLoansInput
@@ -38621,6 +46775,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutLoansInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutLoansInput, UserUpdateWithoutLoansInput>, UserUncheckedUpdateWithoutLoansInput>
+  }
+
+  export type HouseholdUpdateOneWithoutLoansNestedInput = {
+    create?: XOR<HouseholdCreateWithoutLoansInput, HouseholdUncheckedCreateWithoutLoansInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutLoansInput
+    upsert?: HouseholdUpsertWithoutLoansInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutLoansInput, HouseholdUpdateWithoutLoansInput>, HouseholdUncheckedUpdateWithoutLoansInput>
   }
 
   export type PropertyUpdateOneWithoutLoansNestedInput = {
@@ -38827,6 +46991,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutPaymentTransactionsInput = {
+    create?: XOR<HouseholdCreateWithoutPaymentTransactionsInput, HouseholdUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutPaymentTransactionsInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type BillCreateNestedOneWithoutTransactionsInput = {
     create?: XOR<BillCreateWithoutTransactionsInput, BillUncheckedCreateWithoutTransactionsInput>
     connectOrCreate?: BillCreateOrConnectWithoutTransactionsInput
@@ -38873,6 +47043,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutTransactionsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTransactionsInput, UserUpdateWithoutTransactionsInput>, UserUncheckedUpdateWithoutTransactionsInput>
+  }
+
+  export type HouseholdUpdateOneWithoutPaymentTransactionsNestedInput = {
+    create?: XOR<HouseholdCreateWithoutPaymentTransactionsInput, HouseholdUncheckedCreateWithoutPaymentTransactionsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutPaymentTransactionsInput
+    upsert?: HouseholdUpsertWithoutPaymentTransactionsInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutPaymentTransactionsInput, HouseholdUpdateWithoutPaymentTransactionsInput>, HouseholdUncheckedUpdateWithoutPaymentTransactionsInput>
   }
 
   export type BillUpdateOneWithoutTransactionsNestedInput = {
@@ -39288,6 +47468,12 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type HouseholdCreateNestedOneWithoutDocumentsInput = {
+    create?: XOR<HouseholdCreateWithoutDocumentsInput, HouseholdUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutDocumentsInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
   export type PropertyCreateNestedOneWithoutDocumentsInput = {
     create?: XOR<PropertyCreateWithoutDocumentsInput, PropertyUncheckedCreateWithoutDocumentsInput>
     connectOrCreate?: PropertyCreateOrConnectWithoutDocumentsInput
@@ -39342,6 +47528,16 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutDocumentsInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutDocumentsInput, UserUpdateWithoutDocumentsInput>, UserUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type HouseholdUpdateOneWithoutDocumentsNestedInput = {
+    create?: XOR<HouseholdCreateWithoutDocumentsInput, HouseholdUncheckedCreateWithoutDocumentsInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutDocumentsInput
+    upsert?: HouseholdUpsertWithoutDocumentsInput
+    disconnect?: boolean
+    delete?: HouseholdWhereInput | boolean
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutDocumentsInput, HouseholdUpdateWithoutDocumentsInput>, HouseholdUncheckedUpdateWithoutDocumentsInput>
   }
 
   export type PropertyUpdateOneWithoutDocumentsNestedInput = {
@@ -39465,6 +47661,424 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGuestsInput, UserUpdateWithoutGuestsInput>, UserUncheckedUpdateWithoutGuestsInput>
   }
 
+  export type HouseholdMemberCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<HouseholdMemberCreateWithoutHouseholdInput, HouseholdMemberUncheckedCreateWithoutHouseholdInput> | HouseholdMemberCreateWithoutHouseholdInput[] | HouseholdMemberUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutHouseholdInput | HouseholdMemberCreateOrConnectWithoutHouseholdInput[]
+    createMany?: HouseholdMemberCreateManyHouseholdInputEnvelope
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+  }
+
+  export type PropertyCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<PropertyCreateWithoutHouseholdInput, PropertyUncheckedCreateWithoutHouseholdInput> | PropertyCreateWithoutHouseholdInput[] | PropertyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PropertyCreateOrConnectWithoutHouseholdInput | PropertyCreateOrConnectWithoutHouseholdInput[]
+    createMany?: PropertyCreateManyHouseholdInputEnvelope
+    connect?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+  }
+
+  export type PolicyCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<PolicyCreateWithoutHouseholdInput, PolicyUncheckedCreateWithoutHouseholdInput> | PolicyCreateWithoutHouseholdInput[] | PolicyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutHouseholdInput | PolicyCreateOrConnectWithoutHouseholdInput[]
+    createMany?: PolicyCreateManyHouseholdInputEnvelope
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+  }
+
+  export type InvestmentCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<InvestmentCreateWithoutHouseholdInput, InvestmentUncheckedCreateWithoutHouseholdInput> | InvestmentCreateWithoutHouseholdInput[] | InvestmentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutHouseholdInput | InvestmentCreateOrConnectWithoutHouseholdInput[]
+    createMany?: InvestmentCreateManyHouseholdInputEnvelope
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+  }
+
+  export type LoanCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<LoanCreateWithoutHouseholdInput, LoanUncheckedCreateWithoutHouseholdInput> | LoanCreateWithoutHouseholdInput[] | LoanUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutHouseholdInput | LoanCreateOrConnectWithoutHouseholdInput[]
+    createMany?: LoanCreateManyHouseholdInputEnvelope
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+  }
+
+  export type BillScheduleCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<BillScheduleCreateWithoutHouseholdInput, BillScheduleUncheckedCreateWithoutHouseholdInput> | BillScheduleCreateWithoutHouseholdInput[] | BillScheduleUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillScheduleCreateOrConnectWithoutHouseholdInput | BillScheduleCreateOrConnectWithoutHouseholdInput[]
+    createMany?: BillScheduleCreateManyHouseholdInputEnvelope
+    connect?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+  }
+
+  export type BillCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<BillCreateWithoutHouseholdInput, BillUncheckedCreateWithoutHouseholdInput> | BillCreateWithoutHouseholdInput[] | BillUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutHouseholdInput | BillCreateOrConnectWithoutHouseholdInput[]
+    createMany?: BillCreateManyHouseholdInputEnvelope
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  }
+
+  export type DocumentCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<DocumentCreateWithoutHouseholdInput, DocumentUncheckedCreateWithoutHouseholdInput> | DocumentCreateWithoutHouseholdInput[] | DocumentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutHouseholdInput | DocumentCreateOrConnectWithoutHouseholdInput[]
+    createMany?: DocumentCreateManyHouseholdInputEnvelope
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+  }
+
+  export type PaymentTransactionCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<PaymentTransactionCreateWithoutHouseholdInput, PaymentTransactionUncheckedCreateWithoutHouseholdInput> | PaymentTransactionCreateWithoutHouseholdInput[] | PaymentTransactionUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutHouseholdInput | PaymentTransactionCreateOrConnectWithoutHouseholdInput[]
+    createMany?: PaymentTransactionCreateManyHouseholdInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+  }
+
+  export type HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<HouseholdMemberCreateWithoutHouseholdInput, HouseholdMemberUncheckedCreateWithoutHouseholdInput> | HouseholdMemberCreateWithoutHouseholdInput[] | HouseholdMemberUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutHouseholdInput | HouseholdMemberCreateOrConnectWithoutHouseholdInput[]
+    createMany?: HouseholdMemberCreateManyHouseholdInputEnvelope
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+  }
+
+  export type PropertyUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<PropertyCreateWithoutHouseholdInput, PropertyUncheckedCreateWithoutHouseholdInput> | PropertyCreateWithoutHouseholdInput[] | PropertyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PropertyCreateOrConnectWithoutHouseholdInput | PropertyCreateOrConnectWithoutHouseholdInput[]
+    createMany?: PropertyCreateManyHouseholdInputEnvelope
+    connect?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+  }
+
+  export type PolicyUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<PolicyCreateWithoutHouseholdInput, PolicyUncheckedCreateWithoutHouseholdInput> | PolicyCreateWithoutHouseholdInput[] | PolicyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutHouseholdInput | PolicyCreateOrConnectWithoutHouseholdInput[]
+    createMany?: PolicyCreateManyHouseholdInputEnvelope
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+  }
+
+  export type InvestmentUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<InvestmentCreateWithoutHouseholdInput, InvestmentUncheckedCreateWithoutHouseholdInput> | InvestmentCreateWithoutHouseholdInput[] | InvestmentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutHouseholdInput | InvestmentCreateOrConnectWithoutHouseholdInput[]
+    createMany?: InvestmentCreateManyHouseholdInputEnvelope
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+  }
+
+  export type LoanUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<LoanCreateWithoutHouseholdInput, LoanUncheckedCreateWithoutHouseholdInput> | LoanCreateWithoutHouseholdInput[] | LoanUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutHouseholdInput | LoanCreateOrConnectWithoutHouseholdInput[]
+    createMany?: LoanCreateManyHouseholdInputEnvelope
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+  }
+
+  export type BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<BillScheduleCreateWithoutHouseholdInput, BillScheduleUncheckedCreateWithoutHouseholdInput> | BillScheduleCreateWithoutHouseholdInput[] | BillScheduleUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillScheduleCreateOrConnectWithoutHouseholdInput | BillScheduleCreateOrConnectWithoutHouseholdInput[]
+    createMany?: BillScheduleCreateManyHouseholdInputEnvelope
+    connect?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+  }
+
+  export type BillUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<BillCreateWithoutHouseholdInput, BillUncheckedCreateWithoutHouseholdInput> | BillCreateWithoutHouseholdInput[] | BillUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutHouseholdInput | BillCreateOrConnectWithoutHouseholdInput[]
+    createMany?: BillCreateManyHouseholdInputEnvelope
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+  }
+
+  export type DocumentUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<DocumentCreateWithoutHouseholdInput, DocumentUncheckedCreateWithoutHouseholdInput> | DocumentCreateWithoutHouseholdInput[] | DocumentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutHouseholdInput | DocumentCreateOrConnectWithoutHouseholdInput[]
+    createMany?: DocumentCreateManyHouseholdInputEnvelope
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+  }
+
+  export type PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput = {
+    create?: XOR<PaymentTransactionCreateWithoutHouseholdInput, PaymentTransactionUncheckedCreateWithoutHouseholdInput> | PaymentTransactionCreateWithoutHouseholdInput[] | PaymentTransactionUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutHouseholdInput | PaymentTransactionCreateOrConnectWithoutHouseholdInput[]
+    createMany?: PaymentTransactionCreateManyHouseholdInputEnvelope
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+  }
+
+  export type HouseholdMemberUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<HouseholdMemberCreateWithoutHouseholdInput, HouseholdMemberUncheckedCreateWithoutHouseholdInput> | HouseholdMemberCreateWithoutHouseholdInput[] | HouseholdMemberUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutHouseholdInput | HouseholdMemberCreateOrConnectWithoutHouseholdInput[]
+    upsert?: HouseholdMemberUpsertWithWhereUniqueWithoutHouseholdInput | HouseholdMemberUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: HouseholdMemberCreateManyHouseholdInputEnvelope
+    set?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    disconnect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    delete?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    update?: HouseholdMemberUpdateWithWhereUniqueWithoutHouseholdInput | HouseholdMemberUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: HouseholdMemberUpdateManyWithWhereWithoutHouseholdInput | HouseholdMemberUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: HouseholdMemberScalarWhereInput | HouseholdMemberScalarWhereInput[]
+  }
+
+  export type PropertyUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<PropertyCreateWithoutHouseholdInput, PropertyUncheckedCreateWithoutHouseholdInput> | PropertyCreateWithoutHouseholdInput[] | PropertyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PropertyCreateOrConnectWithoutHouseholdInput | PropertyCreateOrConnectWithoutHouseholdInput[]
+    upsert?: PropertyUpsertWithWhereUniqueWithoutHouseholdInput | PropertyUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: PropertyCreateManyHouseholdInputEnvelope
+    set?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    disconnect?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    delete?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    connect?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    update?: PropertyUpdateWithWhereUniqueWithoutHouseholdInput | PropertyUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: PropertyUpdateManyWithWhereWithoutHouseholdInput | PropertyUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: PropertyScalarWhereInput | PropertyScalarWhereInput[]
+  }
+
+  export type PolicyUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<PolicyCreateWithoutHouseholdInput, PolicyUncheckedCreateWithoutHouseholdInput> | PolicyCreateWithoutHouseholdInput[] | PolicyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutHouseholdInput | PolicyCreateOrConnectWithoutHouseholdInput[]
+    upsert?: PolicyUpsertWithWhereUniqueWithoutHouseholdInput | PolicyUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: PolicyCreateManyHouseholdInputEnvelope
+    set?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    disconnect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    delete?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    update?: PolicyUpdateWithWhereUniqueWithoutHouseholdInput | PolicyUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: PolicyUpdateManyWithWhereWithoutHouseholdInput | PolicyUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: PolicyScalarWhereInput | PolicyScalarWhereInput[]
+  }
+
+  export type InvestmentUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<InvestmentCreateWithoutHouseholdInput, InvestmentUncheckedCreateWithoutHouseholdInput> | InvestmentCreateWithoutHouseholdInput[] | InvestmentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutHouseholdInput | InvestmentCreateOrConnectWithoutHouseholdInput[]
+    upsert?: InvestmentUpsertWithWhereUniqueWithoutHouseholdInput | InvestmentUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: InvestmentCreateManyHouseholdInputEnvelope
+    set?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    disconnect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    delete?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    update?: InvestmentUpdateWithWhereUniqueWithoutHouseholdInput | InvestmentUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: InvestmentUpdateManyWithWhereWithoutHouseholdInput | InvestmentUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+  }
+
+  export type LoanUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<LoanCreateWithoutHouseholdInput, LoanUncheckedCreateWithoutHouseholdInput> | LoanCreateWithoutHouseholdInput[] | LoanUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutHouseholdInput | LoanCreateOrConnectWithoutHouseholdInput[]
+    upsert?: LoanUpsertWithWhereUniqueWithoutHouseholdInput | LoanUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: LoanCreateManyHouseholdInputEnvelope
+    set?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    disconnect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    delete?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    update?: LoanUpdateWithWhereUniqueWithoutHouseholdInput | LoanUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: LoanUpdateManyWithWhereWithoutHouseholdInput | LoanUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: LoanScalarWhereInput | LoanScalarWhereInput[]
+  }
+
+  export type BillScheduleUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<BillScheduleCreateWithoutHouseholdInput, BillScheduleUncheckedCreateWithoutHouseholdInput> | BillScheduleCreateWithoutHouseholdInput[] | BillScheduleUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillScheduleCreateOrConnectWithoutHouseholdInput | BillScheduleCreateOrConnectWithoutHouseholdInput[]
+    upsert?: BillScheduleUpsertWithWhereUniqueWithoutHouseholdInput | BillScheduleUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: BillScheduleCreateManyHouseholdInputEnvelope
+    set?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    disconnect?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    delete?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    connect?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    update?: BillScheduleUpdateWithWhereUniqueWithoutHouseholdInput | BillScheduleUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: BillScheduleUpdateManyWithWhereWithoutHouseholdInput | BillScheduleUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: BillScheduleScalarWhereInput | BillScheduleScalarWhereInput[]
+  }
+
+  export type BillUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<BillCreateWithoutHouseholdInput, BillUncheckedCreateWithoutHouseholdInput> | BillCreateWithoutHouseholdInput[] | BillUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutHouseholdInput | BillCreateOrConnectWithoutHouseholdInput[]
+    upsert?: BillUpsertWithWhereUniqueWithoutHouseholdInput | BillUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: BillCreateManyHouseholdInputEnvelope
+    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    update?: BillUpdateWithWhereUniqueWithoutHouseholdInput | BillUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: BillUpdateManyWithWhereWithoutHouseholdInput | BillUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
+  export type DocumentUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<DocumentCreateWithoutHouseholdInput, DocumentUncheckedCreateWithoutHouseholdInput> | DocumentCreateWithoutHouseholdInput[] | DocumentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutHouseholdInput | DocumentCreateOrConnectWithoutHouseholdInput[]
+    upsert?: DocumentUpsertWithWhereUniqueWithoutHouseholdInput | DocumentUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: DocumentCreateManyHouseholdInputEnvelope
+    set?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    disconnect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    delete?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    update?: DocumentUpdateWithWhereUniqueWithoutHouseholdInput | DocumentUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: DocumentUpdateManyWithWhereWithoutHouseholdInput | DocumentUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+  }
+
+  export type PaymentTransactionUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutHouseholdInput, PaymentTransactionUncheckedCreateWithoutHouseholdInput> | PaymentTransactionCreateWithoutHouseholdInput[] | PaymentTransactionUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutHouseholdInput | PaymentTransactionCreateOrConnectWithoutHouseholdInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutHouseholdInput | PaymentTransactionUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: PaymentTransactionCreateManyHouseholdInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutHouseholdInput | PaymentTransactionUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutHouseholdInput | PaymentTransactionUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
+  export type HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<HouseholdMemberCreateWithoutHouseholdInput, HouseholdMemberUncheckedCreateWithoutHouseholdInput> | HouseholdMemberCreateWithoutHouseholdInput[] | HouseholdMemberUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: HouseholdMemberCreateOrConnectWithoutHouseholdInput | HouseholdMemberCreateOrConnectWithoutHouseholdInput[]
+    upsert?: HouseholdMemberUpsertWithWhereUniqueWithoutHouseholdInput | HouseholdMemberUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: HouseholdMemberCreateManyHouseholdInputEnvelope
+    set?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    disconnect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    delete?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    connect?: HouseholdMemberWhereUniqueInput | HouseholdMemberWhereUniqueInput[]
+    update?: HouseholdMemberUpdateWithWhereUniqueWithoutHouseholdInput | HouseholdMemberUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: HouseholdMemberUpdateManyWithWhereWithoutHouseholdInput | HouseholdMemberUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: HouseholdMemberScalarWhereInput | HouseholdMemberScalarWhereInput[]
+  }
+
+  export type PropertyUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<PropertyCreateWithoutHouseholdInput, PropertyUncheckedCreateWithoutHouseholdInput> | PropertyCreateWithoutHouseholdInput[] | PropertyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PropertyCreateOrConnectWithoutHouseholdInput | PropertyCreateOrConnectWithoutHouseholdInput[]
+    upsert?: PropertyUpsertWithWhereUniqueWithoutHouseholdInput | PropertyUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: PropertyCreateManyHouseholdInputEnvelope
+    set?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    disconnect?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    delete?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    connect?: PropertyWhereUniqueInput | PropertyWhereUniqueInput[]
+    update?: PropertyUpdateWithWhereUniqueWithoutHouseholdInput | PropertyUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: PropertyUpdateManyWithWhereWithoutHouseholdInput | PropertyUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: PropertyScalarWhereInput | PropertyScalarWhereInput[]
+  }
+
+  export type PolicyUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<PolicyCreateWithoutHouseholdInput, PolicyUncheckedCreateWithoutHouseholdInput> | PolicyCreateWithoutHouseholdInput[] | PolicyUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PolicyCreateOrConnectWithoutHouseholdInput | PolicyCreateOrConnectWithoutHouseholdInput[]
+    upsert?: PolicyUpsertWithWhereUniqueWithoutHouseholdInput | PolicyUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: PolicyCreateManyHouseholdInputEnvelope
+    set?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    disconnect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    delete?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    connect?: PolicyWhereUniqueInput | PolicyWhereUniqueInput[]
+    update?: PolicyUpdateWithWhereUniqueWithoutHouseholdInput | PolicyUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: PolicyUpdateManyWithWhereWithoutHouseholdInput | PolicyUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: PolicyScalarWhereInput | PolicyScalarWhereInput[]
+  }
+
+  export type InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<InvestmentCreateWithoutHouseholdInput, InvestmentUncheckedCreateWithoutHouseholdInput> | InvestmentCreateWithoutHouseholdInput[] | InvestmentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: InvestmentCreateOrConnectWithoutHouseholdInput | InvestmentCreateOrConnectWithoutHouseholdInput[]
+    upsert?: InvestmentUpsertWithWhereUniqueWithoutHouseholdInput | InvestmentUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: InvestmentCreateManyHouseholdInputEnvelope
+    set?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    disconnect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    delete?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    connect?: InvestmentWhereUniqueInput | InvestmentWhereUniqueInput[]
+    update?: InvestmentUpdateWithWhereUniqueWithoutHouseholdInput | InvestmentUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: InvestmentUpdateManyWithWhereWithoutHouseholdInput | InvestmentUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
+  }
+
+  export type LoanUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<LoanCreateWithoutHouseholdInput, LoanUncheckedCreateWithoutHouseholdInput> | LoanCreateWithoutHouseholdInput[] | LoanUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: LoanCreateOrConnectWithoutHouseholdInput | LoanCreateOrConnectWithoutHouseholdInput[]
+    upsert?: LoanUpsertWithWhereUniqueWithoutHouseholdInput | LoanUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: LoanCreateManyHouseholdInputEnvelope
+    set?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    disconnect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    delete?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    connect?: LoanWhereUniqueInput | LoanWhereUniqueInput[]
+    update?: LoanUpdateWithWhereUniqueWithoutHouseholdInput | LoanUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: LoanUpdateManyWithWhereWithoutHouseholdInput | LoanUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: LoanScalarWhereInput | LoanScalarWhereInput[]
+  }
+
+  export type BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<BillScheduleCreateWithoutHouseholdInput, BillScheduleUncheckedCreateWithoutHouseholdInput> | BillScheduleCreateWithoutHouseholdInput[] | BillScheduleUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillScheduleCreateOrConnectWithoutHouseholdInput | BillScheduleCreateOrConnectWithoutHouseholdInput[]
+    upsert?: BillScheduleUpsertWithWhereUniqueWithoutHouseholdInput | BillScheduleUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: BillScheduleCreateManyHouseholdInputEnvelope
+    set?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    disconnect?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    delete?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    connect?: BillScheduleWhereUniqueInput | BillScheduleWhereUniqueInput[]
+    update?: BillScheduleUpdateWithWhereUniqueWithoutHouseholdInput | BillScheduleUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: BillScheduleUpdateManyWithWhereWithoutHouseholdInput | BillScheduleUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: BillScheduleScalarWhereInput | BillScheduleScalarWhereInput[]
+  }
+
+  export type BillUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<BillCreateWithoutHouseholdInput, BillUncheckedCreateWithoutHouseholdInput> | BillCreateWithoutHouseholdInput[] | BillUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: BillCreateOrConnectWithoutHouseholdInput | BillCreateOrConnectWithoutHouseholdInput[]
+    upsert?: BillUpsertWithWhereUniqueWithoutHouseholdInput | BillUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: BillCreateManyHouseholdInputEnvelope
+    set?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    disconnect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    delete?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    connect?: BillWhereUniqueInput | BillWhereUniqueInput[]
+    update?: BillUpdateWithWhereUniqueWithoutHouseholdInput | BillUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: BillUpdateManyWithWhereWithoutHouseholdInput | BillUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: BillScalarWhereInput | BillScalarWhereInput[]
+  }
+
+  export type DocumentUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<DocumentCreateWithoutHouseholdInput, DocumentUncheckedCreateWithoutHouseholdInput> | DocumentCreateWithoutHouseholdInput[] | DocumentUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: DocumentCreateOrConnectWithoutHouseholdInput | DocumentCreateOrConnectWithoutHouseholdInput[]
+    upsert?: DocumentUpsertWithWhereUniqueWithoutHouseholdInput | DocumentUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: DocumentCreateManyHouseholdInputEnvelope
+    set?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    disconnect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    delete?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    connect?: DocumentWhereUniqueInput | DocumentWhereUniqueInput[]
+    update?: DocumentUpdateWithWhereUniqueWithoutHouseholdInput | DocumentUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: DocumentUpdateManyWithWhereWithoutHouseholdInput | DocumentUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput = {
+    create?: XOR<PaymentTransactionCreateWithoutHouseholdInput, PaymentTransactionUncheckedCreateWithoutHouseholdInput> | PaymentTransactionCreateWithoutHouseholdInput[] | PaymentTransactionUncheckedCreateWithoutHouseholdInput[]
+    connectOrCreate?: PaymentTransactionCreateOrConnectWithoutHouseholdInput | PaymentTransactionCreateOrConnectWithoutHouseholdInput[]
+    upsert?: PaymentTransactionUpsertWithWhereUniqueWithoutHouseholdInput | PaymentTransactionUpsertWithWhereUniqueWithoutHouseholdInput[]
+    createMany?: PaymentTransactionCreateManyHouseholdInputEnvelope
+    set?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    disconnect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    delete?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    connect?: PaymentTransactionWhereUniqueInput | PaymentTransactionWhereUniqueInput[]
+    update?: PaymentTransactionUpdateWithWhereUniqueWithoutHouseholdInput | PaymentTransactionUpdateWithWhereUniqueWithoutHouseholdInput[]
+    updateMany?: PaymentTransactionUpdateManyWithWhereWithoutHouseholdInput | PaymentTransactionUpdateManyWithWhereWithoutHouseholdInput[]
+    deleteMany?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
+  }
+
+  export type HouseholdCreateNestedOneWithoutMembersInput = {
+    create?: XOR<HouseholdCreateWithoutMembersInput, HouseholdUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutMembersInput
+    connect?: HouseholdWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutHouseholdsInput = {
+    create?: XOR<UserCreateWithoutHouseholdsInput, UserUncheckedCreateWithoutHouseholdsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutHouseholdsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumHouseholdRoleFieldUpdateOperationsInput = {
+    set?: $Enums.HouseholdRole
+  }
+
+  export type HouseholdUpdateOneRequiredWithoutMembersNestedInput = {
+    create?: XOR<HouseholdCreateWithoutMembersInput, HouseholdUncheckedCreateWithoutMembersInput>
+    connectOrCreate?: HouseholdCreateOrConnectWithoutMembersInput
+    upsert?: HouseholdUpsertWithoutMembersInput
+    connect?: HouseholdWhereUniqueInput
+    update?: XOR<XOR<HouseholdUpdateToOneWithWhereWithoutMembersInput, HouseholdUpdateWithoutMembersInput>, HouseholdUncheckedUpdateWithoutMembersInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutHouseholdsNestedInput = {
+    create?: XOR<UserCreateWithoutHouseholdsInput, UserUncheckedCreateWithoutHouseholdsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutHouseholdsInput
+    upsert?: UserUpsertWithoutHouseholdsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutHouseholdsInput, UserUpdateWithoutHouseholdsInput>, UserUncheckedUpdateWithoutHouseholdsInput>
+  }
+
+  export type BigIntFieldUpdateOperationsInput = {
+    set?: bigint | number
+    increment?: bigint | number
+    decrement?: bigint | number
+    multiply?: bigint | number
+    divide?: bigint | number
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -39477,59 +48091,6 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringFilter<$PrismaModel> | string
-  }
-
-  export type NestedDateTimeFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
-  }
-
-  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel>
-    in?: string[] | ListStringFieldRefInput<$PrismaModel>
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedStringFilter<$PrismaModel>
-    _max?: NestedStringFilter<$PrismaModel>
-  }
-
-  export type NestedIntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedDateTimeFilter<$PrismaModel>
-    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedBoolFilter<$PrismaModel = never> = {
@@ -39587,6 +48148,45 @@ export namespace Prisma {
     gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
     isSet?: boolean
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
+  export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel>
+    in?: string[] | ListStringFieldRefInput<$PrismaModel>
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel>
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringWithAggregatesFilter<$PrismaModel> | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedStringFilter<$PrismaModel>
+    _max?: NestedStringFilter<$PrismaModel>
+  }
+
+  export type NestedIntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
   }
 
   export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
@@ -39676,6 +48276,20 @@ export namespace Prisma {
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
     isSet?: boolean
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type NestedEnumPropertyTypeFilter<$PrismaModel = never> = {
@@ -40115,146 +48729,48 @@ export namespace Prisma {
     _max?: NestedEnumReminderChannelFilter<$PrismaModel>
   }
 
-  export type UserCreateWithoutPostsInput = {
-    id?: string
-    name: string
-    email: string
-    emailVerified?: boolean
-    image?: string | null
-    currency?: $Enums.Currency
-    timezone?: string | null
-    phone?: string | null
-    reminderHour?: number | null
-    role?: string | null
-    banned?: boolean | null
-    banReason?: string | null
-    banExpires?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    sessions?: SessionCreateNestedManyWithoutUserInput
-    accounts?: AccountCreateNestedManyWithoutUserInput
-    guests?: GuestCreateNestedManyWithoutOwnerInput
-    properties?: PropertyCreateNestedManyWithoutOwnerInput
-    policies?: PolicyCreateNestedManyWithoutOwnerInput
-    investments?: InvestmentCreateNestedManyWithoutOwnerInput
-    loans?: LoanCreateNestedManyWithoutOwnerInput
-    bills?: BillCreateNestedManyWithoutOwnerInput
-    billSchedules?: BillScheduleCreateNestedManyWithoutOwnerInput
-    notificationRules?: NotificationRuleCreateNestedManyWithoutOwnerInput
-    notificationJobs?: NotificationJobCreateNestedManyWithoutOwnerInput
-    documents?: DocumentCreateNestedManyWithoutOwnerInput
-    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
-    transactions?: PaymentTransactionCreateNestedManyWithoutOwnerInput
+  export type NestedEnumHouseholdRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.HouseholdRole | EnumHouseholdRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumHouseholdRoleFilter<$PrismaModel> | $Enums.HouseholdRole
   }
 
-  export type UserUncheckedCreateWithoutPostsInput = {
-    id?: string
-    name: string
-    email: string
-    emailVerified?: boolean
-    image?: string | null
-    currency?: $Enums.Currency
-    timezone?: string | null
-    phone?: string | null
-    reminderHour?: number | null
-    role?: string | null
-    banned?: boolean | null
-    banReason?: string | null
-    banExpires?: Date | string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
-    properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
-    policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
-    investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
-    loans?: LoanUncheckedCreateNestedManyWithoutOwnerInput
-    bills?: BillUncheckedCreateNestedManyWithoutOwnerInput
-    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutOwnerInput
-    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutOwnerInput
-    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutOwnerInput
-    documents?: DocumentUncheckedCreateNestedManyWithoutOwnerInput
-    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
-    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutOwnerInput
+  export type NestedEnumHouseholdRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.HouseholdRole | EnumHouseholdRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.HouseholdRole[] | ListEnumHouseholdRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumHouseholdRoleWithAggregatesFilter<$PrismaModel> | $Enums.HouseholdRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumHouseholdRoleFilter<$PrismaModel>
+    _max?: NestedEnumHouseholdRoleFilter<$PrismaModel>
   }
 
-  export type UserCreateOrConnectWithoutPostsInput = {
-    where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
+  export type NestedBigIntFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntFilter<$PrismaModel> | bigint | number
   }
 
-  export type UserUpsertWithoutPostsInput = {
-    update: XOR<UserUpdateWithoutPostsInput, UserUncheckedUpdateWithoutPostsInput>
-    create: XOR<UserCreateWithoutPostsInput, UserUncheckedCreateWithoutPostsInput>
-    where?: UserWhereInput
-  }
-
-  export type UserUpdateToOneWithWhereWithoutPostsInput = {
-    where?: UserWhereInput
-    data: XOR<UserUpdateWithoutPostsInput, UserUncheckedUpdateWithoutPostsInput>
-  }
-
-  export type UserUpdateWithoutPostsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
-    timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
-    role?: NullableStringFieldUpdateOperationsInput | string | null
-    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    banReason?: NullableStringFieldUpdateOperationsInput | string | null
-    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUpdateManyWithoutUserNestedInput
-    accounts?: AccountUpdateManyWithoutUserNestedInput
-    guests?: GuestUpdateManyWithoutOwnerNestedInput
-    properties?: PropertyUpdateManyWithoutOwnerNestedInput
-    policies?: PolicyUpdateManyWithoutOwnerNestedInput
-    investments?: InvestmentUpdateManyWithoutOwnerNestedInput
-    loans?: LoanUpdateManyWithoutOwnerNestedInput
-    bills?: BillUpdateManyWithoutOwnerNestedInput
-    billSchedules?: BillScheduleUpdateManyWithoutOwnerNestedInput
-    notificationRules?: NotificationRuleUpdateManyWithoutOwnerNestedInput
-    notificationJobs?: NotificationJobUpdateManyWithoutOwnerNestedInput
-    documents?: DocumentUpdateManyWithoutOwnerNestedInput
-    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
-    transactions?: PaymentTransactionUpdateManyWithoutOwnerNestedInput
-  }
-
-  export type UserUncheckedUpdateWithoutPostsInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    email?: StringFieldUpdateOperationsInput | string
-    emailVerified?: BoolFieldUpdateOperationsInput | boolean
-    image?: NullableStringFieldUpdateOperationsInput | string | null
-    currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
-    timezone?: NullableStringFieldUpdateOperationsInput | string | null
-    phone?: NullableStringFieldUpdateOperationsInput | string | null
-    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
-    role?: NullableStringFieldUpdateOperationsInput | string | null
-    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
-    banReason?: NullableStringFieldUpdateOperationsInput | string | null
-    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
-    properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
-    policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
-    investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
-    loans?: LoanUncheckedUpdateManyWithoutOwnerNestedInput
-    bills?: BillUncheckedUpdateManyWithoutOwnerNestedInput
-    billSchedules?: BillScheduleUncheckedUpdateManyWithoutOwnerNestedInput
-    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutOwnerNestedInput
-    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutOwnerNestedInput
-    documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
-    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
-    transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  export type NestedBigIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    in?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    notIn?: bigint[] | number[] | ListBigIntFieldRefInput<$PrismaModel>
+    lt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    lte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gt?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    gte?: bigint | number | BigIntFieldRefInput<$PrismaModel>
+    not?: NestedBigIntWithAggregatesFilter<$PrismaModel> | bigint | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedBigIntFilter<$PrismaModel>
+    _min?: NestedBigIntFilter<$PrismaModel>
+    _max?: NestedBigIntFilter<$PrismaModel>
   }
 
   export type SessionCreateWithoutUserInput = {
@@ -40286,6 +48802,29 @@ export namespace Prisma {
 
   export type SessionCreateManyUserInputEnvelope = {
     data: SessionCreateManyUserInput | SessionCreateManyUserInput[]
+  }
+
+  export type HouseholdMemberCreateWithoutUserInput = {
+    id?: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+    household: HouseholdCreateNestedOneWithoutMembersInput
+  }
+
+  export type HouseholdMemberUncheckedCreateWithoutUserInput = {
+    id?: string
+    householdId: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+  }
+
+  export type HouseholdMemberCreateOrConnectWithoutUserInput = {
+    where: HouseholdMemberWhereUniqueInput
+    create: XOR<HouseholdMemberCreateWithoutUserInput, HouseholdMemberUncheckedCreateWithoutUserInput>
+  }
+
+  export type HouseholdMemberCreateManyUserInputEnvelope = {
+    data: HouseholdMemberCreateManyUserInput | HouseholdMemberCreateManyUserInput[]
   }
 
   export type AccountCreateWithoutUserInput = {
@@ -40325,29 +48864,6 @@ export namespace Prisma {
 
   export type AccountCreateManyUserInputEnvelope = {
     data: AccountCreateManyUserInput | AccountCreateManyUserInput[]
-  }
-
-  export type PostCreateWithoutCreatedByInput = {
-    id?: string
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type PostUncheckedCreateWithoutCreatedByInput = {
-    id?: string
-    name: string
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type PostCreateOrConnectWithoutCreatedByInput = {
-    where: PostWhereUniqueInput
-    create: XOR<PostCreateWithoutCreatedByInput, PostUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type PostCreateManyCreatedByInputEnvelope = {
-    data: PostCreateManyCreatedByInput | PostCreateManyCreatedByInput[]
   }
 
   export type GuestCreateWithoutOwnerInput = {
@@ -40414,6 +48930,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -40428,6 +48945,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -40487,6 +49005,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
@@ -40499,6 +49018,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -40550,6 +49070,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
@@ -40561,6 +49082,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -40604,6 +49126,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -40617,6 +49140,7 @@ export namespace Prisma {
 
   export type LoanUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -40651,6 +49175,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -40675,6 +49200,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -40689,6 +49215,7 @@ export namespace Prisma {
 
   export type BillUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -40697,6 +49224,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -40749,6 +49277,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -40757,6 +49287,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -40770,6 +49301,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -40786,6 +49318,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -40930,6 +49464,7 @@ export namespace Prisma {
     mimeType?: string | null
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
@@ -40942,6 +49477,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -41007,6 +49543,7 @@ export namespace Prisma {
     notes?: string | null
     deletedAt?: Date | string | null
     createdAt?: Date | string
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     bill?: BillCreateNestedOneWithoutTransactionsInput
     property?: PropertyCreateNestedOneWithoutTransactionsInput
     lease?: LeaseCreateNestedOneWithoutTransactionsInput
@@ -41017,6 +49554,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedCreateWithoutOwnerInput = {
     id?: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -41075,6 +49613,33 @@ export namespace Prisma {
     impersonatedBy?: StringNullableFilter<"Session"> | string | null
   }
 
+  export type HouseholdMemberUpsertWithWhereUniqueWithoutUserInput = {
+    where: HouseholdMemberWhereUniqueInput
+    update: XOR<HouseholdMemberUpdateWithoutUserInput, HouseholdMemberUncheckedUpdateWithoutUserInput>
+    create: XOR<HouseholdMemberCreateWithoutUserInput, HouseholdMemberUncheckedCreateWithoutUserInput>
+  }
+
+  export type HouseholdMemberUpdateWithWhereUniqueWithoutUserInput = {
+    where: HouseholdMemberWhereUniqueInput
+    data: XOR<HouseholdMemberUpdateWithoutUserInput, HouseholdMemberUncheckedUpdateWithoutUserInput>
+  }
+
+  export type HouseholdMemberUpdateManyWithWhereWithoutUserInput = {
+    where: HouseholdMemberScalarWhereInput
+    data: XOR<HouseholdMemberUpdateManyMutationInput, HouseholdMemberUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type HouseholdMemberScalarWhereInput = {
+    AND?: HouseholdMemberScalarWhereInput | HouseholdMemberScalarWhereInput[]
+    OR?: HouseholdMemberScalarWhereInput[]
+    NOT?: HouseholdMemberScalarWhereInput | HouseholdMemberScalarWhereInput[]
+    id?: StringFilter<"HouseholdMember"> | string
+    householdId?: StringFilter<"HouseholdMember"> | string
+    userId?: StringFilter<"HouseholdMember"> | string
+    role?: EnumHouseholdRoleFilter<"HouseholdMember"> | $Enums.HouseholdRole
+    createdAt?: DateTimeFilter<"HouseholdMember"> | Date | string
+  }
+
   export type AccountUpsertWithWhereUniqueWithoutUserInput = {
     where: AccountWhereUniqueInput
     update: XOR<AccountUpdateWithoutUserInput, AccountUncheckedUpdateWithoutUserInput>
@@ -41108,33 +49673,6 @@ export namespace Prisma {
     password?: StringNullableFilter<"Account"> | string | null
     createdAt?: DateTimeFilter<"Account"> | Date | string
     updatedAt?: DateTimeFilter<"Account"> | Date | string
-  }
-
-  export type PostUpsertWithWhereUniqueWithoutCreatedByInput = {
-    where: PostWhereUniqueInput
-    update: XOR<PostUpdateWithoutCreatedByInput, PostUncheckedUpdateWithoutCreatedByInput>
-    create: XOR<PostCreateWithoutCreatedByInput, PostUncheckedCreateWithoutCreatedByInput>
-  }
-
-  export type PostUpdateWithWhereUniqueWithoutCreatedByInput = {
-    where: PostWhereUniqueInput
-    data: XOR<PostUpdateWithoutCreatedByInput, PostUncheckedUpdateWithoutCreatedByInput>
-  }
-
-  export type PostUpdateManyWithWhereWithoutCreatedByInput = {
-    where: PostScalarWhereInput
-    data: XOR<PostUpdateManyMutationInput, PostUncheckedUpdateManyWithoutCreatedByInput>
-  }
-
-  export type PostScalarWhereInput = {
-    AND?: PostScalarWhereInput | PostScalarWhereInput[]
-    OR?: PostScalarWhereInput[]
-    NOT?: PostScalarWhereInput | PostScalarWhereInput[]
-    id?: StringFilter<"Post"> | string
-    name?: StringFilter<"Post"> | string
-    createdAt?: DateTimeFilter<"Post"> | Date | string
-    updatedAt?: DateTimeFilter<"Post"> | Date | string
-    createdById?: StringFilter<"Post"> | string
   }
 
   export type GuestUpsertWithWhereUniqueWithoutOwnerInput = {
@@ -41196,6 +49734,7 @@ export namespace Prisma {
     NOT?: PropertyScalarWhereInput | PropertyScalarWhereInput[]
     id?: StringFilter<"Property"> | string
     ownerId?: StringFilter<"Property"> | string
+    householdId?: StringNullableFilter<"Property"> | string | null
     name?: StringFilter<"Property"> | string
     type?: EnumPropertyTypeFilter<"Property"> | $Enums.PropertyType
     uniquePropertyId?: StringNullableFilter<"Property"> | string | null
@@ -41239,6 +49778,7 @@ export namespace Prisma {
     NOT?: PolicyScalarWhereInput | PolicyScalarWhereInput[]
     id?: StringFilter<"Policy"> | string
     ownerId?: StringFilter<"Policy"> | string
+    householdId?: StringNullableFilter<"Policy"> | string | null
     type?: EnumPolicyTypeFilter<"Policy"> | $Enums.PolicyType
     insurer?: StringFilter<"Policy"> | string
     policyNumber?: StringFilter<"Policy"> | string
@@ -41281,6 +49821,7 @@ export namespace Prisma {
     NOT?: InvestmentScalarWhereInput | InvestmentScalarWhereInput[]
     id?: StringFilter<"Investment"> | string
     ownerId?: StringFilter<"Investment"> | string
+    householdId?: StringNullableFilter<"Investment"> | string | null
     name?: StringFilter<"Investment"> | string
     type?: EnumInvestmentTypeFilter<"Investment"> | $Enums.InvestmentType
     institution?: StringNullableFilter<"Investment"> | string | null
@@ -41318,6 +49859,7 @@ export namespace Prisma {
     NOT?: LoanScalarWhereInput | LoanScalarWhereInput[]
     id?: StringFilter<"Loan"> | string
     ownerId?: StringFilter<"Loan"> | string
+    householdId?: StringNullableFilter<"Loan"> | string | null
     lender?: StringFilter<"Loan"> | string
     type?: EnumLoanTypeFilter<"Loan"> | $Enums.LoanType
     principal?: FloatFilter<"Loan"> | number
@@ -41355,6 +49897,7 @@ export namespace Prisma {
     NOT?: BillScalarWhereInput | BillScalarWhereInput[]
     id?: StringFilter<"Bill"> | string
     ownerId?: StringFilter<"Bill"> | string
+    householdId?: StringNullableFilter<"Bill"> | string | null
     category?: EnumEventCategoryFilter<"Bill"> | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFilter<"Bill"> | $Enums.FinancialEventType
     billScheduleId?: StringNullableFilter<"Bill"> | string | null
@@ -41363,6 +49906,7 @@ export namespace Prisma {
     loanId?: StringNullableFilter<"Bill"> | string | null
     policyId?: StringNullableFilter<"Bill"> | string | null
     investmentId?: StringNullableFilter<"Bill"> | string | null
+    generationKey?: StringFilter<"Bill"> | string
     dueDate?: DateTimeFilter<"Bill"> | Date | string
     amount?: FloatFilter<"Bill"> | number
     currency?: EnumCurrencyNullableFilter<"Bill"> | $Enums.Currency | null
@@ -41411,6 +49955,7 @@ export namespace Prisma {
     NOT?: BillScheduleScalarWhereInput | BillScheduleScalarWhereInput[]
     id?: StringFilter<"BillSchedule"> | string
     ownerId?: StringFilter<"BillSchedule"> | string
+    householdId?: StringNullableFilter<"BillSchedule"> | string | null
     category?: EnumEventCategoryFilter<"BillSchedule"> | $Enums.EventCategory
     propertyId?: StringNullableFilter<"BillSchedule"> | string | null
     leaseId?: StringNullableFilter<"BillSchedule"> | string | null
@@ -41427,6 +49972,8 @@ export namespace Prisma {
     startDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
+    endDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -41545,6 +50092,7 @@ export namespace Prisma {
     NOT?: DocumentScalarWhereInput | DocumentScalarWhereInput[]
     id?: StringFilter<"Document"> | string
     ownerId?: StringFilter<"Document"> | string
+    householdId?: StringNullableFilter<"Document"> | string | null
     propertyId?: StringNullableFilter<"Document"> | string | null
     roomId?: StringNullableFilter<"Document"> | string | null
     leaseId?: StringNullableFilter<"Document"> | string | null
@@ -41612,6 +50160,7 @@ export namespace Prisma {
     NOT?: PaymentTransactionScalarWhereInput | PaymentTransactionScalarWhereInput[]
     id?: StringFilter<"PaymentTransaction"> | string
     ownerId?: StringFilter<"PaymentTransaction"> | string
+    householdId?: StringNullableFilter<"PaymentTransaction"> | string | null
     category?: EnumEventCategoryFilter<"PaymentTransaction"> | $Enums.EventCategory
     billId?: StringNullableFilter<"PaymentTransaction"> | string | null
     propertyId?: StringNullableFilter<"PaymentTransaction"> | string | null
@@ -41646,8 +50195,8 @@ export namespace Prisma {
     banExpires?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -41678,8 +50227,8 @@ export namespace Prisma {
     banExpires?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -41725,8 +50274,8 @@ export namespace Prisma {
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -41756,8 +50305,8 @@ export namespace Prisma {
     banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -41789,7 +50338,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -41821,7 +50370,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -41868,7 +50417,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -41899,7 +50448,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -41931,8 +50480,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -41963,8 +50512,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -41981,6 +50530,43 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutPropertiesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutPropertiesInput, UserUncheckedCreateWithoutPropertiesInput>
+  }
+
+  export type HouseholdCreateWithoutPropertiesInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutPropertiesInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutPropertiesInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutPropertiesInput, HouseholdUncheckedCreateWithoutPropertiesInput>
   }
 
   export type RoomCreateWithoutPropertyInput = {
@@ -42093,6 +50679,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -42105,6 +50692,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -42153,6 +50741,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -42162,6 +50752,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
     policy?: PolicyCreateNestedOneWithoutBillSchedulesInput
@@ -42175,6 +50766,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     leaseId?: string | null
     loanId?: string | null
@@ -42190,6 +50782,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -42217,6 +50811,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -42242,6 +50837,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
     loan?: LoanCreateNestedOneWithoutBillsInput
@@ -42256,6 +50852,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -42263,6 +50860,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -42315,6 +50913,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
     billSchedules?: BillScheduleCreateNestedManyWithoutLoanInput
@@ -42328,6 +50927,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutLinkedPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -42365,6 +50965,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
     policy?: PolicyCreateNestedOneWithoutDocumentsInput
@@ -42377,6 +50978,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     roomId?: string | null
     leaseId?: string | null
     policyId?: string | null
@@ -42413,6 +51015,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     owner: UserCreateNestedOneWithoutTransactionsInput
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     bill?: BillCreateNestedOneWithoutTransactionsInput
     lease?: LeaseCreateNestedOneWithoutTransactionsInput
     loan?: LoanCreateNestedOneWithoutTransactionsInput
@@ -42423,6 +51026,7 @@ export namespace Prisma {
   export type PaymentTransactionUncheckedCreateWithoutPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     leaseId?: string | null
@@ -42590,8 +51194,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -42621,8 +51225,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -42634,6 +51238,47 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdUpsertWithoutPropertiesInput = {
+    update: XOR<HouseholdUpdateWithoutPropertiesInput, HouseholdUncheckedUpdateWithoutPropertiesInput>
+    create: XOR<HouseholdCreateWithoutPropertiesInput, HouseholdUncheckedCreateWithoutPropertiesInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutPropertiesInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutPropertiesInput, HouseholdUncheckedUpdateWithoutPropertiesInput>
+  }
+
+  export type HouseholdUpdateWithoutPropertiesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutPropertiesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type RoomUpsertWithWhereUniqueWithoutPropertyInput = {
@@ -42854,6 +51499,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
@@ -42868,6 +51514,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutRoomsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -42968,6 +51615,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
     policy?: PolicyCreateNestedOneWithoutDocumentsInput
@@ -42980,6 +51628,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutRoomInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     leaseId?: string | null
     policyId?: string | null
@@ -43035,6 +51684,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
@@ -43048,6 +51698,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutRoomsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43132,6 +51783,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
@@ -43146,6 +51798,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutLeasesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -43223,6 +51876,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -43232,6 +51887,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
     policy?: PolicyCreateNestedOneWithoutBillSchedulesInput
@@ -43245,6 +51901,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     loanId?: string | null
@@ -43260,6 +51917,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -43287,6 +51946,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -43312,6 +51972,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     loan?: LoanCreateNestedOneWithoutBillsInput
@@ -43326,6 +51987,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -43333,6 +51995,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -43380,6 +52043,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     policy?: PolicyCreateNestedOneWithoutDocumentsInput
@@ -43392,6 +52056,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     policyId?: string | null
@@ -43428,6 +52093,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     owner: UserCreateNestedOneWithoutTransactionsInput
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     bill?: BillCreateNestedOneWithoutTransactionsInput
     property?: PropertyCreateNestedOneWithoutTransactionsInput
     loan?: LoanCreateNestedOneWithoutTransactionsInput
@@ -43438,6 +52104,7 @@ export namespace Prisma {
   export type PaymentTransactionUncheckedCreateWithoutLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -43610,6 +52277,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
@@ -43623,6 +52291,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutLeasesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -43799,8 +52468,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -43831,8 +52500,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -43849,6 +52518,43 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutBillSchedulesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutBillSchedulesInput, UserUncheckedCreateWithoutBillSchedulesInput>
+  }
+
+  export type HouseholdCreateWithoutBillSchedulesInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutBillSchedulesInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutBillSchedulesInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutBillSchedulesInput, HouseholdUncheckedCreateWithoutBillSchedulesInput>
   }
 
   export type PropertyCreateWithoutBillSchedulesInput = {
@@ -43873,6 +52579,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -43887,6 +52594,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutBillSchedulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -43988,6 +52696,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -44001,6 +52710,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutBillSchedulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -44046,6 +52756,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     bills?: BillCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -44058,6 +52769,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutBillSchedulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -44105,6 +52817,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
     documents?: DocumentCreateNestedManyWithoutInvestmentInput
@@ -44116,6 +52829,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateWithoutBillSchedulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -44146,6 +52860,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -44171,6 +52886,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
     loan?: LoanCreateNestedOneWithoutBillsInput
@@ -44185,6 +52901,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutBillScheduleInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     propertyId?: string | null
@@ -44192,6 +52909,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -44239,6 +52957,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
@@ -44251,6 +52970,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutBillScheduleInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -44424,8 +53144,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -44455,8 +53175,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -44468,6 +53188,47 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdUpsertWithoutBillSchedulesInput = {
+    update: XOR<HouseholdUpdateWithoutBillSchedulesInput, HouseholdUncheckedUpdateWithoutBillSchedulesInput>
+    create: XOR<HouseholdCreateWithoutBillSchedulesInput, HouseholdUncheckedCreateWithoutBillSchedulesInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutBillSchedulesInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutBillSchedulesInput, HouseholdUncheckedUpdateWithoutBillSchedulesInput>
+  }
+
+  export type HouseholdUpdateWithoutBillSchedulesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutBillSchedulesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type PropertyUpsertWithoutBillSchedulesInput = {
@@ -44502,6 +53263,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -44515,6 +53277,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutBillSchedulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44625,6 +53388,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -44637,6 +53401,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutBillSchedulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -44687,6 +53452,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -44698,6 +53464,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutBillSchedulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -44750,6 +53517,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
     documents?: DocumentUpdateManyWithoutInvestmentNestedInput
@@ -44760,6 +53528,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateWithoutBillSchedulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -44862,8 +53631,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -44894,8 +53663,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -44914,6 +53683,43 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutBillsInput, UserUncheckedCreateWithoutBillsInput>
   }
 
+  export type HouseholdCreateWithoutBillsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutBillsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutBillsInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutBillsInput, HouseholdUncheckedCreateWithoutBillsInput>
+  }
+
   export type BillScheduleCreateWithoutBillsInput = {
     id?: string
     category: $Enums.EventCategory
@@ -44927,6 +53733,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -44936,6 +53744,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -44949,6 +53758,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutBillsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -44965,6 +53775,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -45005,6 +53817,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -45019,6 +53832,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutBillsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -45120,6 +53934,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -45133,6 +53948,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutBillsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -45178,6 +53994,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
@@ -45190,6 +54007,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutBillsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -45237,6 +54055,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
     documents?: DocumentCreateNestedManyWithoutInvestmentInput
@@ -45248,6 +54067,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateWithoutBillsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -45287,6 +54107,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     owner: UserCreateNestedOneWithoutTransactionsInput
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     property?: PropertyCreateNestedOneWithoutTransactionsInput
     lease?: LeaseCreateNestedOneWithoutTransactionsInput
     loan?: LoanCreateNestedOneWithoutTransactionsInput
@@ -45297,6 +54118,7 @@ export namespace Prisma {
   export type PaymentTransactionUncheckedCreateWithoutBillInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -45331,6 +54153,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
@@ -45343,6 +54166,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutBillInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -45507,8 +54331,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -45538,8 +54362,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -45551,6 +54375,47 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdUpsertWithoutBillsInput = {
+    update: XOR<HouseholdUpdateWithoutBillsInput, HouseholdUncheckedUpdateWithoutBillsInput>
+    create: XOR<HouseholdCreateWithoutBillsInput, HouseholdUncheckedCreateWithoutBillsInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutBillsInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutBillsInput, HouseholdUncheckedUpdateWithoutBillsInput>
+  }
+
+  export type HouseholdUpdateWithoutBillsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutBillsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type BillScheduleUpsertWithoutBillsInput = {
@@ -45576,6 +54441,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -45585,6 +54452,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -45597,6 +54465,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutBillsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45613,6 +54482,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -45658,6 +54529,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -45671,6 +54543,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutBillsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -45781,6 +54654,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -45793,6 +54667,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutBillsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -45843,6 +54718,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -45854,6 +54730,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutBillsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -45906,6 +54783,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
     documents?: DocumentUpdateManyWithoutInvestmentNestedInput
@@ -45916,6 +54794,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateWithoutBillsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46018,8 +54897,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -46050,8 +54929,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -46068,6 +54947,43 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutPoliciesInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutPoliciesInput, UserUncheckedCreateWithoutPoliciesInput>
+  }
+
+  export type HouseholdCreateWithoutPoliciesInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutPoliciesInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutPoliciesInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutPoliciesInput, HouseholdUncheckedCreateWithoutPoliciesInput>
   }
 
   export type PropertyCreateWithoutPoliciesInput = {
@@ -46092,6 +55008,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
@@ -46106,6 +55023,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutPoliciesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -46154,6 +55072,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -46163,6 +55083,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -46176,6 +55097,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -46191,6 +55113,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -46218,6 +55142,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -46243,6 +55168,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -46257,6 +55183,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -46264,6 +55191,7 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -46316,6 +55244,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
     billSchedules?: BillScheduleCreateNestedManyWithoutLoanInput
@@ -46329,6 +55258,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutLinkedPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -46366,6 +55296,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
@@ -46378,6 +55309,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -46414,6 +55346,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     owner: UserCreateNestedOneWithoutTransactionsInput
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     bill?: BillCreateNestedOneWithoutTransactionsInput
     property?: PropertyCreateNestedOneWithoutTransactionsInput
     lease?: LeaseCreateNestedOneWithoutTransactionsInput
@@ -46424,6 +55357,7 @@ export namespace Prisma {
   export type PaymentTransactionUncheckedCreateWithoutPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -46591,8 +55525,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -46622,8 +55556,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -46635,6 +55569,47 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdUpsertWithoutPoliciesInput = {
+    update: XOR<HouseholdUpdateWithoutPoliciesInput, HouseholdUncheckedUpdateWithoutPoliciesInput>
+    create: XOR<HouseholdCreateWithoutPoliciesInput, HouseholdUncheckedCreateWithoutPoliciesInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutPoliciesInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutPoliciesInput, HouseholdUncheckedUpdateWithoutPoliciesInput>
+  }
+
+  export type HouseholdUpdateWithoutPoliciesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutPoliciesInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type PropertyUpsertWithoutPoliciesInput = {
@@ -46669,6 +55644,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
@@ -46682,6 +55658,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutPoliciesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -46841,8 +55818,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -46873,8 +55850,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -46893,6 +55870,43 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutInvestmentsInput, UserUncheckedCreateWithoutInvestmentsInput>
   }
 
+  export type HouseholdCreateWithoutInvestmentsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutInvestmentsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutInvestmentsInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutInvestmentsInput, HouseholdUncheckedCreateWithoutInvestmentsInput>
+  }
+
   export type BillScheduleCreateWithoutInvestmentInput = {
     id?: string
     category: $Enums.EventCategory
@@ -46906,6 +55920,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -46915,6 +55931,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -46928,6 +55945,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -46943,6 +55961,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -46970,6 +55990,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -46995,6 +56016,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -47009,6 +56031,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -47016,6 +56039,7 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     policyId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -47068,6 +56092,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     billSchedules?: BillScheduleCreateNestedManyWithoutLoanInput
@@ -47081,6 +56106,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutLinkedInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -47118,6 +56144,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
@@ -47130,6 +56157,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -47166,6 +56194,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     owner: UserCreateNestedOneWithoutTransactionsInput
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     bill?: BillCreateNestedOneWithoutTransactionsInput
     property?: PropertyCreateNestedOneWithoutTransactionsInput
     lease?: LeaseCreateNestedOneWithoutTransactionsInput
@@ -47176,6 +56205,7 @@ export namespace Prisma {
   export type PaymentTransactionUncheckedCreateWithoutInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -47343,8 +56373,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -47374,8 +56404,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -47387,6 +56417,47 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdUpsertWithoutInvestmentsInput = {
+    update: XOR<HouseholdUpdateWithoutInvestmentsInput, HouseholdUncheckedUpdateWithoutInvestmentsInput>
+    create: XOR<HouseholdCreateWithoutInvestmentsInput, HouseholdUncheckedCreateWithoutInvestmentsInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutInvestmentsInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutInvestmentsInput, HouseholdUncheckedUpdateWithoutInvestmentsInput>
+  }
+
+  export type HouseholdUpdateWithoutInvestmentsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutInvestmentsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type BillScheduleUpsertWithWhereUniqueWithoutInvestmentInput = {
@@ -47518,8 +56589,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -47550,8 +56621,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -47568,6 +56639,43 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutLoansInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutLoansInput, UserUncheckedCreateWithoutLoansInput>
+  }
+
+  export type HouseholdCreateWithoutLoansInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutLoansInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutLoansInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutLoansInput, HouseholdUncheckedCreateWithoutLoansInput>
   }
 
   export type PropertyCreateWithoutLoansInput = {
@@ -47592,6 +56700,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -47606,6 +56715,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutLoansInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -47661,6 +56771,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
@@ -47673,6 +56784,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutLoansInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -47720,6 +56832,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     documents?: DocumentCreateNestedManyWithoutInvestmentInput
@@ -47731,6 +56844,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateWithoutLoansInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -47770,6 +56884,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -47779,6 +56895,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     policy?: PolicyCreateNestedOneWithoutBillSchedulesInput
@@ -47792,6 +56909,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -47807,6 +56925,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -47834,6 +56954,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -47859,6 +56980,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -47873,6 +56995,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -47880,6 +57003,7 @@ export namespace Prisma {
     leaseId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -47927,6 +57051,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     uploadedAt?: Date | string
     owner: UserCreateNestedOneWithoutDocumentsInput
+    household?: HouseholdCreateNestedOneWithoutDocumentsInput
     property?: PropertyCreateNestedOneWithoutDocumentsInput
     room?: RoomCreateNestedOneWithoutDocumentsInput
     lease?: LeaseCreateNestedOneWithoutDocumentsInput
@@ -47939,6 +57064,7 @@ export namespace Prisma {
   export type DocumentUncheckedCreateWithoutLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -47975,6 +57101,7 @@ export namespace Prisma {
     deletedAt?: Date | string | null
     createdAt?: Date | string
     owner: UserCreateNestedOneWithoutTransactionsInput
+    household?: HouseholdCreateNestedOneWithoutPaymentTransactionsInput
     bill?: BillCreateNestedOneWithoutTransactionsInput
     property?: PropertyCreateNestedOneWithoutTransactionsInput
     lease?: LeaseCreateNestedOneWithoutTransactionsInput
@@ -47985,6 +57112,7 @@ export namespace Prisma {
   export type PaymentTransactionUncheckedCreateWithoutLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -48152,8 +57280,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -48183,8 +57311,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -48196,6 +57324,47 @@ export namespace Prisma {
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdUpsertWithoutLoansInput = {
+    update: XOR<HouseholdUpdateWithoutLoansInput, HouseholdUncheckedUpdateWithoutLoansInput>
+    create: XOR<HouseholdCreateWithoutLoansInput, HouseholdUncheckedCreateWithoutLoansInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutLoansInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutLoansInput, HouseholdUncheckedUpdateWithoutLoansInput>
+  }
+
+  export type HouseholdUpdateWithoutLoansInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutLoansInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type PropertyUpsertWithoutLoansInput = {
@@ -48230,6 +57399,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -48243,6 +57413,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutLoansInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48303,6 +57474,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
@@ -48314,6 +57486,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutLoansInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -48366,6 +57539,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     documents?: DocumentUpdateManyWithoutInvestmentNestedInput
@@ -48376,6 +57550,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateWithoutLoansInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -48510,8 +57685,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -48542,8 +57717,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -48562,10 +57737,48 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutTransactionsInput, UserUncheckedCreateWithoutTransactionsInput>
   }
 
+  export type HouseholdCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutPaymentTransactionsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutPaymentTransactionsInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutPaymentTransactionsInput, HouseholdUncheckedCreateWithoutPaymentTransactionsInput>
+  }
+
   export type BillCreateWithoutTransactionsInput = {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -48591,6 +57804,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -48605,6 +57819,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutTransactionsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -48613,6 +57828,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -48669,6 +57885,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -48683,6 +57900,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutTransactionsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -48784,6 +58002,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -48797,6 +58016,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutTransactionsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -48842,6 +58062,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
@@ -48854,6 +58075,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutTransactionsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -48901,6 +58123,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
@@ -48912,6 +58135,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateWithoutTransactionsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -48965,8 +58189,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -48996,8 +58220,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -49009,6 +58233,47 @@ export namespace Prisma {
     notificationJobs?: NotificationJobUncheckedUpdateManyWithoutOwnerNestedInput
     documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type HouseholdUpsertWithoutPaymentTransactionsInput = {
+    update: XOR<HouseholdUpdateWithoutPaymentTransactionsInput, HouseholdUncheckedUpdateWithoutPaymentTransactionsInput>
+    create: XOR<HouseholdCreateWithoutPaymentTransactionsInput, HouseholdUncheckedCreateWithoutPaymentTransactionsInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutPaymentTransactionsInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutPaymentTransactionsInput, HouseholdUncheckedUpdateWithoutPaymentTransactionsInput>
+  }
+
+  export type HouseholdUpdateWithoutPaymentTransactionsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutPaymentTransactionsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type BillUpsertWithoutTransactionsInput = {
@@ -49025,6 +58290,7 @@ export namespace Prisma {
   export type BillUpdateWithoutTransactionsInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -49050,6 +58316,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -49063,6 +58330,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutTransactionsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49071,6 +58339,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -49132,6 +58401,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -49145,6 +58415,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutTransactionsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49255,6 +58526,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -49267,6 +58539,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutTransactionsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -49317,6 +58590,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
@@ -49328,6 +58602,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutTransactionsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -49380,6 +58655,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
@@ -49390,6 +58666,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateWithoutTransactionsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -49428,8 +58705,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -49460,8 +58737,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -49507,8 +58784,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -49538,8 +58815,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -49570,8 +58847,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -49602,8 +58879,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -49635,6 +58912,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -49644,6 +58923,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -49657,6 +58937,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutNotificationRulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -49673,6 +58954,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -49695,6 +58978,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -49720,6 +59004,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -49734,6 +59019,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutNotificationRulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -49742,6 +59028,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -49798,6 +59085,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -49812,6 +59100,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutNotificationRulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -49913,6 +59202,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -49926,6 +59216,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutNotificationRulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -49971,6 +59262,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
@@ -49983,6 +59275,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutNotificationRulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -50030,6 +59323,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
@@ -50041,6 +59335,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateWithoutNotificationRulesInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -50159,8 +59454,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -50190,8 +59485,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -50228,6 +59523,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -50237,6 +59534,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -50249,6 +59547,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutNotificationRulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50265,6 +59564,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -50292,6 +59593,7 @@ export namespace Prisma {
   export type BillUpdateWithoutNotificationRulesInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -50317,6 +59619,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -50330,6 +59633,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutNotificationRulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50338,6 +59642,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -50399,6 +59704,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -50412,6 +59718,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutNotificationRulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50522,6 +59829,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -50534,6 +59842,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutNotificationRulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -50584,6 +59893,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
@@ -50595,6 +59905,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutNotificationRulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -50647,6 +59958,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
@@ -50657,6 +59969,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateWithoutNotificationRulesInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -50756,8 +60069,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -50788,8 +60101,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -50821,6 +60134,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -50830,6 +60145,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -50843,6 +60159,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutNotificationJobsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -50859,6 +60176,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -50881,6 +60200,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -50906,6 +60226,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -50920,6 +60241,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutNotificationJobsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -50928,6 +60250,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -50984,6 +60307,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -50998,6 +60322,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutNotificationJobsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -51099,6 +60424,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -51112,6 +60438,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutNotificationJobsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -51157,6 +60484,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
@@ -51169,6 +60497,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutNotificationJobsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -51216,6 +60545,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
@@ -51227,6 +60557,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateWithoutNotificationJobsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -51329,8 +60660,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -51360,8 +60691,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -51398,6 +60729,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51407,6 +60740,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -51419,6 +60753,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutNotificationJobsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51435,6 +60770,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -51462,6 +60799,7 @@ export namespace Prisma {
   export type BillUpdateWithoutNotificationJobsInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -51487,6 +60825,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -51500,6 +60839,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutNotificationJobsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51508,6 +60848,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -51569,6 +60910,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -51582,6 +60924,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutNotificationJobsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51692,6 +61035,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -51704,6 +61048,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutNotificationJobsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -51754,6 +61099,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
@@ -51765,6 +61111,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutNotificationJobsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -51817,6 +61164,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
@@ -51827,6 +61175,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateWithoutNotificationJobsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -51865,8 +61214,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     guests?: GuestCreateNestedManyWithoutOwnerInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
@@ -51897,8 +61246,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
@@ -51915,6 +61264,43 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutDocumentsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutDocumentsInput, UserUncheckedCreateWithoutDocumentsInput>
+  }
+
+  export type HouseholdCreateWithoutDocumentsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutDocumentsInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    members?: HouseholdMemberUncheckedCreateNestedManyWithoutHouseholdInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutDocumentsInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutDocumentsInput, HouseholdUncheckedCreateWithoutDocumentsInput>
   }
 
   export type PropertyCreateWithoutDocumentsInput = {
@@ -51939,6 +61325,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPropertiesInput
+    household?: HouseholdCreateNestedOneWithoutPropertiesInput
     rooms?: RoomCreateNestedManyWithoutPropertyInput
     leases?: LeaseCreateNestedManyWithoutPropertyInput
     policies?: PolicyCreateNestedManyWithoutPropertyInput
@@ -51953,6 +61340,7 @@ export namespace Prisma {
   export type PropertyUncheckedCreateWithoutDocumentsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -52090,6 +61478,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutPoliciesInput
+    household?: HouseholdCreateNestedOneWithoutPoliciesInput
     property?: PropertyCreateNestedOneWithoutPoliciesInput
     billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
     bills?: BillCreateNestedManyWithoutPolicyInput
@@ -52102,6 +61491,7 @@ export namespace Prisma {
   export type PolicyUncheckedCreateWithoutDocumentsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -52149,6 +61539,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutInvestmentsInput
+    household?: HouseholdCreateNestedOneWithoutInvestmentsInput
     billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
     bills?: BillCreateNestedManyWithoutInvestmentInput
     loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
@@ -52160,6 +61551,7 @@ export namespace Prisma {
   export type InvestmentUncheckedCreateWithoutDocumentsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -52199,6 +61591,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutLoansInput
+    household?: HouseholdCreateNestedOneWithoutLoansInput
     linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
     linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
     linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
@@ -52212,6 +61605,7 @@ export namespace Prisma {
   export type LoanUncheckedCreateWithoutDocumentsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -52250,6 +61644,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -52259,6 +61655,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner: UserCreateNestedOneWithoutBillSchedulesInput
+    household?: HouseholdCreateNestedOneWithoutBillSchedulesInput
     property?: PropertyCreateNestedOneWithoutBillSchedulesInput
     lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
     loan?: LoanCreateNestedOneWithoutBillSchedulesInput
@@ -52272,6 +61669,7 @@ export namespace Prisma {
   export type BillScheduleUncheckedCreateWithoutDocumentsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -52288,6 +61686,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -52310,6 +61710,7 @@ export namespace Prisma {
     id?: string
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -52335,6 +61736,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     owner: UserCreateNestedOneWithoutBillsInput
+    household?: HouseholdCreateNestedOneWithoutBillsInput
     billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
     property?: PropertyCreateNestedOneWithoutBillsInput
     lease?: LeaseCreateNestedOneWithoutBillsInput
@@ -52349,6 +61751,7 @@ export namespace Prisma {
   export type BillUncheckedCreateWithoutDocumentsInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -52357,6 +61760,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -52418,8 +61822,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
@@ -52449,8 +61853,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
     guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
@@ -52462,6 +61866,47 @@ export namespace Prisma {
     notificationJobs?: NotificationJobUncheckedUpdateManyWithoutOwnerNestedInput
     auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
     transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdUpsertWithoutDocumentsInput = {
+    update: XOR<HouseholdUpdateWithoutDocumentsInput, HouseholdUncheckedUpdateWithoutDocumentsInput>
+    create: XOR<HouseholdCreateWithoutDocumentsInput, HouseholdUncheckedCreateWithoutDocumentsInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutDocumentsInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutDocumentsInput, HouseholdUncheckedUpdateWithoutDocumentsInput>
+  }
+
+  export type HouseholdUpdateWithoutDocumentsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutDocumentsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    members?: HouseholdMemberUncheckedUpdateManyWithoutHouseholdNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
   }
 
   export type PropertyUpsertWithoutDocumentsInput = {
@@ -52496,6 +61941,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -52509,6 +61955,7 @@ export namespace Prisma {
 
   export type PropertyUncheckedUpdateWithoutDocumentsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52659,6 +62106,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
@@ -52670,6 +62118,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutDocumentsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -52722,6 +62171,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
@@ -52732,6 +62182,7 @@ export namespace Prisma {
 
   export type InvestmentUncheckedUpdateWithoutDocumentsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52776,6 +62227,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -52788,6 +62240,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutDocumentsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -52831,6 +62284,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52840,6 +62295,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -52852,6 +62308,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutDocumentsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52868,6 +62325,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -52895,6 +62354,7 @@ export namespace Prisma {
   export type BillUpdateWithoutDocumentsInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -52920,6 +62380,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -52933,6 +62394,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutDocumentsInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -52941,6 +62403,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -52987,8 +62450,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
-    posts?: PostCreateNestedManyWithoutCreatedByInput
     properties?: PropertyCreateNestedManyWithoutOwnerInput
     policies?: PolicyCreateNestedManyWithoutOwnerInput
     investments?: InvestmentCreateNestedManyWithoutOwnerInput
@@ -53019,8 +62482,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    households?: HouseholdMemberUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
-    posts?: PostUncheckedCreateNestedManyWithoutCreatedByInput
     properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
     policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
     investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
@@ -53066,8 +62529,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
-    posts?: PostUpdateManyWithoutCreatedByNestedInput
     properties?: PropertyUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUpdateManyWithoutOwnerNestedInput
@@ -53097,8 +62560,925 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    households?: HouseholdMemberUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
-    posts?: PostUncheckedUpdateManyWithoutCreatedByNestedInput
+    properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutOwnerNestedInput
+    bills?: BillUncheckedUpdateManyWithoutOwnerNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutOwnerNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutOwnerNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutOwnerNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutUserNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type HouseholdMemberCreateWithoutHouseholdInput = {
+    id?: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutHouseholdsInput
+  }
+
+  export type HouseholdMemberUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    userId: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+  }
+
+  export type HouseholdMemberCreateOrConnectWithoutHouseholdInput = {
+    where: HouseholdMemberWhereUniqueInput
+    create: XOR<HouseholdMemberCreateWithoutHouseholdInput, HouseholdMemberUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type HouseholdMemberCreateManyHouseholdInputEnvelope = {
+    data: HouseholdMemberCreateManyHouseholdInput | HouseholdMemberCreateManyHouseholdInput[]
+  }
+
+  export type PropertyCreateWithoutHouseholdInput = {
+    id?: string
+    name: string
+    type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
+    addressLine1: string
+    addressLine2?: string | null
+    city: string
+    state: string
+    pinCode: string
+    country?: string
+    currency?: $Enums.Currency | null
+    purchasePrice?: number | null
+    currentEstimatedValue?: number | null
+    purchaseDate?: Date | string | null
+    photos?: PropertyCreatephotosInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutPropertiesInput
+    rooms?: RoomCreateNestedManyWithoutPropertyInput
+    leases?: LeaseCreateNestedManyWithoutPropertyInput
+    policies?: PolicyCreateNestedManyWithoutPropertyInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutPropertyInput
+    bills?: BillCreateNestedManyWithoutPropertyInput
+    loans?: LoanCreateNestedManyWithoutLinkedPropertyInput
+    documents?: DocumentCreateNestedManyWithoutPropertyInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutPropertyInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutPropertyInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutPropertyInput
+  }
+
+  export type PropertyUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    name: string
+    type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
+    addressLine1: string
+    addressLine2?: string | null
+    city: string
+    state: string
+    pinCode: string
+    country?: string
+    currency?: $Enums.Currency | null
+    purchasePrice?: number | null
+    currentEstimatedValue?: number | null
+    purchaseDate?: Date | string | null
+    photos?: PropertyCreatephotosInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    rooms?: RoomUncheckedCreateNestedManyWithoutPropertyInput
+    leases?: LeaseUncheckedCreateNestedManyWithoutPropertyInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutPropertyInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPropertyInput
+    bills?: BillUncheckedCreateNestedManyWithoutPropertyInput
+    loans?: LoanUncheckedCreateNestedManyWithoutLinkedPropertyInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutPropertyInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutPropertyInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutPropertyInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutPropertyInput
+  }
+
+  export type PropertyCreateOrConnectWithoutHouseholdInput = {
+    where: PropertyWhereUniqueInput
+    create: XOR<PropertyCreateWithoutHouseholdInput, PropertyUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type PropertyCreateManyHouseholdInputEnvelope = {
+    data: PropertyCreateManyHouseholdInput | PropertyCreateManyHouseholdInput[]
+  }
+
+  export type PolicyCreateWithoutHouseholdInput = {
+    id?: string
+    type: $Enums.PolicyType
+    insurer: string
+    policyNumber: string
+    holderName: string
+    nominees?: PolicyCreatenomineesInput | string[]
+    startDate: Date | string
+    tenureYears?: number | null
+    status?: $Enums.PolicyStatus
+    sumAssured?: number | null
+    currency?: $Enums.Currency | null
+    roomRentLimit?: number | null
+    coPayPercent?: number | null
+    waitingPeriodMonths?: number | null
+    networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutPoliciesInput
+    property?: PropertyCreateNestedOneWithoutPoliciesInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutPolicyInput
+    bills?: BillCreateNestedManyWithoutPolicyInput
+    loans?: LoanCreateNestedManyWithoutLinkedPolicyInput
+    documents?: DocumentCreateNestedManyWithoutPolicyInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutPolicyInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutPolicyInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutPolicyInput
+  }
+
+  export type PolicyUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    type: $Enums.PolicyType
+    insurer: string
+    policyNumber: string
+    holderName: string
+    nominees?: PolicyCreatenomineesInput | string[]
+    startDate: Date | string
+    tenureYears?: number | null
+    status?: $Enums.PolicyStatus
+    sumAssured?: number | null
+    currency?: $Enums.Currency | null
+    roomRentLimit?: number | null
+    coPayPercent?: number | null
+    waitingPeriodMonths?: number | null
+    networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutPolicyInput
+    bills?: BillUncheckedCreateNestedManyWithoutPolicyInput
+    loans?: LoanUncheckedCreateNestedManyWithoutLinkedPolicyInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutPolicyInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutPolicyInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutPolicyInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutPolicyInput
+  }
+
+  export type PolicyCreateOrConnectWithoutHouseholdInput = {
+    where: PolicyWhereUniqueInput
+    create: XOR<PolicyCreateWithoutHouseholdInput, PolicyUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type PolicyCreateManyHouseholdInputEnvelope = {
+    data: PolicyCreateManyHouseholdInput | PolicyCreateManyHouseholdInput[]
+  }
+
+  export type InvestmentCreateWithoutHouseholdInput = {
+    id?: string
+    name: string
+    type: $Enums.InvestmentType
+    institution?: string | null
+    investedDate: Date | string
+    capitalDeployed: number
+    currency?: $Enums.Currency | null
+    expectedReturnType?: string | null
+    expectedReturnDate?: Date | string | null
+    targetRoiPercent?: number | null
+    currentEstimatedValue?: number | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutInvestmentsInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutInvestmentInput
+    bills?: BillCreateNestedManyWithoutInvestmentInput
+    loans?: LoanCreateNestedManyWithoutLinkedInvestmentInput
+    documents?: DocumentCreateNestedManyWithoutInvestmentInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutInvestmentInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutInvestmentInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutInvestmentInput
+  }
+
+  export type InvestmentUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    name: string
+    type: $Enums.InvestmentType
+    institution?: string | null
+    investedDate: Date | string
+    capitalDeployed: number
+    currency?: $Enums.Currency | null
+    expectedReturnType?: string | null
+    expectedReturnDate?: Date | string | null
+    targetRoiPercent?: number | null
+    currentEstimatedValue?: number | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutInvestmentInput
+    bills?: BillUncheckedCreateNestedManyWithoutInvestmentInput
+    loans?: LoanUncheckedCreateNestedManyWithoutLinkedInvestmentInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutInvestmentInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutInvestmentInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutInvestmentInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutInvestmentInput
+  }
+
+  export type InvestmentCreateOrConnectWithoutHouseholdInput = {
+    where: InvestmentWhereUniqueInput
+    create: XOR<InvestmentCreateWithoutHouseholdInput, InvestmentUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type InvestmentCreateManyHouseholdInputEnvelope = {
+    data: InvestmentCreateManyHouseholdInput | InvestmentCreateManyHouseholdInput[]
+  }
+
+  export type LoanCreateWithoutHouseholdInput = {
+    id?: string
+    lender: string
+    type: $Enums.LoanType
+    principal: number
+    currency?: $Enums.Currency | null
+    interestRatePercent: number
+    startDate: Date | string
+    outstandingBalance: number
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutLoansInput
+    linkedProperty?: PropertyCreateNestedOneWithoutLoansInput
+    linkedPolicy?: PolicyCreateNestedOneWithoutLoansInput
+    linkedInvestment?: InvestmentCreateNestedOneWithoutLoansInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutLoanInput
+    bills?: BillCreateNestedManyWithoutLoanInput
+    documents?: DocumentCreateNestedManyWithoutLoanInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutLoanInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutLoanInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutLoanInput
+  }
+
+  export type LoanUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    lender: string
+    type: $Enums.LoanType
+    principal: number
+    currency?: $Enums.Currency | null
+    interestRatePercent: number
+    startDate: Date | string
+    outstandingBalance: number
+    linkedPropertyId?: string | null
+    linkedPolicyId?: string | null
+    linkedInvestmentId?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutLoanInput
+    bills?: BillUncheckedCreateNestedManyWithoutLoanInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutLoanInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutLoanInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutLoanInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutLoanInput
+  }
+
+  export type LoanCreateOrConnectWithoutHouseholdInput = {
+    where: LoanWhereUniqueInput
+    create: XOR<LoanCreateWithoutHouseholdInput, LoanUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type LoanCreateManyHouseholdInputEnvelope = {
+    data: LoanCreateManyHouseholdInput | LoanCreateManyHouseholdInput[]
+  }
+
+  export type BillScheduleCreateWithoutHouseholdInput = {
+    id?: string
+    category: $Enums.EventCategory
+    billType?: $Enums.BillType | null
+    provider?: string | null
+    accountNumber?: string | null
+    meterNumber?: string | null
+    billingType?: $Enums.BillingType | null
+    autoGenerateBill?: boolean | null
+    recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
+    dueDay: number
+    dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
+    defaultAmount?: number | null
+    currency?: $Enums.Currency | null
+    tenureMonths?: number | null
+    active?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+    owner: UserCreateNestedOneWithoutBillSchedulesInput
+    property?: PropertyCreateNestedOneWithoutBillSchedulesInput
+    lease?: LeaseCreateNestedOneWithoutBillSchedulesInput
+    loan?: LoanCreateNestedOneWithoutBillSchedulesInput
+    policy?: PolicyCreateNestedOneWithoutBillSchedulesInput
+    investment?: InvestmentCreateNestedOneWithoutBillSchedulesInput
+    bills?: BillCreateNestedManyWithoutBillScheduleInput
+    documents?: DocumentCreateNestedManyWithoutBillScheduleInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutBillScheduleInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutBillScheduleInput
+  }
+
+  export type BillScheduleUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    category: $Enums.EventCategory
+    propertyId?: string | null
+    leaseId?: string | null
+    loanId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    billType?: $Enums.BillType | null
+    provider?: string | null
+    accountNumber?: string | null
+    meterNumber?: string | null
+    billingType?: $Enums.BillingType | null
+    autoGenerateBill?: boolean | null
+    recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
+    dueDay: number
+    dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
+    defaultAmount?: number | null
+    currency?: $Enums.Currency | null
+    tenureMonths?: number | null
+    active?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+    bills?: BillUncheckedCreateNestedManyWithoutBillScheduleInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutBillScheduleInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutBillScheduleInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutBillScheduleInput
+  }
+
+  export type BillScheduleCreateOrConnectWithoutHouseholdInput = {
+    where: BillScheduleWhereUniqueInput
+    create: XOR<BillScheduleCreateWithoutHouseholdInput, BillScheduleUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type BillScheduleCreateManyHouseholdInputEnvelope = {
+    data: BillScheduleCreateManyHouseholdInput | BillScheduleCreateManyHouseholdInput[]
+  }
+
+  export type BillCreateWithoutHouseholdInput = {
+    id?: string
+    category: $Enums.EventCategory
+    direction: $Enums.FinancialEventType
+    generationKey?: string
+    dueDate: Date | string
+    amount: number
+    currency?: $Enums.Currency | null
+    status?: $Enums.PaymentStatus
+    paidDate?: Date | string | null
+    paidAmount?: number | null
+    notes?: string | null
+    installmentNumber?: number | null
+    principalComponent?: number | null
+    interestComponent?: number | null
+    previousMeterValue?: number | null
+    currentMeterValue?: number | null
+    billingPeriodStart?: Date | string | null
+    billingPeriodEnd?: Date | string | null
+    billDocumentUrl?: string | null
+    receiptDocumentUrl?: string | null
+    frequency?: $Enums.PremiumFrequency | null
+    gracePeriodDays?: number | null
+    label?: string | null
+    claimStatus?: $Enums.ClaimStatus | null
+    description?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutBillsInput
+    billSchedule?: BillScheduleCreateNestedOneWithoutBillsInput
+    property?: PropertyCreateNestedOneWithoutBillsInput
+    lease?: LeaseCreateNestedOneWithoutBillsInput
+    loan?: LoanCreateNestedOneWithoutBillsInput
+    policy?: PolicyCreateNestedOneWithoutBillsInput
+    investment?: InvestmentCreateNestedOneWithoutBillsInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutBillInput
+    documents?: DocumentCreateNestedManyWithoutBillInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutBillInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutBillInput
+  }
+
+  export type BillUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    category: $Enums.EventCategory
+    direction: $Enums.FinancialEventType
+    billScheduleId?: string | null
+    propertyId?: string | null
+    leaseId?: string | null
+    loanId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    generationKey?: string
+    dueDate: Date | string
+    amount: number
+    currency?: $Enums.Currency | null
+    status?: $Enums.PaymentStatus
+    paidDate?: Date | string | null
+    paidAmount?: number | null
+    notes?: string | null
+    installmentNumber?: number | null
+    principalComponent?: number | null
+    interestComponent?: number | null
+    previousMeterValue?: number | null
+    currentMeterValue?: number | null
+    billingPeriodStart?: Date | string | null
+    billingPeriodEnd?: Date | string | null
+    billDocumentUrl?: string | null
+    receiptDocumentUrl?: string | null
+    frequency?: $Enums.PremiumFrequency | null
+    gracePeriodDays?: number | null
+    label?: string | null
+    claimStatus?: $Enums.ClaimStatus | null
+    description?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutBillInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutBillInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutBillInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutBillInput
+  }
+
+  export type BillCreateOrConnectWithoutHouseholdInput = {
+    where: BillWhereUniqueInput
+    create: XOR<BillCreateWithoutHouseholdInput, BillUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type BillCreateManyHouseholdInputEnvelope = {
+    data: BillCreateManyHouseholdInput | BillCreateManyHouseholdInput[]
+  }
+
+  export type DocumentCreateWithoutHouseholdInput = {
+    id?: string
+    fileName: string
+    fileUrl: string
+    mimeType?: string | null
+    deletedAt?: Date | string | null
+    uploadedAt?: Date | string
+    owner: UserCreateNestedOneWithoutDocumentsInput
+    property?: PropertyCreateNestedOneWithoutDocumentsInput
+    room?: RoomCreateNestedOneWithoutDocumentsInput
+    lease?: LeaseCreateNestedOneWithoutDocumentsInput
+    policy?: PolicyCreateNestedOneWithoutDocumentsInput
+    investment?: InvestmentCreateNestedOneWithoutDocumentsInput
+    loan?: LoanCreateNestedOneWithoutDocumentsInput
+    billSchedule?: BillScheduleCreateNestedOneWithoutDocumentsInput
+    bill?: BillCreateNestedOneWithoutDocumentsInput
+  }
+
+  export type DocumentUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    propertyId?: string | null
+    roomId?: string | null
+    leaseId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    loanId?: string | null
+    billScheduleId?: string | null
+    billId?: string | null
+    fileName: string
+    fileUrl: string
+    mimeType?: string | null
+    deletedAt?: Date | string | null
+    uploadedAt?: Date | string
+  }
+
+  export type DocumentCreateOrConnectWithoutHouseholdInput = {
+    where: DocumentWhereUniqueInput
+    create: XOR<DocumentCreateWithoutHouseholdInput, DocumentUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type DocumentCreateManyHouseholdInputEnvelope = {
+    data: DocumentCreateManyHouseholdInput | DocumentCreateManyHouseholdInput[]
+  }
+
+  export type PaymentTransactionCreateWithoutHouseholdInput = {
+    id?: string
+    category: $Enums.EventCategory
+    amount: number
+    currency?: $Enums.Currency | null
+    paymentMethod?: $Enums.PaymentMethod
+    referenceNumber?: string | null
+    receiptUrl?: string | null
+    paidAt?: Date | string
+    notes?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    owner: UserCreateNestedOneWithoutTransactionsInput
+    bill?: BillCreateNestedOneWithoutTransactionsInput
+    property?: PropertyCreateNestedOneWithoutTransactionsInput
+    lease?: LeaseCreateNestedOneWithoutTransactionsInput
+    loan?: LoanCreateNestedOneWithoutTransactionsInput
+    policy?: PolicyCreateNestedOneWithoutTransactionsInput
+    investment?: InvestmentCreateNestedOneWithoutTransactionsInput
+  }
+
+  export type PaymentTransactionUncheckedCreateWithoutHouseholdInput = {
+    id?: string
+    ownerId: string
+    category: $Enums.EventCategory
+    billId?: string | null
+    propertyId?: string | null
+    leaseId?: string | null
+    loanId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    amount: number
+    currency?: $Enums.Currency | null
+    paymentMethod?: $Enums.PaymentMethod
+    referenceNumber?: string | null
+    receiptUrl?: string | null
+    paidAt?: Date | string
+    notes?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type PaymentTransactionCreateOrConnectWithoutHouseholdInput = {
+    where: PaymentTransactionWhereUniqueInput
+    create: XOR<PaymentTransactionCreateWithoutHouseholdInput, PaymentTransactionUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type PaymentTransactionCreateManyHouseholdInputEnvelope = {
+    data: PaymentTransactionCreateManyHouseholdInput | PaymentTransactionCreateManyHouseholdInput[]
+  }
+
+  export type HouseholdMemberUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: HouseholdMemberWhereUniqueInput
+    update: XOR<HouseholdMemberUpdateWithoutHouseholdInput, HouseholdMemberUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<HouseholdMemberCreateWithoutHouseholdInput, HouseholdMemberUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type HouseholdMemberUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: HouseholdMemberWhereUniqueInput
+    data: XOR<HouseholdMemberUpdateWithoutHouseholdInput, HouseholdMemberUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type HouseholdMemberUpdateManyWithWhereWithoutHouseholdInput = {
+    where: HouseholdMemberScalarWhereInput
+    data: XOR<HouseholdMemberUpdateManyMutationInput, HouseholdMemberUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type PropertyUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: PropertyWhereUniqueInput
+    update: XOR<PropertyUpdateWithoutHouseholdInput, PropertyUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<PropertyCreateWithoutHouseholdInput, PropertyUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type PropertyUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: PropertyWhereUniqueInput
+    data: XOR<PropertyUpdateWithoutHouseholdInput, PropertyUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type PropertyUpdateManyWithWhereWithoutHouseholdInput = {
+    where: PropertyScalarWhereInput
+    data: XOR<PropertyUpdateManyMutationInput, PropertyUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type PolicyUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: PolicyWhereUniqueInput
+    update: XOR<PolicyUpdateWithoutHouseholdInput, PolicyUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<PolicyCreateWithoutHouseholdInput, PolicyUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type PolicyUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: PolicyWhereUniqueInput
+    data: XOR<PolicyUpdateWithoutHouseholdInput, PolicyUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type PolicyUpdateManyWithWhereWithoutHouseholdInput = {
+    where: PolicyScalarWhereInput
+    data: XOR<PolicyUpdateManyMutationInput, PolicyUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type InvestmentUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: InvestmentWhereUniqueInput
+    update: XOR<InvestmentUpdateWithoutHouseholdInput, InvestmentUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<InvestmentCreateWithoutHouseholdInput, InvestmentUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type InvestmentUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: InvestmentWhereUniqueInput
+    data: XOR<InvestmentUpdateWithoutHouseholdInput, InvestmentUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type InvestmentUpdateManyWithWhereWithoutHouseholdInput = {
+    where: InvestmentScalarWhereInput
+    data: XOR<InvestmentUpdateManyMutationInput, InvestmentUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type LoanUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: LoanWhereUniqueInput
+    update: XOR<LoanUpdateWithoutHouseholdInput, LoanUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<LoanCreateWithoutHouseholdInput, LoanUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type LoanUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: LoanWhereUniqueInput
+    data: XOR<LoanUpdateWithoutHouseholdInput, LoanUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type LoanUpdateManyWithWhereWithoutHouseholdInput = {
+    where: LoanScalarWhereInput
+    data: XOR<LoanUpdateManyMutationInput, LoanUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type BillScheduleUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: BillScheduleWhereUniqueInput
+    update: XOR<BillScheduleUpdateWithoutHouseholdInput, BillScheduleUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<BillScheduleCreateWithoutHouseholdInput, BillScheduleUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type BillScheduleUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: BillScheduleWhereUniqueInput
+    data: XOR<BillScheduleUpdateWithoutHouseholdInput, BillScheduleUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type BillScheduleUpdateManyWithWhereWithoutHouseholdInput = {
+    where: BillScheduleScalarWhereInput
+    data: XOR<BillScheduleUpdateManyMutationInput, BillScheduleUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type BillUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: BillWhereUniqueInput
+    update: XOR<BillUpdateWithoutHouseholdInput, BillUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<BillCreateWithoutHouseholdInput, BillUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type BillUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: BillWhereUniqueInput
+    data: XOR<BillUpdateWithoutHouseholdInput, BillUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type BillUpdateManyWithWhereWithoutHouseholdInput = {
+    where: BillScalarWhereInput
+    data: XOR<BillUpdateManyMutationInput, BillUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type DocumentUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: DocumentWhereUniqueInput
+    update: XOR<DocumentUpdateWithoutHouseholdInput, DocumentUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<DocumentCreateWithoutHouseholdInput, DocumentUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type DocumentUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: DocumentWhereUniqueInput
+    data: XOR<DocumentUpdateWithoutHouseholdInput, DocumentUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type DocumentUpdateManyWithWhereWithoutHouseholdInput = {
+    where: DocumentScalarWhereInput
+    data: XOR<DocumentUpdateManyMutationInput, DocumentUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type PaymentTransactionUpsertWithWhereUniqueWithoutHouseholdInput = {
+    where: PaymentTransactionWhereUniqueInput
+    update: XOR<PaymentTransactionUpdateWithoutHouseholdInput, PaymentTransactionUncheckedUpdateWithoutHouseholdInput>
+    create: XOR<PaymentTransactionCreateWithoutHouseholdInput, PaymentTransactionUncheckedCreateWithoutHouseholdInput>
+  }
+
+  export type PaymentTransactionUpdateWithWhereUniqueWithoutHouseholdInput = {
+    where: PaymentTransactionWhereUniqueInput
+    data: XOR<PaymentTransactionUpdateWithoutHouseholdInput, PaymentTransactionUncheckedUpdateWithoutHouseholdInput>
+  }
+
+  export type PaymentTransactionUpdateManyWithWhereWithoutHouseholdInput = {
+    where: PaymentTransactionScalarWhereInput
+    data: XOR<PaymentTransactionUpdateManyMutationInput, PaymentTransactionUncheckedUpdateManyWithoutHouseholdInput>
+  }
+
+  export type HouseholdCreateWithoutMembersInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    properties?: PropertyCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentCreateNestedManyWithoutHouseholdInput
+    loans?: LoanCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutHouseholdInput
+    bills?: BillCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdUncheckedCreateWithoutMembersInput = {
+    id?: string
+    name: string
+    personalForUserId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    properties?: PropertyUncheckedCreateNestedManyWithoutHouseholdInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutHouseholdInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutHouseholdInput
+    loans?: LoanUncheckedCreateNestedManyWithoutHouseholdInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutHouseholdInput
+    bills?: BillUncheckedCreateNestedManyWithoutHouseholdInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutHouseholdInput
+    paymentTransactions?: PaymentTransactionUncheckedCreateNestedManyWithoutHouseholdInput
+  }
+
+  export type HouseholdCreateOrConnectWithoutMembersInput = {
+    where: HouseholdWhereUniqueInput
+    create: XOR<HouseholdCreateWithoutMembersInput, HouseholdUncheckedCreateWithoutMembersInput>
+  }
+
+  export type UserCreateWithoutHouseholdsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    currency?: $Enums.Currency
+    timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    guests?: GuestCreateNestedManyWithoutOwnerInput
+    properties?: PropertyCreateNestedManyWithoutOwnerInput
+    policies?: PolicyCreateNestedManyWithoutOwnerInput
+    investments?: InvestmentCreateNestedManyWithoutOwnerInput
+    loans?: LoanCreateNestedManyWithoutOwnerInput
+    bills?: BillCreateNestedManyWithoutOwnerInput
+    billSchedules?: BillScheduleCreateNestedManyWithoutOwnerInput
+    notificationRules?: NotificationRuleCreateNestedManyWithoutOwnerInput
+    notificationJobs?: NotificationJobCreateNestedManyWithoutOwnerInput
+    documents?: DocumentCreateNestedManyWithoutOwnerInput
+    auditLogs?: AuditLogCreateNestedManyWithoutUserInput
+    transactions?: PaymentTransactionCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserUncheckedCreateWithoutHouseholdsInput = {
+    id?: string
+    name: string
+    email: string
+    emailVerified?: boolean
+    image?: string | null
+    currency?: $Enums.Currency
+    timezone?: string | null
+    phone?: string | null
+    reminderHour?: number | null
+    role?: string | null
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    guests?: GuestUncheckedCreateNestedManyWithoutOwnerInput
+    properties?: PropertyUncheckedCreateNestedManyWithoutOwnerInput
+    policies?: PolicyUncheckedCreateNestedManyWithoutOwnerInput
+    investments?: InvestmentUncheckedCreateNestedManyWithoutOwnerInput
+    loans?: LoanUncheckedCreateNestedManyWithoutOwnerInput
+    bills?: BillUncheckedCreateNestedManyWithoutOwnerInput
+    billSchedules?: BillScheduleUncheckedCreateNestedManyWithoutOwnerInput
+    notificationRules?: NotificationRuleUncheckedCreateNestedManyWithoutOwnerInput
+    notificationJobs?: NotificationJobUncheckedCreateNestedManyWithoutOwnerInput
+    documents?: DocumentUncheckedCreateNestedManyWithoutOwnerInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutUserInput
+    transactions?: PaymentTransactionUncheckedCreateNestedManyWithoutOwnerInput
+  }
+
+  export type UserCreateOrConnectWithoutHouseholdsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutHouseholdsInput, UserUncheckedCreateWithoutHouseholdsInput>
+  }
+
+  export type HouseholdUpsertWithoutMembersInput = {
+    update: XOR<HouseholdUpdateWithoutMembersInput, HouseholdUncheckedUpdateWithoutMembersInput>
+    create: XOR<HouseholdCreateWithoutMembersInput, HouseholdUncheckedCreateWithoutMembersInput>
+    where?: HouseholdWhereInput
+  }
+
+  export type HouseholdUpdateToOneWithWhereWithoutMembersInput = {
+    where?: HouseholdWhereInput
+    data: XOR<HouseholdUpdateWithoutMembersInput, HouseholdUncheckedUpdateWithoutMembersInput>
+  }
+
+  export type HouseholdUpdateWithoutMembersInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    properties?: PropertyUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type HouseholdUncheckedUpdateWithoutMembersInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    personalForUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    properties?: PropertyUncheckedUpdateManyWithoutHouseholdNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutHouseholdNestedInput
+    investments?: InvestmentUncheckedUpdateManyWithoutHouseholdNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutHouseholdNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutHouseholdNestedInput
+    bills?: BillUncheckedUpdateManyWithoutHouseholdNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutHouseholdNestedInput
+    paymentTransactions?: PaymentTransactionUncheckedUpdateManyWithoutHouseholdNestedInput
+  }
+
+  export type UserUpsertWithoutHouseholdsInput = {
+    update: XOR<UserUpdateWithoutHouseholdsInput, UserUncheckedUpdateWithoutHouseholdsInput>
+    create: XOR<UserCreateWithoutHouseholdsInput, UserUncheckedCreateWithoutHouseholdsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutHouseholdsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutHouseholdsInput, UserUncheckedUpdateWithoutHouseholdsInput>
+  }
+
+  export type UserUpdateWithoutHouseholdsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    guests?: GuestUpdateManyWithoutOwnerNestedInput
+    properties?: PropertyUpdateManyWithoutOwnerNestedInput
+    policies?: PolicyUpdateManyWithoutOwnerNestedInput
+    investments?: InvestmentUpdateManyWithoutOwnerNestedInput
+    loans?: LoanUpdateManyWithoutOwnerNestedInput
+    bills?: BillUpdateManyWithoutOwnerNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutOwnerNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutOwnerNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutOwnerNestedInput
+    documents?: DocumentUpdateManyWithoutOwnerNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutUserNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutOwnerNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutHouseholdsInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: EnumCurrencyFieldUpdateOperationsInput | $Enums.Currency
+    timezone?: NullableStringFieldUpdateOperationsInput | string | null
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    reminderHour?: NullableIntFieldUpdateOperationsInput | number | null
+    role?: NullableStringFieldUpdateOperationsInput | string | null
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    guests?: GuestUncheckedUpdateManyWithoutOwnerNestedInput
     properties?: PropertyUncheckedUpdateManyWithoutOwnerNestedInput
     policies?: PolicyUncheckedUpdateManyWithoutOwnerNestedInput
     investments?: InvestmentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -53123,6 +63503,13 @@ export namespace Prisma {
     impersonatedBy?: string | null
   }
 
+  export type HouseholdMemberCreateManyUserInput = {
+    id?: string
+    householdId: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+  }
+
   export type AccountCreateManyUserInput = {
     id?: string
     accountId: string
@@ -53134,13 +63521,6 @@ export namespace Prisma {
     refreshTokenExpiresAt?: Date | string | null
     scope?: string | null
     password?: string | null
-    createdAt?: Date | string
-    updatedAt?: Date | string
-  }
-
-  export type PostCreateManyCreatedByInput = {
-    id?: string
-    name: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -53164,6 +63544,7 @@ export namespace Prisma {
 
   export type PropertyCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     name: string
     type: $Enums.PropertyType
     uniquePropertyId?: string | null
@@ -53187,6 +63568,7 @@ export namespace Prisma {
 
   export type PolicyCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -53209,6 +63591,7 @@ export namespace Prisma {
 
   export type InvestmentCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     name: string
     type: $Enums.InvestmentType
     institution?: string | null
@@ -53226,6 +63609,7 @@ export namespace Prisma {
 
   export type LoanCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -53243,6 +63627,7 @@ export namespace Prisma {
 
   export type BillCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -53251,6 +63636,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -53279,6 +63665,7 @@ export namespace Prisma {
 
   export type BillScheduleCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -53295,6 +63682,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -53354,6 +63743,7 @@ export namespace Prisma {
 
   export type DocumentCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -53381,6 +63771,7 @@ export namespace Prisma {
 
   export type PaymentTransactionCreateManyOwnerInput = {
     id?: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -53429,6 +63820,24 @@ export namespace Prisma {
     impersonatedBy?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
+  export type HouseholdMemberUpdateWithoutUserInput = {
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneRequiredWithoutMembersNestedInput
+  }
+
+  export type HouseholdMemberUncheckedUpdateWithoutUserInput = {
+    householdId?: StringFieldUpdateOperationsInput | string
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HouseholdMemberUncheckedUpdateManyWithoutUserInput = {
+    householdId?: StringFieldUpdateOperationsInput | string
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AccountUpdateWithoutUserInput = {
     accountId?: StringFieldUpdateOperationsInput | string
     providerId?: StringFieldUpdateOperationsInput | string
@@ -53467,24 +63876,6 @@ export namespace Prisma {
     refreshTokenExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     password?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PostUpdateWithoutCreatedByInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PostUncheckedUpdateWithoutCreatedByInput = {
-    name?: StringFieldUpdateOperationsInput | string
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type PostUncheckedUpdateManyWithoutCreatedByInput = {
-    name?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -53557,6 +63948,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneWithoutPropertiesNestedInput
     rooms?: RoomUpdateManyWithoutPropertyNestedInput
     leases?: LeaseUpdateManyWithoutPropertyNestedInput
     policies?: PolicyUpdateManyWithoutPropertyNestedInput
@@ -53570,6 +63962,7 @@ export namespace Prisma {
   }
 
   export type PropertyUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53602,6 +63995,7 @@ export namespace Prisma {
   }
 
   export type PropertyUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
     uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53641,6 +64035,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     property?: PropertyUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
@@ -53652,6 +64047,7 @@ export namespace Prisma {
   }
 
   export type PolicyUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -53680,6 +64076,7 @@ export namespace Prisma {
   }
 
   export type PolicyUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -53714,6 +64111,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneWithoutInvestmentsNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
     bills?: BillUpdateManyWithoutInvestmentNestedInput
     loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
@@ -53724,6 +64122,7 @@ export namespace Prisma {
   }
 
   export type InvestmentUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53747,6 +64146,7 @@ export namespace Prisma {
   }
 
   export type InvestmentUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     name?: StringFieldUpdateOperationsInput | string
     type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
     institution?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53773,6 +64173,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
@@ -53785,6 +64186,7 @@ export namespace Prisma {
   }
 
   export type LoanUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -53807,6 +64209,7 @@ export namespace Prisma {
   }
 
   export type LoanUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -53825,6 +64228,7 @@ export namespace Prisma {
   export type BillUpdateWithoutOwnerInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -53849,6 +64253,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -53862,6 +64267,7 @@ export namespace Prisma {
   }
 
   export type BillUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53870,6 +64276,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -53901,6 +64308,7 @@ export namespace Prisma {
   }
 
   export type BillUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53909,6 +64317,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -53947,6 +64356,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53955,6 +64366,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -53967,6 +64379,7 @@ export namespace Prisma {
   }
 
   export type BillScheduleUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -53983,6 +64396,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53998,6 +64413,7 @@ export namespace Prisma {
   }
 
   export type BillScheduleUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54014,6 +64430,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54167,6 +64585,7 @@ export namespace Prisma {
     mimeType?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
@@ -54178,6 +64597,7 @@ export namespace Prisma {
   }
 
   export type DocumentUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54194,6 +64614,7 @@ export namespace Prisma {
   }
 
   export type DocumentUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54247,6 +64668,7 @@ export namespace Prisma {
     notes?: NullableStringFieldUpdateOperationsInput | string | null
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     bill?: BillUpdateOneWithoutTransactionsNestedInput
     property?: PropertyUpdateOneWithoutTransactionsNestedInput
     lease?: LeaseUpdateOneWithoutTransactionsNestedInput
@@ -54256,6 +64678,7 @@ export namespace Prisma {
   }
 
   export type PaymentTransactionUncheckedUpdateWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54275,6 +64698,7 @@ export namespace Prisma {
   }
 
   export type PaymentTransactionUncheckedUpdateManyWithoutOwnerInput = {
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54324,6 +64748,7 @@ export namespace Prisma {
   export type PolicyCreateManyPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     type: $Enums.PolicyType
     insurer: string
     policyNumber: string
@@ -54346,6 +64771,7 @@ export namespace Prisma {
   export type BillScheduleCreateManyPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     leaseId?: string | null
     loanId?: string | null
@@ -54361,6 +64787,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -54374,6 +64802,7 @@ export namespace Prisma {
   export type BillCreateManyPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -54381,6 +64810,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -54410,6 +64840,7 @@ export namespace Prisma {
   export type LoanCreateManyLinkedPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -54427,6 +64858,7 @@ export namespace Prisma {
   export type DocumentCreateManyPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     roomId?: string | null
     leaseId?: string | null
     policyId?: string | null
@@ -54444,6 +64876,7 @@ export namespace Prisma {
   export type PaymentTransactionCreateManyPropertyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     leaseId?: string | null
@@ -54621,6 +65054,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    household?: HouseholdUpdateOneWithoutPoliciesNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
     bills?: BillUpdateManyWithoutPolicyNestedInput
     loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
@@ -54632,6 +65066,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -54660,6 +65095,7 @@ export namespace Prisma {
 
   export type PolicyUncheckedUpdateManyWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
     insurer?: StringFieldUpdateOperationsInput | string
     policyNumber?: StringFieldUpdateOperationsInput | string
@@ -54691,6 +65127,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54700,6 +65138,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
     policy?: PolicyUpdateOneWithoutBillSchedulesNestedInput
@@ -54712,6 +65151,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54727,6 +65167,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54743,6 +65185,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateManyWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54758,6 +65201,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -54771,6 +65216,7 @@ export namespace Prisma {
   export type BillUpdateWithoutPropertyInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -54796,6 +65242,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
     loan?: LoanUpdateOneWithoutBillsNestedInput
@@ -54809,6 +65256,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54816,6 +65264,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -54848,6 +65297,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54855,6 +65305,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -54893,6 +65344,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutLoanNestedInput
@@ -54905,6 +65357,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutLinkedPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -54927,6 +65380,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateManyWithoutLinkedPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -54948,6 +65402,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
     policy?: PolicyUpdateOneWithoutDocumentsNestedInput
@@ -54959,6 +65414,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -54975,6 +65431,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55001,6 +65458,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     bill?: BillUpdateOneWithoutTransactionsNestedInput
     lease?: LeaseUpdateOneWithoutTransactionsNestedInput
     loan?: LoanUpdateOneWithoutTransactionsNestedInput
@@ -55010,6 +65468,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55029,6 +65488,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateManyWithoutPropertyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55204,6 +65664,7 @@ export namespace Prisma {
   export type DocumentCreateManyRoomInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     leaseId?: string | null
     policyId?: string | null
@@ -55288,6 +65749,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
     policy?: PolicyUpdateOneWithoutDocumentsNestedInput
@@ -55299,6 +65761,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutRoomInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55315,6 +65778,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutRoomInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55332,6 +65796,7 @@ export namespace Prisma {
   export type BillScheduleCreateManyLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     loanId?: string | null
@@ -55347,6 +65812,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -55360,6 +65827,7 @@ export namespace Prisma {
   export type BillCreateManyLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -55367,6 +65835,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -55396,6 +65865,7 @@ export namespace Prisma {
   export type DocumentCreateManyLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     policyId?: string | null
@@ -55413,6 +65883,7 @@ export namespace Prisma {
   export type PaymentTransactionCreateManyLeaseInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -55489,6 +65960,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55498,6 +65971,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
     policy?: PolicyUpdateOneWithoutBillSchedulesNestedInput
@@ -55510,6 +65984,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55525,6 +66000,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55541,6 +66018,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateManyWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55556,6 +66034,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -55569,6 +66049,7 @@ export namespace Prisma {
   export type BillUpdateWithoutLeaseInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -55594,6 +66075,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     loan?: LoanUpdateOneWithoutBillsNestedInput
@@ -55607,6 +66089,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55614,6 +66097,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -55646,6 +66130,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55653,6 +66138,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -55686,6 +66172,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     policy?: PolicyUpdateOneWithoutDocumentsNestedInput
@@ -55697,6 +66184,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55713,6 +66201,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55739,6 +66228,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     bill?: BillUpdateOneWithoutTransactionsNestedInput
     property?: PropertyUpdateOneWithoutTransactionsNestedInput
     loan?: LoanUpdateOneWithoutTransactionsNestedInput
@@ -55748,6 +66238,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55767,6 +66258,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateManyWithoutLeaseInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -55924,6 +66416,7 @@ export namespace Prisma {
   export type BillCreateManyBillScheduleInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     propertyId?: string | null
@@ -55931,6 +66424,7 @@ export namespace Prisma {
     loanId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -55960,6 +66454,7 @@ export namespace Prisma {
   export type DocumentCreateManyBillScheduleInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -56032,6 +66527,7 @@ export namespace Prisma {
   export type BillUpdateWithoutBillScheduleInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -56057,6 +66553,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
     loan?: LoanUpdateOneWithoutBillsNestedInput
@@ -56070,6 +66567,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutBillScheduleInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56077,6 +66575,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -56109,6 +66608,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutBillScheduleInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56116,6 +66616,7 @@ export namespace Prisma {
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -56149,6 +66650,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
@@ -56160,6 +66662,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutBillScheduleInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56176,6 +66679,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutBillScheduleInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56330,6 +66834,7 @@ export namespace Prisma {
   export type PaymentTransactionCreateManyBillInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -56350,6 +66855,7 @@ export namespace Prisma {
   export type DocumentCreateManyBillInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -56423,6 +66929,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     property?: PropertyUpdateOneWithoutTransactionsNestedInput
     lease?: LeaseUpdateOneWithoutTransactionsNestedInput
     loan?: LoanUpdateOneWithoutTransactionsNestedInput
@@ -56432,6 +66939,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateWithoutBillInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56451,6 +66959,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateManyWithoutBillInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56475,6 +66984,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
@@ -56486,6 +66996,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutBillInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56502,6 +67013,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutBillInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56656,6 +67168,7 @@ export namespace Prisma {
   export type BillScheduleCreateManyPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -56671,6 +67184,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -56684,6 +67199,7 @@ export namespace Prisma {
   export type BillCreateManyPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -56691,6 +67207,7 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -56720,6 +67237,7 @@ export namespace Prisma {
   export type LoanCreateManyLinkedPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -56737,6 +67255,7 @@ export namespace Prisma {
   export type DocumentCreateManyPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -56754,6 +67273,7 @@ export namespace Prisma {
   export type PaymentTransactionCreateManyPolicyInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -56830,6 +67350,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -56839,6 +67361,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -56851,6 +67374,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56866,6 +67390,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -56882,6 +67408,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateManyWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56897,6 +67424,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -56910,6 +67439,7 @@ export namespace Prisma {
   export type BillUpdateWithoutPolicyInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -56935,6 +67465,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -56948,6 +67479,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56955,6 +67487,7 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -56987,6 +67520,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -56994,6 +67528,7 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -57032,6 +67567,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutLoanNestedInput
@@ -57044,6 +67580,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutLinkedPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -57066,6 +67603,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateManyWithoutLinkedPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -57087,6 +67625,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
@@ -57098,6 +67637,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57114,6 +67654,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57140,6 +67681,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     bill?: BillUpdateOneWithoutTransactionsNestedInput
     property?: PropertyUpdateOneWithoutTransactionsNestedInput
     lease?: LeaseUpdateOneWithoutTransactionsNestedInput
@@ -57149,6 +67691,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57168,6 +67711,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateManyWithoutPolicyInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57325,6 +67869,7 @@ export namespace Prisma {
   export type BillScheduleCreateManyInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -57340,6 +67885,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -57353,6 +67900,7 @@ export namespace Prisma {
   export type BillCreateManyInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -57360,6 +67908,7 @@ export namespace Prisma {
     leaseId?: string | null
     loanId?: string | null
     policyId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -57389,6 +67938,7 @@ export namespace Prisma {
   export type LoanCreateManyLinkedInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     lender: string
     type: $Enums.LoanType
     principal: number
@@ -57406,6 +67956,7 @@ export namespace Prisma {
   export type DocumentCreateManyInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -57423,6 +67974,7 @@ export namespace Prisma {
   export type PaymentTransactionCreateManyInvestmentInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -57499,6 +68051,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -57508,6 +68062,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
@@ -57520,6 +68075,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57535,6 +68091,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -57551,6 +68109,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateManyWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57566,6 +68125,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -57579,6 +68140,7 @@ export namespace Prisma {
   export type BillUpdateWithoutInvestmentInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -57604,6 +68166,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -57617,6 +68180,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57624,6 +68188,7 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -57656,6 +68221,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57663,6 +68229,7 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     loanId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -57701,6 +68268,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    household?: HouseholdUpdateOneWithoutLoansNestedInput
     linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
     linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
     billSchedules?: BillScheduleUpdateManyWithoutLoanNestedInput
@@ -57713,6 +68281,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateWithoutLinkedInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -57735,6 +68304,7 @@ export namespace Prisma {
 
   export type LoanUncheckedUpdateManyWithoutLinkedInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     lender?: StringFieldUpdateOperationsInput | string
     type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
     principal?: FloatFieldUpdateOperationsInput | number
@@ -57756,6 +68326,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
@@ -57767,6 +68338,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57783,6 +68355,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57809,6 +68382,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     bill?: BillUpdateOneWithoutTransactionsNestedInput
     property?: PropertyUpdateOneWithoutTransactionsNestedInput
     lease?: LeaseUpdateOneWithoutTransactionsNestedInput
@@ -57818,6 +68392,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57837,6 +68412,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateManyWithoutInvestmentInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -57994,6 +68570,7 @@ export namespace Prisma {
   export type BillScheduleCreateManyLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     propertyId?: string | null
     leaseId?: string | null
@@ -58009,6 +68586,8 @@ export namespace Prisma {
     startDate?: Date | string | null
     dueDay: number
     dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -58022,6 +68601,7 @@ export namespace Prisma {
   export type BillCreateManyLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     direction: $Enums.FinancialEventType
     billScheduleId?: string | null
@@ -58029,6 +68609,7 @@ export namespace Prisma {
     leaseId?: string | null
     policyId?: string | null
     investmentId?: string | null
+    generationKey?: string
     dueDate: Date | string
     amount: number
     currency?: $Enums.Currency | null
@@ -58058,6 +68639,7 @@ export namespace Prisma {
   export type DocumentCreateManyLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     propertyId?: string | null
     roomId?: string | null
     leaseId?: string | null
@@ -58075,6 +68657,7 @@ export namespace Prisma {
   export type PaymentTransactionCreateManyLoanInput = {
     id?: string
     ownerId: string
+    householdId?: string | null
     category: $Enums.EventCategory
     billId?: string | null
     propertyId?: string | null
@@ -58151,6 +68734,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -58160,6 +68745,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
     owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    household?: HouseholdUpdateOneWithoutBillSchedulesNestedInput
     property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
     lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
     policy?: PolicyUpdateOneWithoutBillSchedulesNestedInput
@@ -58172,6 +68758,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58187,6 +68774,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -58203,6 +68792,7 @@ export namespace Prisma {
 
   export type BillScheduleUncheckedUpdateManyWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58218,6 +68808,8 @@ export namespace Prisma {
     startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -58231,6 +68823,7 @@ export namespace Prisma {
   export type BillUpdateWithoutLoanInput = {
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -58256,6 +68849,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    household?: HouseholdUpdateOneWithoutBillsNestedInput
     billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
     property?: PropertyUpdateOneWithoutBillsNestedInput
     lease?: LeaseUpdateOneWithoutBillsNestedInput
@@ -58269,6 +68863,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58276,6 +68871,7 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -58308,6 +68904,7 @@ export namespace Prisma {
 
   export type BillUncheckedUpdateManyWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
     billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58315,6 +68912,7 @@ export namespace Prisma {
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
     policyId?: NullableStringFieldUpdateOperationsInput | string | null
     investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
     dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
     amount?: FloatFieldUpdateOperationsInput | number
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
@@ -58348,6 +68946,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    household?: HouseholdUpdateOneWithoutDocumentsNestedInput
     property?: PropertyUpdateOneWithoutDocumentsNestedInput
     room?: RoomUpdateOneWithoutDocumentsNestedInput
     lease?: LeaseUpdateOneWithoutDocumentsNestedInput
@@ -58359,6 +68958,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58375,6 +68975,7 @@ export namespace Prisma {
 
   export type DocumentUncheckedUpdateManyWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
     roomId?: NullableStringFieldUpdateOperationsInput | string | null
     leaseId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58401,6 +69002,7 @@ export namespace Prisma {
     deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    household?: HouseholdUpdateOneWithoutPaymentTransactionsNestedInput
     bill?: BillUpdateOneWithoutTransactionsNestedInput
     property?: PropertyUpdateOneWithoutTransactionsNestedInput
     lease?: LeaseUpdateOneWithoutTransactionsNestedInput
@@ -58410,6 +69012,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58429,6 +69032,7 @@ export namespace Prisma {
 
   export type PaymentTransactionUncheckedUpdateManyWithoutLoanInput = {
     ownerId?: StringFieldUpdateOperationsInput | string
+    householdId?: NullableStringFieldUpdateOperationsInput | string | null
     category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
     billId?: NullableStringFieldUpdateOperationsInput | string | null
     propertyId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -58690,6 +69294,847 @@ export namespace Prisma {
     retryCount?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HouseholdMemberCreateManyHouseholdInput = {
+    id?: string
+    userId: string
+    role?: $Enums.HouseholdRole
+    createdAt?: Date | string
+  }
+
+  export type PropertyCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    name: string
+    type: $Enums.PropertyType
+    uniquePropertyId?: string | null
+    propertyCategory?: $Enums.PropertyCategory | null
+    ownershipType?: $Enums.OwnershipType | null
+    addressLine1: string
+    addressLine2?: string | null
+    city: string
+    state: string
+    pinCode: string
+    country?: string
+    currency?: $Enums.Currency | null
+    purchasePrice?: number | null
+    currentEstimatedValue?: number | null
+    purchaseDate?: Date | string | null
+    photos?: PropertyCreatephotosInput | string[]
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type PolicyCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    type: $Enums.PolicyType
+    insurer: string
+    policyNumber: string
+    holderName: string
+    nominees?: PolicyCreatenomineesInput | string[]
+    startDate: Date | string
+    tenureYears?: number | null
+    status?: $Enums.PolicyStatus
+    sumAssured?: number | null
+    currency?: $Enums.Currency | null
+    roomRentLimit?: number | null
+    coPayPercent?: number | null
+    waitingPeriodMonths?: number | null
+    networkHospitals?: PolicyCreatenetworkHospitalsInput | string[]
+    propertyId?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type InvestmentCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    name: string
+    type: $Enums.InvestmentType
+    institution?: string | null
+    investedDate: Date | string
+    capitalDeployed: number
+    currency?: $Enums.Currency | null
+    expectedReturnType?: string | null
+    expectedReturnDate?: Date | string | null
+    targetRoiPercent?: number | null
+    currentEstimatedValue?: number | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type LoanCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    lender: string
+    type: $Enums.LoanType
+    principal: number
+    currency?: $Enums.Currency | null
+    interestRatePercent: number
+    startDate: Date | string
+    outstandingBalance: number
+    linkedPropertyId?: string | null
+    linkedPolicyId?: string | null
+    linkedInvestmentId?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BillScheduleCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    category: $Enums.EventCategory
+    propertyId?: string | null
+    leaseId?: string | null
+    loanId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    billType?: $Enums.BillType | null
+    provider?: string | null
+    accountNumber?: string | null
+    meterNumber?: string | null
+    billingType?: $Enums.BillingType | null
+    autoGenerateBill?: boolean | null
+    recurrence?: $Enums.BillRecurrence
+    startDate?: Date | string | null
+    dueDay: number
+    dueMonth?: number | null
+    endDate?: Date | string | null
+    nextDueDate?: Date | string | null
+    defaultAmount?: number | null
+    currency?: $Enums.Currency | null
+    tenureMonths?: number | null
+    active?: boolean
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    recipients?: XOR<RecipientListCreateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+  }
+
+  export type BillCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    category: $Enums.EventCategory
+    direction: $Enums.FinancialEventType
+    billScheduleId?: string | null
+    propertyId?: string | null
+    leaseId?: string | null
+    loanId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    generationKey?: string
+    dueDate: Date | string
+    amount: number
+    currency?: $Enums.Currency | null
+    status?: $Enums.PaymentStatus
+    paidDate?: Date | string | null
+    paidAmount?: number | null
+    notes?: string | null
+    installmentNumber?: number | null
+    principalComponent?: number | null
+    interestComponent?: number | null
+    previousMeterValue?: number | null
+    currentMeterValue?: number | null
+    billingPeriodStart?: Date | string | null
+    billingPeriodEnd?: Date | string | null
+    billDocumentUrl?: string | null
+    receiptDocumentUrl?: string | null
+    frequency?: $Enums.PremiumFrequency | null
+    gracePeriodDays?: number | null
+    label?: string | null
+    claimStatus?: $Enums.ClaimStatus | null
+    description?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type DocumentCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    propertyId?: string | null
+    roomId?: string | null
+    leaseId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    loanId?: string | null
+    billScheduleId?: string | null
+    billId?: string | null
+    fileName: string
+    fileUrl: string
+    mimeType?: string | null
+    deletedAt?: Date | string | null
+    uploadedAt?: Date | string
+  }
+
+  export type PaymentTransactionCreateManyHouseholdInput = {
+    id?: string
+    ownerId: string
+    category: $Enums.EventCategory
+    billId?: string | null
+    propertyId?: string | null
+    leaseId?: string | null
+    loanId?: string | null
+    policyId?: string | null
+    investmentId?: string | null
+    amount: number
+    currency?: $Enums.Currency | null
+    paymentMethod?: $Enums.PaymentMethod
+    referenceNumber?: string | null
+    receiptUrl?: string | null
+    paidAt?: Date | string
+    notes?: string | null
+    deletedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type HouseholdMemberUpdateWithoutHouseholdInput = {
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutHouseholdsNestedInput
+  }
+
+  export type HouseholdMemberUncheckedUpdateWithoutHouseholdInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HouseholdMemberUncheckedUpdateManyWithoutHouseholdInput = {
+    userId?: StringFieldUpdateOperationsInput | string
+    role?: EnumHouseholdRoleFieldUpdateOperationsInput | $Enums.HouseholdRole
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PropertyUpdateWithoutHouseholdInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    addressLine1?: StringFieldUpdateOperationsInput | string
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    pinCode?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    purchasePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    purchaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    photos?: PropertyUpdatephotosInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutPropertiesNestedInput
+    rooms?: RoomUpdateManyWithoutPropertyNestedInput
+    leases?: LeaseUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUpdateManyWithoutPropertyNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutPropertyNestedInput
+    bills?: BillUpdateManyWithoutPropertyNestedInput
+    loans?: LoanUpdateManyWithoutLinkedPropertyNestedInput
+    documents?: DocumentUpdateManyWithoutPropertyNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutPropertyNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutPropertyNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutPropertyNestedInput
+  }
+
+  export type PropertyUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    addressLine1?: StringFieldUpdateOperationsInput | string
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    pinCode?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    purchasePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    purchaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    photos?: PropertyUpdatephotosInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    rooms?: RoomUncheckedUpdateManyWithoutPropertyNestedInput
+    leases?: LeaseUncheckedUpdateManyWithoutPropertyNestedInput
+    policies?: PolicyUncheckedUpdateManyWithoutPropertyNestedInput
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutPropertyNestedInput
+    bills?: BillUncheckedUpdateManyWithoutPropertyNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutLinkedPropertyNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutPropertyNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutPropertyNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutPropertyNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutPropertyNestedInput
+  }
+
+  export type PropertyUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumPropertyTypeFieldUpdateOperationsInput | $Enums.PropertyType
+    uniquePropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyCategory?: NullableEnumPropertyCategoryFieldUpdateOperationsInput | $Enums.PropertyCategory | null
+    ownershipType?: NullableEnumOwnershipTypeFieldUpdateOperationsInput | $Enums.OwnershipType | null
+    addressLine1?: StringFieldUpdateOperationsInput | string
+    addressLine2?: NullableStringFieldUpdateOperationsInput | string | null
+    city?: StringFieldUpdateOperationsInput | string
+    state?: StringFieldUpdateOperationsInput | string
+    pinCode?: StringFieldUpdateOperationsInput | string
+    country?: StringFieldUpdateOperationsInput | string
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    purchasePrice?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    purchaseDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    photos?: PropertyUpdatephotosInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PolicyUpdateWithoutHouseholdInput = {
+    type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
+    insurer?: StringFieldUpdateOperationsInput | string
+    policyNumber?: StringFieldUpdateOperationsInput | string
+    holderName?: StringFieldUpdateOperationsInput | string
+    nominees?: PolicyUpdatenomineesInput | string[]
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenureYears?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumPolicyStatusFieldUpdateOperationsInput | $Enums.PolicyStatus
+    sumAssured?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    roomRentLimit?: NullableFloatFieldUpdateOperationsInput | number | null
+    coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutPoliciesNestedInput
+    property?: PropertyUpdateOneWithoutPoliciesNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutPolicyNestedInput
+    bills?: BillUpdateManyWithoutPolicyNestedInput
+    loans?: LoanUpdateManyWithoutLinkedPolicyNestedInput
+    documents?: DocumentUpdateManyWithoutPolicyNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutPolicyNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutPolicyNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutPolicyNestedInput
+  }
+
+  export type PolicyUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
+    insurer?: StringFieldUpdateOperationsInput | string
+    policyNumber?: StringFieldUpdateOperationsInput | string
+    holderName?: StringFieldUpdateOperationsInput | string
+    nominees?: PolicyUpdatenomineesInput | string[]
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenureYears?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumPolicyStatusFieldUpdateOperationsInput | $Enums.PolicyStatus
+    sumAssured?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    roomRentLimit?: NullableFloatFieldUpdateOperationsInput | number | null
+    coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutPolicyNestedInput
+    bills?: BillUncheckedUpdateManyWithoutPolicyNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutLinkedPolicyNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutPolicyNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutPolicyNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutPolicyNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutPolicyNestedInput
+  }
+
+  export type PolicyUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    type?: EnumPolicyTypeFieldUpdateOperationsInput | $Enums.PolicyType
+    insurer?: StringFieldUpdateOperationsInput | string
+    policyNumber?: StringFieldUpdateOperationsInput | string
+    holderName?: StringFieldUpdateOperationsInput | string
+    nominees?: PolicyUpdatenomineesInput | string[]
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    tenureYears?: NullableIntFieldUpdateOperationsInput | number | null
+    status?: EnumPolicyStatusFieldUpdateOperationsInput | $Enums.PolicyStatus
+    sumAssured?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    roomRentLimit?: NullableFloatFieldUpdateOperationsInput | number | null
+    coPayPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    waitingPeriodMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    networkHospitals?: PolicyUpdatenetworkHospitalsInput | string[]
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type InvestmentUpdateWithoutHouseholdInput = {
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
+    institution?: NullableStringFieldUpdateOperationsInput | string | null
+    investedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    capitalDeployed?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    expectedReturnType?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetRoiPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutInvestmentsNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutInvestmentNestedInput
+    bills?: BillUpdateManyWithoutInvestmentNestedInput
+    loans?: LoanUpdateManyWithoutLinkedInvestmentNestedInput
+    documents?: DocumentUpdateManyWithoutInvestmentNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutInvestmentNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutInvestmentNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutInvestmentNestedInput
+  }
+
+  export type InvestmentUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
+    institution?: NullableStringFieldUpdateOperationsInput | string | null
+    investedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    capitalDeployed?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    expectedReturnType?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetRoiPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutInvestmentNestedInput
+    bills?: BillUncheckedUpdateManyWithoutInvestmentNestedInput
+    loans?: LoanUncheckedUpdateManyWithoutLinkedInvestmentNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutInvestmentNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutInvestmentNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutInvestmentNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutInvestmentNestedInput
+  }
+
+  export type InvestmentUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    type?: EnumInvestmentTypeFieldUpdateOperationsInput | $Enums.InvestmentType
+    institution?: NullableStringFieldUpdateOperationsInput | string | null
+    investedDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    capitalDeployed?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    expectedReturnType?: NullableStringFieldUpdateOperationsInput | string | null
+    expectedReturnDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    targetRoiPercent?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentEstimatedValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type LoanUpdateWithoutHouseholdInput = {
+    lender?: StringFieldUpdateOperationsInput | string
+    type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
+    principal?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    interestRatePercent?: FloatFieldUpdateOperationsInput | number
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    outstandingBalance?: FloatFieldUpdateOperationsInput | number
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutLoansNestedInput
+    linkedProperty?: PropertyUpdateOneWithoutLoansNestedInput
+    linkedPolicy?: PolicyUpdateOneWithoutLoansNestedInput
+    linkedInvestment?: InvestmentUpdateOneWithoutLoansNestedInput
+    billSchedules?: BillScheduleUpdateManyWithoutLoanNestedInput
+    bills?: BillUpdateManyWithoutLoanNestedInput
+    documents?: DocumentUpdateManyWithoutLoanNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutLoanNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutLoanNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutLoanNestedInput
+  }
+
+  export type LoanUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    lender?: StringFieldUpdateOperationsInput | string
+    type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
+    principal?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    interestRatePercent?: FloatFieldUpdateOperationsInput | number
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    outstandingBalance?: FloatFieldUpdateOperationsInput | number
+    linkedPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedPolicyId?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedInvestmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    billSchedules?: BillScheduleUncheckedUpdateManyWithoutLoanNestedInput
+    bills?: BillUncheckedUpdateManyWithoutLoanNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutLoanNestedInput
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutLoanNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutLoanNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutLoanNestedInput
+  }
+
+  export type LoanUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    lender?: StringFieldUpdateOperationsInput | string
+    type?: EnumLoanTypeFieldUpdateOperationsInput | $Enums.LoanType
+    principal?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    interestRatePercent?: FloatFieldUpdateOperationsInput | number
+    startDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    outstandingBalance?: FloatFieldUpdateOperationsInput | number
+    linkedPropertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedPolicyId?: NullableStringFieldUpdateOperationsInput | string | null
+    linkedInvestmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BillScheduleUpdateWithoutHouseholdInput = {
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    billType?: NullableEnumBillTypeFieldUpdateOperationsInput | $Enums.BillType | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    meterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
+    autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDay?: IntFieldUpdateOperationsInput | number
+    dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+    owner?: UserUpdateOneRequiredWithoutBillSchedulesNestedInput
+    property?: PropertyUpdateOneWithoutBillSchedulesNestedInput
+    lease?: LeaseUpdateOneWithoutBillSchedulesNestedInput
+    loan?: LoanUpdateOneWithoutBillSchedulesNestedInput
+    policy?: PolicyUpdateOneWithoutBillSchedulesNestedInput
+    investment?: InvestmentUpdateOneWithoutBillSchedulesNestedInput
+    bills?: BillUpdateManyWithoutBillScheduleNestedInput
+    documents?: DocumentUpdateManyWithoutBillScheduleNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutBillScheduleNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutBillScheduleNestedInput
+  }
+
+  export type BillScheduleUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    billType?: NullableEnumBillTypeFieldUpdateOperationsInput | $Enums.BillType | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    meterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
+    autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDay?: IntFieldUpdateOperationsInput | number
+    dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+    bills?: BillUncheckedUpdateManyWithoutBillScheduleNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutBillScheduleNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutBillScheduleNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutBillScheduleNestedInput
+  }
+
+  export type BillScheduleUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    billType?: NullableEnumBillTypeFieldUpdateOperationsInput | $Enums.BillType | null
+    provider?: NullableStringFieldUpdateOperationsInput | string | null
+    accountNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    meterNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    billingType?: NullableEnumBillingTypeFieldUpdateOperationsInput | $Enums.BillingType | null
+    autoGenerateBill?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    recurrence?: EnumBillRecurrenceFieldUpdateOperationsInput | $Enums.BillRecurrence
+    startDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    dueDay?: IntFieldUpdateOperationsInput | number
+    dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
+    endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    recipients?: XOR<RecipientListUpdateEnvelopeInput, RecipientCreateInput> | RecipientCreateInput[]
+  }
+
+  export type BillUpdateWithoutHouseholdInput = {
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    generationKey?: StringFieldUpdateOperationsInput | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    principalComponent?: NullableFloatFieldUpdateOperationsInput | number | null
+    interestComponent?: NullableFloatFieldUpdateOperationsInput | number | null
+    previousMeterValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentMeterValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    billingPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billDocumentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptDocumentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    frequency?: NullableEnumPremiumFrequencyFieldUpdateOperationsInput | $Enums.PremiumFrequency | null
+    gracePeriodDays?: NullableIntFieldUpdateOperationsInput | number | null
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    claimStatus?: NullableEnumClaimStatusFieldUpdateOperationsInput | $Enums.ClaimStatus | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutBillsNestedInput
+    billSchedule?: BillScheduleUpdateOneWithoutBillsNestedInput
+    property?: PropertyUpdateOneWithoutBillsNestedInput
+    lease?: LeaseUpdateOneWithoutBillsNestedInput
+    loan?: LoanUpdateOneWithoutBillsNestedInput
+    policy?: PolicyUpdateOneWithoutBillsNestedInput
+    investment?: InvestmentUpdateOneWithoutBillsNestedInput
+    transactions?: PaymentTransactionUpdateManyWithoutBillNestedInput
+    documents?: DocumentUpdateManyWithoutBillNestedInput
+    notificationRules?: NotificationRuleUpdateManyWithoutBillNestedInput
+    notificationJobs?: NotificationJobUpdateManyWithoutBillNestedInput
+  }
+
+  export type BillUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    principalComponent?: NullableFloatFieldUpdateOperationsInput | number | null
+    interestComponent?: NullableFloatFieldUpdateOperationsInput | number | null
+    previousMeterValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentMeterValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    billingPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billDocumentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptDocumentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    frequency?: NullableEnumPremiumFrequencyFieldUpdateOperationsInput | $Enums.PremiumFrequency | null
+    gracePeriodDays?: NullableIntFieldUpdateOperationsInput | number | null
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    claimStatus?: NullableEnumClaimStatusFieldUpdateOperationsInput | $Enums.ClaimStatus | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    transactions?: PaymentTransactionUncheckedUpdateManyWithoutBillNestedInput
+    documents?: DocumentUncheckedUpdateManyWithoutBillNestedInput
+    notificationRules?: NotificationRuleUncheckedUpdateManyWithoutBillNestedInput
+    notificationJobs?: NotificationJobUncheckedUpdateManyWithoutBillNestedInput
+  }
+
+  export type BillUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    direction?: EnumFinancialEventTypeFieldUpdateOperationsInput | $Enums.FinancialEventType
+    billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    generationKey?: StringFieldUpdateOperationsInput | string
+    dueDate?: DateTimeFieldUpdateOperationsInput | Date | string
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
+    paidDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    paidAmount?: NullableFloatFieldUpdateOperationsInput | number | null
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    installmentNumber?: NullableIntFieldUpdateOperationsInput | number | null
+    principalComponent?: NullableFloatFieldUpdateOperationsInput | number | null
+    interestComponent?: NullableFloatFieldUpdateOperationsInput | number | null
+    previousMeterValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    currentMeterValue?: NullableFloatFieldUpdateOperationsInput | number | null
+    billingPeriodStart?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billingPeriodEnd?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    billDocumentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptDocumentUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    frequency?: NullableEnumPremiumFrequencyFieldUpdateOperationsInput | $Enums.PremiumFrequency | null
+    gracePeriodDays?: NullableIntFieldUpdateOperationsInput | number | null
+    label?: NullableStringFieldUpdateOperationsInput | string | null
+    claimStatus?: NullableEnumClaimStatusFieldUpdateOperationsInput | $Enums.ClaimStatus | null
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentUpdateWithoutHouseholdInput = {
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutDocumentsNestedInput
+    property?: PropertyUpdateOneWithoutDocumentsNestedInput
+    room?: RoomUpdateOneWithoutDocumentsNestedInput
+    lease?: LeaseUpdateOneWithoutDocumentsNestedInput
+    policy?: PolicyUpdateOneWithoutDocumentsNestedInput
+    investment?: InvestmentUpdateOneWithoutDocumentsNestedInput
+    loan?: LoanUpdateOneWithoutDocumentsNestedInput
+    billSchedule?: BillScheduleUpdateOneWithoutDocumentsNestedInput
+    bill?: BillUpdateOneWithoutDocumentsNestedInput
+  }
+
+  export type DocumentUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    roomId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DocumentUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    roomId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    billScheduleId?: NullableStringFieldUpdateOperationsInput | string | null
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    fileName?: StringFieldUpdateOperationsInput | string
+    fileUrl?: StringFieldUpdateOperationsInput | string
+    mimeType?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    uploadedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUpdateWithoutHouseholdInput = {
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    referenceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutTransactionsNestedInput
+    bill?: BillUpdateOneWithoutTransactionsNestedInput
+    property?: PropertyUpdateOneWithoutTransactionsNestedInput
+    lease?: LeaseUpdateOneWithoutTransactionsNestedInput
+    loan?: LoanUpdateOneWithoutTransactionsNestedInput
+    policy?: PolicyUpdateOneWithoutTransactionsNestedInput
+    investment?: InvestmentUpdateOneWithoutTransactionsNestedInput
+  }
+
+  export type PaymentTransactionUncheckedUpdateWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    referenceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type PaymentTransactionUncheckedUpdateManyWithoutHouseholdInput = {
+    ownerId?: StringFieldUpdateOperationsInput | string
+    category?: EnumEventCategoryFieldUpdateOperationsInput | $Enums.EventCategory
+    billId?: NullableStringFieldUpdateOperationsInput | string | null
+    propertyId?: NullableStringFieldUpdateOperationsInput | string | null
+    leaseId?: NullableStringFieldUpdateOperationsInput | string | null
+    loanId?: NullableStringFieldUpdateOperationsInput | string | null
+    policyId?: NullableStringFieldUpdateOperationsInput | string | null
+    investmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    amount?: FloatFieldUpdateOperationsInput | number
+    currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
+    paymentMethod?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
+    referenceNumber?: NullableStringFieldUpdateOperationsInput | string | null
+    receiptUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    paidAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    notes?: NullableStringFieldUpdateOperationsInput | string | null
+    deletedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

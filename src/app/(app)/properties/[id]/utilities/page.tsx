@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
@@ -13,13 +14,13 @@ import { StatusBadge } from "~/app/_components/status-badge";
 import { formatBillAmount, formatDate } from "~/lib/format";
 import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
 import {
-  addUtilityRecipient,
+  addUtilityRecipientForm,
   deactivateUtility,
   removeUtilityRecipient,
 } from "~/server/actions/utilities";
-import { getSession } from "~/server/better-auth/server";
-import { getUserTimeZone } from "~/server/queries/settings";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { requireScope } from "~/server/households";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 import {
   getActiveUtilitiesForProperty,
   getUtilityBillsForProperty,
@@ -31,18 +32,19 @@ export default async function PropertyUtilitiesPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const property = await getPropertyForOwner(id, session.user.id);
+  const scope = await requireScope();
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
 
-  const [utilities, bills, timeZone] = await Promise.all([
+  const [utilities, bills, timeZone, userCurrency] = await Promise.all([
     getActiveUtilitiesForProperty(id),
     getUtilityBillsForProperty(id),
-    getUserTimeZone(session.user.id),
+    getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
   ]);
+  const currency = property.currency ?? userCurrency;
   const today = todayInTimeZone(timeZone);
   const OPEN = ["DUE", "OVERDUE", "PARTIALLY_PAID"];
 
@@ -96,6 +98,7 @@ export default async function PropertyUtilitiesPage({
                               {formatBillAmount(
                                 utility.defaultAmount,
                                 utility.billingType === "VARIABLE",
+                                utility.currency ?? currency,
                               )}
                             </>
                           )}
@@ -119,6 +122,7 @@ export default async function PropertyUtilitiesPage({
                               dueDate={next.dueDate}
                               amount={next.amount}
                               approx={utility.billingType === "VARIABLE"}
+                              currency={utility.currency ?? currency}
                               timeZone={timeZone}
                             />
                           ) : null;
@@ -165,8 +169,8 @@ export default async function PropertyUtilitiesPage({
                         </ul>
                       )}
 
-                      <form
-                        action={addUtilityRecipient.bind(null, utility.id)}
+                      <ActionForm
+                        action={addUtilityRecipientForm.bind(null, utility.id)}
                         data-gtm-event="utility_recipient_added"
                         className="mt-2 flex flex-wrap gap-2"
                       >
@@ -188,7 +192,7 @@ export default async function PropertyUtilitiesPage({
                         <SubmitButton variant="outline" size="sm">
                           Add
                         </SubmitButton>
-                      </form>
+                      </ActionForm>
                     </div>
                   </div>
                 ))}
@@ -211,7 +215,7 @@ export default async function PropertyUtilitiesPage({
                   {bills.map((bill) => (
                     <li key={bill.id}>
                       <Link
-                        href={`/properties/${id}/utilities/bills/${bill.id}`}
+                        href={`/bills/${bill.id}`}
                         className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-sunken"
                       >
                         <div className="min-w-0">
@@ -225,6 +229,7 @@ export default async function PropertyUtilitiesPage({
                               bill.amount,
                               bill.utility.billingType === "VARIABLE" &&
                                 bill.status !== "PAID",
+                              bill.currency ?? currency,
                             )}{" "}
                             · due {formatDate(bill.dueDate)}
                           </p>

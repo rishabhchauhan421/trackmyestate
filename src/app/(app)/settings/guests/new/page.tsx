@@ -1,15 +1,12 @@
-import { redirect } from "next/navigation";
-
 import { Breadcrumbs } from "~/app/_components/page-header";
-import { createGuest } from "~/server/actions/guests";
-import { getSession } from "~/server/better-auth/server";
-import { getPropertyOptionsForOwner } from "~/server/queries/properties";
+import { createGuestForm } from "~/server/actions/guests";
+import { requireScope } from "~/server/households";
+import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 import { GuestForm } from "../guest-form";
 
 export default async function NewGuestPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const properties = await getPropertyOptionsForOwner(session.user.id);
+  const scope = await requireScope();
+  const properties = await getPropertyOptionsForHousehold(scope.householdId);
 
   return (
     <>
@@ -26,7 +23,7 @@ export default async function NewGuestPage() {
         </p>
       </div>
       <GuestForm
-        action={createGuest}
+        action={createGuestForm}
         properties={properties}
         submitLabel="Add guest"
       />

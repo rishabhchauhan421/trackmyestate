@@ -1,16 +1,21 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
-import { toDateInputValue } from "~/lib/format";
+import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-payment-fields";
+import { currencySymbol, toDateInputValue } from "~/lib/format";
 import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from "~/lib/labels";
-import { deletePolicy, updatePolicy } from "~/server/actions/policies";
-import { getSession } from "~/server/better-auth/server";
+import { optionalFromMinorUnits } from "~/lib/money";
+import { deletePolicyForm, updatePolicyForm } from "~/server/actions/policies";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import {
-  getPolicyForOwner,
-  hasBillsForPolicy,
+  getPolicyForHousehold,
+  getPolicyPaymentDefaults,
+  hasPaymentsForPolicy,
 } from "~/server/queries/policies";
 
 export default async function EditPolicyPage({
@@ -19,15 +24,20 @@ export default async function EditPolicyPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const policy = await getPolicyForOwner(id, session.user.id);
+  const policy = await getPolicyForHousehold(id, scope.householdId);
   if (!policy) {
     notFound();
   }
+  const symbol = currencySymbol(
+    policy.currency ?? (await getUserCurrency(scope.userId)),
+  );
 
-  const canDelete = !(await hasBillsForPolicy(id));
+  const [canDelete, paymentDefaults] = await Promise.all([
+    hasPaymentsForPolicy(id).then((paid) => !paid),
+    getPolicyPaymentDefaults(id),
+  ]);
 
   return (
     <>
@@ -41,8 +51,8 @@ export default async function EditPolicyPage({
         description="Update this policy's details, including its status."
       />
 
-      <form
-        action={updatePolicy.bind(null, policy.id)}
+      <ActionForm
+        action={updatePolicyForm.bind(null, policy.id)}
         data-gtm-event="policy_updated"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -152,24 +162,26 @@ export default async function EditPolicyPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Sum assured (₹, optional)</span>
+            <span className={labelClass}>Sum assured ({symbol}, optional)</span>
             <input
               type="number"
               name="sumAssured"
               min="0"
               step="1"
-              defaultValue={policy.sumAssured ?? ""}
+              defaultValue={optionalFromMinorUnits(policy.sumAssured) ?? ""}
               className={controlClass}
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Room rent limit (₹, optional)</span>
+            <span className={labelClass}>
+              Room rent limit ({symbol}, optional)
+            </span>
             <input
               type="number"
               name="roomRentLimit"
               min="0"
               step="1"
-              defaultValue={policy.roomRentLimit ?? ""}
+              defaultValue={optionalFromMinorUnits(policy.roomRentLimit) ?? ""}
               className={controlClass}
             />
           </label>
@@ -202,25 +214,27 @@ export default async function EditPolicyPage({
           </label>
         </div>
 
+        <PolicyPaymentFields defaults={paymentDefaults} symbol={symbol} />
+
         <FormActions>
           <Button href="/insurance" variant="outline">
             Cancel
           </Button>
           <SubmitButton>Save changes</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
           <p className="text-sm font-semibold text-ink">Delete policy</p>
           <p className="mt-1 text-xs text-muted">
             {canDelete
-              ? "Permanently removes this policy. Only possible when it has no premiums or claims on record."
-              : "This policy has premiums or claims on record, so it can't be deleted."}
+              ? "Permanently removes this policy. Only possible while nothing has been paid or received on it; unpaid premiums are removed with it."
+              : "Premiums or payouts have been recorded on this policy, so it can't be deleted."}
           </p>
         </div>
-        <form
-          action={deletePolicy.bind(null, policy.id)}
+        <ActionForm
+          action={deletePolicyForm.bind(null, policy.id)}
           data-gtm-event="policy_deleted"
         >
           <SubmitButton
@@ -231,7 +245,7 @@ export default async function EditPolicyPage({
           >
             Delete policy
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
     </>
   );

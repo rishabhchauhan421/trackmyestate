@@ -5,7 +5,6 @@ import { type Metadata } from "next";
 import { Bricolage_Grotesque, Geist } from "next/font/google";
 
 import { env } from "~/env";
-import { TRPCReactProvider } from "~/trpc/react";
 
 // TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
 // See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
@@ -70,9 +69,7 @@ export default function RootLayout({
       {env.NEXT_PUBLIC_GTM_ID && (
         <GoogleTagManager gtmId={env.NEXT_PUBLIC_GTM_ID} />
       )}
-      <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

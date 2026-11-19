@@ -6,6 +6,9 @@
  */
 import { NextRequest } from "next/server";
 
+jest.mock("~/server/db", () =>
+  jest.requireActual<Record<string, unknown>>("~/server/__testing__/memory-db"),
+);
 jest.mock("~/env", () => ({
   env: { CRON_SECRET: "test-secret" },
 }));

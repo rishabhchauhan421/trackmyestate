@@ -114,14 +114,6 @@ Prisma.NullTypes = {
  * Enums
  */
 
-exports.Prisma.PostScalarFieldEnum = {
-  id: 'id',
-  name: 'name',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt',
-  createdById: 'createdById'
-};
-
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -180,6 +172,7 @@ exports.Prisma.VerificationScalarFieldEnum = {
 exports.Prisma.PropertyScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   name: 'name',
   type: 'type',
   uniquePropertyId: 'uniquePropertyId',
@@ -234,6 +227,7 @@ exports.Prisma.LeaseScalarFieldEnum = {
 exports.Prisma.BillScheduleScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   category: 'category',
   propertyId: 'propertyId',
   leaseId: 'leaseId',
@@ -250,6 +244,8 @@ exports.Prisma.BillScheduleScalarFieldEnum = {
   startDate: 'startDate',
   dueDay: 'dueDay',
   dueMonth: 'dueMonth',
+  endDate: 'endDate',
+  nextDueDate: 'nextDueDate',
   defaultAmount: 'defaultAmount',
   currency: 'currency',
   tenureMonths: 'tenureMonths',
@@ -262,6 +258,7 @@ exports.Prisma.BillScheduleScalarFieldEnum = {
 exports.Prisma.BillScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   category: 'category',
   direction: 'direction',
   billScheduleId: 'billScheduleId',
@@ -270,6 +267,7 @@ exports.Prisma.BillScalarFieldEnum = {
   loanId: 'loanId',
   policyId: 'policyId',
   investmentId: 'investmentId',
+  generationKey: 'generationKey',
   dueDate: 'dueDate',
   amount: 'amount',
   currency: 'currency',
@@ -299,6 +297,7 @@ exports.Prisma.BillScalarFieldEnum = {
 exports.Prisma.PolicyScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   type: 'type',
   insurer: 'insurer',
   policyNumber: 'policyNumber',
@@ -322,6 +321,7 @@ exports.Prisma.PolicyScalarFieldEnum = {
 exports.Prisma.InvestmentScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   name: 'name',
   type: 'type',
   institution: 'institution',
@@ -340,6 +340,7 @@ exports.Prisma.InvestmentScalarFieldEnum = {
 exports.Prisma.LoanScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   lender: 'lender',
   type: 'type',
   principal: 'principal',
@@ -358,6 +359,7 @@ exports.Prisma.LoanScalarFieldEnum = {
 exports.Prisma.PaymentTransactionScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   category: 'category',
   billId: 'billId',
   propertyId: 'propertyId',
@@ -439,6 +441,7 @@ exports.Prisma.NotificationJobScalarFieldEnum = {
 exports.Prisma.DocumentScalarFieldEnum = {
   id: 'id',
   ownerId: 'ownerId',
+  householdId: 'householdId',
   propertyId: 'propertyId',
   roomId: 'roomId',
   leaseId: 'leaseId',
@@ -470,6 +473,60 @@ exports.Prisma.GuestScalarFieldEnum = {
   deletedAt: 'deletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.HouseholdScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  personalForUserId: 'personalForUserId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.HouseholdMemberScalarFieldEnum = {
+  id: 'id',
+  householdId: 'householdId',
+  userId: 'userId',
+  role: 'role',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.AppMigrationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  ranAt: 'ranAt'
+};
+
+exports.Prisma.RateLimitScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  count: 'count',
+  lastRequest: 'lastRequest'
+};
+
+exports.Prisma.AuthThrottleScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  count: 'count',
+  windowStart: 'windowStart'
+};
+
+exports.Prisma.EmailSuppressionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  email: 'email',
+  ownerId: 'ownerId',
+  reason: 'reason',
+  createdAt: 'createdAt'
+};
+
+exports.Prisma.CronRunScalarFieldEnum = {
+  id: 'id',
+  job: 'job',
+  lastStartedAt: 'lastStartedAt',
+  lastSucceededAt: 'lastSucceededAt',
+  lastFailedAt: 'lastFailedAt',
+  lastError: 'lastError'
 };
 
 exports.Prisma.SortOrder = {
@@ -652,8 +709,12 @@ exports.NotificationStatus = exports.$Enums.NotificationStatus = {
   SKIPPED: 'SKIPPED'
 };
 
+exports.HouseholdRole = exports.$Enums.HouseholdRole = {
+  OWNER: 'OWNER',
+  MEMBER: 'MEMBER'
+};
+
 exports.Prisma.ModelName = {
-  Post: 'Post',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -671,7 +732,14 @@ exports.Prisma.ModelName = {
   NotificationRule: 'NotificationRule',
   NotificationJob: 'NotificationJob',
   Document: 'Document',
-  Guest: 'Guest'
+  Guest: 'Guest',
+  Household: 'Household',
+  HouseholdMember: 'HouseholdMember',
+  AppMigration: 'AppMigration',
+  RateLimit: 'RateLimit',
+  AuthThrottle: 'AuthThrottle',
+  EmailSuppression: 'EmailSuppression',
+  CronRun: 'CronRun'
 };
 
 /**

@@ -19,6 +19,9 @@ jest.mock("~/server/reminders/generate", () => ({
 jest.mock("~/server/notifications/process", () => ({
   processDueNotificationJobs: jest.fn(),
 }));
+jest.mock("~/server/db", () =>
+  jest.requireActual<Record<string, unknown>>("~/server/__testing__/memory-db"),
+);
 jest.mock("next/navigation", () => ({
   redirect: jest.fn((path: string) => {
     throw new Error(`REDIRECT:${path}`);

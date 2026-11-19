@@ -1,23 +1,18 @@
-# Frequent background jobs. Vercel's Hobby plan only runs crons once a day
-# (see vercel.json → /api/cron/daily), so the runs that make reminder send
-# times and time zones exact come from here instead:
+# Manual runs of the background jobs. Their schedules live in vercel.json
+# (Vercel Cron, on the Pro plan):
 #
 #   every 15 minutes → /api/cron/notifications   (send due reminders)
 #   hourly at :05    → /api/cron/reminders       (queue today's reminders)
+#   daily at 03:00   → /api/cron/bills           (generate bills)
 #
-# Needs two repository secrets (Settings → Secrets and variables → Actions):
+# Run one from the Actions tab to catch up by hand. Needs two repository
+# secrets (Settings → Secrets and variables → Actions):
 #   APP_URL      the deployed app, e.g. https://trackmyestate.app
 #   CRON_SECRET  the same value as the app's CRON_SECRET env var
-#
-# GitHub runs scheduled workflows on a best-effort basis — usually within a
-# few minutes of the time. Every job is idempotent, so late or overlapping
-# runs are harmless.
+
 name: Background jobs
 
 on:
-  schedule:
-    - cron: "*/15 * * * *"
-    - cron: "5 * * * *"
   workflow_dispatch:
     inputs:
       job:
@@ -29,7 +24,7 @@ on:
 permissions: {}
 
 concurrency:
-  group: background-jobs-${{ github.event.schedule || inputs.job }}
+  group: background-jobs-${{ inputs.job }}
   cancel-in-progress: false
 
 jobs:
@@ -48,7 +43,7 @@ jobs:
           fi
 
       - name: Queue reminders
-        if: github.event.schedule == '5 * * * *' || inputs.job == 'reminders'
+        if: inputs.job == 'reminders'
         env:
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
@@ -68,7 +63,7 @@ jobs:
             "$APP_URL/api/cron/bills"
 
       - name: Send due reminders
-        if: github.event.schedule == '*/15 * * * *' || inputs.job == 'notifications'
+        if: inputs.job == 'notifications'
         env:
           APP_URL: ${{ secrets.APP_URL }}
           CRON_SECRET: ${{ secrets.CRON_SECRET }}

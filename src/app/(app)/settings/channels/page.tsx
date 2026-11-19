@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
@@ -9,9 +10,9 @@ import { formatPhone, localMobileDigits } from "~/lib/phone";
 import { REMINDER_HOURS, formatReminderHour } from "~/lib/reminders";
 import {
   sendTestEmail,
-  updateChannelSettings,
+  updateChannelSettingsForm,
 } from "~/server/actions/settings";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserSettings } from "~/server/queries/settings";
 import { SEND_HOUR } from "~/server/reminders/generate";
 
@@ -59,18 +60,17 @@ export default async function ChannelSettingsPage({
 }: {
   searchParams: Promise<{ saved?: string }>;
 }) {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
   const [user, { saved }] = await Promise.all([
-    getUserSettings(session.user.id),
+    getUserSettings(scope.userId),
     searchParams,
   ]);
   if (!user) notFound();
   const message = saved ? SAVED_MESSAGES[saved] : undefined;
 
   return (
-    <form
-      action={updateChannelSettings}
+    <ActionForm
+      action={updateChannelSettingsForm}
       data-gtm-event="channels_updated"
       className="space-y-4"
     >
@@ -216,6 +216,6 @@ export default async function ChannelSettingsPage({
       <FormActions>
         <SubmitButton>Save changes</SubmitButton>
       </FormActions>
-    </form>
+    </ActionForm>
   );
 }

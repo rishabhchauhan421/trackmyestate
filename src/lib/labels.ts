@@ -13,6 +13,7 @@ import type {
   LoanType,
   NotificationStatus,
   OwnershipType,
+  PaymentMethod,
   PolicyStatus,
   PolicyType,
   PremiumFrequency,
@@ -153,4 +154,16 @@ export const CURRENCY_LABELS: Record<Currency, string> = {
   AED: "د.إ UAE dirham (AED)",
   SGD: "$ Singapore dollar (SGD)",
   AUD: "$ Australian dollar (AUD)",
+};
+
+/** Display label for each `PaymentMethod` (how a bill was paid or received). */
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  UPI: "UPI",
+  BANK_TRANSFER: "Bank transfer",
+  AUTO_DEBIT: "Auto-debit",
+  CREDIT_CARD: "Credit card",
+  DEBIT_CARD: "Debit card",
+  CASH: "Cash",
+  CHEQUE: "Cheque",
+  OTHER: "Other",
 };

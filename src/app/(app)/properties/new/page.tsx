@@ -1,16 +1,17 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
-import { createProperty } from "~/server/actions/properties";
-import { getSession } from "~/server/better-auth/server";
+import { createPropertyForm } from "~/server/actions/properties";
+import { currencySymbol } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import { PropertyFormFields } from "../_components/property-form-fields";
 
 export default async function NewPropertyPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
+  const symbol = currencySymbol(await getUserCurrency(scope.userId));
 
   return (
     <>
@@ -24,19 +25,19 @@ export default async function NewPropertyPage() {
       />
 
       <div className="flex flex-col-reverse gap-6 lg:flex-row lg:items-start">
-        <form
-          action={createProperty}
+        <ActionForm
+          action={createPropertyForm}
           data-gtm-event="property_created"
           className="min-w-0 flex-1 space-y-4"
         >
-          <PropertyFormFields />
+          <PropertyFormFields symbol={symbol} />
           <FormActions>
             <Button href="/properties" variant="outline">
               Cancel
             </Button>
             <SubmitButton>Save property</SubmitButton>
           </FormActions>
-        </form>
+        </ActionForm>
 
         <aside className="rounded-card border border-line bg-surface p-5 lg:w-72">
           <h2 className="text-sm font-semibold text-ink">After you save</h2>

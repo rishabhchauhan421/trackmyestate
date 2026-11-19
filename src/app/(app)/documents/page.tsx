@@ -1,11 +1,9 @@
-import { redirect } from "next/navigation";
-
 import { Button } from "~/app/_components/button";
 import { DocumentsIcon } from "~/app/_components/icons";
 import { EmptyState } from "~/app/_components/empty-state";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatDate } from "~/lib/format";
-import { getSession } from "~/server/better-auth/server";
+import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
 import { getDocuments } from "~/server/queries/documents";
 
@@ -21,10 +19,9 @@ const OWNER_TYPE_LABELS: Record<string, string> = {
 };
 
 export default async function DocumentsPage() {
-  const session = await getSession();
-  if (!session) redirect("/login");
-  const timeZone = await getUserTimeZone(session.user.id);
-  const documents = await getDocuments(session.user.id);
+  const scope = await requireScope();
+  const timeZone = await getUserTimeZone(scope.userId);
+  const documents = await getDocuments(scope.householdId);
 
   return (
     <>

@@ -1,13 +1,19 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
-import { deleteProperty, updateProperty } from "~/server/actions/properties";
-import { getSession } from "~/server/better-auth/server";
 import {
-  getPropertyForOwner,
+  deletePropertyForm,
+  updatePropertyForm,
+} from "~/server/actions/properties";
+import { currencySymbol } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
+import {
+  getPropertyForHousehold,
   hasDependentRecordsForProperty,
 } from "~/server/queries/properties";
 import { PropertyFormFields } from "../../_components/property-form-fields";
@@ -18,13 +24,15 @@ export default async function EditPropertyPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
 
-  const property = await getPropertyForOwner(id, session.user.id);
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
+  const symbol = currencySymbol(
+    property.currency ?? (await getUserCurrency(scope.userId)),
+  );
 
   const hasDependents = await hasDependentRecordsForProperty(id);
 
@@ -37,19 +45,19 @@ export default async function EditPropertyPage({
       />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <form
-          action={updateProperty.bind(null, property.id)}
+        <ActionForm
+          action={updatePropertyForm.bind(null, property.id)}
           data-gtm-event="property_updated"
           className="min-w-0 flex-1 space-y-4"
         >
-          <PropertyFormFields property={property} />
+          <PropertyFormFields property={property} symbol={symbol} />
           <FormActions>
             <Button href={`/properties/${id}`} variant="outline">
               Cancel
             </Button>
             <SubmitButton>Save changes</SubmitButton>
           </FormActions>
-        </form>
+        </ActionForm>
 
         <aside className="space-y-3 rounded-card border border-danger/25 bg-surface p-5 lg:w-72">
           <h2 className="text-sm font-semibold text-ink">Delete property</h2>
@@ -58,8 +66,8 @@ export default async function EditPropertyPage({
               ? "This property has leases, rental units, utilities or bills on record, so it can't be deleted."
               : "Permanently removes this property. Only possible when it has no leases, rental units, utilities or bills on record."}
           </p>
-          <form
-            action={deleteProperty.bind(null, property.id)}
+          <ActionForm
+            action={deletePropertyForm.bind(null, property.id)}
             data-gtm-event="property_deleted"
           >
             <SubmitButton
@@ -75,7 +83,7 @@ export default async function EditPropertyPage({
             >
               Delete property
             </SubmitButton>
-          </form>
+          </ActionForm>
         </aside>
       </div>
     </>

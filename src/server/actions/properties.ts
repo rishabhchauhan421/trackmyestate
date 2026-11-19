@@ -24,29 +24,25 @@ import {
 } from "../../../generated/prisma";
 import {
   enumValue,
+  FormError,
   optionalDate,
   optionalEnumValue,
-  optionalNumber,
+  optionalMoney,
   optionalText,
   parseFormData,
   text,
 } from "~/lib/form";
-import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
+import { requireScope } from "~/server/households";
 import { hasDependentRecordsForProperty } from "~/server/queries/properties";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
-async function requireSession() {
-  const session = await getSession();
-  if (!session) redirect("/");
-  return session;
-}
-
-async function requireOwnedProperty(propertyId: string, ownerId: string) {
+async function requireOwnedProperty(propertyId: string, householdId: string) {
   const property = await db.property.findFirst({
-    where: { id: propertyId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: propertyId, householdId, ...NOT_SOFT_DELETED },
   });
-  if (!property) throw new Error("Property not found");
+  if (!property) throw new FormError("Property not found");
   return property;
 }
 
@@ -69,20 +65,22 @@ const propertyFieldsSchema = z.object({
   state: text("Enter the state"),
   pinCode: text("Enter the PIN code"),
   country: optionalText().transform((country) => country ?? "India"),
-  purchasePrice: optionalNumber("Enter a valid purchase price"),
-  currentEstimatedValue: optionalNumber(
-    "Enter a valid current estimated value",
-  ),
+  purchasePrice: optionalMoney("Enter a valid purchase price"),
+  currentEstimatedValue: optionalMoney("Enter a valid current estimated value"),
   purchaseDate: optionalDate("Enter a valid purchase date"),
 });
 
 /** Creates a new `Property` for the signed-in owner. */
 export async function createProperty(formData: FormData) {
-  const session = await requireSession();
+  const scope = await requireScope();
   const fields = parseFormData(propertyFieldsSchema, formData);
 
   await db.property.create({
-    data: { ownerId: session.user.id, ...fields },
+    data: {
+      ownerId: scope.userId,
+      householdId: scope.householdId,
+      ...fields,
+    },
   });
 
   revalidatePath("/properties");
@@ -91,9 +89,24 @@ export async function createProperty(formData: FormData) {
 
 /** Updates every editable field of an existing `Property` the owner holds. */
 export async function updateProperty(propertyId: string, formData: FormData) {
-  const session = await requireSession();
-  await requireOwnedProperty(propertyId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedProperty(propertyId, scope.householdId);
   const fields = parseFormData(propertyFieldsSchema, formData);
+
+  // A self-occupied property can't be rented out (see `createLease`), so it
+  // can't become one while a tenant is still in it.
+  if (fields.type === "SELF_OCCUPIED") {
+    const activeLease = await db.lease.findFirst({
+      where: { propertyId, active: true },
+      select: { id: true },
+    });
+    if (activeLease) {
+      throw new FormError(
+        "End this property's active leases before marking it self-occupied",
+        "type",
+      );
+    }
+  }
 
   await db.property.update({
     where: { id: propertyId },
@@ -112,11 +125,11 @@ export async function updateProperty(propertyId: string, formData: FormData) {
  * `deleteLease`.
  */
 export async function deleteProperty(propertyId: string) {
-  const session = await requireSession();
-  await requireOwnedProperty(propertyId, session.user.id);
+  const scope = await requireScope();
+  await requireOwnedProperty(propertyId, scope.householdId);
 
   if (await hasDependentRecordsForProperty(propertyId)) {
-    throw new Error(
+    throw new FormError(
       "Cannot delete a property that has leases, rental units, utilities or bills on record",
     );
   }
@@ -128,4 +141,29 @@ export async function deleteProperty(propertyId: string) {
 
   revalidatePath("/properties");
   redirect("/properties");
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createPropertyForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createProperty(formData));
+}
+
+export async function updatePropertyForm(
+  propertyId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateProperty(propertyId, formData));
+}
+
+export async function deletePropertyForm(
+  propertyId: string,
+  _state: FormState,
+  _formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => deleteProperty(propertyId));
 }

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "~/server/db";
+import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
 /**
  * `Bill`s for a property, scoped to one category — the generic query
@@ -44,3 +45,32 @@ export async function getAllBillsForProperty(propertyId: string) {
     orderBy: { dueDate: "desc" },
   });
 }
+
+/**
+ * One bill in the household, with what it belongs to (for its title and
+ * a link back) and the payments recorded against it, oldest first — for
+ * the bill page (`/bills/[id]`). `null` if it isn't in this household.
+ */
+export async function getBillForHousehold(billId: string, householdId: string) {
+  return db.bill.findFirst({
+    where: { id: billId, householdId },
+    include: {
+      property: { select: { id: true, name: true } },
+      lease: { select: { id: true, tenantName: true, propertyId: true } },
+      loan: { select: { id: true, lender: true } },
+      policy: { select: { id: true, insurer: true, policyNumber: true } },
+      investment: { select: { id: true, name: true } },
+      billSchedule: {
+        select: { id: true, billType: true, provider: true, billingType: true },
+      },
+      transactions: {
+        where: NOT_SOFT_DELETED,
+        orderBy: { paidAt: "asc" },
+      },
+    },
+  });
+}
+
+export type BillWithContext = NonNullable<
+  Awaited<ReturnType<typeof getBillForHousehold>>
+>;

@@ -2,7 +2,7 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
-import { getLoanForOwner, getLoans } from "~/server/queries/loans";
+import { getLoanForHousehold, getLoans } from "~/server/queries/loans";
 
 jest.mock("~/server/db");
 
@@ -13,11 +13,11 @@ beforeEach(() => {
   dbMock.billSchedule.findMany.mockResolvedValue([]);
 });
 
-describe("getLoanForOwner", () => {
+describe("getLoanForHousehold", () => {
   it("returns null for a loan that doesn't exist or isn't owned by this user", async () => {
     dbMock.loan.findFirst.mockResolvedValue(null);
 
-    const result = await getLoanForOwner("loan-1", "owner-1");
+    const result = await getLoanForHousehold("loan-1", "owner-1");
 
     expect(result).toBeNull();
     expect(dbMock.billSchedule.findFirst).not.toHaveBeenCalled();
@@ -35,7 +35,7 @@ describe("getLoanForOwner", () => {
       tenureMonths: 240,
     } as never);
 
-    const result = await getLoanForOwner("loan-1", "owner-1");
+    const result = await getLoanForHousehold("loan-1", "owner-1");
 
     const scheduleCall = dbMock.billSchedule.findFirst.mock.calls[0]?.[0];
     expect(scheduleCall?.where).toEqual({ category: "EMI", loanId: "loan-1" });

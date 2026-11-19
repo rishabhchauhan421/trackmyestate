@@ -15,9 +15,9 @@ import {
  * in application code instead. Deleted properties (see `deleteProperty` in
  * `~/server/actions/properties`) are excluded.
  */
-export async function getProperties(ownerId: string) {
+export async function getProperties(householdId: string) {
   const properties = await db.property.findMany({
-    where: { ownerId, ...NOT_SOFT_DELETED },
+    where: { householdId, ...NOT_SOFT_DELETED },
     include: { leases: { where: { active: true } } },
     orderBy: { createdAt: "asc" },
   });
@@ -49,14 +49,17 @@ export async function getProperties(ownerId: string) {
 }
 
 /**
- * Looks up a property by id, scoped to `ownerId`. Returns `null` for a
+ * Looks up a property by id, scoped to `householdId`. Returns `null` for a
  * nonexistent property *or* one owned by someone else — callers should
  * treat both the same way (404), not distinguish them, to avoid leaking
  * which property ids exist.
  */
-export async function getPropertyForOwner(propertyId: string, ownerId: string) {
+export async function getPropertyForHousehold(
+  propertyId: string,
+  householdId: string,
+) {
   return db.property.findFirst({
-    where: { id: propertyId, ownerId, ...NOT_SOFT_DELETED },
+    where: { id: propertyId, householdId, ...NOT_SOFT_DELETED },
   });
 }
 
@@ -64,9 +67,9 @@ export async function getPropertyForOwner(propertyId: string, ownerId: string) {
  * Id/name pairs for every one of the owner's properties, for a "link to
  * property" select — e.g. the Loan form's optional `linkedPropertyId`.
  */
-export async function getPropertyOptionsForOwner(ownerId: string) {
+export async function getPropertyOptionsForHousehold(householdId: string) {
   return db.property.findMany({
-    where: { ownerId, ...NOT_SOFT_DELETED },
+    where: { householdId, ...NOT_SOFT_DELETED },
     select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
@@ -76,7 +79,7 @@ export async function getPropertyOptionsForOwner(ownerId: string) {
  * Whether a property has any real history hanging off it — bills, leases,
  * rental units, utility schedules, or a loan linked to it — that a
  * `deleteProperty` (see `~/server/actions/properties`) would otherwise
- * orphan. Mirrors `hasBillsForLease`'s rationale in `~/server/queries/leases`.
+ * orphan. Mirrors `hasPaymentsForLease`'s rationale in `~/server/queries/leases`.
  */
 export async function hasDependentRecordsForProperty(propertyId: string) {
   const [bill, lease, room, billSchedule, loan] = await Promise.all([

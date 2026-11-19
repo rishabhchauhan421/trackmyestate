@@ -1,25 +1,62 @@
 /**
- * Shared display formatters for money and dates. Every amount in the app is
- * currently rendered as INR regardless of a record's `Currency` field — see
- * the README's "What's next" for surfacing real multi-currency display.
+ * Shared display formatters for money and dates. An amount is shown in its
+ * record's currency, or the user's (Settings › General) when the record
+ * has none. Amounts in different currencies are never added together:
+ * totals are kept per currency (see `~/lib/money-totals`).
  *
  * Dates: date-only values (due dates, purchase dates…) follow the
  * convention in `~/lib/calendar-day` — stored as midnight UTC, shown as
  * that calendar day whatever the server's or viewer's time zone.
  */
+import type { Currency } from "../../generated/prisma";
 import { calendarDayOf } from "./calendar-day";
+import { fromMinorUnits } from "./money";
 import { DEFAULT_TIME_ZONE, daysBetween, todayInTimeZone } from "./time-zone";
 
+/** The locale each currency is written in: digit grouping and symbol. */
+const CURRENCY_LOCALES: Record<Currency, string> = {
+  INR: "en-IN",
+  USD: "en-US",
+  EUR: "en-IE",
+  GBP: "en-GB",
+  CAD: "en-CA",
+  AED: "en-AE",
+  SGD: "en-SG",
+  AUD: "en-AU",
+};
+
+const formatters = new Map<Currency, Intl.NumberFormat>();
+
 /**
- * Formats a number as a whole-rupee INR amount (e.g. `1234.56` -> `"₹1,235"`),
- * using Indian digit grouping (lakh/crore), not Western thousands grouping.
+ * Formats an amount stored in minor units (see `~/lib/money`) as whole
+ * units of `currency`, e.g. `123456` -> `"₹1,235"` (Indian lakh/crore
+ * grouping) or `"$1,235"`.
  */
-export function formatINR(amount: number): string {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(amount);
+export function formatMoney(
+  amountMinor: number,
+  currency: Currency | null | undefined = "INR",
+): string {
+  const code = currency ?? "INR";
+  let formatter = formatters.get(code);
+  if (!formatter) {
+    formatter = new Intl.NumberFormat(CURRENCY_LOCALES[code], {
+      style: "currency",
+      currency: code,
+      maximumFractionDigits: 0,
+    });
+    formatters.set(code, formatter);
+  }
+  return formatter.format(fromMinorUnits(amountMinor));
+}
+
+/** "₹", "$", "£", "AED"… — for labels like "Rent (₹/month)". */
+export function currencySymbol(currency: Currency | null | undefined): string {
+  return formatMoney(0, currency).replace(/[\d\s.,]/g, "");
+}
+
+/** `formatMoney` in rupees. */
+export function formatINR(amountMinor: number): string {
+  return formatMoney(amountMinor, "INR");
 }
 
 /**
@@ -87,6 +124,11 @@ export function formatDueIn(
  * A bill or schedule amount, marked "Approx." when it's only an estimate —
  * a variable (usage-based) utility's amount until the bill is actually paid.
  */
-export function formatBillAmount(amount: number, approx: boolean): string {
-  return approx ? `Approx. ${formatINR(amount)}` : formatINR(amount);
+export function formatBillAmount(
+  amountMinor: number,
+  approx: boolean,
+  currency?: Currency | null,
+): string {
+  const money = formatMoney(amountMinor, currency);
+  return approx ? `Approx. ${money}` : money;
 }

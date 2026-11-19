@@ -15,6 +15,11 @@ jest.mock("~/server/db");
 jest.mock("~/server/bills/generate", () => ({
   generateBillsForSchedule: jest.fn(),
 }));
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -53,6 +58,13 @@ afterAll(() => {
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.findMany.mockResolvedValue([]);
+  dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
+  dbMock.bill.findMany.mockResolvedValue([]);
+  // Interactive transactions run their callback against the same mock.
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
@@ -194,7 +206,7 @@ describe("createUtility", () => {
         accountNumber: "ACC-1",
         billingType: "VARIABLE",
         recurrence: "MONTHLY",
-        defaultAmount: 1500,
+        defaultAmount: 150000,
         dueDay: 10,
         dueMonth: null,
       }),
@@ -350,31 +362,39 @@ describe("deactivateUtility", () => {
     expect(dbMock.billSchedule.update).not.toHaveBeenCalled();
   });
 
-  it("sets active to false and revalidates the utilities page", async () => {
+  it("switches it off and removes its upcoming unpaid bills", async () => {
     dbMock.billSchedule.findFirst.mockResolvedValue({
       id: "utility-1",
       propertyId: "prop-1",
     } as never);
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      { id: "utility-1" },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValue([{ id: "bill-9" }] as never);
 
     await deactivateUtility("utility-1");
 
-    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
-      where: { id: "utility-1" },
+    expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
+      where: { id: { in: ["utility-1"] } },
       data: { active: false },
     });
+    // Only bills from today on; overdue ones are still owed.
+    expect(dbMock.bill.findMany).toHaveBeenCalledWith({
+      where: expect.objectContaining({
+        billScheduleId: { in: ["utility-1"] },
+        dueDate: { gte: expect.any(Date) },
+      }),
+      select: { id: true },
+    });
+    expect(dbMock.bill.update).toHaveBeenCalledWith({
+      where: { id: "bill-9" },
+      data: { deletedAt: expect.any(Date), generationKey: "removed:bill-9" },
+    });
+    expect(dbMock.notificationJob.updateMany).toHaveBeenCalledWith({
+      where: { billId: { in: ["bill-9"] }, status: "SCHEDULED" },
+      data: { status: "CANCELLED", failedReason: "Bill was removed" },
+    });
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/utilities");
-  });
-
-  it("does not touch any other utility field", async () => {
-    dbMock.billSchedule.findFirst.mockResolvedValue({
-      id: "utility-1",
-      propertyId: "prop-1",
-    } as never);
-
-    await deactivateUtility("utility-1");
-
-    const call = dbMock.billSchedule.update.mock.calls[0]?.[0];
-    expect(Object.keys(call?.data ?? {})).toEqual(["active"]);
   });
 });
 

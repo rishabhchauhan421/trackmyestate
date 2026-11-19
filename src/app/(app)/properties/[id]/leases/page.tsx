@@ -1,13 +1,14 @@
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { Button } from "~/app/_components/button";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
-import { formatDate, formatINR } from "~/lib/format";
-import { getSession } from "~/server/better-auth/server";
+import { formatDate, formatMoney } from "~/lib/format";
+import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import { getLeasesForProperty } from "~/server/queries/leases";
-import { getPropertyForOwner } from "~/server/queries/properties";
+import { getPropertyForHousehold } from "~/server/queries/properties";
 
 export default async function PropertyLeasesPage({
   params,
@@ -15,10 +16,10 @@ export default async function PropertyLeasesPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const session = await getSession();
-  if (!session) redirect("/login");
+  const scope = await requireScope();
+  const currency = await getUserCurrency(scope.userId);
 
-  const property = await getPropertyForOwner(id, session.user.id);
+  const property = await getPropertyForHousehold(id, scope.householdId);
   if (!property) {
     notFound();
   }
@@ -83,7 +84,11 @@ export default async function PropertyLeasesPage({
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-semibold text-ink">
-                          {formatINR(lease.rentAmount)}/mo
+                          {formatMoney(
+                            lease.rentAmount,
+                            lease.currency ?? currency,
+                          )}
+                          /mo
                         </p>
                         <p className="text-xs text-muted">
                           since {formatDate(lease.leaseStart)}
@@ -129,7 +134,11 @@ export default async function PropertyLeasesPage({
                         </p>
                       </div>
                       <p className="text-sm font-medium text-muted">
-                        {formatINR(lease.rentAmount)}/mo
+                        {formatMoney(
+                          lease.rentAmount,
+                          lease.currency ?? currency,
+                        )}
+                        /mo
                       </p>
                       <StatusBadge status="PAST" />
                       <Link

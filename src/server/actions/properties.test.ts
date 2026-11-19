@@ -6,6 +6,11 @@ import { getSession } from "~/server/better-auth/server";
 import { createProperty, deleteProperty, updateProperty } from "./properties";
 
 jest.mock("~/server/db");
+jest.mock("~/server/households", () =>
+  jest.requireActual<Record<string, unknown>>(
+    "~/server/__testing__/households-mock",
+  ),
+);
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
@@ -121,11 +126,12 @@ describe("createProperty", () => {
     expect(dbMock.property.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
         ownerId: "user-1",
+        householdId: "household-1",
         name: "Whitefield Apartment",
         type: "RENTED",
         city: "Bengaluru",
-        purchasePrice: 8000000,
-        currentEstimatedValue: 9500000,
+        purchasePrice: 800000000,
+        currentEstimatedValue: 950000000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/properties");
@@ -159,6 +165,22 @@ describe("createProperty", () => {
 });
 
 describe("updateProperty", () => {
+  it("won't mark a property with a tenant self-occupied", async () => {
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-1" } as never);
+    dbMock.lease.findFirst.mockResolvedValue({ id: "lease-1" } as never);
+
+    await expect(
+      updateProperty("prop-1", buildPropertyForm({ type: "SELF_OCCUPIED" })),
+    ).rejects.toThrow(
+      "End this property's active leases before marking it self-occupied",
+    );
+    expect(dbMock.lease.findFirst).toHaveBeenCalledWith({
+      where: { propertyId: "prop-1", active: true },
+      select: { id: true },
+    });
+    expect(dbMock.property.update).not.toHaveBeenCalled();
+  });
+
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 
