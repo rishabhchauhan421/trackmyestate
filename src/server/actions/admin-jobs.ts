@@ -14,6 +14,12 @@ import { recordCronRun } from "~/server/cron-runs";
 import { processDueNotificationJobs } from "~/server/notifications/process";
 import { generateReminders } from "~/server/reminders/generate";
 
+/**
+ * A run from the admin page gets less time than a cron run (whose route
+ * sets a long `maxDuration`): it reports "more to do" and can be run again.
+ */
+const MANUAL_RUN = { timeBudgetMs: 45_000 };
+
 async function requireAdmin() {
   const session = await getFreshSession();
   if (!session) redirect("/login");
@@ -30,7 +36,9 @@ function done(job: string, result: Record<string, string | number | boolean>) {
 
 export async function runBillGeneration() {
   await requireAdmin();
-  const summary = await recordCronRun("bills", () => generateBills());
+  const summary = await recordCronRun("bills", () =>
+    generateBills(new Date(), MANUAL_RUN),
+  );
   done("bills", {
     created: summary.billsCreated,
     scanned: summary.schedulesScanned,
@@ -41,7 +49,9 @@ export async function runBillGeneration() {
 
 export async function runReminderGeneration() {
   await requireAdmin();
-  const summary = await recordCronRun("reminders", () => generateReminders());
+  const summary = await recordCronRun("reminders", () =>
+    generateReminders(new Date(), MANUAL_RUN),
+  );
   done("reminders", {
     queued: summary.queued,
     scanned: summary.scanned,
@@ -52,7 +62,7 @@ export async function runReminderGeneration() {
 export async function runNotificationDrain() {
   await requireAdmin();
   const summary = await recordCronRun("notifications", () =>
-    processDueNotificationJobs(),
+    processDueNotificationJobs(new Date(), MANUAL_RUN),
   );
   done("notifications", {
     total: summary.total,

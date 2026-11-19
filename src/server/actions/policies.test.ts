@@ -213,6 +213,8 @@ describe("policy premiums and payouts", () => {
         recurrence: "YEARLY",
         startDate: new Date("2026-01-10"),
         nextDueDate: new Date("2026-01-10"),
+        // Started months ago: bills from today.
+        billFrom: expect.any(Date) as Date,
         dueDay: 10,
         dueMonth: 1,
         // A 20-year policy from 10 Jan 2022.

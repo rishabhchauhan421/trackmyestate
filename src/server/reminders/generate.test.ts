@@ -98,7 +98,12 @@ describe("generateReminders", () => {
         },
       }),
     );
-    expect(summary).toEqual({ scanned: 1, queued: 2, hasMore: false });
+    expect(summary).toEqual({
+      scanned: 1,
+      queued: 2,
+      failed: 0,
+      hasMore: false,
+    });
   });
 
   it("also emails the utility's recipients who want due reminders", async () => {
@@ -241,8 +246,8 @@ describe("generateReminders", () => {
       in: ["DUE", "OVERDUE", "PARTIALLY_PAID"],
     });
     expect(first?.take).toBe(BATCH_SIZE);
-    expect(second?.cursor).toEqual({ id: `bill-${BATCH_SIZE - 1}` });
-    expect(second?.skip).toBe(1);
+    expect(first?.where?.id).toBeUndefined();
+    expect(second?.where?.id).toEqual({ gt: `bill-${BATCH_SIZE - 1}` });
   });
 });
 

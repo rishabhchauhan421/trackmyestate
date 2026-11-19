@@ -82,6 +82,7 @@ describe("generateBills", () => {
       schedulesScanned: 1,
       billsCreated: 2,
       skippedNoAmount: 0,
+      failed: 0,
       hasMore: false,
     });
     // 4 Sep is outside the lookback; 10 Sep … 9 Nov is the window.
@@ -165,7 +166,7 @@ describe("generateBills", () => {
           dueDate: new Date("2026-10-10"),
           amount: 150000,
           status: "DUE",
-          generationKey: `${s.id}:2026-10-10`,
+          generationKey: `${s.id}:2026-10`,
         } as never,
       });
       return result;
@@ -190,8 +191,8 @@ describe("generateBills", () => {
     await generateBills(NOW);
 
     expect(bills().map((b) => [b.householdId, b.generationKey])).toEqual([
-      ["hh-1", `${s.id}:2026-09-10`],
-      ["hh-1", `${s.id}:2026-10-10`],
+      ["hh-1", `${s.id}:2026-09`],
+      ["hh-1", `${s.id}:2026-10`],
     ]);
   });
 
@@ -358,6 +359,94 @@ describe("generateBills", () => {
       billsCreated: BATCH_SIZE + 25,
       hasMore: false,
     });
+  });
+
+  it("doesn't bill a month again when the due day moves", async () => {
+    const user = await owner();
+    // EMIs were on the 2nd (September's and October's are paid); today,
+    // 5 Oct, they moved to the 25th.
+    const s = await schedule(user.id, {
+      category: "EMI",
+      startDate: new Date("2026-01-25"),
+      dueDay: 25,
+      defaultAmount: 4300000,
+      billFrom: new Date("2026-10-05"),
+    });
+    for (const day of ["2026-09-02", "2026-10-02"]) {
+      await db.bill.create({
+        data: {
+          ownerId: user.id,
+          billScheduleId: s.id,
+          category: "EMI",
+          dueDate: new Date(day),
+          amount: 4300000,
+          status: "PAID",
+          // The key bills had before periods: the full day.
+          generationKey: `${s.id}:${day}`,
+        } as never,
+      });
+    }
+
+    const summary = await generateBills(NOW);
+
+    // No 25 Sep (before the change) and no 25 Oct (October is billed).
+    expect(summary.billsCreated).toBe(0);
+    expect(dueDays(s.id)).toEqual(["2026-09-02", "2026-10-02"]);
+
+    // November is a new month: billed on the new day.
+    await generateBills(new Date("2026-10-25T04:30:00Z"));
+    expect(dueDays(s.id)).toEqual(["2026-09-02", "2026-10-02", "2026-11-25"]);
+  });
+
+  it("doesn't bill days before the schedule's billFrom", async () => {
+    const user = await owner();
+    // A loan from 2024, added today (5 Oct): the 1 Oct EMI isn't shown as
+    // unpaid, the 1 Nov one is billed.
+    const s = await schedule(user.id, {
+      category: "EMI",
+      startDate: new Date("2024-03-01"),
+      dueDay: 1,
+      defaultAmount: 4300000,
+      billFrom: new Date("2026-10-05"),
+    });
+
+    await generateBills(NOW);
+
+    expect(dueDays(s.id)).toEqual(["2026-11-01"]);
+  });
+
+  it("carries on past a schedule that fails, and reports it", async () => {
+    const user = await owner();
+    const bad = await schedule(user.id, {
+      category: "UTILITY_BILL",
+      startDate: new Date("2026-01-10"),
+      dueDay: 10,
+      defaultAmount: 150000,
+    });
+    const good = await schedule(user.id, {
+      category: "UTILITY_BILL",
+      startDate: new Date("2026-01-12"),
+      dueDay: 12,
+      defaultAmount: 90000,
+    });
+    jest.spyOn(console, "error").mockImplementation(() => undefined);
+    const create = db.bill.create.bind(db.bill);
+    jest.spyOn(db.bill, "create").mockImplementation((async (args: {
+      data: { billScheduleId: string };
+    }) => {
+      if (args.data.billScheduleId === bad.id) throw new Error("bad data");
+      return create(args as never);
+    }) as never);
+
+    const summary = await generateBills(NOW);
+    jest.restoreAllMocks();
+
+    expect(summary.failed).toBe(1);
+    expect(summary.firstError).toBe(`Schedule ${bad.id}: bad data`);
+    expect(dueDays(good.id)).toEqual(["2026-09-12", "2026-10-12"]);
+    // The failed schedule is tried again next run.
+    await generateBills(NOW);
+    expect(dueDays(bad.id)).toEqual(["2026-09-10", "2026-10-10"]);
   });
 });
 

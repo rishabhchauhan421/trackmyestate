@@ -26,6 +26,7 @@ import type {
   Prisma,
 } from "../../../generated/prisma";
 import { dateOnly } from "~/lib/calendar-day";
+import { BILL_LOOKBACK_DAYS } from "~/lib/schedule";
 import type { ScheduleTerms } from "~/lib/schedule-terms";
 import { todayInTimeZone } from "~/lib/time-zone";
 import type { db } from "~/server/db";
@@ -94,6 +95,17 @@ export async function removeUnpaidBills(
   return bills.length;
 }
 
+/**
+ * Where a new schedule's billing starts. One whose first due date is
+ * recent bills from that date, so a bill already owed shows up. One that
+ * started long ago (a loan taken years back) bills from today instead of
+ * showing last month's instalment as unpaid.
+ */
+export function billFromForNewSchedule(startDate: Date, today: Date) {
+  const catchUpStart = today.getTime() - BILL_LOOKBACK_DAYS * 86_400_000;
+  return startDate.getTime() < catchUpStart ? today : null;
+}
+
 const sameDay = (a: Date | null | undefined, b: Date | null | undefined) =>
   (a?.getTime() ?? null) === (b?.getTime() ?? null);
 
@@ -154,7 +166,13 @@ export async function saveSchedule(
 
   if (!existing) {
     const created = await tx.billSchedule.create({
-      data: { ...data, category, ...values, active: true },
+      data: {
+        ...data,
+        category,
+        ...values,
+        billFrom: billFromForNewSchedule(terms.startDate, today),
+        active: true,
+      },
     });
     return created.id;
   }
@@ -163,7 +181,9 @@ export async function saveSchedule(
     await removeUnpaidBills(tx, [existing.id], today);
     await tx.billSchedule.update({
       where: { id: existing.id },
-      data: { ...values, active: true },
+      // New terms bill from today on: days already gone keep whatever
+      // bills they had under the old terms.
+      data: { ...values, billFrom: today, active: true },
     });
   }
   return existing.id;

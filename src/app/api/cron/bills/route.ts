@@ -6,7 +6,7 @@
 import { generateBills } from "~/server/bills/generate";
 import { cronRoute } from "~/server/cron-route";
 
-// Comfortably above the generator's time budget (`TIME_BUDGET_MS`, 45s).
-export const maxDuration = 60;
+// Comfortably above the generator's time budget (`TIME_BUDGET_MS`, 4 min).
+export const maxDuration = 300;
 
 export const GET = cronRoute("bills", () => generateBills());

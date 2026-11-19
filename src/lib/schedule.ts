@@ -150,6 +150,25 @@ export function occurrencesBetween(
   return result;
 }
 
+/**
+ * How many days back the bill generator catches up after missed runs (see
+ * `~/server/bills/generate`).
+ */
+export const BILL_LOOKBACK_DAYS = 31;
+
+/**
+ * Which billing period a due day belongs to: its month for month-based
+ * schedules ("2026-11"), the day itself for weekly ones. A schedule bills
+ * each period once, so moving its due day within a month (the 5th to the
+ * 25th) can't bill that month a second time.
+ */
+export function billingPeriodOf(
+  recurrence: BillRecurrence,
+  day: CalendarDay,
+): string {
+  return DAY_STEP[recurrence] ? day : day.slice(0, 7);
+}
+
 /** The first due day on or after `day`, or null once the schedule has ended. */
 export function nextOccurrence(
   schedule: ScheduleTiming,

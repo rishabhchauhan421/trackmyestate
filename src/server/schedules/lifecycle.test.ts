@@ -130,6 +130,33 @@ describe("saveSchedule", () => {
   });
 });
 
+describe("where billing starts (billFrom)", () => {
+  it("bills an old schedule from today, a recent one from its start", async () => {
+    // First due 5 Jan, added 5 Oct: last month's bill isn't shown as unpaid.
+    await createRentSchedule();
+    expect(rows("billSchedule")[0]).toMatchObject({ billFrom: TODAY });
+
+    resetMemoryDb();
+    // First due 20 Sep, two weeks before it was added: that bill is owed.
+    await createRentSchedule({
+      ...TERMS,
+      startDate: new Date("2026-09-20"),
+      dueDay: 20,
+    });
+    expect(rows("billSchedule")[0]).toMatchObject({ billFrom: null });
+  });
+
+  it("bills changed terms from today", async () => {
+    await createRentSchedule({ ...TERMS, startDate: new Date("2026-09-20") });
+    await createRentSchedule({ ...TERMS, dueDay: 25 });
+
+    expect(rows("billSchedule")[0]).toMatchObject({
+      dueDay: 25,
+      billFrom: TODAY,
+    });
+  });
+});
+
 describe("retireSchedules", () => {
   it("stops the schedule and removes unpaid bills from the given day", async () => {
     const id = await createRentSchedule();

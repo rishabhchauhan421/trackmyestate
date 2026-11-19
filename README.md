@@ -284,10 +284,28 @@ runs are harmless. `/api/cron/daily` runs all three in order for a manual
 catch-up, and the GitHub Actions workflow (`.github/workflows/cron.yml`)
 can call any of them by hand.
 
-**Missed runs:** each run is recorded in `CronRun`. `GET /api/health/cron`
-returns 200 while every job has succeeded within two of its intervals, and
-503 naming the late ones otherwise. Point an uptime monitor at it to be
-alerted. Admins see each job's last success, and can run any job, in
+**How the jobs behave:**
+
+- A schedule bills each period (a month, or a weekly schedule's day) once,
+  so moving a due day never bills a month twice. It never bills days before
+  its terms were last set (`BillSchedule.billFrom`).
+- A record that throws is skipped, logged and retried next run; the rest of
+  the run goes ahead.
+- A reminder missed yesterday (the job didn't run, or the bill is new) is
+  queued today. Everyone in the bill's household gets the owner's reminders.
+- One person's due reminders go out as a single email. Each send carries an
+  idempotency key, so a run that dies mid-send can't email twice. When the
+  provider rate limits, the run stops and the rest wait for the next one
+  without losing an attempt.
+- Each run has four minutes (`maxDuration` is 300 seconds, which needs
+  Vercel Pro); what's left over is picked up by the next run.
+
+**Health:** each run is recorded in `CronRun`. `GET /api/health/cron`
+returns 200 when all is well and 503, saying why, when a job hasn't
+succeeded within two of its intervals (`late`), a job's last run skipped
+records that threw (`warnings`), a due reminder has waited over an hour
+(`sending.stuck`), or most reminders in the last 24 hours failed
+(`sending.failing`). Point an uptime monitor at it to be alerted. Admins see each job's last success, and can run any job, in
 **Admin › Jobs**, and see what was sent (or why it failed) in **Admin ›
 Notifications**.
 

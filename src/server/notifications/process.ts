@@ -7,12 +7,18 @@
  * 2. Dispatches due `SCHEDULED` jobs via `./engine`, in batches, until the
  *    queue is empty or the time budget is spent — whatever's left waits
  *    for the next run instead of overrunning the function's time limit.
+ *    One person's jobs in a batch go out as a single message (a digest).
+ *    If the provider starts rate limiting, the run stops sending there.
  * 3. Deletes finished jobs past the retention window.
  */
 import "server-only";
 
 import { db } from "~/server/db";
-import { MAX_SEND_ATTEMPTS, dispatchNotificationJob } from "./engine";
+import {
+  MAX_SEND_ATTEMPTS,
+  digestKey,
+  dispatchNotificationJobs,
+} from "./engine";
 import type { DispatchOutcome } from "./engine";
 import type { NotificationJobWithMetadata } from "./types";
 
@@ -23,7 +29,7 @@ export const BATCH_SIZE = 100;
  * No new batch starts after this long. Well inside the cron route's
  * `maxDuration`, so the batch in flight can finish.
  */
-export const TIME_BUDGET_MS = 45_000;
+export const TIME_BUDGET_MS = 240_000;
 
 /** A job `PROCESSING` for longer than this was abandoned by a dead run. */
 export const STALE_CLAIM_MS = 10 * 60 * 1000;
@@ -35,24 +41,23 @@ const FINISHED_STATUSES = ["SENT", "FAILED", "SKIPPED", "CANCELLED"] as const;
 
 export interface ProcessDueJobsSummary {
   total: number;
-  /**
-   * `ERRORED`: dispatching threw unexpectedly (e.g. a database error). The
-   * job stays claimed and is reclaimed by a later run (see
-   * `reclaimStaleJobs`).
-   */
-  outcomes: Record<DispatchOutcome | "ERRORED", number>;
+  outcomes: Record<DispatchOutcome, number>;
   /** Stuck jobs put back in the queue (or failed, if out of attempts). */
   reclaimed: number;
   /** Old finished jobs deleted. */
   purged: number;
-  /** True when the time budget ran out with due jobs possibly left over. */
+  /**
+   * True when the time budget ran out, or the provider rate limited us,
+   * with due jobs possibly left over.
+   */
   hasMore: boolean;
 }
 
-const EMPTY_OUTCOMES: Record<DispatchOutcome | "ERRORED", number> = {
+const EMPTY_OUTCOMES: Record<DispatchOutcome, number> = {
   SENT: 0,
   SKIPPED: 0,
   RETRY_SCHEDULED: 0,
+  RATE_LIMITED: 0,
   FAILED: 0,
   ALREADY_CLAIMED: 0,
   CANCELLED: 0,
@@ -61,9 +66,9 @@ const EMPTY_OUTCOMES: Record<DispatchOutcome | "ERRORED", number> = {
 
 /**
  * Dispatches due jobs serially (jobs hit third-party APIs with their own
- * rate limits, so we don't fan them out concurrently). One job's failure
- * never stops the batch — each is caught and recorded by
- * `dispatchNotificationJob` itself.
+ * rate limits, so we don't fan them out concurrently), one recipient's
+ * jobs at a time. One job's failure never stops the batch — each is caught
+ * and recorded by `dispatchNotificationJobs` itself.
  *
  * A job can't be picked twice in one run: dispatching moves it out of
  * `SCHEDULED`, and a retry is rescheduled into the future (after `now`).
@@ -86,20 +91,41 @@ export async function processDueNotificationJobs(
       take: BATCH_SIZE,
     })) as NotificationJobWithMetadata[];
 
+    // One group per recipient, in the order their first job is due.
+    const groups = new Map<string, NotificationJobWithMetadata[]>();
     for (const job of batch) {
+      const key = digestKey(job);
+      groups.set(key, [...(groups.get(key) ?? []), job]);
+    }
+
+    const erroredBefore = outcomes.ERRORED;
+    let rateLimited = false;
+    for (const group of groups.values()) {
       try {
-        outcomes[await dispatchNotificationJob(job)] += 1;
+        for (const outcome of await dispatchNotificationJobs(group)) {
+          outcomes[outcome] += 1;
+          if (outcome === "RATE_LIMITED") rateLimited = true;
+        }
       } catch (error) {
-        // Never let one job stop the run; the job is retried once
-        // reclaimed.
+        // Never let one recipient stop the run; their jobs are retried
+        // once reclaimed.
         console.error(
-          `[notifications] Dispatching job ${job.id} failed`,
+          `[notifications] Dispatching jobs ${group.map((job) => job.id).join(", ")} failed`,
           error,
         );
-        outcomes.ERRORED += 1;
+        outcomes.ERRORED += group.length;
       }
+      total += group.length;
+      // The provider is throttling: leave the rest for the next run
+      // rather than spend their attempts on more rate-limit errors.
+      if (rateLimited) break;
     }
-    total += batch.length;
+    // Also stop when a whole batch errored (the database is down, say):
+    // those jobs are still due, and re-reading them would only spin.
+    if (rateLimited || outcomes.ERRORED - erroredBefore === batch.length) {
+      hasMore = batch.length > 0;
+      break;
+    }
 
     if (batch.length < BATCH_SIZE) break;
     if (clock() - startedAt >= timeBudgetMs) {

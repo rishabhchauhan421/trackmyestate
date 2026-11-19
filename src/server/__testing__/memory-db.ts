@@ -35,6 +35,7 @@ const MODELS = [
   "paymentTransaction",
   "emailSuppression",
   "cronRun",
+  "householdMember",
 ] as const;
 type Model = (typeof MODELS)[number];
 

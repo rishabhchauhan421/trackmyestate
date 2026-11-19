@@ -305,6 +305,8 @@ describe("createLease rent schedule", () => {
         recurrence: "MONTHLY",
         startDate: new Date("2026-07-05"),
         nextDueDate: new Date("2026-07-05"),
+        // Started months ago: bills from today.
+        billFrom: expect.any(Date) as Date,
         dueDay: 5,
         dueMonth: null,
         endDate: new Date("2027-05-31"),
