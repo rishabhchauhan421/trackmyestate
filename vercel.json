@@ -1,5 +1,12 @@
 {
   "regions": ["bom1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "**": false
+    }
+  },
+  "ignoreCommand": "[ \"$VERCEL_ENV\" != \"production\" ]",
   "crons": [
     {
       "path": "/api/cron/notifications",
