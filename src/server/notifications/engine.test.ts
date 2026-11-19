@@ -192,6 +192,25 @@ describe("stop when paid", () => {
     });
   });
 
+  it.each([
+    [{ status: "DUE", deletedAt: new Date() }, "Bill was removed"],
+    [null, "Bill no longer exists"],
+  ])("cancels a reminder for a removed bill (%p)", async (bill, reason) => {
+    dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
+    dbMock.bill.findUnique.mockResolvedValue(bill as never);
+
+    const outcome = await dispatchNotificationJob(
+      buildJob({ billId: "bill-1" }),
+    );
+
+    expect(outcome).toBe("CANCELLED");
+    expect(sendEmailMock).not.toHaveBeenCalled();
+    expect(dbMock.notificationJob.update).toHaveBeenCalledWith({
+      where: { id: "job-1" },
+      data: { status: "CANCELLED", failedReason: reason },
+    });
+  });
+
   it("sends a reminder whose bill is still unpaid", async () => {
     dbMock.notificationJob.updateMany.mockResolvedValue({ count: 1 });
     dbMock.bill.findUnique.mockResolvedValue({ status: "OVERDUE" } as never);

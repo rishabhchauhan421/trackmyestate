@@ -3,6 +3,7 @@ import "server-only";
 import { nextBillFor } from "~/lib/schedule";
 import { DEFAULT_TIME_ZONE, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
+import { hasPaymentHistory } from "~/server/schedules/lifecycle";
 import {
   NOT_SOFT_DELETED,
   OPEN_PAYMENT_STATUSES,
@@ -118,15 +119,11 @@ export async function getLoanForHousehold(loanId: string, householdId: string) {
 }
 
 /**
- * Whether any `Bill` has ever been generated for this loan (an EMI payment
- * on record). A loan with billing history can't be deleted — see
- * `deleteLoan` in `~/server/actions/loans` — same rationale as
- * `hasBillsForLease`.
+ * Whether money has been recorded against any of this loan's bills
+ * (an EMI). Such a loan can't be deleted — see `deleteLoan` in
+ * `~/server/actions/loans` — because that history needs it; unpaid bills
+ * are removed along with it instead.
  */
-export async function hasBillsForLoan(loanId: string) {
-  const bill = await db.bill.findFirst({
-    where: { loanId },
-    select: { id: true },
-  });
-  return bill != null;
+export async function hasPaymentsForLoan(loanId: string) {
+  return hasPaymentHistory(db, { loanId: loanId });
 }

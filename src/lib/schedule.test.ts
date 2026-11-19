@@ -22,6 +22,16 @@ function schedule(overrides: Partial<ScheduleTiming> = {}): ScheduleTiming {
 const days = (occurrences: { day: string }[]) => occurrences.map((o) => o.day);
 
 describe("occurrencesBetween", () => {
+  it("stops at the schedule's end date, inclusive", () => {
+    const s = schedule({ endDate: new Date("2026-05-10") });
+    expect(days(occurrencesBetween(s, "2026-03-01", "2026-08-31"))).toEqual([
+      "2026-03-10",
+      "2026-04-10",
+      "2026-05-10",
+    ]);
+    expect(occurrencesBetween(s, "2026-06-01", "2026-08-31")).toEqual([]);
+  });
+
   it("lists monthly due days in a range, inclusive", () => {
     expect(
       days(occurrencesBetween(schedule(), "2026-03-10", "2026-06-10")),

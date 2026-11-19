@@ -53,20 +53,26 @@ export async function dispatchNotificationJob(
   });
   if (claim.count === 0) return "ALREADY_CLAIMED";
 
-  // Stop when paid: a reminder for a bill settled since it was queued is
-  // cancelled rather than sent.
+  // Stop when paid or gone: a reminder for a bill settled, or removed (its
+  // asset was deleted or its schedule changed) since it was queued, is
+  // cancelled rather than sent. `findUnique` isn't soft-delete filtered
+  // (see `~/server/soft-delete`), hence the `deletedAt` check.
   if (job.billId) {
     const bill = await db.bill.findUnique({
       where: { id: job.billId },
-      select: { status: true },
+      select: { status: true, deletedAt: true },
     });
-    if (bill && !OPEN_BILL_STATUSES.includes(bill.status)) {
+    const reason = !bill
+      ? "Bill no longer exists"
+      : bill.deletedAt
+        ? "Bill was removed"
+        : !OPEN_BILL_STATUSES.includes(bill.status)
+          ? `Bill is ${bill.status.toLowerCase()}`
+          : null;
+    if (reason) {
       await db.notificationJob.update({
         where: { id: job.id },
-        data: {
-          status: "CANCELLED",
-          failedReason: `Bill is ${bill.status.toLowerCase()}`,
-        },
+        data: { status: "CANCELLED", failedReason: reason },
       });
       return "CANCELLED";
     }

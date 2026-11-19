@@ -459,6 +459,8 @@ model BillSchedule {
   startDate     DateTime?
   dueDay        Int
   dueMonth      Int?
+  // Last day a bill can fall on (e.g. a lease's end date). No end if unset.
+  endDate       DateTime?
   defaultAmount Float?
   currency      Currency?
   tenureMonths  Int?

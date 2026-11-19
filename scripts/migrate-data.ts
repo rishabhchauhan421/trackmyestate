@@ -15,6 +15,8 @@
  * with no `generationKey`).
  */
 import { PrismaClient } from "../generated/prisma";
+import { addDays, calendarDayOf, dateOnly } from "../src/lib/calendar-day";
+import { firstDueDayAfter } from "../src/lib/schedule";
 
 const db = new PrismaClient();
 const DRY_RUN = process.argv.includes("--dry-run");
@@ -244,6 +246,59 @@ async function households() {
   return `${users.length} users, ${created} households created`;
 }
 
+/**
+ * Leases now bill their rent through a RENT schedule (see
+ * `src/server/actions/leases.ts`). Every active lease without one gets
+ * one, due on its `rentDueDay` (or, if it never had one, the day of the
+ * month it started, which is also saved as its due day). The next bill run
+ * creates the bills. Runs after "households" so each schedule gets its
+ * property's household.
+ */
+async function rentSchedules() {
+  const leases = await db.lease.findMany({
+    where: {
+      active: true,
+      OR: [{ deletedAt: null }, { deletedAt: { isSet: false } }],
+    },
+    include: { property: { select: { ownerId: true, householdId: true } } },
+  });
+  let created = 0;
+  for (const lease of leases) {
+    const existing = await db.billSchedule.findFirst({
+      where: { leaseId: lease.id, category: "RENT" },
+      select: { id: true },
+    });
+    if (existing) continue;
+    created += 1;
+    if (DRY_RUN) continue;
+
+    const dueDay = lease.rentDueDay ?? lease.leaseStart.getUTCDate();
+    const dayBeforeStart = addDays(calendarDayOf(lease.leaseStart), -1);
+    if (lease.rentDueDay == null) {
+      await db.lease.update({
+        where: { id: lease.id },
+        data: { rentDueDay: dueDay },
+      });
+    }
+    await db.billSchedule.create({
+      data: {
+        ownerId: lease.property.ownerId,
+        householdId: lease.property.householdId,
+        category: "RENT",
+        propertyId: lease.propertyId,
+        leaseId: lease.id,
+        recurrence: "MONTHLY",
+        startDate: dateOnly(firstDueDayAfter(dayBeforeStart, dueDay)),
+        dueDay,
+        endDate: lease.leaseEnd,
+        defaultAmount: lease.rentAmount,
+        active: true,
+      },
+    });
+  }
+  return `${leases.length} active leases, ${created} rent schedules created`;
+}
+
 async function main() {
   if (DRY_RUN) console.log("Dry run: nothing will be written.\n");
   await step("2026-11-bill-generation-keys", billGenerationKeys);
@@ -255,6 +310,7 @@ async function main() {
     }
   }
   await step("2026-11-households", households);
+  await step("2026-11-rent-schedules", rentSchedules);
 }
 
 main()

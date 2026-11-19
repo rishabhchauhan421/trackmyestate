@@ -11,7 +11,7 @@ import { requireScope } from "~/server/households";
 import { getDocumentsForLease } from "~/server/queries/documents";
 import {
   getLeaseForHousehold,
-  hasBillsForLease,
+  hasPaymentsForLease,
 } from "~/server/queries/leases";
 import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getRoomsForProperty } from "~/server/queries/rentals";
@@ -36,7 +36,7 @@ export default async function EditLeasePage({
 
   const [rooms, canDelete, documents] = await Promise.all([
     getRoomsForProperty(id),
-    hasBillsForLease(leaseId).then((hasBills) => !hasBills),
+    hasPaymentsForLease(leaseId).then((hasBills) => !hasBills),
     getDocumentsForLease(leaseId, scope.householdId),
   ]);
 
@@ -114,7 +114,7 @@ export default async function EditLeasePage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Rent due day (optional)</span>
+            <span className={labelClass}>Rent due day</span>
             <input
               type="number"
               name="rentDueDay"
@@ -122,7 +122,8 @@ export default async function EditLeasePage({
               max="31"
               step="1"
               placeholder="e.g. 5"
-              defaultValue={lease.rentDueDay ?? ""}
+              required
+              defaultValue={lease.rentDueDay ?? lease.leaseStart.getUTCDate()}
               className={controlClass}
             />
           </label>
@@ -165,8 +166,8 @@ export default async function EditLeasePage({
           <p className="text-sm font-semibold text-ink">Delete lease</p>
           <p className="mt-1 text-xs text-muted">
             {canDelete
-              ? "Permanently removes this lease. Only possible when it has no bills on record."
-              : "This lease has bills on record, so it can't be deleted — end the lease instead."}
+              ? "Permanently removes this lease. Only possible while no rent has been received; unpaid rent is removed with it."
+              : "Rent has been received on this lease, so it can't be deleted — end the lease instead."}
           </p>
         </div>
         <form

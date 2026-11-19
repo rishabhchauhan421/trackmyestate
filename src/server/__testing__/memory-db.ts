@@ -31,6 +31,8 @@ const MODELS = [
   "loan",
   "policy",
   "lease",
+  "investment",
+  "paymentTransaction",
 ] as const;
 type Model = (typeof MODELS)[number];
 
@@ -290,6 +292,12 @@ function makeDelegate(model: Model) {
   };
 }
 
-export const db = Object.fromEntries(
+const delegates: Record<string, unknown> = Object.fromEntries(
   MODELS.map((model) => [model, makeDelegate(model)]),
-) as unknown as PrismaClient;
+);
+// An interactive transaction just runs against the same store (no
+// rollback): enough for code that wraps its writes in one.
+delegates.$transaction = async (fn: (tx: unknown) => Promise<unknown>) =>
+  fn(delegates);
+
+export const db = delegates as unknown as PrismaClient;

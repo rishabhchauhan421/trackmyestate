@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "~/server/db";
+import { hasPaymentHistory } from "~/server/schedules/lifecycle";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
 /**
@@ -34,14 +35,11 @@ export async function getLeaseForHousehold(
 }
 
 /**
- * Whether any rent `Bill` has ever been generated for this lease. A lease
- * with billing history can't be deleted — see `deleteLease` in
- * `~/server/actions/leases` — only have its lease ended.
+ * Whether money has been recorded against any of this lease's bills
+ * (rent). Such a lease can't be deleted — see `deleteLease` in
+ * `~/server/actions/leases` — because that history needs it; unpaid bills
+ * are removed along with it instead.
  */
-export async function hasBillsForLease(leaseId: string) {
-  const bill = await db.bill.findFirst({
-    where: { category: "RENT", leaseId },
-    select: { id: true },
-  });
-  return bill != null;
+export async function hasPaymentsForLease(leaseId: string) {
+  return hasPaymentHistory(db, { leaseId: leaseId });
 }

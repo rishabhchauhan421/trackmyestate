@@ -58,8 +58,9 @@ const isOpen = (status: string) =>
  * Records a payment against a bill: a `PaymentTransaction` for the money
  * that moved, and the bill's running `paidAmount` and status. The bill is
  * PAID once the payments cover what was due, or when the owner says this
- * payment settles it; otherwise it's PARTIALLY_PAID. Both writes happen in
- * one transaction so the total can't drift from the payments.
+ * payment settles it; otherwise it's PARTIALLY_PAID. Settling an EMI also
+ * takes its principal share off the loan's outstanding balance. The writes
+ * happen in one transaction so the totals can't drift from the payments.
  */
 export async function recordBillPayment(billId: string, formData: FormData) {
   const scope = await requireScope();
@@ -112,6 +113,25 @@ export async function recordBillPayment(billId: string, formData: FormData) {
         paidDate: settled ? fields.paidOn : null,
       },
     });
+
+    // A paid EMI repays its principal share of the loan.
+    if (settled && current.loanId && current.principalComponent) {
+      const loan = await tx.loan.findFirst({
+        where: { id: current.loanId },
+        select: { outstandingBalance: true },
+      });
+      if (loan) {
+        await tx.loan.update({
+          where: { id: current.loanId },
+          data: {
+            outstandingBalance: Math.max(
+              loan.outstandingBalance - current.principalComponent,
+              0,
+            ),
+          },
+        });
+      }
+    }
   });
 
   revalidatePath(`/bills/${bill.id}`);

@@ -12,6 +12,7 @@
  * - `tenureMonths` (e.g. an EMI) caps a month-based schedule at that many
  *   months' worth of instalments; each occurrence carries its instalment
  *   number.
+ * - `endDate` (e.g. a lease's end) is the last day a bill can fall on.
  */
 import type { BillRecurrence } from "../../generated/prisma";
 import { addDays, calendarDayOf, type CalendarDay } from "./calendar-day";
@@ -23,6 +24,7 @@ export type ScheduleTiming = {
   startDate: Date | null;
   createdAt: Date;
   tenureMonths: number | null;
+  endDate?: Date | null;
 };
 
 export type Occurrence = { day: CalendarDay; installment: number };
@@ -109,6 +111,10 @@ export function occurrencesBetween(
   from: CalendarDay,
   to: CalendarDay,
 ): Occurrence[] {
+  if (schedule.endDate) {
+    const end = calendarDayOf(schedule.endDate);
+    if (end < to) to = end;
+  }
   if (from > to) return [];
   const anchor = scheduleAnchor(schedule);
   const limit = occurrenceLimit(schedule);

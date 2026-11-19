@@ -9,7 +9,10 @@ import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
 import { deleteLoan, updateLoan } from "~/server/actions/loans";
 import { requireScope } from "~/server/households";
-import { getLoanForHousehold, hasBillsForLoan } from "~/server/queries/loans";
+import {
+  getLoanForHousehold,
+  hasPaymentsForLoan,
+} from "~/server/queries/loans";
 import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 
 export default async function EditLoanPage({
@@ -25,7 +28,7 @@ export default async function EditLoanPage({
     notFound();
   }
   const properties = await getPropertyOptionsForHousehold(scope.householdId);
-  const canDelete = !(await hasBillsForLoan(id));
+  const canDelete = !(await hasPaymentsForLoan(id));
 
   return (
     <>
@@ -197,8 +200,8 @@ export default async function EditLoanPage({
           <p className="text-sm font-semibold text-ink">Delete loan</p>
           <p className="mt-1 text-xs text-muted">
             {canDelete
-              ? "Permanently removes this loan and its EMI schedule. Only possible when it has no EMI payments on record."
-              : "This loan has EMI payments on record, so it can't be deleted."}
+              ? "Permanently removes this loan and its EMI schedule. Only possible while no EMI has been paid; unpaid EMIs are removed with it."
+              : "EMIs have been paid on this loan, so it can't be deleted."}
           </p>
         </div>
         <form

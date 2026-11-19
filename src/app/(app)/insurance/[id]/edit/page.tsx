@@ -4,6 +4,7 @@ import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
+import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-payment-fields";
 import { toDateInputValue } from "~/lib/format";
 import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from "~/lib/labels";
 import { optionalFromMinorUnits } from "~/lib/money";
@@ -11,7 +12,8 @@ import { deletePolicy, updatePolicy } from "~/server/actions/policies";
 import { requireScope } from "~/server/households";
 import {
   getPolicyForHousehold,
-  hasBillsForPolicy,
+  getPolicyPaymentDefaults,
+  hasPaymentsForPolicy,
 } from "~/server/queries/policies";
 
 export default async function EditPolicyPage({
@@ -27,7 +29,10 @@ export default async function EditPolicyPage({
     notFound();
   }
 
-  const canDelete = !(await hasBillsForPolicy(id));
+  const [canDelete, paymentDefaults] = await Promise.all([
+    hasPaymentsForPolicy(id).then((paid) => !paid),
+    getPolicyPaymentDefaults(id),
+  ]);
 
   return (
     <>
@@ -202,6 +207,8 @@ export default async function EditPolicyPage({
           </label>
         </div>
 
+        <PolicyPaymentFields defaults={paymentDefaults} />
+
         <FormActions>
           <Button href="/insurance" variant="outline">
             Cancel
@@ -215,8 +222,8 @@ export default async function EditPolicyPage({
           <p className="text-sm font-semibold text-ink">Delete policy</p>
           <p className="mt-1 text-xs text-muted">
             {canDelete
-              ? "Permanently removes this policy. Only possible when it has no premiums or claims on record."
-              : "This policy has premiums or claims on record, so it can't be deleted."}
+              ? "Permanently removes this policy. Only possible while nothing has been paid or received on it; unpaid premiums are removed with it."
+              : "Premiums or payouts have been recorded on this policy, so it can't be deleted."}
           </p>
         </div>
         <form

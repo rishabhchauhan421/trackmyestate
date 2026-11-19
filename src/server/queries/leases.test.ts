@@ -5,7 +5,7 @@ import { db } from "~/server/db";
 import {
   getLeaseForHousehold,
   getLeasesForProperty,
-  hasBillsForLease,
+  hasPaymentsForLease,
 } from "~/server/queries/leases";
 
 jest.mock("~/server/db");
@@ -97,22 +97,25 @@ describe("getLeaseForHousehold", () => {
   });
 });
 
-describe("hasBillsForLease", () => {
-  it("queries RENT-category bills scoped to the lease's leaseId", async () => {
+describe("hasPaymentsForLease", () => {
+  it("looks for the lease's paid or part-paid bills", async () => {
     dbMock.bill.findFirst.mockResolvedValue(null);
 
-    await hasBillsForLease("lease-1");
+    await hasPaymentsForLease("lease-1");
 
     expect(dbMock.bill.findFirst).toHaveBeenCalledWith({
-      where: { category: "RENT", leaseId: "lease-1" },
+      where: {
+        leaseId: "lease-1",
+        status: { in: ["PAID", "PARTIALLY_PAID", "REFUNDED"] },
+      },
       select: { id: true },
     });
   });
 
-  it("returns true when a rent bill exists", async () => {
+  it("returns true when rent has been received", async () => {
     dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
 
-    const result = await hasBillsForLease("lease-1");
+    const result = await hasPaymentsForLease("lease-1");
 
     expect(result).toBe(true);
   });
@@ -120,7 +123,7 @@ describe("hasBillsForLease", () => {
   it("returns false when no rent bill exists", async () => {
     dbMock.bill.findFirst.mockResolvedValue(null);
 
-    const result = await hasBillsForLease("lease-1");
+    const result = await hasPaymentsForLease("lease-1");
 
     expect(result).toBe(false);
   });

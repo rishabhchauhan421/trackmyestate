@@ -9,7 +9,9 @@
  * A loan's EMI schedule (tenure, due day, EMI amount) lives on its own
  * `BillSchedule` row (category `"EMI"`, `loanId` = the Loan's id) rather
  * than on `Loan` itself — see the `BillSchedule` model comment in
- * `prisma/schema.prisma`. `createLoan`/`updateLoan` write both records.
+ * `prisma/schema.prisma`. `createLoan`/`updateLoan` write both records in
+ * one transaction, through `~/server/schedules/lifecycle` so a changed EMI
+ * replaces the upcoming unpaid EMI bills.
  *
  * A loan can optionally be linked to one of the owner's properties
  * (`linkedPropertyId`, an "Exclusive Arc" on `Loan` — see the model
@@ -42,6 +44,13 @@ import { firstDueDayAfter } from "~/lib/schedule";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { requireScope } from "~/server/households";
+import {
+  hasPaymentHistory,
+  retireSchedules,
+  saveSchedule,
+  todayFor,
+  type ScheduleTerms,
+} from "~/server/schedules/lifecycle";
 
 async function requireOwnedLoan(loanId: string, householdId: string) {
   const loan = await db.loan.findFirst({ where: { id: loanId, householdId } });
@@ -102,6 +111,17 @@ function firstEmiDate(loanStart: Date, emiDueDay: number) {
   return dateOnly(firstDueDayAfter(calendarDayOf(loanStart), emiDueDay));
 }
 
+/** The EMI schedule the form describes. */
+function emiTerms(fields: z.output<typeof loanFieldsSchema>): ScheduleTerms {
+  return {
+    recurrence: "MONTHLY",
+    startDate: firstEmiDate(fields.startDate, fields.emiDueDay),
+    dueDay: fields.emiDueDay,
+    tenureMonths: fields.tenureMonths,
+    defaultAmount: fields.emiAmount,
+  };
+}
+
 /** Creates a new `Loan` and its EMI `BillSchedule` for the signed-in owner. */
 export async function createLoan(formData: FormData) {
   const scope = await requireScope();
@@ -111,35 +131,36 @@ export async function createLoan(formData: FormData) {
     scope.householdId,
   );
 
-  const loan = await db.loan.create({
-    data: {
-      ownerId: scope.userId,
-      householdId: scope.householdId,
-      lender: fields.lender,
-      type: fields.type,
-      principal: fields.principal,
-      interestRatePercent: fields.interestRatePercent,
-      startDate: fields.startDate,
-      outstandingBalance: fields.outstandingBalance,
-      linkedPropertyId,
-    },
-  });
+  const today = await todayFor(scope.userId);
 
-  const schedule = await db.billSchedule.create({
-    data: {
-      ownerId: scope.userId,
-      householdId: scope.householdId,
+  const scheduleId = await db.$transaction(async (tx) => {
+    const loan = await tx.loan.create({
+      data: {
+        ownerId: scope.userId,
+        householdId: scope.householdId,
+        lender: fields.lender,
+        type: fields.type,
+        principal: fields.principal,
+        interestRatePercent: fields.interestRatePercent,
+        startDate: fields.startDate,
+        outstandingBalance: fields.outstandingBalance,
+        linkedPropertyId,
+      },
+    });
+    return saveSchedule(tx, {
+      owner: { loanId: loan.id },
       category: "EMI",
-      loanId: loan.id,
-      recurrence: "MONTHLY",
-      startDate: firstEmiDate(fields.startDate, fields.emiDueDay),
-      dueDay: fields.emiDueDay,
-      defaultAmount: fields.emiAmount,
-      tenureMonths: fields.tenureMonths,
-    },
+      data: {
+        ownerId: scope.userId,
+        householdId: scope.householdId,
+        loanId: loan.id,
+      },
+      terms: emiTerms(fields),
+      today,
+    });
   });
   // Create its first EMI bills now, so the next one shows up straight away.
-  await generateBillsForSchedule(schedule.id);
+  await generateBillsForSchedule(scheduleId);
 
   revalidatePath("/loans");
   if (linkedPropertyId) revalidatePath(`/properties/${linkedPropertyId}`);
@@ -156,28 +177,35 @@ export async function updateLoan(loanId: string, formData: FormData) {
     scope.householdId,
   );
 
-  await db.loan.update({
-    where: { id: loanId },
-    data: {
-      lender: fields.lender,
-      type: fields.type,
-      principal: fields.principal,
-      interestRatePercent: fields.interestRatePercent,
-      startDate: fields.startDate,
-      outstandingBalance: fields.outstandingBalance,
-      linkedPropertyId,
-    },
-  });
+  const today = await todayFor(scope.userId);
 
-  await db.billSchedule.updateMany({
-    where: { category: "EMI", loanId },
-    data: {
-      startDate: firstEmiDate(fields.startDate, fields.emiDueDay),
-      dueDay: fields.emiDueDay,
-      defaultAmount: fields.emiAmount,
-      tenureMonths: fields.tenureMonths,
-    },
+  const scheduleId = await db.$transaction(async (tx) => {
+    await tx.loan.update({
+      where: { id: loanId },
+      data: {
+        lender: fields.lender,
+        type: fields.type,
+        principal: fields.principal,
+        interestRatePercent: fields.interestRatePercent,
+        startDate: fields.startDate,
+        outstandingBalance: fields.outstandingBalance,
+        linkedPropertyId,
+      },
+    });
+    // A changed EMI, due day or tenure replaces the upcoming unpaid EMIs.
+    return saveSchedule(tx, {
+      owner: { loanId },
+      category: "EMI",
+      data: {
+        ownerId: existingLoan.ownerId,
+        householdId: scope.householdId,
+        loanId,
+      },
+      terms: emiTerms(fields),
+      today,
+    });
   });
+  await generateBillsForSchedule(scheduleId);
 
   revalidatePath("/loans");
   if (existingLoan.linkedPropertyId) {
@@ -188,29 +216,26 @@ export async function updateLoan(loanId: string, formData: FormData) {
 }
 
 /**
- * Soft-deletes a loan and its EMI `BillSchedule` — refused if any EMI
- * `Bill` has ever been generated for it, since that payment history needs
- * the loan record to stay meaningful. Same rationale as `deleteLease`.
+ * Soft-deletes a loan, stops its EMI schedule and removes its unpaid EMI
+ * bills — refused once any EMI has been paid, since that payment history
+ * needs the loan record to stay meaningful. Same rationale as
+ * `deleteLease`.
  */
 export async function deleteLoan(loanId: string) {
   const scope = await requireScope();
   const loan = await requireOwnedLoan(loanId, scope.householdId);
 
-  const existingBill = await db.bill.findFirst({
-    where: { loanId },
-    select: { id: true },
-  });
-  if (existingBill) {
+  if (await hasPaymentHistory(db, { loanId })) {
     throw new Error("Cannot delete a loan that has EMI payments on record");
   }
 
-  await db.loan.update({
-    where: { id: loanId },
-    data: { deletedAt: new Date() },
-  });
-  await db.billSchedule.updateMany({
-    where: { category: "EMI", loanId },
-    data: { deletedAt: new Date() },
+  const today = await todayFor(scope.userId);
+  await db.$transaction(async (tx) => {
+    await tx.loan.update({
+      where: { id: loanId },
+      data: { deletedAt: new Date() },
+    });
+    await retireSchedules(tx, { loanId }, { from: today, remove: true });
   });
 
   revalidatePath("/loans");

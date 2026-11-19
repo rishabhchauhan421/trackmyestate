@@ -79,7 +79,7 @@ export async function getPropertyOptionsForHousehold(householdId: string) {
  * Whether a property has any real history hanging off it — bills, leases,
  * rental units, utility schedules, or a loan linked to it — that a
  * `deleteProperty` (see `~/server/actions/properties`) would otherwise
- * orphan. Mirrors `hasBillsForLease`'s rationale in `~/server/queries/leases`.
+ * orphan. Mirrors `hasPaymentsForLease`'s rationale in `~/server/queries/leases`.
  */
 export async function hasDependentRecordsForProperty(propertyId: string) {
   const [bill, lease, room, billSchedule, loan] = await Promise.all([

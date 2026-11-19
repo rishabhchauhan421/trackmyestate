@@ -223,6 +223,38 @@ describe("generateBills", () => {
     ]);
   });
 
+  it("splits each EMI into interest and principal", async () => {
+    const user = await owner();
+    // ₹10,00,000 at 12% over 12 months; first EMI on 5 Oct 2026.
+    const loan = await db.loan.create({
+      data: {
+        ownerId: user.id,
+        lender: "HDFC",
+        type: "PERSONAL_LOAN",
+        principal: 100_000_000,
+        interestRatePercent: 12,
+      } as never,
+    });
+    const emi = await schedule(user.id, {
+      category: "EMI",
+      loanId: loan.id,
+      startDate: new Date("2026-10-05"),
+      dueDay: 5,
+      tenureMonths: 12,
+      defaultAmount: 8_884_879,
+    });
+
+    await generateBills(NOW);
+
+    const first = bills().find(
+      (b) => b.billScheduleId === emi.id && b.installmentNumber === 1,
+    );
+    expect(first).toMatchObject({
+      interestComponent: 1_000_000,
+      principalComponent: 7_884_879,
+    });
+  });
+
   it("stops after an EMI's last instalment", async () => {
     const user = await owner();
     const emi = await schedule(user.id, {

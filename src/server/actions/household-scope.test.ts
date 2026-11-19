@@ -90,6 +90,7 @@ describe("household scoping", () => {
             leaseStart: "2026-01-01",
             rentAmount: "100",
             depositAmount: "0",
+            rentDueDay: "5",
           }),
         ),
     ],

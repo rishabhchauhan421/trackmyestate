@@ -2,6 +2,7 @@ import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
+import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-payment-fields";
 import { POLICY_TYPE_LABELS } from "~/lib/labels";
 import { createPolicy } from "~/server/actions/policies";
 import { requireScope } from "~/server/households";
@@ -155,6 +156,8 @@ export default async function NewPolicyPage() {
             />
           </label>
         </div>
+
+        <PolicyPaymentFields />
 
         <FormActions>
           <Button href="/insurance" variant="outline">

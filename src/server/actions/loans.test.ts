@@ -40,6 +40,10 @@ const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
 beforeEach(() => {
   mockReset(dbMock);
+  // Interactive transactions run their callback against the same mock.
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
@@ -198,8 +202,11 @@ describe("createLoan", () => {
         // later, stored as a date-only value.
         startDate: new Date("2024-05-05"),
         dueDay: 5,
+        dueMonth: null,
+        endDate: null,
         defaultAmount: 4300000,
         tenureMonths: 240,
+        active: true,
       },
     });
   });
@@ -287,6 +294,18 @@ describe("updateLoan", () => {
       ownerId: "user-1",
     } as never);
     dbMock.loan.update.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.billSchedule.findFirst.mockResolvedValue({
+      id: "sched-1",
+      recurrence: "MONTHLY",
+      startDate: new Date("2024-05-05"),
+      dueDay: 5,
+      dueMonth: null,
+      endDate: null,
+      tenureMonths: 240,
+      defaultAmount: 4300000,
+      active: true,
+    } as never);
+    dbMock.bill.findMany.mockResolvedValue([]);
 
     await expect(
       updateLoan(
@@ -299,16 +318,29 @@ describe("updateLoan", () => {
       ),
     ).rejects.toThrow("REDIRECT:");
 
-    expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
-      where: { category: "EMI", loanId: "loan-1" },
+    expect(dbMock.billSchedule.update).toHaveBeenCalledWith({
+      where: { id: "sched-1" },
       data: {
+        recurrence: "MONTHLY",
         // Still starts 5 Apr 2024; EMIs moved to the 10th → first on 10 Apr.
         startDate: new Date("2024-04-10"),
         dueDay: 10,
+        dueMonth: null,
+        endDate: null,
         defaultAmount: 4400000,
         tenureMonths: 180,
+        active: true,
       },
     });
+    // The upcoming unpaid EMIs at the old terms are looked up for removal.
+    expect(dbMock.bill.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          billScheduleId: { in: ["sched-1"] },
+          status: { in: ["DUE", "OVERDUE"] },
+        }),
+      }),
+    );
   });
 
   it("re-links the loan to a different owned property and revalidates both", async () => {
@@ -364,6 +396,21 @@ describe("deleteLoan", () => {
     expect(dbMock.loan.update).not.toHaveBeenCalled();
   });
 
+  it("checks for paid EMIs, not just any EMI bill", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.bill.findFirst.mockResolvedValue(null);
+    dbMock.billSchedule.findMany.mockResolvedValue([]);
+
+    await expect(deleteLoan("loan-1")).rejects.toThrow("REDIRECT:/loans");
+    expect(dbMock.bill.findFirst).toHaveBeenCalledWith({
+      where: {
+        loanId: "loan-1",
+        status: { in: ["PAID", "PARTIALLY_PAID", "REFUNDED"] },
+      },
+      select: { id: true },
+    });
+  });
+
   it("refuses to delete a loan that has EMI payments on record", async () => {
     dbMock.loan.findFirst.mockResolvedValue({
       id: "loan-1",
@@ -385,6 +432,10 @@ describe("deleteLoan", () => {
     } as never);
     dbMock.bill.findFirst.mockResolvedValue(null);
     dbMock.loan.update.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      { id: "sched-1" },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValue([]);
 
     await expect(deleteLoan("loan-1")).rejects.toThrow("REDIRECT:/loans");
 
@@ -393,8 +444,16 @@ describe("deleteLoan", () => {
       data: { deletedAt: expect.any(Date) },
     });
     expect(dbMock.billSchedule.updateMany).toHaveBeenCalledWith({
-      where: { category: "EMI", loanId: "loan-1" },
-      data: { deletedAt: expect.any(Date) },
+      where: { id: { in: ["sched-1"] } },
+      data: { active: false, deletedAt: expect.any(Date) },
+    });
+    // Every unpaid EMI goes with it, overdue ones included.
+    expect(dbMock.bill.findMany).toHaveBeenCalledWith({
+      where: {
+        billScheduleId: { in: ["sched-1"] },
+        status: { in: ["DUE", "OVERDUE"] },
+      },
+      select: { id: true },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/loans");
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");

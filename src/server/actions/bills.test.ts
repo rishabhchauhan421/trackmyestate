@@ -68,9 +68,9 @@ beforeEach(() => {
   mockReset(dbMock);
   revalidatePath.mockClear();
   getSessionMock.mockReset().mockResolvedValue({ user: { id: "user-1" } });
-  dbMock.$transaction.mockImplementation((async (
-    fn: (tx: typeof dbMock) => Promise<unknown>,
-  ) => fn(dbMock)));
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   billIs({});
 });
 
@@ -177,6 +177,37 @@ describe("recordBillPayment", () => {
       where: { id: "bill-1" },
       data: expect.objectContaining({ paidAmount: 10_000 }),
     });
+  });
+
+  it("takes a paid EMI's principal off the loan", async () => {
+    billIs({
+      category: "EMI",
+      propertyId: null,
+      loanId: "loan-1",
+      principalComponent: 120_000,
+    });
+    dbMock.loan.findFirst.mockResolvedValue({
+      outstandingBalance: 10_000_000,
+    } as never);
+
+    await expect(recordBillPayment("bill-1", paymentForm())).rejects.toThrow(
+      "REDIRECT:",
+    );
+
+    expect(dbMock.loan.update).toHaveBeenCalledWith({
+      where: { id: "loan-1" },
+      data: { outstandingBalance: 9_880_000 },
+    });
+  });
+
+  it("leaves the loan alone for a part-paid EMI", async () => {
+    billIs({ category: "EMI", loanId: "loan-1", principalComponent: 120_000 });
+
+    await expect(
+      recordBillPayment("bill-1", paymentForm({ amount: "10", settles: "" })),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.loan.update).not.toHaveBeenCalled();
   });
 
   it.each(["PAID", "CANCELLED", "REFUNDED"])(

@@ -1,6 +1,7 @@
 import "server-only";
 
 import type { BillSchedule } from "../../../generated/prisma";
+import { amortizationRow } from "~/lib/amortization";
 import { addDays, dateOnly } from "~/lib/calendar-day";
 import { BILL_TYPE_LABELS, EVENT_CATEGORY_LABELS } from "~/lib/labels";
 import { reminderCategoryConfig } from "~/lib/reminders";
@@ -95,12 +96,12 @@ export async function generateBillsForSchedule(
 }
 
 async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
-  const ids = (key: "propertyId" | "loanId" | "policyId" | "leaseId") => [
-    ...new Set(schedules.flatMap((s) => (s[key] ? [s[key]] : []))),
-  ];
+  const ids = (
+    key: "propertyId" | "loanId" | "policyId" | "leaseId" | "investmentId",
+  ) => [...new Set(schedules.flatMap((s) => (s[key] ? [s[key]] : [])))];
   const ownerIds = [...new Set(schedules.map((s) => s.ownerId))];
 
-  const [owners, properties, loans, policies, leases, existing] =
+  const [owners, properties, loans, policies, leases, investments, existing] =
     await Promise.all([
       db.user.findMany({
         where: { id: { in: ownerIds } },
@@ -112,7 +113,13 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
       }),
       db.loan.findMany({
         where: { id: { in: ids("loanId") } },
-        select: { id: true, lender: true, type: true },
+        select: {
+          id: true,
+          lender: true,
+          type: true,
+          principal: true,
+          interestRatePercent: true,
+        },
       }),
       db.policy.findMany({
         where: { id: { in: ids("policyId") } },
@@ -121,6 +128,10 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
       db.lease.findMany({
         where: { id: { in: ids("leaseId") } },
         select: { id: true, tenantName: true },
+      }),
+      db.investment.findMany({
+        where: { id: { in: ids("investmentId") } },
+        select: { id: true, name: true },
       }),
       // Bills already generated for these schedules, to never duplicate.
       db.bill.findMany({
@@ -143,7 +154,9 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
     loan: new Map(loans.map((l) => [l.id, l.lender])),
     policy: new Map(policies.map((p) => [p.id, p.insurer])),
     lease: new Map(leases.map((l) => [l.id, l.tenantName])),
+    investment: new Map(investments.map((i) => [i.id, i.name])),
   };
+  const loanById = new Map(loans.map((loan) => [loan.id, loan]));
   const alreadyBilled = new Set(
     existing.map(
       (bill) => `${bill.billScheduleId}:${bill.dueDate.toISOString()}`,
@@ -171,6 +184,21 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
       const key = `${schedule.id}:${dateOnly(day).toISOString()}`;
       if (alreadyBilled.has(key)) continue;
 
+      // An EMI's split into interest and principal, from the loan's terms.
+      const loan =
+        schedule.category === "EMI" && schedule.loanId
+          ? loanById.get(schedule.loanId)
+          : undefined;
+      const split =
+        loan && loan.principal > 0
+          ? amortizationRow(
+              loan.principal,
+              loan.interestRatePercent,
+              schedule.defaultAmount,
+              installment,
+            )
+          : undefined;
+
       try {
         await createBill({
           ownerId: schedule.ownerId,
@@ -190,6 +218,8 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
           dueDay: day,
           description: describe(schedule, names),
           installmentNumber: schedule.tenureMonths ? installment : undefined,
+          principalComponent: split?.principal,
+          interestComponent: split?.interest,
         });
         billsCreated += 1;
       } catch (error) {
@@ -206,7 +236,10 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
 /** "BESCOM electricity · Indiranagar 2BHK", "Home loan EMI · SBI", … */
 function describe(
   schedule: BillSchedule,
-  names: Record<"property" | "loan" | "policy" | "lease", Map<string, string>>,
+  names: Record<
+    "property" | "loan" | "policy" | "lease" | "investment",
+    Map<string, string>
+  >,
 ) {
   const parts: (string | undefined)[] = [];
   switch (schedule.category) {
@@ -241,6 +274,21 @@ function describe(
       parts.push("Rent");
       parts.push(
         schedule.leaseId ? names.lease.get(schedule.leaseId) : undefined,
+      );
+      break;
+    case "PAYOUT":
+      parts.push(
+        schedule.policyId && names.policy.get(schedule.policyId)
+          ? `${names.policy.get(schedule.policyId)} payout`
+          : "Payout",
+      );
+      break;
+    case "INVESTMENT_RETURN":
+      parts.push("Return");
+      parts.push(
+        schedule.investmentId
+          ? names.investment.get(schedule.investmentId)
+          : undefined,
       );
       break;
     default:

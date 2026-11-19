@@ -18,6 +18,9 @@ jest.mock("~/server/households", () =>
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
 }));
+jest.mock("~/server/bills/generate", () => ({
+  generateBillsForSchedule: jest.fn(),
+}));
 jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),
 }));
@@ -40,6 +43,17 @@ const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.findMany.mockResolvedValue([]);
+  dbMock.billSchedule.create.mockResolvedValue({ id: "sched-1" } as never);
+  dbMock.bill.findMany.mockResolvedValue([]);
+  dbMock.investment.create.mockResolvedValue({
+    id: "inv-1",
+    ownerId: "user-1",
+  } as never);
+  // Interactive transactions run their callback against the same mock.
+  dbMock.$transaction.mockImplementation(
+    async (fn: (tx: typeof dbMock) => Promise<unknown>) => fn(dbMock),
+  );
   getSessionMock.mockReset().mockResolvedValue(SESSION);
   redirect.mockClear();
   revalidatePath.mockClear();
@@ -168,6 +182,52 @@ describe("createInvestment", () => {
   });
 });
 
+describe("investment returns", () => {
+  it("bills the expected return once, on its date", async () => {
+    await expect(createInvestment(buildInvestmentForm())).rejects.toThrow(
+      "REDIRECT:/investments",
+    );
+
+    expect(dbMock.billSchedule.create).toHaveBeenCalledWith({
+      data: {
+        ownerId: "user-1",
+        householdId: "household-1",
+        investmentId: "inv-1",
+        category: "INVESTMENT_RETURN",
+        recurrence: "YEARLY",
+        startDate: new Date("2030-01-10"),
+        dueDay: 10,
+        dueMonth: 1,
+        endDate: null,
+        tenureMonths: 12,
+        // The current estimate, ₹55,000.
+        defaultAmount: 5500000,
+        active: true,
+      },
+    });
+  });
+
+  it("retires the return when the date is cleared", async () => {
+    dbMock.investment.findFirst.mockResolvedValue({
+      id: "inv-1",
+      ownerId: "user-1",
+    } as never);
+
+    await expect(
+      updateInvestment(
+        "inv-1",
+        buildInvestmentForm({ expectedReturnDate: "" }),
+      ),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.billSchedule.create).not.toHaveBeenCalled();
+    expect(dbMock.billSchedule.findMany).toHaveBeenCalledWith({
+      where: { investmentId: "inv-1", category: "INVESTMENT_RETURN" },
+      select: { id: true },
+    });
+  });
+});
+
 describe("updateInvestment", () => {
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
@@ -239,7 +299,7 @@ describe("deleteInvestment", () => {
     expect(dbMock.investment.update).not.toHaveBeenCalled();
   });
 
-  it("refuses to delete an investment that has bills on record", async () => {
+  it("refuses to delete an investment that has returns on record", async () => {
     dbMock.investment.findFirst.mockResolvedValue({
       id: "inv-1",
       ownerId: "user-1",
@@ -247,7 +307,7 @@ describe("deleteInvestment", () => {
     dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
 
     await expect(deleteInvestment("inv-1")).rejects.toThrow(
-      "Cannot delete an investment that has bills on record",
+      "Cannot delete an investment that has returns on record",
     );
     expect(dbMock.investment.update).not.toHaveBeenCalled();
   });

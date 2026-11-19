@@ -8,8 +8,8 @@
  * lead time) that can only be deactivated, not edited or deleted, once
  * created. `BillSchedule` is shared across every recurring-bill category
  * (see the model comment in `prisma/schema.prisma`); this file only ever
- * touches `category: "UTILITY_BILL"` rows. Its generated bill instances are `Bill` rows —
- * see `~/server/actions/bills` for `generateBill`/`markBillPaid`, shared
+ * touches `category: "UTILITY_BILL"` rows. Its generated bill instances are
+ * `Bill` rows — see `~/server/actions/bills` for `recordBillPayment`, shared
  * across every bill category. Every mutation below re-checks ownership
  * itself rather than trusting the caller, since these are invoked directly
  * from client forms.
@@ -41,6 +41,7 @@ import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
+import { retireSchedules, todayFor } from "~/server/schedules/lifecycle";
 
 /** The "Add utility" form. */
 const utilitySchema = z.object({
@@ -144,17 +145,19 @@ export async function createUtility(formData: FormData) {
 }
 
 /**
- * Marks a utility inactive. The only mutation a utility template allows
- * post-creation — there is no edit, and deliberately no "reactivate".
+ * Marks a utility inactive and removes its upcoming unpaid bills (and
+ * their reminders); bills already overdue stay, since they're still owed.
+ * The only mutation a utility template allows post-creation — there is no
+ * edit, and deliberately no "reactivate".
  */
 export async function deactivateUtility(utilityId: string) {
   const scope = await requireScope();
   const utility = await requireOwnedUtility(utilityId, scope.householdId);
 
-  await db.billSchedule.update({
-    where: { id: utility.id },
-    data: { active: false },
-  });
+  const today = await todayFor(scope.userId);
+  await db.$transaction((tx) =>
+    retireSchedules(tx, { id: utility.id }, { from: today }),
+  );
 
   revalidatePath(`/properties/${utility.propertyId}/utilities`);
 }

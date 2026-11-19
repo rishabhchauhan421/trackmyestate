@@ -26,8 +26,17 @@ import {
   parseFormData,
   text,
 } from "~/lib/form";
+import { expectedReturnAmount, oneOffTerms } from "~/lib/schedule-terms";
+import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { requireScope } from "~/server/households";
+import {
+  hasPaymentHistory,
+  retireSchedules,
+  saveSchedule,
+  todayFor,
+  type ScheduleTx,
+} from "~/server/schedules/lifecycle";
 
 async function requireOwnedInvestment(
   investmentId: string,
@@ -55,18 +64,62 @@ const investmentFieldsSchema = z.object({
   currentEstimatedValue: optionalMoney("Enter a valid current estimated value"),
 });
 
+type InvestmentFields = z.output<typeof investmentFieldsSchema>;
+
+/**
+ * An investment with an expected return date gets a one-off
+ * INVESTMENT_RETURN bill (money coming in) on that date; clearing the date
+ * retires it. Returns the schedule to generate bills for, if any.
+ */
+async function syncReturnSchedule(
+  tx: ScheduleTx,
+  investment: { id: string; ownerId: string; householdId: string },
+  fields: InvestmentFields,
+  today: Date,
+): Promise<string | null> {
+  if (!fields.expectedReturnDate) {
+    await retireSchedules(
+      tx,
+      { investmentId: investment.id, category: "INVESTMENT_RETURN" },
+      { from: today },
+    );
+    return null;
+  }
+  return saveSchedule(tx, {
+    owner: { investmentId: investment.id },
+    category: "INVESTMENT_RETURN",
+    data: {
+      ownerId: investment.ownerId,
+      householdId: investment.householdId,
+      investmentId: investment.id,
+    },
+    terms: oneOffTerms(fields.expectedReturnDate, expectedReturnAmount(fields)),
+    today,
+  });
+}
+
 /** Creates a new `Investment` for the signed-in owner. */
 export async function createInvestment(formData: FormData) {
   const scope = await requireScope();
   const fields = parseFormData(investmentFieldsSchema, formData);
+  const today = await todayFor(scope.userId);
 
-  await db.investment.create({
-    data: {
-      ownerId: scope.userId,
-      householdId: scope.householdId,
-      ...fields,
-    },
+  const scheduleId = await db.$transaction(async (tx) => {
+    const investment = await tx.investment.create({
+      data: {
+        ownerId: scope.userId,
+        householdId: scope.householdId,
+        ...fields,
+      },
+    });
+    return syncReturnSchedule(
+      tx,
+      { ...investment, householdId: scope.householdId },
+      fields,
+      today,
+    );
   });
+  if (scheduleId) await generateBillsForSchedule(scheduleId);
 
   revalidatePath("/investments");
   redirect("/investments");
@@ -78,38 +131,56 @@ export async function updateInvestment(
   formData: FormData,
 ) {
   const scope = await requireScope();
-  await requireOwnedInvestment(investmentId, scope.householdId);
+  const existing = await requireOwnedInvestment(
+    investmentId,
+    scope.householdId,
+  );
   const fields = parseFormData(investmentFieldsSchema, formData);
+  const today = await todayFor(scope.userId);
 
-  await db.investment.update({
-    where: { id: investmentId },
-    data: fields,
+  const scheduleId = await db.$transaction(async (tx) => {
+    await tx.investment.update({
+      where: { id: investmentId },
+      data: fields,
+    });
+    return syncReturnSchedule(
+      tx,
+      {
+        id: investmentId,
+        ownerId: existing.ownerId,
+        householdId: scope.householdId,
+      },
+      fields,
+      today,
+    );
   });
+  if (scheduleId) await generateBillsForSchedule(scheduleId);
 
   revalidatePath("/investments");
   redirect("/investments");
 }
 
 /**
- * Soft-deletes an investment — refused if any `Bill` (payout or return) has
- * ever been generated for it, since that history needs the investment
- * record to stay meaningful. Same rationale as `deleteLease`.
+ * Soft-deletes an investment, its return schedule and unpaid return bills
+ * — refused once money has been received on it, since that history needs
+ * the investment record to stay meaningful. Same rationale as
+ * `deleteLease`.
  */
 export async function deleteInvestment(investmentId: string) {
   const scope = await requireScope();
   await requireOwnedInvestment(investmentId, scope.householdId);
 
-  const existingBill = await db.bill.findFirst({
-    where: { investmentId },
-    select: { id: true },
-  });
-  if (existingBill) {
-    throw new Error("Cannot delete an investment that has bills on record");
+  if (await hasPaymentHistory(db, { investmentId })) {
+    throw new Error("Cannot delete an investment that has returns on record");
   }
 
-  await db.investment.update({
-    where: { id: investmentId },
-    data: { deletedAt: new Date() },
+  const today = await todayFor(scope.userId);
+  await db.$transaction(async (tx) => {
+    await tx.investment.update({
+      where: { id: investmentId },
+      data: { deletedAt: new Date() },
+    });
+    await retireSchedules(tx, { investmentId }, { from: today, remove: true });
   });
 
   revalidatePath("/investments");

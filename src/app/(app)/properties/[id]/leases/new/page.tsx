@@ -136,7 +136,7 @@ export default async function NewLeasePage({
         </div>
 
         <label className="block">
-          <span className={labelClass}>Rent due day (optional)</span>
+          <span className={labelClass}>Rent due day</span>
           <input
             type="number"
             name="rentDueDay"
@@ -144,10 +144,12 @@ export default async function NewLeasePage({
             max="31"
             step="1"
             placeholder="e.g. 5"
+            required
             className={`${controlClass} sm:w-40`}
           />
           <span className="mt-1.5 block text-xs text-muted">
-            Day of the month rent is due — for display only.
+            Day of the month rent is due. We&apos;ll add each month&apos;s rent
+            to your timeline and remind you if it hasn&apos;t arrived.
           </span>
         </label>
 

@@ -59,6 +59,9 @@ export async function createBill(args: {
   description: string;
   /** For instalment schedules (EMIs): 1 for the first, and so on. */
   installmentNumber?: number;
+  /** For EMIs: how much of `amount` repays principal, and how much is interest. */
+  principalComponent?: number;
+  interestComponent?: number;
   /**
    * Unique per bill (see `Bill.generationKey`): a schedule's bills use
    * `scheduleBillKey`, so a second run creating the same bill fails on the
@@ -81,6 +84,8 @@ export async function createBill(args: {
     dueDay,
     description,
     installmentNumber,
+    principalComponent,
+    interestComponent,
     generationKey,
   } = args;
 
@@ -101,6 +106,8 @@ export async function createBill(args: {
       status: "DUE",
       description,
       installmentNumber,
+      principalComponent,
+      interestComponent,
       generationKey,
     },
   });

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "~/server/db";
+import { hasPaymentHistory } from "~/server/schedules/lifecycle";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
 /**
@@ -29,15 +30,11 @@ export async function getInvestmentForHousehold(
 }
 
 /**
- * Whether any `Bill` has ever been generated for this investment (e.g. a
- * payout or investment-return event). An investment with billing history
- * can't be deleted — see `deleteInvestment` in
- * `~/server/actions/investments` — same rationale as `hasBillsForLease`.
+ * Whether money has been recorded against any of this investment's bills
+ * (a return or payout). Such a investment can't be deleted — see `deleteInvestment` in
+ * `~/server/actions/investments` — because that history needs it; unpaid bills
+ * are removed along with it instead.
  */
-export async function hasBillsForInvestment(investmentId: string) {
-  const bill = await db.bill.findFirst({
-    where: { investmentId },
-    select: { id: true },
-  });
-  return bill != null;
+export async function hasPaymentsForInvestment(investmentId: string) {
+  return hasPaymentHistory(db, { investmentId: investmentId });
 }

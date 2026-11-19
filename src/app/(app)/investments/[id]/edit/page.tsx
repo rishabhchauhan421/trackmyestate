@@ -14,7 +14,7 @@ import {
 import { requireScope } from "~/server/households";
 import {
   getInvestmentForHousehold,
-  hasBillsForInvestment,
+  hasPaymentsForInvestment,
 } from "~/server/queries/investments";
 
 export default async function EditInvestmentPage({
@@ -29,7 +29,7 @@ export default async function EditInvestmentPage({
   if (!investment) {
     notFound();
   }
-  const canDelete = !(await hasBillsForInvestment(id));
+  const canDelete = !(await hasPaymentsForInvestment(id));
 
   return (
     <>
@@ -178,8 +178,8 @@ export default async function EditInvestmentPage({
           <p className="text-sm font-semibold text-ink">Delete investment</p>
           <p className="mt-1 text-xs text-muted">
             {canDelete
-              ? "Permanently removes this investment. Only possible when it has no bills on record."
-              : "This investment has bills on record, so it can't be deleted."}
+              ? "Permanently removes this investment. Only possible while nothing has been received on it; unpaid returns are removed with it."
+              : "Returns have been received on this investment, so it can't be deleted."}
           </p>
         </div>
         <form
