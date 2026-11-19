@@ -8,18 +8,20 @@
  * that calendar day whatever the server's or viewer's time zone.
  */
 import { calendarDayOf } from "./calendar-day";
+import { fromMinorUnits } from "./money";
 import { DEFAULT_TIME_ZONE, daysBetween, todayInTimeZone } from "./time-zone";
 
 /**
- * Formats a number as a whole-rupee INR amount (e.g. `1234.56` -> `"₹1,235"`),
- * using Indian digit grouping (lakh/crore), not Western thousands grouping.
+ * Formats an amount stored in paise (see `~/lib/money`) as whole rupees
+ * (e.g. `123456` -> `"₹1,235"`), using Indian digit grouping (lakh/crore),
+ * not Western thousands grouping.
  */
-export function formatINR(amount: number): string {
+export function formatINR(amountMinor: number): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
     maximumFractionDigits: 0,
-  }).format(amount);
+  }).format(fromMinorUnits(amountMinor));
 }
 
 /**
@@ -87,6 +89,11 @@ export function formatDueIn(
  * A bill or schedule amount, marked "Approx." when it's only an estimate —
  * a variable (usage-based) utility's amount until the bill is actually paid.
  */
-export function formatBillAmount(amount: number, approx: boolean): string {
-  return approx ? `Approx. ${formatINR(amount)}` : formatINR(amount);
+export function formatBillAmount(
+  amountMinor: number,
+  approx: boolean,
+): string {
+  return approx
+    ? `Approx. ${formatINR(amountMinor)}`
+    : formatINR(amountMinor);
 }

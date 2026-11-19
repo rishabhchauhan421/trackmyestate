@@ -6,6 +6,7 @@ import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
+import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
 import { deleteLoan, updateLoan } from "~/server/actions/loans";
 import { requireScope } from "~/server/households";
 import { getLoanForHousehold, hasBillsForLoan } from "~/server/queries/loans";
@@ -80,7 +81,7 @@ export default async function EditLoanPage({
               min="1"
               step="1"
               required
-              defaultValue={loan.principal}
+              defaultValue={fromMinorUnits(loan.principal)}
               className={controlClass}
             />
           </label>
@@ -119,7 +120,7 @@ export default async function EditLoanPage({
               min="1"
               step="1"
               required
-              defaultValue={loan.emiAmount}
+              defaultValue={optionalFromMinorUnits(loan.emiAmount)}
               className={controlClass}
             />
           </label>
@@ -158,7 +159,7 @@ export default async function EditLoanPage({
             name="outstandingBalance"
             min="0"
             step="1"
-            defaultValue={loan.outstandingBalance}
+            defaultValue={fromMinorUnits(loan.outstandingBalance)}
             className={`${controlClass} sm:w-56`}
           />
         </label>

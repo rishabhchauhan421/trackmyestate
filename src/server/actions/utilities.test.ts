@@ -199,7 +199,7 @@ describe("createUtility", () => {
         accountNumber: "ACC-1",
         billingType: "VARIABLE",
         recurrence: "MONTHLY",
-        defaultAmount: 1500,
+        defaultAmount: 150000,
         dueDay: 10,
         dueMonth: null,
       }),

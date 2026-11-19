@@ -26,7 +26,7 @@ import {
   enumValue,
   optionalDate,
   optionalEnumValue,
-  optionalNumber,
+  optionalMoney,
   optionalText,
   parseFormData,
   text,
@@ -63,10 +63,8 @@ const propertyFieldsSchema = z.object({
   state: text("Enter the state"),
   pinCode: text("Enter the PIN code"),
   country: optionalText().transform((country) => country ?? "India"),
-  purchasePrice: optionalNumber("Enter a valid purchase price"),
-  currentEstimatedValue: optionalNumber(
-    "Enter a valid current estimated value",
-  ),
+  purchasePrice: optionalMoney("Enter a valid purchase price"),
+  currentEstimatedValue: optionalMoney("Enter a valid current estimated value"),
   purchaseDate: optionalDate("Enter a valid purchase date"),
 });
 

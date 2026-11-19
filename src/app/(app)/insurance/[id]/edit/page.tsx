@@ -6,6 +6,7 @@ import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from "~/lib/labels";
+import { optionalFromMinorUnits } from "~/lib/money";
 import { deletePolicy, updatePolicy } from "~/server/actions/policies";
 import { requireScope } from "~/server/households";
 import {
@@ -157,7 +158,7 @@ export default async function EditPolicyPage({
               name="sumAssured"
               min="0"
               step="1"
-              defaultValue={policy.sumAssured ?? ""}
+              defaultValue={optionalFromMinorUnits(policy.sumAssured) ?? ""}
               className={controlClass}
             />
           </label>
@@ -168,7 +169,7 @@ export default async function EditPolicyPage({
               name="roomRentLimit"
               min="0"
               step="1"
-              defaultValue={policy.roomRentLimit ?? ""}
+              defaultValue={optionalFromMinorUnits(policy.roomRentLimit) ?? ""}
               className={controlClass}
             />
           </label>

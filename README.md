@@ -12,9 +12,14 @@ OAuth and email/password (including password reset). Email goes out through
 
 ## Data model in one breath
 
-- `User` owns `Property`, `Policy`, `Investment`, `Loan` and `Document` rows
-  directly (no shared supertype), plus a `timezone` used for "today" and reminder
-  send times.
+- A **`Household`** owns the portfolio: `Property`, `Policy`, `Investment`,
+  `Loan`, `BillSchedule`, `Bill`, `Document` and `PaymentTransaction` rows carry
+  a `householdId`, and pages and actions look records up by household (via
+  `requireScope` in `src/server/households.ts`), so a portfolio can be shared.
+  Each user gets a personal household on first use (`HouseholdMember` links
+  users to households). `ownerId` stays on each record as its creator. A
+  `User` keeps their own settings: `timezone` (for "today" and reminder send
+  times), reminder rules and guests.
 - `Property` has rental units (`Room`) and `Lease`s, with the tenant's details on
   the lease itself.
 - **`BillSchedule`** is a recurring template — a utility, a loan's EMI schedule, a
@@ -32,10 +37,18 @@ OAuth and email/password (including password reset). Email goes out through
   stored as midnight UTC of its calendar day — exactly what an
   `<input type="date">` value parses to — and always read back as that day
   (`src/lib/calendar-day.ts`). Only "today" depends on a time zone: the
-  user's, from Settings. `generateBill` takes a `"YYYY-MM-DD"` day, not a
+  user's, from Settings. `createBill` takes a `"YYYY-MM-DD"` day, not a
   `Date`, so a bill can't land on the wrong day.
-- Most models carry `deletedAt` for soft deletes, and money fields an optional
-  `Currency` (everything renders as INR today). Money fields are `Float`.
+- **Soft deletes:** most models carry `deletedAt`, and `src/server/db.ts`
+  adds the not-deleted filter to every read on them automatically (see
+  `src/server/soft-delete.ts`). A query that names `deletedAt` itself is left
+  alone.
+- **Money** is stored in minor units (paise) as whole numbers in `Float`
+  columns (`src/lib/money.ts` explains why not `Int`). Forms parse rupees with
+  `money`/`optionalMoney` from `src/lib/form.ts`; `formatINR` takes paise.
+- **Bills are generated once:** `Bill.generationKey` is unique
+  (`<scheduleId>:<day>` for a schedule's bills), so overlapping generator runs
+  can't duplicate a bill.
 
 ## Getting started
 
@@ -104,6 +117,23 @@ new models/fields — until the process itself restarts, not just the file.
 | `pnpm test` / `pnpm test:watch`                    | Jest                                                         |
 | `pnpm format:check` / `pnpm format:write`          | Prettier                                                     |
 | `pnpm db:push` / `pnpm db:seed` / `pnpm db:studio` | Prisma                                                       |
+
+## Deploying a schema change
+
+Some releases need existing data reshaped before the new code can read it.
+`scripts/migrate-data.ts` holds those one-off steps; each runs once and is
+recorded in the `AppMigration` collection, so running the script again is
+safe. For a release that changes `prisma/schema.prisma`:
+
+```bash
+pnpm tsx scripts/migrate-data.ts --dry-run  # see what would change
+pnpm tsx scripts/migrate-data.ts            # reshape the data
+pnpm db:push                                # then create the new indexes
+```
+
+Then deploy the code. The November 2026 steps give every bill a unique
+`generationKey` (soft-deleting any duplicate bills found), convert money from
+rupees to paise, and create a personal household for every user.
 
 ## Granting the first admin
 

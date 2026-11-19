@@ -5,6 +5,7 @@ import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
+import { fromMinorUnits } from "~/lib/money";
 import { deleteLease, endLease, updateLease } from "~/server/actions/leases";
 import { requireScope } from "~/server/households";
 import { getDocumentsForLease } from "~/server/queries/documents";
@@ -82,7 +83,7 @@ export default async function EditLeasePage({
               min="1"
               step="1"
               required
-              defaultValue={lease.rentAmount}
+              defaultValue={fromMinorUnits(lease.rentAmount)}
               className={controlClass}
             />
           </label>
@@ -94,7 +95,7 @@ export default async function EditLeasePage({
               min="0"
               step="1"
               required
-              defaultValue={lease.depositAmount}
+              defaultValue={fromMinorUnits(lease.depositAmount)}
               className={controlClass}
             />
           </label>

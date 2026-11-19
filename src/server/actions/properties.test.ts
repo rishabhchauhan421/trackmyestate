@@ -130,8 +130,8 @@ describe("createProperty", () => {
         name: "Whitefield Apartment",
         type: "RENTED",
         city: "Bengaluru",
-        purchasePrice: 8000000,
-        currentEstimatedValue: 9500000,
+        purchasePrice: 800000000,
+        currentEstimatedValue: 950000000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/properties");

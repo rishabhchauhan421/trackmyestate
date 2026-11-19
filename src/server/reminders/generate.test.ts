@@ -36,7 +36,7 @@ function bill(overrides: Record<string, unknown> = {}) {
     investmentId: null,
     // Due 8 Oct in India: 3 days away — matches the utility default of -3.
     dueDate: new Date("2026-10-08"),
-    amount: 4120,
+    amount: 412000,
     status: "DUE",
     description: "BESCOM electricity",
     ...overrides,
@@ -163,7 +163,7 @@ describe("generateReminders", () => {
         category: "RENT",
         billScheduleId: null,
         description: "Rent · Whitefield",
-        amount: 32000,
+        amount: 3200000,
         // Due today in India.
         dueDate: new Date("2026-10-05"),
       }),

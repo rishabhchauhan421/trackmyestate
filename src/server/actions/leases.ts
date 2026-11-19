@@ -22,7 +22,7 @@ import { z } from "zod";
 
 import {
   date,
-  number,
+  money,
   optionalDate,
   optionalNumber,
   optionalText,
@@ -67,8 +67,8 @@ async function requireOwnedLease(leaseId: string, householdId: string) {
 const leaseTermsSchema = z.object({
   roomId: optionalText(),
   leaseEnd: optionalDate("Enter a valid lease end date"),
-  rentAmount: number("Enter a valid rent amount", { positive: true }),
-  depositAmount: number("Enter a valid deposit amount", { min: 0 }),
+  rentAmount: money("Enter a valid rent amount", { positive: true }),
+  depositAmount: money("Enter a valid deposit amount", { min: 0 }),
   // Display-only — day of month (1-31) rent is due; not wired to any
   // `BillSchedule` or generated `Bill`.
   rentDueDay: optionalNumber("Enter a valid rent due day (1-31)", {

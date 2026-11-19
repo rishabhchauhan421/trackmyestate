@@ -18,8 +18,9 @@ import { InvestmentType } from "../../../generated/prisma";
 import {
   date,
   enumValue,
-  number,
+  money,
   optionalDate,
+  optionalMoney,
   optionalNumber,
   optionalText,
   parseFormData,
@@ -45,15 +46,13 @@ const investmentFieldsSchema = z.object({
   type: enumValue(InvestmentType, "Choose an investment type"),
   institution: optionalText(),
   investedDate: date("Enter a valid invested date"),
-  capitalDeployed: number("Enter a valid capital deployed amount", {
+  capitalDeployed: money("Enter a valid capital deployed amount", {
     positive: true,
   }),
   expectedReturnType: optionalText(),
   expectedReturnDate: optionalDate("Enter a valid expected return date"),
   targetRoiPercent: optionalNumber("Enter a valid target ROI"),
-  currentEstimatedValue: optionalNumber(
-    "Enter a valid current estimated value",
-  ),
+  currentEstimatedValue: optionalMoney("Enter a valid current estimated value"),
 });
 
 /** Creates a new `Investment` for the signed-in owner. */

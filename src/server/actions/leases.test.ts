@@ -165,9 +165,9 @@ describe("createLease", () => {
         tenantEmail: "asha@example.com",
         leaseStart: new Date("2026-06-01"),
         leaseEnd: null,
-        rentAmount: 25000,
+        rentAmount: 2500000,
         rentDueDay: null,
-        depositAmount: 50000,
+        depositAmount: 5000000,
         currency: "INR",
         active: true,
       },
@@ -333,9 +333,9 @@ describe("updateLease", () => {
       where: { id: "lease-1" },
       data: {
         roomId: null,
-        rentAmount: 27000,
+        rentAmount: 2700000,
         rentDueDay: null,
-        depositAmount: 54000,
+        depositAmount: 5400000,
         leaseEnd: null,
       },
     });

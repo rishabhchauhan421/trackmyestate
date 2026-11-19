@@ -9,12 +9,12 @@ import {
 } from "./format";
 
 describe("formatINR", () => {
-  it("formats whole rupee amounts with the ₹ symbol and no decimals", () => {
-    expect(formatINR(1_000_000)).toBe("₹10,00,000");
+  it("formats paise as whole rupees with the ₹ symbol and no decimals", () => {
+    expect(formatINR(100_000_000)).toBe("₹10,00,000");
   });
 
-  it("rounds off fractional paise", () => {
-    expect(formatINR(1234.56)).toBe("₹1,235");
+  it("rounds paise to the nearest rupee", () => {
+    expect(formatINR(123_456)).toBe("₹1,235");
   });
 
   it("formats zero", () => {
@@ -22,20 +22,20 @@ describe("formatINR", () => {
   });
 
   it("formats negative amounts", () => {
-    expect(formatINR(-500)).toBe("-₹500");
+    expect(formatINR(-50_000)).toBe("-₹500");
   });
 
   // Regression guard: Indian digit grouping is lakh/crore (2-digit groups
   // after the first 3), not the Western 3-digit grouping a naive formatter
   // (or the wrong locale) would produce.
   it("groups digits by lakh/crore, not by thousands", () => {
-    expect(formatINR(100_000)).toBe("₹1,00,000");
-    expect(formatINR(12_345_678)).toBe("₹1,23,45,678");
+    expect(formatINR(10_000_000)).toBe("₹1,00,000");
+    expect(formatINR(1_234_567_800)).toBe("₹1,23,45,678");
   });
 
-  it("rounds 0.5 up and 0.4 down at the paise boundary", () => {
-    expect(formatINR(0.5)).toBe("₹1");
-    expect(formatINR(0.4)).toBe("₹0");
+  it("rounds 50 paise up and 40 paise down", () => {
+    expect(formatINR(50)).toBe("₹1");
+    expect(formatINR(40)).toBe("₹0");
   });
 
   it("does not throw on NaN, rendering it inline instead", () => {
@@ -43,7 +43,7 @@ describe("formatINR", () => {
   });
 
   it("formats a very large amount without switching to scientific notation", () => {
-    expect(formatINR(999_999_999_999)).toBe("₹9,99,99,99,99,999");
+    expect(formatINR(99_999_999_999_900)).toBe("₹9,99,99,99,99,999");
   });
 });
 

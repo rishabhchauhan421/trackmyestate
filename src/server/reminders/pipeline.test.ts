@@ -118,21 +118,21 @@ async function seedPortfolio(
     billScheduleId: schedule.id,
     propertyId: property.id,
     description: "BESCOM electricity",
-    amount: 4120,
+    amount: 412000,
     dueDate: dueOct(8),
   });
   const emi = await bill({
     category: "EMI",
     loanId: "loan-1",
     description: "Home loan EMI - SBI",
-    amount: 71250,
+    amount: 7125000,
     dueDate: dueOct(5),
   });
   const premium = await bill({
     category: "PREMIUM",
     policyId: "policy-1",
     description: "LIC Jeevan Anand",
-    amount: 42500,
+    amount: 4250000,
     status: "OVERDUE",
     dueDate: dueOct(4),
   });
@@ -142,7 +142,7 @@ async function seedPortfolio(
     propertyId: property.id,
     leaseId: "lease-1",
     description: "Rent · Whitefield",
-    amount: 32000,
+    amount: 3200000,
     dueDate: dueOct(5),
   });
   const paid = await bill({
@@ -150,7 +150,7 @@ async function seedPortfolio(
     billScheduleId: schedule.id,
     propertyId: property.id,
     description: "Water",
-    amount: 600,
+    amount: 60000,
     status: "PAID",
     dueDate: dueOct(8),
   });
@@ -158,14 +158,14 @@ async function seedPortfolio(
     category: "EMI",
     loanId: "loan-2",
     description: "Car loan EMI",
-    amount: 12000,
+    amount: 1200000,
     dueDate: dueOct(15),
   });
   const deleted = await bill({
     category: "UTILITY_BILL",
     propertyId: property.id,
     description: "Old gas bill",
-    amount: 900,
+    amount: 90000,
     dueDate: dueOct(8),
     deletedAt: new Date("2026-09-01T00:00:00Z"),
   });
@@ -354,7 +354,7 @@ describe("generating reminders", () => {
         status: "DUE",
         direction: "OUTFLOW",
         description: "NY EMI",
-        amount: 500,
+        amount: 50000,
         dueDate: new Date("2026-10-08"),
       } as never,
     });
@@ -378,7 +378,7 @@ describe("generating reminders", () => {
           status: "DUE",
           direction: "OUTFLOW",
           description: `EMI ${i}`,
-          amount: 1000,
+          amount: 100000,
           dueDate: dueOct(5),
         } as never,
       });

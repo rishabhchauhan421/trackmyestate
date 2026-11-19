@@ -30,7 +30,7 @@ import {
   date,
   email,
   enumValue,
-  number,
+  money,
   optionalEnumValue,
   optionalText,
   parseFormData,
@@ -53,7 +53,7 @@ const utilitySchema = z.object({
     "Choose a billing type",
   ).transform((billingType) => billingType ?? BillingType.VARIABLE),
   recurrence: enumValue(BillRecurrence, "Choose how often the bill recurs"),
-  defaultAmount: number("Enter a valid amount", { positive: true }),
+  defaultAmount: money("Enter a valid amount", { positive: true }),
   // Must be today or later — checked in `createUtility`, which knows the
   // user's time zone and so what "today" is for them.
   firstDueDate: date("Enter a valid first due date"),

@@ -30,8 +30,9 @@ import { LoanType } from "../../../generated/prisma";
 import {
   date,
   enumValue,
+  money,
   number,
-  optionalNumber,
+  optionalMoney,
   optionalText,
   parseFormData,
   text,
@@ -56,20 +57,20 @@ const loanFieldsSchema = z
   .object({
     lender: text("Enter a lender"),
     type: enumValue(LoanType, "Choose a loan type"),
-    principal: number("Enter a valid principal amount", { positive: true }),
+    principal: money("Enter a valid principal amount", { positive: true }),
     interestRatePercent: number("Enter a valid interest rate", { min: 0 }),
     tenureMonths: number("Enter a valid tenure in months", {
       int: true,
       positive: true,
     }),
-    emiAmount: number("Enter a valid EMI amount", { positive: true }),
+    emiAmount: money("Enter a valid EMI amount", { positive: true }),
     emiDueDay: number("Enter a valid EMI due day (1-31)", {
       int: true,
       min: 1,
       max: 31,
     }),
     startDate: date("Enter a valid start date"),
-    outstandingBalance: optionalNumber("Enter a valid outstanding balance", {
+    outstandingBalance: optionalMoney("Enter a valid outstanding balance", {
       min: 0,
     }),
     linkedPropertyId: optionalText(),

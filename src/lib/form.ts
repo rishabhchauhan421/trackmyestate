@@ -10,6 +10,8 @@
  */
 import { z } from "zod";
 
+import { toMinorUnits } from "./money";
+
 /** Trims strings and turns blank strings / `null` into `undefined`. */
 function blankToUndefined(value: unknown) {
   if (typeof value !== "string") return value ?? undefined;
@@ -100,6 +102,25 @@ export function optionalNumber(message: string, rules: NumberRules = {}) {
   return z
     .preprocess(toNumber, numberSchema(message, message, rules).optional())
     .transform((value) => value ?? null);
+}
+
+/**
+ * A required amount of money, typed in rupees and stored in minor units
+ * (paise) — see `~/lib/money`. Takes the same rules as `number`, in rupees.
+ */
+export function money(
+  message: string,
+  rules: NumberRules = {},
+  requiredMessage = message,
+) {
+  return number(message, rules, requiredMessage).transform(toMinorUnits);
+}
+
+/** An optional amount of money; blank becomes `null`. See `money`. */
+export function optionalMoney(message: string, rules: NumberRules = {}) {
+  return optionalNumber(message, rules).transform((value) =>
+    value == null ? null : toMinorUnits(value),
+  );
 }
 
 /** A required, valid date (from an `<input type="date">` value). */

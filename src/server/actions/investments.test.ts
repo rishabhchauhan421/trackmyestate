@@ -133,9 +133,9 @@ describe("createInvestment", () => {
         name: "HDFC Flexicap Fund",
         type: "MUTUAL_FUND",
         institution: "HDFC Mutual Fund",
-        capitalDeployed: 50000,
+        capitalDeployed: 5000000,
         targetRoiPercent: 12,
-        currentEstimatedValue: 55000,
+        currentEstimatedValue: 5500000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/investments");
@@ -216,7 +216,7 @@ describe("updateInvestment", () => {
       where: { id: "inv-1" },
       data: expect.objectContaining({
         name: "Updated Fund",
-        capitalDeployed: 60000,
+        capitalDeployed: 6000000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/investments");

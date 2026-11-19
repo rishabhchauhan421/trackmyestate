@@ -8,6 +8,7 @@ import {
   Select,
 } from "~/app/_components/form";
 import { toDateInputValue } from "~/lib/format";
+import { optionalFromMinorUnits } from "~/lib/money";
 import {
   OWNERSHIP_TYPE_LABELS,
   PROPERTY_CATEGORY_LABELS,
@@ -154,7 +155,7 @@ export function PropertyFormFields({ property }: { property?: Property }) {
             <MoneyInput
               name="purchasePrice"
               step="1"
-              defaultValue={property?.purchasePrice ?? undefined}
+              defaultValue={optionalFromMinorUnits(property?.purchasePrice)}
             />
           </Field>
           <Field label="Purchase date">
@@ -172,7 +173,9 @@ export function PropertyFormFields({ property }: { property?: Property }) {
             <MoneyInput
               name="currentEstimatedValue"
               step="1"
-              defaultValue={property?.currentEstimatedValue ?? undefined}
+              defaultValue={optionalFromMinorUnits(
+                property?.currentEstimatedValue,
+              )}
             />
           </Field>
         </div>

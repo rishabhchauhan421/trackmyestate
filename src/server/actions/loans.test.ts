@@ -142,8 +142,8 @@ describe("createLoan", () => {
 
     expect(dbMock.loan.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
-        principal: 5000000,
-        outstandingBalance: 5000000,
+        principal: 500000000,
+        outstandingBalance: 500000000,
       }),
     });
   });
@@ -161,10 +161,10 @@ describe("createLoan", () => {
         householdId: "household-1",
         lender: "HDFC Bank",
         type: "HOME_LOAN",
-        principal: 5000000,
+        principal: 500000000,
         interestRatePercent: 8.5,
         startDate: new Date("2024-04-05"),
-        outstandingBalance: 4800000,
+        outstandingBalance: 480000000,
         linkedPropertyId: null,
       },
     });
@@ -198,7 +198,7 @@ describe("createLoan", () => {
         // later, stored as a date-only value.
         startDate: new Date("2024-05-05"),
         dueDay: 5,
-        defaultAmount: 43000,
+        defaultAmount: 4300000,
         tenureMonths: 240,
       },
     });
@@ -274,7 +274,7 @@ describe("updateLoan", () => {
 
     expect(dbMock.loan.update).toHaveBeenCalledWith({
       where: { id: "loan-1" },
-      data: expect.objectContaining({ outstandingBalance: 4700000 }),
+      data: expect.objectContaining({ outstandingBalance: 470000000 }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/loans");
   });
@@ -305,7 +305,7 @@ describe("updateLoan", () => {
         // Still starts 5 Apr 2024; EMIs moved to the 10th → first on 10 Apr.
         startDate: new Date("2024-04-10"),
         dueDay: 10,
-        defaultAmount: 44000,
+        defaultAmount: 4400000,
         tenureMonths: 180,
       },
     });

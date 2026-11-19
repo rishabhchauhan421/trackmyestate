@@ -133,7 +133,7 @@ describe("createPolicy", () => {
         insurer: "LIC",
         policyNumber: "LIC-12345",
         holderName: "Jane Doe",
-        sumAssured: 5000000,
+        sumAssured: 500000000,
       }),
     });
     expect(revalidatePath).toHaveBeenCalledWith("/insurance");

@@ -73,7 +73,7 @@ describe("generateBills", () => {
       billingType: "VARIABLE",
       startDate: new Date("2026-01-10"),
       dueDay: 10,
-      defaultAmount: 1500,
+      defaultAmount: 150000,
     });
 
     const summary = await generateBills(NOW);
@@ -91,7 +91,7 @@ describe("generateBills", () => {
       category: "UTILITY_BILL",
       direction: "OUTFLOW",
       propertyId: property.id,
-      amount: 1500,
+      amount: 150000,
       status: "DUE",
       description: "BESCOM electricity · Indiranagar 2BHK",
     });
@@ -107,7 +107,7 @@ describe("generateBills", () => {
       category: "UTILITY_BILL",
       startDate: new Date("2026-01-10"),
       dueDay: 10,
-      defaultAmount: 1500,
+      defaultAmount: 150000,
     });
 
     await generateBills(NOW);
@@ -123,7 +123,7 @@ describe("generateBills", () => {
       category: "UTILITY_BILL",
       startDate: new Date("2026-01-10"),
       dueDay: 10,
-      defaultAmount: 1500,
+      defaultAmount: 150000,
     });
     await db.bill.create({
       data: {
@@ -131,7 +131,7 @@ describe("generateBills", () => {
         billScheduleId: s.id,
         category: "UTILITY_BILL",
         dueDate: new Date("2026-10-10"),
-        amount: 1720, // the real amount, entered by hand
+        amount: 172000, // the real amount, entered by hand
         status: "DUE",
       } as never,
     });
@@ -139,7 +139,7 @@ describe("generateBills", () => {
     await generateBills(NOW);
 
     expect(dueDays(s.id)).toEqual(["2026-09-10", "2026-10-10"]);
-    expect(bills().find((b) => b.amount === 1720)).toBeDefined();
+    expect(bills().find((b) => b.amount === 172000)).toBeDefined();
   });
 
   it("skips a bill another run inserted at the same moment", async () => {
@@ -148,7 +148,7 @@ describe("generateBills", () => {
       category: "UTILITY_BILL",
       startDate: new Date("2026-01-10"),
       dueDay: 10,
-      defaultAmount: 1500,
+      defaultAmount: 150000,
     });
     // The other run's insert lands after this run read the existing bills:
     // only the unique generation key stops a duplicate.
@@ -163,7 +163,7 @@ describe("generateBills", () => {
           billScheduleId: s.id,
           category: "UTILITY_BILL",
           dueDate: new Date("2026-10-10"),
-          amount: 1500,
+          amount: 150000,
           status: "DUE",
           generationKey: `${s.id}:2026-10-10`,
         } as never,
@@ -184,7 +184,7 @@ describe("generateBills", () => {
       householdId: "hh-1",
       startDate: new Date("2026-01-10"),
       dueDay: 10,
-      defaultAmount: 1500,
+      defaultAmount: 150000,
     });
 
     await generateBills(NOW);
@@ -206,7 +206,7 @@ describe("generateBills", () => {
       startDate: new Date("2020-01-05"),
       dueDay: 5,
       tenureMonths: 240,
-      defaultAmount: 71250,
+      defaultAmount: 7125000,
     });
 
     await generateBills(NOW);
@@ -230,7 +230,7 @@ describe("generateBills", () => {
       startDate: new Date("2026-08-05"),
       dueDay: 5,
       tenureMonths: 2,
-      defaultAmount: 5000,
+      defaultAmount: 500000,
     });
 
     await generateBills(NOW);
@@ -249,7 +249,7 @@ describe("generateBills", () => {
       leaseId: lease.id,
       startDate: new Date("2026-01-07"),
       dueDay: 7,
-      defaultAmount: 32000,
+      defaultAmount: 3200000,
     });
 
     await generateBills(NOW);
@@ -267,10 +267,10 @@ describe("generateBills", () => {
       startDate: new Date("2026-01-10"),
       dueDay: 10,
     };
-    await schedule(user.id, { ...base, defaultAmount: 100, active: false });
+    await schedule(user.id, { ...base, defaultAmount: 10000, active: false });
     await schedule(user.id, {
       ...base,
-      defaultAmount: 100,
+      defaultAmount: 10000,
       deletedAt: new Date(),
     });
     await schedule(user.id, { ...base });
@@ -291,13 +291,13 @@ describe("generateBills", () => {
       category: "UTILITY_BILL",
       startDate: new Date("2026-12-10"),
       dueDay: 10,
-      defaultAmount: 1,
+      defaultAmount: 100,
     });
     const sNewYork = await schedule(newYork.id, {
       category: "UTILITY_BILL",
       startDate: new Date("2026-12-10"),
       dueDay: 10,
-      defaultAmount: 1,
+      defaultAmount: 100,
     });
 
     await generateBills(evening);
@@ -315,7 +315,7 @@ describe("generateBills", () => {
         category: "UTILITY_BILL",
         startDate: new Date("2026-10-10"),
         dueDay: 10,
-        defaultAmount: 1,
+        defaultAmount: 100,
       });
     }
 
@@ -336,13 +336,13 @@ describe("generateBillsForSchedule", () => {
       category: "UTILITY_BILL",
       startDate: new Date("2026-10-20"),
       dueDay: 20,
-      defaultAmount: 900,
+      defaultAmount: 90000,
     });
     const b = await schedule(user.id, {
       category: "UTILITY_BILL",
       startDate: new Date("2026-10-20"),
       dueDay: 20,
-      defaultAmount: 900,
+      defaultAmount: 90000,
     });
 
     const result = await generateBillsForSchedule(a.id, NOW);
@@ -363,7 +363,7 @@ describe("bills → reminders", () => {
       // Due 8 Oct: 3 days from 5 Oct — a default utility reminder.
       startDate: new Date("2026-10-08"),
       dueDay: 8,
-      defaultAmount: 4120,
+      defaultAmount: 412000,
     });
 
     await generateBills(NOW);
@@ -385,7 +385,7 @@ describe("/api/cron/bills", () => {
       category: "UTILITY_BILL",
       startDate: new Date(Date.now() + 5 * 86_400_000),
       dueDay: 1,
-      defaultAmount: 1,
+      defaultAmount: 100,
     });
 
     const ok = await GET(
@@ -420,7 +420,7 @@ describe("/api/cron/daily", () => {
       billType: "ELECTRICITY",
       startDate: new Date("2026-10-08"), // 3 days away: a default reminder
       dueDay: 8,
-      defaultAmount: 4120,
+      defaultAmount: 412000,
     });
 
     const response = await GET(

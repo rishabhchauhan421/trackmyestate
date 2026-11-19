@@ -6,6 +6,7 @@ import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
+import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
 import {
   deleteInvestment,
   updateInvestment,
@@ -106,7 +107,7 @@ export default async function EditInvestmentPage({
               min="1"
               step="1"
               required
-              defaultValue={investment.capitalDeployed}
+              defaultValue={fromMinorUnits(investment.capitalDeployed)}
               className={controlClass}
             />
           </label>
@@ -119,7 +120,9 @@ export default async function EditInvestmentPage({
               name="currentEstimatedValue"
               min="0"
               step="1"
-              defaultValue={investment.currentEstimatedValue ?? ""}
+              defaultValue={
+                optionalFromMinorUnits(investment.currentEstimatedValue) ?? ""
+              }
               className={controlClass}
             />
           </label>

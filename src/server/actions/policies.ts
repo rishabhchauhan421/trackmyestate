@@ -19,6 +19,7 @@ import { PolicyStatus, PolicyType } from "../../../generated/prisma";
 import {
   date,
   enumValue,
+  optionalMoney,
   optionalNumber,
   optionalText,
   parseFormData,
@@ -54,8 +55,8 @@ const policyFieldsSchema = z.object({
     int: true,
     positive: true,
   }),
-  sumAssured: optionalNumber("Enter a valid sum assured"),
-  roomRentLimit: optionalNumber("Enter a valid room rent limit"),
+  sumAssured: optionalMoney("Enter a valid sum assured"),
+  roomRentLimit: optionalMoney("Enter a valid room rent limit"),
   coPayPercent: optionalNumber("Enter a valid co-pay percent"),
   waitingPeriodMonths: optionalNumber("Enter a valid waiting period", {
     int: true,
