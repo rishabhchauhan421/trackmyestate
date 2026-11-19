@@ -1,29 +1,26 @@
+import { Suspense } from "react";
 import { type Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { Notice } from "~/app/_components/form";
 import { GoogleIcon } from "~/app/_components/google-icon";
 import { SlimLayout } from "~/app/_components/slim-layout";
+import { SlimLayoutSkeleton } from "~/app/_components/skeleton";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { TextField } from "~/app/_components/text-field";
 import { signInWithGoogle, signUpWithEmail } from "~/server/actions/auth";
 import { PASSWORD_MIN_LENGTH } from "~/server/better-auth/config";
-import { getSession } from "~/server/better-auth/server";
+import { SignedInRedirect } from "../signed-in-redirect";
 
 export const metadata: Metadata = {
   title: "Create an account",
 };
 
-export default async function SignUpPage({
+async function SignUpPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; sent?: string }>;
 }) {
-  const session = await getSession();
-  if (session) {
-    redirect("/dashboard");
-  }
   const { error, sent } = await searchParams;
 
   return (
@@ -116,5 +113,24 @@ export default async function SignUpPage({
         </Link>
       </p>
     </SlimLayout>
+  );
+}
+
+/**
+ * What this page shows depends on the address it was opened with, so the
+ * frame and title are prerendered and the rest streams in behind them.
+ */
+export default function SignUpPage(
+  props: Parameters<typeof SignUpPageContent>[0],
+) {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <SignedInRedirect />
+      </Suspense>
+      <Suspense fallback={<SlimLayoutSkeleton title="Create your account" />}>
+        <SignUpPageContent {...props} />
+      </Suspense>
+    </>
   );
 }

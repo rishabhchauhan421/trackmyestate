@@ -8,8 +8,8 @@ import {
 } from "@heroicons/react/16/solid";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Suspense } from "react";
 
-import { Avatar } from "~/app/_components/avatar";
 import {
   Dropdown,
   DropdownButton,
@@ -63,19 +63,15 @@ const addAssetItems = [
 
 function AccountMenu({
   anchor,
-  name,
-  email,
+  heading,
 }: {
   anchor: "top start" | "bottom end";
-  name: string;
-  email?: string;
+  /** The user's name and email. */
+  heading: React.ReactNode;
 }) {
   return (
     <DropdownMenu className="min-w-64" anchor={anchor}>
-      <DropdownHeader>
-        <p className="truncate text-sm font-semibold text-ink">{name}</p>
-        {email && <p className="truncate text-xs text-muted">{email}</p>}
-      </DropdownHeader>
+      <DropdownHeader>{heading}</DropdownHeader>
       <DropdownDivider />
       <DropdownItem href="/settings">
         <Cog8ToothIcon />
@@ -93,6 +89,61 @@ function AccountMenu({
         </Headless.CloseButton>
       </form>
     </DropdownMenu>
+  );
+}
+
+/** The sidebar's main links, with the one for `pathname` marked current. */
+function MainNav({ pathname }: { pathname: string | null }) {
+  return navGroups.map((group) => (
+    <SidebarSection key={group}>
+      <SidebarHeading>{group}</SidebarHeading>
+      {navItems
+        .filter((item) => item.group === group)
+        .map(({ label, href, Icon }) => (
+          <SidebarItem
+            key={href}
+            href={href}
+            current={pathname !== null && isActive(pathname, href)}
+          >
+            <Icon data-slot="icon" />
+            <SidebarLabel>{label}</SidebarLabel>
+          </SidebarItem>
+        ))}
+    </SidebarSection>
+  ));
+}
+
+/**
+ * `MainNav` for the current route. Reading the route needs a `<Suspense>`
+ * boundary: on a page whose address has a dynamic part it isn't known
+ * while the frame is prerendered, so the links appear unmarked first.
+ */
+function MainNavOnRoute() {
+  return <MainNav pathname={usePathname()} />;
+}
+
+/** The sidebar's Admin section. The layout renders it for admins only. */
+export function AdminNav() {
+  const pathname = usePathname();
+
+  return (
+    <SidebarSection>
+      <SidebarHeading>Admin</SidebarHeading>
+      {adminNavItems.map(({ label, href, Icon }) => (
+        <SidebarItem
+          key={href}
+          href={href}
+          // "/admin" would otherwise also match "/admin/users" etc.
+          // under the shared prefix rule `isActive` uses elsewhere.
+          current={
+            href === "/admin" ? pathname === "/admin" : isActive(pathname, href)
+          }
+        >
+          <Icon data-slot="icon" />
+          <SidebarLabel>{label}</SidebarLabel>
+        </SidebarItem>
+      ))}
+    </SidebarSection>
   );
 }
 
@@ -118,21 +169,32 @@ function AddAssetMenu() {
   );
 }
 
+/**
+ * The signed-in frame: sidebar, mobile navbar and the page beside them.
+ * Everything that names the user arrives as a slot from
+ * `(app)/layout.tsx`, so this frame itself reads nothing from the request
+ * and can be prerendered.
+ */
 export function AppShell({
-  name,
-  email,
-  initial,
-  isAdmin = false,
+  navbarAvatar,
+  sidebarAvatar,
+  accountHeading,
+  accountSummary,
+  adminNav,
   children,
 }: {
-  name: string;
-  email?: string;
-  initial: string;
-  isAdmin?: boolean;
+  /** The user's avatar, at the mobile navbar's size. */
+  navbarAvatar: React.ReactNode;
+  /** The user's avatar, at the sidebar footer's size. */
+  sidebarAvatar: React.ReactNode;
+  /** Name and email for the account menu's heading. */
+  accountHeading: React.ReactNode;
+  /** Name and email for the sidebar's footer. */
+  accountSummary: React.ReactNode;
+  /** `<AdminNav />` for admins, nothing for everyone else. */
+  adminNav: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
   return (
     <SidebarLayout
       navbar={
@@ -144,13 +206,9 @@ export function AppShell({
           <NavbarSection>
             <Dropdown>
               <DropdownButton as={NavbarItem} aria-label="Account menu">
-                <Avatar
-                  initials={initial}
-                  className="bg-night-3 text-white"
-                  square
-                />
+                {navbarAvatar}
               </DropdownButton>
-              <AccountMenu anchor="bottom end" name={name} email={email} />
+              <AccountMenu anchor="bottom end" heading={accountHeading} />
             </Dropdown>
           </NavbarSection>
         </Navbar>
@@ -165,69 +223,23 @@ export function AppShell({
           </SidebarHeader>
 
           <SidebarBody>
-            {navGroups.map((group) => (
-              <SidebarSection key={group}>
-                <SidebarHeading>{group}</SidebarHeading>
-                {navItems
-                  .filter((item) => item.group === group)
-                  .map(({ label, href, Icon }) => (
-                    <SidebarItem
-                      key={href}
-                      href={href}
-                      current={isActive(pathname, href)}
-                    >
-                      <Icon data-slot="icon" />
-                      <SidebarLabel>{label}</SidebarLabel>
-                    </SidebarItem>
-                  ))}
-              </SidebarSection>
-            ))}
+            <Suspense fallback={<MainNav pathname={null} />}>
+              <MainNavOnRoute />
+            </Suspense>
 
-            {isAdmin && (
-              <SidebarSection>
-                <SidebarHeading>Admin</SidebarHeading>
-                {adminNavItems.map(({ label, href, Icon }) => (
-                  <SidebarItem
-                    key={href}
-                    href={href}
-                    // "/admin" would otherwise also match "/admin/users" etc.
-                    // under the shared prefix rule `isActive` uses elsewhere.
-                    current={
-                      href === "/admin"
-                        ? pathname === "/admin"
-                        : isActive(pathname, href)
-                    }
-                  >
-                    <Icon data-slot="icon" />
-                    <SidebarLabel>{label}</SidebarLabel>
-                  </SidebarItem>
-                ))}
-              </SidebarSection>
-            )}
+            {adminNav}
           </SidebarBody>
 
           <SidebarFooter>
             <Dropdown>
               <DropdownButton as={SidebarItem}>
                 <span className="flex min-w-0 items-center gap-3">
-                  <Avatar
-                    initials={initial}
-                    className="size-9 bg-night-3 text-white"
-                  />
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm/5 font-semibold text-white">
-                      {name}
-                    </span>
-                    {email && (
-                      <span className="block truncate text-xs/5 font-normal text-night-muted">
-                        {email}
-                      </span>
-                    )}
-                  </span>
+                  {sidebarAvatar}
+                  <span className="min-w-0">{accountSummary}</span>
                 </span>
                 <ChevronUpIcon data-slot="icon" />
               </DropdownButton>
-              <AccountMenu anchor="top start" name={name} email={email} />
+              <AccountMenu anchor="top start" heading={accountHeading} />
             </Dropdown>
           </SidebarFooter>
         </Sidebar>

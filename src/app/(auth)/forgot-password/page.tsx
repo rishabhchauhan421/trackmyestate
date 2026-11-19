@@ -1,27 +1,24 @@
+import { Suspense } from "react";
 import { type Metadata } from "next";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Notice } from "~/app/_components/form";
 import { SlimLayout } from "~/app/_components/slim-layout";
+import { SlimLayoutSkeleton } from "~/app/_components/skeleton";
 import { TextField } from "~/app/_components/text-field";
 import { requestPasswordReset } from "~/server/actions/password-reset";
-import { getSession } from "~/server/better-auth/server";
+import { SignedInRedirect } from "../signed-in-redirect";
 
 export const metadata: Metadata = {
   title: "Forgot password",
 };
 
-export default async function ForgotPasswordPage({
+async function ForgotPasswordPageContent({
   searchParams,
 }: {
   searchParams: Promise<{ error?: string; sent?: string }>;
 }) {
-  const session = await getSession();
-  if (session) {
-    redirect("/dashboard");
-  }
   const { error, sent } = await searchParams;
 
   return (
@@ -71,5 +68,24 @@ export default async function ForgotPasswordPage({
         </Link>
       </p>
     </SlimLayout>
+  );
+}
+
+/**
+ * What this page shows depends on the address it was opened with, so the
+ * frame and title are prerendered and the rest streams in behind them.
+ */
+export default function ForgotPasswordPage(
+  props: Parameters<typeof ForgotPasswordPageContent>[0],
+) {
+  return (
+    <>
+      <Suspense fallback={null}>
+        <SignedInRedirect />
+      </Suspense>
+      <Suspense fallback={<SlimLayoutSkeleton title="Reset your password" />}>
+        <ForgotPasswordPageContent {...props} />
+      </Suspense>
+    </>
   );
 }

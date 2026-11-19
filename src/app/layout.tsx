@@ -6,9 +6,6 @@ import { Bricolage_Grotesque, Geist } from "next/font/google";
 
 import { env } from "~/env";
 
-// TODO: Cache Components adoption. Refactor this route so this opt-out can be removed.
-// See: https://nextjs.org/docs/app/guides/migrating-to-cache-components
-
 export const metadata: Metadata = {
   metadataBase: new URL(env.NEXT_PUBLIC_SITE_URL),
   title: {

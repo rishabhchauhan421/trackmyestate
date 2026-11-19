@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ListSkeleton } from "~/app/_components/skeleton";
 import Link from "next/link";
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
@@ -10,7 +12,7 @@ import { requireScope } from "~/server/households";
 import { getUserCurrency } from "~/server/queries/settings";
 import { getPolicies } from "~/server/queries/policies";
 
-export default async function InsurancePage() {
+async function InsuranceContent() {
   const scope = await requireScope();
   const [currency, policies] = await Promise.all([
     getUserCurrency(scope.userId),
@@ -19,12 +21,6 @@ export default async function InsurancePage() {
 
   return (
     <>
-      <PageHeader
-        title="Insurance"
-        description="Life, health, vehicle and home policies — premiums, coverage, maturity and claims."
-        action={<Button href="/insurance/new">Add policy</Button>}
-      />
-
       {policies.length === 0 ? (
         <EmptyState
           Icon={InsuranceIcon}
@@ -90,6 +86,26 @@ export default async function InsurancePage() {
           </ul>
         </div>
       )}
+    </>
+  );
+}
+
+/**
+ * The header is the same for everyone, so it is prerendered and shows the
+ * moment the page is opened; the data streams in beneath it.
+ */
+export default function InsurancePage() {
+  return (
+    <>
+      <PageHeader
+        title="Insurance"
+        description="Life, health, vehicle and home policies — premiums, coverage, maturity and claims."
+        action={<Button href="/insurance/new">Add policy</Button>}
+      />
+
+      <Suspense fallback={<ListSkeleton />}>
+        <InsuranceContent />
+      </Suspense>
     </>
   );
 }

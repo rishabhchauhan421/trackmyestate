@@ -1,19 +1,15 @@
-import { redirect } from "next/navigation";
-
-import { getFreshSession, isAdmin } from "~/server/better-auth/server";
+import { requireAdminSession } from "~/server/better-auth/server";
 
 /**
  * Everything under `/admin` is platform-wide (all users, not just the
- * signed-in one) — gate it here so no page beneath this layout needs to
- * repeat the check. `(app)/layout.tsx` already redirects signed-out
- * visitors to `/login`; this only adds the admin-role check on top.
+ * signed-in one). `src/proxy.ts` turns non-admins away before anything
+ * here runs; this repeats the check, and so does every page beneath it
+ * (see `requireAdminSession`).
  */
 export default async function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const session = await getFreshSession();
-  if (!session) redirect("/login");
-  if (!isAdmin(session.user)) redirect("/dashboard");
+  await requireAdminSession();
 
   return <>{children}</>;
 }

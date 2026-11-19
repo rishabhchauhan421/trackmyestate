@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ListSkeleton } from "~/app/_components/skeleton";
 import Link from "next/link";
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
@@ -10,7 +12,7 @@ import { requireScope } from "~/server/households";
 import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getLoans } from "~/server/queries/loans";
 
-export default async function LoansPage() {
+async function LoansContent() {
   const scope = await requireScope();
   const [currency, timeZone] = await Promise.all([
     getUserCurrency(scope.userId),
@@ -20,12 +22,6 @@ export default async function LoansPage() {
 
   return (
     <>
-      <PageHeader
-        title="Loans"
-        description="Home loans, personal loans and more — EMI, amortization and outstanding balance."
-        action={<Button href="/loans/new">Add loan</Button>}
-      />
-
       {loans.length === 0 ? (
         <EmptyState
           Icon={LoansIcon}
@@ -86,6 +82,26 @@ export default async function LoansPage() {
           </ul>
         </div>
       )}
+    </>
+  );
+}
+
+/**
+ * The header is the same for everyone, so it is prerendered and shows the
+ * moment the page is opened; the data streams in beneath it.
+ */
+export default function LoansPage() {
+  return (
+    <>
+      <PageHeader
+        title="Loans"
+        description="Home loans, personal loans and more — EMI, amortization and outstanding balance."
+        action={<Button href="/loans/new">Add loan</Button>}
+      />
+
+      <Suspense fallback={<ListSkeleton />}>
+        <LoansContent />
+      </Suspense>
     </>
   );
 }

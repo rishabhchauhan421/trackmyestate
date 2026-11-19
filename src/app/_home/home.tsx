@@ -13,9 +13,7 @@ import {
   PropertiesIcon,
 } from "~/app/_components/icons";
 import { SiteFooter } from "~/app/_components/site-footer";
-import { SiteHeader } from "~/app/_components/site-header";
 import { env } from "~/env";
-import type { getSession } from "~/server/better-auth/server";
 
 const title =
   "TrackMyEstate — Free Property, Policy, Loan and Investment Tracker";
@@ -203,11 +201,7 @@ const sectionTitle =
  * `src/app/page.tsx`, `src/app/home/page.tsx` and `src/proxy.ts`. Only the
  * header differs between the two.
  */
-export function Home({
-  session,
-}: {
-  session: Awaited<ReturnType<typeof getSession>>;
-}) {
+export function Home({ header }: { header: React.ReactNode }) {
   return (
     <div className="bg-ground text-ink">
       <script
@@ -219,7 +213,7 @@ export function Home({
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
 
-      <SiteHeader session={session} />
+      {header}
 
       <main>
         <section className="mx-auto flex max-w-300 flex-col items-center gap-14 px-4 pt-10 pb-20 sm:px-8 lg:flex-row lg:pt-16 lg:pb-24">

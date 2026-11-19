@@ -2,7 +2,7 @@
 
 import * as Headless from "@headlessui/react";
 import { usePathname } from "next/navigation";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 
 import { NavbarItem } from "./navbar";
 
@@ -61,6 +61,33 @@ function MobileSidebar({
   );
 }
 
+/**
+ * The mobile sidebar, open only while the visitor is still on the route
+ * it was opened on.
+ */
+function MobileSidebarOnRoute({
+  openedOn,
+  close,
+  children,
+}: React.PropsWithChildren<{ openedOn: string | null; close: () => void }>) {
+  const pathname = usePathname();
+  return (
+    <MobileSidebar open={openedOn === pathname} close={close}>
+      {children}
+    </MobileSidebar>
+  );
+}
+
+/** The menu button: reports the route it was pressed on. */
+function OpenSidebarButton({ onOpen }: { onOpen: (pathname: string) => void }) {
+  const pathname = usePathname();
+  return (
+    <NavbarItem onClick={() => onOpen(pathname)} aria-label="Open navigation">
+      <OpenMenuIcon />
+    </NavbarItem>
+  );
+}
+
 export function SidebarLayout({
   navbar,
   sidebar,
@@ -73,9 +100,12 @@ export function SidebarLayout({
   // open only while we're still there, so any navigation from inside it
   // closes it — including links in its dropdowns (Settings, Add asset),
   // which close their menu but not the surrounding dialog.
-  const pathname = usePathname();
+  //
+  // The two parts that read the route sit behind `<Suspense>`: on a page
+  // whose address has a dynamic part (`/properties/[id]`) the route isn't
+  // known while this frame is prerendered, and without the boundaries the
+  // whole frame would have to wait for the request.
   const [openedOn, setOpenedOn] = useState<string | null>(null);
-  const showSidebar = openedOn === pathname;
 
   return (
     <div className="relative isolate flex min-h-svh w-full bg-ground max-lg:flex-col">
@@ -83,19 +113,27 @@ export function SidebarLayout({
       <div className="fixed inset-y-0 left-0 w-64 max-lg:hidden">{sidebar}</div>
 
       {/* Sidebar on mobile */}
-      <MobileSidebar open={showSidebar} close={() => setOpenedOn(null)}>
-        {sidebar}
-      </MobileSidebar>
+      <Suspense fallback={null}>
+        <MobileSidebarOnRoute
+          openedOn={openedOn}
+          close={() => setOpenedOn(null)}
+        >
+          {sidebar}
+        </MobileSidebarOnRoute>
+      </Suspense>
 
       {/* Navbar on mobile */}
       <header className="sticky top-0 z-20 flex items-center border-b border-line bg-surface/95 px-3 backdrop-blur lg:hidden">
         <div className="py-2.5">
-          <NavbarItem
-            onClick={() => setOpenedOn(pathname)}
-            aria-label="Open navigation"
+          <Suspense
+            fallback={
+              <NavbarItem aria-label="Open navigation">
+                <OpenMenuIcon />
+              </NavbarItem>
+            }
           >
-            <OpenMenuIcon />
-          </NavbarItem>
+            <OpenSidebarButton onOpen={setOpenedOn} />
+          </Suspense>
         </div>
         <div className="min-w-0 flex-1">{navbar}</div>
       </header>

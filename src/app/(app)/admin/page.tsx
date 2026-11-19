@@ -1,9 +1,11 @@
+import { requireAdminSession } from "~/server/better-auth/server";
 import { PageHeader } from "~/app/_components/page-header";
 import { formatINR } from "~/lib/format";
 import { NOTIFICATION_STATUS_LABELS } from "~/lib/labels";
 import { getAdminOverview } from "~/server/queries/admin";
 
 export default async function AdminOverviewPage() {
+  await requireAdminSession();
   const overview = await getAdminOverview();
 
   const stats = [

@@ -1,3 +1,4 @@
+import { SiteHeader } from "./_components/site-header";
 import { Home, homeMetadata } from "./_home/home";
 
 export const metadata = homeMetadata;
@@ -10,5 +11,5 @@ export const metadata = homeMetadata;
  * `headers()`.
  */
 export default function HomePage() {
-  return <Home session={null} />;
+  return <Home header={<SiteHeader session={null} />} />;
 }

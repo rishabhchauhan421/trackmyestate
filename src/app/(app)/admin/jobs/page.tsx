@@ -1,3 +1,4 @@
+import { requireAdminSession } from "~/server/better-auth/server";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
 import { Notice } from "~/app/_components/form";
@@ -101,11 +102,12 @@ export default async function AdminJobsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const [overview, health, sending, params] = await Promise.all([
+  await requireAdminSession();
+  const params = await searchParams;
+  const [overview, health, sending] = await Promise.all([
     getJobsOverview(),
     cronHealth(),
     sendHealth(),
-    searchParams,
   ]);
   const healthOf = (job: CronJobHealth["job"]) =>
     health.find((entry) => entry.job === job);

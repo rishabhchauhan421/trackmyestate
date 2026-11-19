@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { ListSkeleton } from "~/app/_components/skeleton";
 import Link from "next/link";
 import { Button } from "~/app/_components/button";
 import { EmptyState } from "~/app/_components/empty-state";
@@ -9,7 +11,7 @@ import { requireScope } from "~/server/households";
 import { getUserCurrency } from "~/server/queries/settings";
 import { getInvestments } from "~/server/queries/investments";
 
-export default async function InvestmentsPage() {
+async function InvestmentsContent() {
   const scope = await requireScope();
   const [currency, investments] = await Promise.all([
     getUserCurrency(scope.userId),
@@ -18,12 +20,6 @@ export default async function InvestmentsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Investments"
-        description="FDs, mutual funds, stocks, gold and more — capital deployed alongside current value."
-        action={<Button href="/investments/new">Add investment</Button>}
-      />
-
       {investments.length === 0 ? (
         <EmptyState
           Icon={InvestmentsIcon}
@@ -88,6 +84,26 @@ export default async function InvestmentsPage() {
           })}
         </div>
       )}
+    </>
+  );
+}
+
+/**
+ * The header is the same for everyone, so it is prerendered and shows the
+ * moment the page is opened; the data streams in beneath it.
+ */
+export default function InvestmentsPage() {
+  return (
+    <>
+      <PageHeader
+        title="Investments"
+        description="FDs, mutual funds, stocks, gold and more — capital deployed alongside current value."
+        action={<Button href="/investments/new">Add investment</Button>}
+      />
+
+      <Suspense fallback={<ListSkeleton />}>
+        <InvestmentsContent />
+      </Suspense>
     </>
   );
 }
