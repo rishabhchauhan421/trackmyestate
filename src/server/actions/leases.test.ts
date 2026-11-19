@@ -482,7 +482,7 @@ describe("deleteLease", () => {
 
     expect(dbMock.lease.update).toHaveBeenCalledWith({
       where: { id: "lease-1" },
-      data: { deletedAt: expect.any(Date) as Date },
+      data: { active: false, deletedAt: expect.any(Date) as Date },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/leases");
   });

@@ -197,9 +197,11 @@ export async function deleteLease(leaseId: string) {
     throw new Error("Cannot delete a lease that has bills on record");
   }
 
+  // Also mark it inactive: a deleted lease must never count as the
+  // property's or rental unit's current tenancy.
   await db.lease.update({
     where: { id: leaseId },
-    data: { deletedAt: new Date() },
+    data: { active: false, deletedAt: new Date() },
   });
 
   revalidatePath(`/properties/${lease.propertyId}/leases`);
