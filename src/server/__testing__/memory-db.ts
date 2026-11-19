@@ -34,6 +34,7 @@ const MODELS = [
   "investment",
   "paymentTransaction",
   "emailSuppression",
+  "cronRun",
 ] as const;
 type Model = (typeof MODELS)[number];
 
@@ -55,6 +56,7 @@ const UNIQUE: Partial<Record<Model, string[]>> = {
   bill: ["generationKey"],
   user: ["email"],
   emailSuppression: ["key"],
+  cronRun: ["job"],
 };
 
 const store: Record<Model, Doc[]> = Object.fromEntries(

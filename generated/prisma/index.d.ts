@@ -142,6 +142,11 @@ export type AuthThrottle = $Result.DefaultSelection<Prisma.$AuthThrottlePayload>
  * 
  */
 export type EmailSuppression = $Result.DefaultSelection<Prisma.$EmailSuppressionPayload>
+/**
+ * Model CronRun
+ * 
+ */
+export type CronRun = $Result.DefaultSelection<Prisma.$CronRunPayload>
 
 /**
  * Enums
@@ -795,6 +800,16 @@ export class PrismaClient<
     * ```
     */
   get emailSuppression(): Prisma.EmailSuppressionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.cronRun`: Exposes CRUD operations for the **CronRun** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CronRuns
+    * const cronRuns = await prisma.cronRun.findMany()
+    * ```
+    */
+  get cronRun(): Prisma.CronRunDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -1259,7 +1274,8 @@ export namespace Prisma {
     AppMigration: 'AppMigration',
     RateLimit: 'RateLimit',
     AuthThrottle: 'AuthThrottle',
-    EmailSuppression: 'EmailSuppression'
+    EmailSuppression: 'EmailSuppression',
+    CronRun: 'CronRun'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -1278,7 +1294,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "session" | "account" | "verification" | "property" | "room" | "lease" | "billSchedule" | "bill" | "policy" | "investment" | "loan" | "paymentTransaction" | "auditLog" | "notificationRule" | "notificationJob" | "document" | "guest" | "household" | "householdMember" | "appMigration" | "rateLimit" | "authThrottle" | "emailSuppression"
+      modelProps: "user" | "session" | "account" | "verification" | "property" | "room" | "lease" | "billSchedule" | "bill" | "policy" | "investment" | "loan" | "paymentTransaction" | "auditLog" | "notificationRule" | "notificationJob" | "document" | "guest" | "household" | "householdMember" | "appMigration" | "rateLimit" | "authThrottle" | "emailSuppression" | "cronRun"
       txIsolationLevel: never
     }
     model: {
@@ -3058,6 +3074,80 @@ export namespace Prisma {
           }
         }
       }
+      CronRun: {
+        payload: Prisma.$CronRunPayload<ExtArgs>
+        fields: Prisma.CronRunFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CronRunFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CronRunFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          findFirst: {
+            args: Prisma.CronRunFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CronRunFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          findMany: {
+            args: Prisma.CronRunFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>[]
+          }
+          create: {
+            args: Prisma.CronRunCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          createMany: {
+            args: Prisma.CronRunCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.CronRunDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          update: {
+            args: Prisma.CronRunUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          deleteMany: {
+            args: Prisma.CronRunDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CronRunUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.CronRunUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CronRunPayload>
+          }
+          aggregate: {
+            args: Prisma.CronRunAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCronRun>
+          }
+          groupBy: {
+            args: Prisma.CronRunGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CronRunGroupByOutputType>[]
+          }
+          findRaw: {
+            args: Prisma.CronRunFindRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          aggregateRaw: {
+            args: Prisma.CronRunAggregateRawArgs<ExtArgs>
+            result: JsonObject
+          }
+          count: {
+            args: Prisma.CronRunCountArgs<ExtArgs>
+            result: $Utils.Optional<CronRunCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -3161,6 +3251,7 @@ export namespace Prisma {
     rateLimit?: RateLimitOmit
     authThrottle?: AuthThrottleOmit
     emailSuppression?: EmailSuppressionOmit
+    cronRun?: CronRunOmit
   }
 
   /* Types for Logging */
@@ -33587,6 +33678,949 @@ export namespace Prisma {
 
 
   /**
+   * Model CronRun
+   */
+
+  export type AggregateCronRun = {
+    _count: CronRunCountAggregateOutputType | null
+    _min: CronRunMinAggregateOutputType | null
+    _max: CronRunMaxAggregateOutputType | null
+  }
+
+  export type CronRunMinAggregateOutputType = {
+    id: string | null
+    job: string | null
+    lastStartedAt: Date | null
+    lastSucceededAt: Date | null
+    lastFailedAt: Date | null
+    lastError: string | null
+  }
+
+  export type CronRunMaxAggregateOutputType = {
+    id: string | null
+    job: string | null
+    lastStartedAt: Date | null
+    lastSucceededAt: Date | null
+    lastFailedAt: Date | null
+    lastError: string | null
+  }
+
+  export type CronRunCountAggregateOutputType = {
+    id: number
+    job: number
+    lastStartedAt: number
+    lastSucceededAt: number
+    lastFailedAt: number
+    lastError: number
+    _all: number
+  }
+
+
+  export type CronRunMinAggregateInputType = {
+    id?: true
+    job?: true
+    lastStartedAt?: true
+    lastSucceededAt?: true
+    lastFailedAt?: true
+    lastError?: true
+  }
+
+  export type CronRunMaxAggregateInputType = {
+    id?: true
+    job?: true
+    lastStartedAt?: true
+    lastSucceededAt?: true
+    lastFailedAt?: true
+    lastError?: true
+  }
+
+  export type CronRunCountAggregateInputType = {
+    id?: true
+    job?: true
+    lastStartedAt?: true
+    lastSucceededAt?: true
+    lastFailedAt?: true
+    lastError?: true
+    _all?: true
+  }
+
+  export type CronRunAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CronRun to aggregate.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CronRuns
+    **/
+    _count?: true | CronRunCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CronRunMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CronRunMaxAggregateInputType
+  }
+
+  export type GetCronRunAggregateType<T extends CronRunAggregateArgs> = {
+        [P in keyof T & keyof AggregateCronRun]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCronRun[P]>
+      : GetScalarType<T[P], AggregateCronRun[P]>
+  }
+
+
+
+
+  export type CronRunGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CronRunWhereInput
+    orderBy?: CronRunOrderByWithAggregationInput | CronRunOrderByWithAggregationInput[]
+    by: CronRunScalarFieldEnum[] | CronRunScalarFieldEnum
+    having?: CronRunScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CronRunCountAggregateInputType | true
+    _min?: CronRunMinAggregateInputType
+    _max?: CronRunMaxAggregateInputType
+  }
+
+  export type CronRunGroupByOutputType = {
+    id: string
+    job: string
+    lastStartedAt: Date | null
+    lastSucceededAt: Date | null
+    lastFailedAt: Date | null
+    lastError: string | null
+    _count: CronRunCountAggregateOutputType | null
+    _min: CronRunMinAggregateOutputType | null
+    _max: CronRunMaxAggregateOutputType | null
+  }
+
+  type GetCronRunGroupByPayload<T extends CronRunGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CronRunGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CronRunGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CronRunGroupByOutputType[P]>
+            : GetScalarType<T[P], CronRunGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CronRunSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    job?: boolean
+    lastStartedAt?: boolean
+    lastSucceededAt?: boolean
+    lastFailedAt?: boolean
+    lastError?: boolean
+  }, ExtArgs["result"]["cronRun"]>
+
+
+
+  export type CronRunSelectScalar = {
+    id?: boolean
+    job?: boolean
+    lastStartedAt?: boolean
+    lastSucceededAt?: boolean
+    lastFailedAt?: boolean
+    lastError?: boolean
+  }
+
+  export type CronRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "job" | "lastStartedAt" | "lastSucceededAt" | "lastFailedAt" | "lastError", ExtArgs["result"]["cronRun"]>
+
+  export type $CronRunPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CronRun"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      job: string
+      lastStartedAt: Date | null
+      lastSucceededAt: Date | null
+      lastFailedAt: Date | null
+      lastError: string | null
+    }, ExtArgs["result"]["cronRun"]>
+    composites: {}
+  }
+
+  type CronRunGetPayload<S extends boolean | null | undefined | CronRunDefaultArgs> = $Result.GetResult<Prisma.$CronRunPayload, S>
+
+  type CronRunCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CronRunFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CronRunCountAggregateInputType | true
+    }
+
+  export interface CronRunDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CronRun'], meta: { name: 'CronRun' } }
+    /**
+     * Find zero or one CronRun that matches the filter.
+     * @param {CronRunFindUniqueArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CronRunFindUniqueArgs>(args: SelectSubset<T, CronRunFindUniqueArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CronRun that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CronRunFindUniqueOrThrowArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CronRunFindUniqueOrThrowArgs>(args: SelectSubset<T, CronRunFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CronRun that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunFindFirstArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CronRunFindFirstArgs>(args?: SelectSubset<T, CronRunFindFirstArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CronRun that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunFindFirstOrThrowArgs} args - Arguments to find a CronRun
+     * @example
+     * // Get one CronRun
+     * const cronRun = await prisma.cronRun.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CronRunFindFirstOrThrowArgs>(args?: SelectSubset<T, CronRunFindFirstOrThrowArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CronRuns that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CronRuns
+     * const cronRuns = await prisma.cronRun.findMany()
+     * 
+     * // Get first 10 CronRuns
+     * const cronRuns = await prisma.cronRun.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const cronRunWithIdOnly = await prisma.cronRun.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CronRunFindManyArgs>(args?: SelectSubset<T, CronRunFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CronRun.
+     * @param {CronRunCreateArgs} args - Arguments to create a CronRun.
+     * @example
+     * // Create one CronRun
+     * const CronRun = await prisma.cronRun.create({
+     *   data: {
+     *     // ... data to create a CronRun
+     *   }
+     * })
+     * 
+     */
+    create<T extends CronRunCreateArgs>(args: SelectSubset<T, CronRunCreateArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CronRuns.
+     * @param {CronRunCreateManyArgs} args - Arguments to create many CronRuns.
+     * @example
+     * // Create many CronRuns
+     * const cronRun = await prisma.cronRun.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CronRunCreateManyArgs>(args?: SelectSubset<T, CronRunCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a CronRun.
+     * @param {CronRunDeleteArgs} args - Arguments to delete one CronRun.
+     * @example
+     * // Delete one CronRun
+     * const CronRun = await prisma.cronRun.delete({
+     *   where: {
+     *     // ... filter to delete one CronRun
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CronRunDeleteArgs>(args: SelectSubset<T, CronRunDeleteArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CronRun.
+     * @param {CronRunUpdateArgs} args - Arguments to update one CronRun.
+     * @example
+     * // Update one CronRun
+     * const cronRun = await prisma.cronRun.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CronRunUpdateArgs>(args: SelectSubset<T, CronRunUpdateArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CronRuns.
+     * @param {CronRunDeleteManyArgs} args - Arguments to filter CronRuns to delete.
+     * @example
+     * // Delete a few CronRuns
+     * const { count } = await prisma.cronRun.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CronRunDeleteManyArgs>(args?: SelectSubset<T, CronRunDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CronRuns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CronRuns
+     * const cronRun = await prisma.cronRun.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CronRunUpdateManyArgs>(args: SelectSubset<T, CronRunUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one CronRun.
+     * @param {CronRunUpsertArgs} args - Arguments to update or create a CronRun.
+     * @example
+     * // Update or create a CronRun
+     * const cronRun = await prisma.cronRun.upsert({
+     *   create: {
+     *     // ... data to create a CronRun
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CronRun we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CronRunUpsertArgs>(args: SelectSubset<T, CronRunUpsertArgs<ExtArgs>>): Prisma__CronRunClient<$Result.GetResult<Prisma.$CronRunPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CronRuns that matches the filter.
+     * @param {CronRunFindRawArgs} args - Select which filters you would like to apply.
+     * @example
+     * const cronRun = await prisma.cronRun.findRaw({
+     *   filter: { age: { $gt: 25 } }
+     * })
+     */
+    findRaw(args?: CronRunFindRawArgs): Prisma.PrismaPromise<JsonObject>
+
+    /**
+     * Perform aggregation operations on a CronRun.
+     * @param {CronRunAggregateRawArgs} args - Select which aggregations you would like to apply.
+     * @example
+     * const cronRun = await prisma.cronRun.aggregateRaw({
+     *   pipeline: [
+     *     { $match: { status: "registered" } },
+     *     { $group: { _id: "$country", total: { $sum: 1 } } }
+     *   ]
+     * })
+     */
+    aggregateRaw(args?: CronRunAggregateRawArgs): Prisma.PrismaPromise<JsonObject>
+
+
+    /**
+     * Count the number of CronRuns.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunCountArgs} args - Arguments to filter CronRuns to count.
+     * @example
+     * // Count the number of CronRuns
+     * const count = await prisma.cronRun.count({
+     *   where: {
+     *     // ... the filter for the CronRuns we want to count
+     *   }
+     * })
+    **/
+    count<T extends CronRunCountArgs>(
+      args?: Subset<T, CronRunCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CronRunCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CronRun.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CronRunAggregateArgs>(args: Subset<T, CronRunAggregateArgs>): Prisma.PrismaPromise<GetCronRunAggregateType<T>>
+
+    /**
+     * Group by CronRun.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CronRunGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CronRunGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CronRunGroupByArgs['orderBy'] }
+        : { orderBy?: CronRunGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CronRunGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCronRunGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CronRun model
+   */
+  readonly fields: CronRunFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CronRun.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CronRunClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CronRun model
+   */
+  interface CronRunFieldRefs {
+    readonly id: FieldRef<"CronRun", 'String'>
+    readonly job: FieldRef<"CronRun", 'String'>
+    readonly lastStartedAt: FieldRef<"CronRun", 'DateTime'>
+    readonly lastSucceededAt: FieldRef<"CronRun", 'DateTime'>
+    readonly lastFailedAt: FieldRef<"CronRun", 'DateTime'>
+    readonly lastError: FieldRef<"CronRun", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CronRun findUnique
+   */
+  export type CronRunFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun findUniqueOrThrow
+   */
+  export type CronRunFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun findFirst
+   */
+  export type CronRunFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CronRuns.
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CronRuns.
+     */
+    distinct?: CronRunScalarFieldEnum | CronRunScalarFieldEnum[]
+  }
+
+  /**
+   * CronRun findFirstOrThrow
+   */
+  export type CronRunFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRun to fetch.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CronRuns.
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CronRuns.
+     */
+    distinct?: CronRunScalarFieldEnum | CronRunScalarFieldEnum[]
+  }
+
+  /**
+   * CronRun findMany
+   */
+  export type CronRunFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter, which CronRuns to fetch.
+     */
+    where?: CronRunWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CronRuns to fetch.
+     */
+    orderBy?: CronRunOrderByWithRelationInput | CronRunOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CronRuns.
+     */
+    cursor?: CronRunWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CronRuns from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CronRuns.
+     */
+    skip?: number
+    distinct?: CronRunScalarFieldEnum | CronRunScalarFieldEnum[]
+  }
+
+  /**
+   * CronRun create
+   */
+  export type CronRunCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * The data needed to create a CronRun.
+     */
+    data: XOR<CronRunCreateInput, CronRunUncheckedCreateInput>
+  }
+
+  /**
+   * CronRun createMany
+   */
+  export type CronRunCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CronRuns.
+     */
+    data: CronRunCreateManyInput | CronRunCreateManyInput[]
+  }
+
+  /**
+   * CronRun update
+   */
+  export type CronRunUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * The data needed to update a CronRun.
+     */
+    data: XOR<CronRunUpdateInput, CronRunUncheckedUpdateInput>
+    /**
+     * Choose, which CronRun to update.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun updateMany
+   */
+  export type CronRunUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CronRuns.
+     */
+    data: XOR<CronRunUpdateManyMutationInput, CronRunUncheckedUpdateManyInput>
+    /**
+     * Filter which CronRuns to update
+     */
+    where?: CronRunWhereInput
+    /**
+     * Limit how many CronRuns to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CronRun upsert
+   */
+  export type CronRunUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * The filter to search for the CronRun to update in case it exists.
+     */
+    where: CronRunWhereUniqueInput
+    /**
+     * In case the CronRun found by the `where` argument doesn't exist, create a new CronRun with this data.
+     */
+    create: XOR<CronRunCreateInput, CronRunUncheckedCreateInput>
+    /**
+     * In case the CronRun was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CronRunUpdateInput, CronRunUncheckedUpdateInput>
+  }
+
+  /**
+   * CronRun delete
+   */
+  export type CronRunDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+    /**
+     * Filter which CronRun to delete.
+     */
+    where: CronRunWhereUniqueInput
+  }
+
+  /**
+   * CronRun deleteMany
+   */
+  export type CronRunDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CronRuns to delete
+     */
+    where?: CronRunWhereInput
+    /**
+     * Limit how many CronRuns to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CronRun findRaw
+   */
+  export type CronRunFindRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The query predicate filter. If unspecified, then all documents in the collection will match the predicate. ${@link https://docs.mongodb.com/manual/reference/operator/query MongoDB Docs}.
+     */
+    filter?: InputJsonValue
+    /**
+     * Additional options to pass to the `find` command ${@link https://docs.mongodb.com/manual/reference/command/find/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * CronRun aggregateRaw
+   */
+  export type CronRunAggregateRawArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * An array of aggregation stages to process and transform the document stream via the aggregation pipeline. ${@link https://docs.mongodb.com/manual/reference/operator/aggregation-pipeline MongoDB Docs}.
+     */
+    pipeline?: InputJsonValue[]
+    /**
+     * Additional options to pass to the `aggregate` command ${@link https://docs.mongodb.com/manual/reference/command/aggregate/#command-fields MongoDB Docs}.
+     */
+    options?: InputJsonValue
+  }
+
+  /**
+   * CronRun without action
+   */
+  export type CronRunDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CronRun
+     */
+    select?: CronRunSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CronRun
+     */
+    omit?: CronRunOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -34066,6 +35100,18 @@ export namespace Prisma {
   };
 
   export type EmailSuppressionScalarFieldEnum = (typeof EmailSuppressionScalarFieldEnum)[keyof typeof EmailSuppressionScalarFieldEnum]
+
+
+  export const CronRunScalarFieldEnum: {
+    id: 'id',
+    job: 'job',
+    lastStartedAt: 'lastStartedAt',
+    lastSucceededAt: 'lastSucceededAt',
+    lastFailedAt: 'lastFailedAt',
+    lastError: 'lastError'
+  };
+
+  export type CronRunScalarFieldEnum = (typeof CronRunScalarFieldEnum)[keyof typeof CronRunScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -37246,6 +38292,63 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"EmailSuppression"> | Date | string
   }
 
+  export type CronRunWhereInput = {
+    AND?: CronRunWhereInput | CronRunWhereInput[]
+    OR?: CronRunWhereInput[]
+    NOT?: CronRunWhereInput | CronRunWhereInput[]
+    id?: StringFilter<"CronRun"> | string
+    job?: StringFilter<"CronRun"> | string
+    lastStartedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastSucceededAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastFailedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastError?: StringNullableFilter<"CronRun"> | string | null
+  }
+
+  export type CronRunOrderByWithRelationInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+  }
+
+  export type CronRunWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    job?: string
+    AND?: CronRunWhereInput | CronRunWhereInput[]
+    OR?: CronRunWhereInput[]
+    NOT?: CronRunWhereInput | CronRunWhereInput[]
+    lastStartedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastSucceededAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastFailedAt?: DateTimeNullableFilter<"CronRun"> | Date | string | null
+    lastError?: StringNullableFilter<"CronRun"> | string | null
+  }, "id" | "job">
+
+  export type CronRunOrderByWithAggregationInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+    _count?: CronRunCountOrderByAggregateInput
+    _max?: CronRunMaxOrderByAggregateInput
+    _min?: CronRunMinOrderByAggregateInput
+  }
+
+  export type CronRunScalarWhereWithAggregatesInput = {
+    AND?: CronRunScalarWhereWithAggregatesInput | CronRunScalarWhereWithAggregatesInput[]
+    OR?: CronRunScalarWhereWithAggregatesInput[]
+    NOT?: CronRunScalarWhereWithAggregatesInput | CronRunScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CronRun"> | string
+    job?: StringWithAggregatesFilter<"CronRun"> | string
+    lastStartedAt?: DateTimeNullableWithAggregatesFilter<"CronRun"> | Date | string | null
+    lastSucceededAt?: DateTimeNullableWithAggregatesFilter<"CronRun"> | Date | string | null
+    lastFailedAt?: DateTimeNullableWithAggregatesFilter<"CronRun"> | Date | string | null
+    lastError?: StringNullableWithAggregatesFilter<"CronRun"> | string | null
+  }
+
   export type UserCreateInput = {
     id?: string
     name: string
@@ -40212,6 +41315,65 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CronRunCreateInput = {
+    id?: string
+    job: string
+    lastStartedAt?: Date | string | null
+    lastSucceededAt?: Date | string | null
+    lastFailedAt?: Date | string | null
+    lastError?: string | null
+  }
+
+  export type CronRunUncheckedCreateInput = {
+    id?: string
+    job: string
+    lastStartedAt?: Date | string | null
+    lastSucceededAt?: Date | string | null
+    lastFailedAt?: Date | string | null
+    lastError?: string | null
+  }
+
+  export type CronRunUpdateInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CronRunUncheckedUpdateInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CronRunCreateManyInput = {
+    id?: string
+    job: string
+    lastStartedAt?: Date | string | null
+    lastSucceededAt?: Date | string | null
+    lastFailedAt?: Date | string | null
+    lastError?: string | null
+  }
+
+  export type CronRunUpdateManyMutationInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type CronRunUncheckedUpdateManyInput = {
+    job?: StringFieldUpdateOperationsInput | string
+    lastStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastSucceededAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastFailedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -42558,6 +43720,33 @@ export namespace Prisma {
     ownerId?: SortOrder
     reason?: SortOrder
     createdAt?: SortOrder
+  }
+
+  export type CronRunCountOrderByAggregateInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+  }
+
+  export type CronRunMaxOrderByAggregateInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
+  }
+
+  export type CronRunMinOrderByAggregateInput = {
+    id?: SortOrder
+    job?: SortOrder
+    lastStartedAt?: SortOrder
+    lastSucceededAt?: SortOrder
+    lastFailedAt?: SortOrder
+    lastError?: SortOrder
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {

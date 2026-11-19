@@ -1044,3 +1044,16 @@ model EmailSuppression {
 
   @@index([email])
 }
+
+// The last run of each background job (see `src/server/cron-runs.ts`), so a
+// missed or failing run shows up: `/api/health/cron` reports a job that
+// hasn't succeeded on time, for an uptime monitor to alert on.
+model CronRun {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  // "notifications", "reminders" or "bills".
+  job             String    @unique
+  lastStartedAt   DateTime?
+  lastSucceededAt DateTime?
+  lastFailedAt    DateTime?
+  lastError       String?
+}

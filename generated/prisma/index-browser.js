@@ -520,6 +520,15 @@ exports.Prisma.EmailSuppressionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.CronRunScalarFieldEnum = {
+  id: 'id',
+  job: 'job',
+  lastStartedAt: 'lastStartedAt',
+  lastSucceededAt: 'lastSucceededAt',
+  lastFailedAt: 'lastFailedAt',
+  lastError: 'lastError'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -729,7 +738,8 @@ exports.Prisma.ModelName = {
   AppMigration: 'AppMigration',
   RateLimit: 'RateLimit',
   AuthThrottle: 'AuthThrottle',
-  EmailSuppression: 'EmailSuppression'
+  EmailSuppression: 'EmailSuppression',
+  CronRun: 'CronRun'
 };
 
 /**

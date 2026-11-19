@@ -1,19 +1,15 @@
 /**
- * The one cron Vercel runs on the Hobby plan (which allows only daily
- * crons — see `vercel.json`): generate bills, queue today's reminders, then
- * send everything due, in that order.
- *
- * It runs at 03:30 UTC, 09:00 in India — the default send time — so even
- * with nothing else scheduled, India-based users get their reminders on
- * the right day. The more frequent runs that make other send times and
- * time zones exact come from `.github/workflows/cron.yml`, which calls the
- * single-job routes (`/api/cron/reminders`, `/api/cron/notifications`).
+ * All three jobs in one call: generate bills, queue today's reminders, then
+ * send everything due, in that order. Not scheduled any more — Vercel Cron
+ * runs each job on its own (see `vercel.json`) — but kept for a manual
+ * catch-up (`curl -H "Authorization: Bearer $CRON_SECRET" …/api/cron/daily`).
  * Every job is idempotent, so overlapping runs are harmless.
  */
 import { NextResponse, type NextRequest } from "next/server";
 
 import { env } from "~/env";
 import { generateBills } from "~/server/bills/generate";
+import { recordCronRun } from "~/server/cron-runs";
 import { processDueNotificationJobs } from "~/server/notifications/process";
 import { generateReminders } from "~/server/reminders/generate";
 
@@ -30,14 +26,18 @@ export async function GET(request: NextRequest) {
   }
 
   const now = new Date();
-  const bills = await generateBills(now, { timeBudgetMs: BUDGET_MS.bills });
-  const reminders = await generateReminders(now, {
-    timeBudgetMs: BUDGET_MS.reminders,
-  });
+  const bills = await recordCronRun("bills", () =>
+    generateBills(now, { timeBudgetMs: BUDGET_MS.bills }),
+  );
+  const reminders = await recordCronRun("reminders", () =>
+    generateReminders(now, { timeBudgetMs: BUDGET_MS.reminders }),
+  );
   // Re-read the clock: reminders queued above for "now" must be due.
-  const notifications = await processDueNotificationJobs(new Date(), {
-    timeBudgetMs: BUDGET_MS.notifications,
-  });
+  const notifications = await recordCronRun("notifications", () =>
+    processDueNotificationJobs(new Date(), {
+      timeBudgetMs: BUDGET_MS.notifications,
+    }),
+  );
 
   return NextResponse.json({ bills, reminders, notifications });
 }
