@@ -14,9 +14,15 @@ import type {
 import { dateOnly, type CalendarDay } from "~/lib/calendar-day";
 import { db } from "~/server/db";
 
-/** The generation key of the bill `scheduleId` is due on `day`. */
-export function scheduleBillKey(scheduleId: string, day: CalendarDay) {
-  return `${scheduleId}:${day}`;
+/**
+ * The generation key of `scheduleId`'s bill for one billing period (see
+ * `billingPeriodOf`): "<scheduleId>:2026-11" for a month, or
+ * "<scheduleId>:2026-11-05" for a weekly schedule's day. Bills generated
+ * before periods existed carry the full day for every recurrence; the
+ * generator also reads existing bills by period, so those still count.
+ */
+export function scheduleBillKey(scheduleId: string, period: string) {
+  return `${scheduleId}:${period}`;
 }
 
 /** Whether `error` is a unique-index clash (Prisma code P2002). */

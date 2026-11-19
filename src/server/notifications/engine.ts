@@ -6,10 +6,10 @@
 import "server-only";
 
 import { db } from "~/server/db";
-import { CHANNEL_SENDERS } from "./registry";
+import { CHANNEL_DIGEST_SENDERS, CHANNEL_SENDERS } from "./registry";
 import { isEmailSuppressed } from "./suppression";
 import { NotImplementedChannelError } from "./types";
-import type { NotificationJobWithMetadata } from "./types";
+import type { ChannelSendResult, NotificationJobWithMetadata } from "./types";
 
 /** Retryable failures get this many attempts (the original send + retries) before giving up. */
 export const MAX_SEND_ATTEMPTS = 3;
@@ -25,13 +25,25 @@ export function retryDelayMs(retryCount: number) {
   return RETRY_BASE_DELAY_MS * 2 ** Math.max(0, retryCount - 1);
 }
 
+/**
+ * How long a job waits after the provider throttled us. Short: it's
+ * picked up by the next run, which is at least this far away.
+ */
+export const RATE_LIMIT_DELAY_MS = 60 * 1000;
+
 export type DispatchOutcome =
   | "SENT"
   | "SKIPPED"
   | "RETRY_SCHEDULED"
+  | "RATE_LIMITED"
   | "FAILED"
   | "ALREADY_CLAIMED"
-  | "CANCELLED";
+  | "CANCELLED"
+  /**
+   * Checking the job threw unexpectedly (e.g. a database error). It stays
+   * claimed and is reclaimed by a later run (see `reclaimStaleJobs`).
+   */
+  | "ERRORED";
 
 /** A bill in one of these is still awaiting payment, so still worth a reminder. */
 const OPEN_BILL_STATUSES: readonly string[] = [
@@ -48,6 +60,71 @@ const OPEN_BILL_STATUSES: readonly string[] = [
 export async function dispatchNotificationJob(
   job: NotificationJobWithMetadata,
 ): Promise<DispatchOutcome> {
+  return (await dispatchNotificationJobs([job]))[0]!;
+}
+
+/**
+ * Dispatches jobs that are all for the same recipient (see `digestKey`).
+ * Each is claimed and checked on its own; if more than one is still worth
+ * sending and the channel can combine them, they go out as one message (a
+ * digest) and share its result. Returns each job's outcome, in order.
+ */
+export async function dispatchNotificationJobs(
+  jobs: NotificationJobWithMetadata[],
+): Promise<DispatchOutcome[]> {
+  const outcomes = new Map<string, DispatchOutcome>();
+  const ready: NotificationJobWithMetadata[] = [];
+  for (const job of jobs) {
+    try {
+      const settled = await claimAndCheck(job);
+      if (settled) outcomes.set(job.id, settled);
+      else ready.push(job);
+    } catch (error) {
+      // One job's trouble must not hold up the recipient's others.
+      console.error(`[notifications] Checking job ${job.id} failed`, error);
+      outcomes.set(job.id, "ERRORED");
+    }
+  }
+
+  const sendDigest =
+    ready.length > 1 ? CHANNEL_DIGEST_SENDERS[ready[0]!.channel] : undefined;
+  if (sendDigest) {
+    const result = await attempt(() => sendDigest(ready));
+    for (const job of ready) {
+      outcomes.set(job.id, await recordResult(job, result));
+    }
+  } else {
+    for (const job of ready) {
+      const result = await attempt(() => CHANNEL_SENDERS[job.channel](job));
+      outcomes.set(job.id, await recordResult(job, result));
+    }
+  }
+
+  return jobs.map((job) => outcomes.get(job.id)!);
+}
+
+/**
+ * Which jobs can share one message: the same person, hearing from the same
+ * owner, over the same channel, in the same capacity (someone with access
+ * to the bills, or someone reminded on the owner's behalf).
+ */
+export function digestKey(job: NotificationJobWithMetadata) {
+  return [
+    job.channel,
+    job.ownerId,
+    job.recipient.trim().toLowerCase(),
+    job.metadata?.thirdParty === true ? "third-party" : "own",
+  ].join("|");
+}
+
+/**
+ * Claims `job` and checks it's still worth sending. Returns its outcome if
+ * it's settled without sending (claimed elsewhere, or cancelled), or null
+ * when it's ready to send.
+ */
+async function claimAndCheck(
+  job: NotificationJobWithMetadata,
+): Promise<DispatchOutcome | null> {
   const claim = await db.notificationJob.updateMany({
     where: { id: job.id, status: "SCHEDULED" },
     data: { status: "PROCESSING" },
@@ -70,13 +147,7 @@ export async function dispatchNotificationJob(
         : !OPEN_BILL_STATUSES.includes(bill.status)
           ? `Bill is ${bill.status.toLowerCase()}`
           : null;
-    if (reason) {
-      await db.notificationJob.update({
-        where: { id: job.id },
-        data: { status: "CANCELLED", failedReason: reason },
-      });
-      return "CANCELLED";
-    }
+    if (reason) return cancel(job, reason);
   }
 
   // A guest who stopped reminders, was paused or was removed since the job
@@ -96,13 +167,7 @@ export async function dispatchNotificationJob(
           : guest.pausedAt
             ? "Guest is paused"
             : null;
-    if (reason) {
-      await db.notificationJob.update({
-        where: { id: job.id },
-        data: { status: "CANCELLED", failedReason: reason },
-      });
-      return "CANCELLED";
-    }
+    if (reason) return cancel(job, reason);
   }
 
   // Someone emailed on the owner's behalf who has since unsubscribed (from
@@ -112,42 +177,81 @@ export async function dispatchNotificationJob(
     (job.metadata?.thirdParty === true || typeof guestId === "string") &&
     (await isEmailSuppressed(job.recipient, job.ownerId))
   ) {
-    await db.notificationJob.update({
-      where: { id: job.id },
-      data: { status: "CANCELLED", failedReason: "Recipient unsubscribed" },
-    });
-    return "CANCELLED";
+    return cancel(job, "Recipient unsubscribed");
   }
 
+  return null;
+}
+
+async function cancel(
+  job: NotificationJobWithMetadata,
+  reason: string,
+): Promise<DispatchOutcome> {
+  await db.notificationJob.update({
+    where: { id: job.id },
+    data: { status: "CANCELLED", failedReason: reason },
+  });
+  return "CANCELLED";
+}
+
+type AttemptResult = ChannelSendResult | { notImplemented: string };
+
+/** Runs a sender, turning anything it throws into a result. */
+async function attempt(
+  send: () => Promise<ChannelSendResult>,
+): Promise<AttemptResult> {
   try {
-    const result = await CHANNEL_SENDERS[job.channel](job);
-
-    if (result.ok) {
-      await db.notificationJob.update({
-        where: { id: job.id },
-        data: {
-          status: "SENT",
-          sentAt: new Date(),
-          failedReason: null,
-          providerMessageId: result.providerMessageId ?? null,
-        },
-      });
-      return "SENT";
-    }
-
-    return await recordFailure(job, result.reason, result.retryable);
+    return await send();
   } catch (error) {
     if (error instanceof NotImplementedChannelError) {
-      await db.notificationJob.update({
-        where: { id: job.id },
-        data: { status: "SKIPPED", failedReason: error.message },
-      });
-      return "SKIPPED";
+      return { notImplemented: error.message };
     }
-
     const reason = error instanceof Error ? error.message : String(error);
-    return recordFailure(job, reason, true);
+    return { ok: false, retryable: true, reason };
   }
+}
+
+/** Writes a send's result back to `job`. */
+async function recordResult(
+  job: NotificationJobWithMetadata,
+  result: AttemptResult,
+): Promise<DispatchOutcome> {
+  if ("notImplemented" in result) {
+    await db.notificationJob.update({
+      where: { id: job.id },
+      data: { status: "SKIPPED", failedReason: result.notImplemented },
+    });
+    return "SKIPPED";
+  }
+
+  if (result.ok) {
+    await db.notificationJob.update({
+      where: { id: job.id },
+      data: {
+        status: "SENT",
+        sentAt: new Date(),
+        failedReason: null,
+        providerMessageId: result.providerMessageId ?? null,
+      },
+    });
+    return "SENT";
+  }
+
+  // Throttled: nothing wrong with the job, so it keeps its attempts and
+  // simply waits for the next run.
+  if (result.rateLimited) {
+    await db.notificationJob.update({
+      where: { id: job.id },
+      data: {
+        status: "SCHEDULED",
+        failedReason: result.reason,
+        scheduledFor: new Date(Date.now() + RATE_LIMIT_DELAY_MS),
+      },
+    });
+    return "RATE_LIMITED";
+  }
+
+  return recordFailure(job, result.reason, result.retryable);
 }
 
 async function recordFailure(

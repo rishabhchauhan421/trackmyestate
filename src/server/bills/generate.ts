@@ -5,7 +5,12 @@ import { amortizationRow } from "~/lib/amortization";
 import { addDays, calendarDayOf, dateOnly } from "~/lib/calendar-day";
 import { BILL_TYPE_LABELS, EVENT_CATEGORY_LABELS } from "~/lib/labels";
 import { reminderCategoryConfig } from "~/lib/reminders";
-import { nextOccurrence, occurrencesBetween } from "~/lib/schedule";
+import {
+  BILL_LOOKBACK_DAYS,
+  billingPeriodOf,
+  nextOccurrence,
+  occurrencesBetween,
+} from "~/lib/schedule";
 import { resolveTimeZone, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
 import { createBill, isUniqueConstraintError, scheduleBillKey } from "./create";
@@ -19,12 +24,21 @@ import { NOT_SOFT_DELETED } from "~/server/queries/shared";
  * Each run creates every missing bill whose due day falls from
  * `LOOKBACK_DAYS` ago to `HORIZON_DAYS` ahead (in the owner's time zone):
  * far enough ahead for the earliest reminder (30 days before), and far
- * enough back to catch up after missed runs. A bill that already exists
- * for a schedule and day is never created twice — each one's
- * `generationKey` is unique in the database, so even two runs at the same
- * moment can't both insert it — and the job can run as often as needed:
- * daily by `/api/cron/bills`, on demand from the admin portal, and for a
- * single schedule right after it's created.
+ * enough back to catch up after missed runs — but never before the
+ * schedule's `billFrom`, the day its terms were last set, so adding an old
+ * loan or moving a due day doesn't produce bills for days already gone.
+ *
+ * A schedule bills each period (a month, or a weekly schedule's day) once:
+ * a period that already has a bill is skipped whatever day that bill is
+ * on, and each bill's `generationKey` names its period and is unique in
+ * the database, so even two runs at the same moment can't both insert it.
+ * The job can run as often as needed: daily by `/api/cron/bills`, on
+ * demand from the admin portal, and for a single schedule right after
+ * it's created.
+ *
+ * One schedule that fails (bad data, a database error) is logged and
+ * counted in `failed`; the rest of the run carries on, and that schedule
+ * is tried again next run.
  *
  * Each schedule remembers its `nextDueDate` — the first day it hasn't
  * billed yet — so a run reads only the schedules with something due within
@@ -32,15 +46,20 @@ import { NOT_SOFT_DELETED } from "~/server/queries/shared";
  */
 
 export const HORIZON_DAYS = 35;
-export const LOOKBACK_DAYS = 31;
+export const LOOKBACK_DAYS = BILL_LOOKBACK_DAYS;
 export const BATCH_SIZE = 200;
-export const TIME_BUDGET_MS = 45_000;
+export const TIME_BUDGET_MS = 240_000;
+const DAY_MS = 86_400_000;
 
 export interface GenerateBillsSummary {
   schedulesScanned: number;
   billsCreated: number;
   /** Schedules with no amount to bill (nothing to create). */
   skippedNoAmount: number;
+  /** Schedules that threw; they're retried on the next run. */
+  failed: number;
+  /** The first failure's message, for the job's health record. */
+  firstError?: string;
   hasMore: boolean;
 }
 
@@ -58,6 +77,7 @@ export async function generateBills(
     schedulesScanned: 0,
     billsCreated: 0,
     skippedNoAmount: 0,
+    failed: 0,
     hasMore: false,
   };
   let cursor: string | undefined;
@@ -89,6 +109,8 @@ export async function generateBills(
     const batch = await generateBillsForSchedules(schedules, now);
     summary.billsCreated += batch.billsCreated;
     summary.skippedNoAmount += batch.skippedNoAmount;
+    summary.failed += batch.failed;
+    summary.firstError ??= batch.firstError;
     summary.schedulesScanned += schedules.length;
     cursor = schedules[schedules.length - 1]!.id;
 
@@ -110,7 +132,7 @@ export async function generateBillsForSchedule(
   const schedule = await db.billSchedule.findFirst({
     where: { id: scheduleId, ...ACTIVE_SCHEDULE },
   });
-  if (!schedule) return { billsCreated: 0, skippedNoAmount: 0 };
+  if (!schedule) return { billsCreated: 0, skippedNoAmount: 0, failed: 0 };
   return generateBillsForSchedules([schedule], now);
 }
 
@@ -152,13 +174,15 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
         where: { id: { in: ids("investmentId") } },
         select: { id: true, name: true },
       }),
-      // Bills already generated for these schedules, to never duplicate.
+      // Bills these schedules already have, to never bill a period twice.
+      // A month wider than the window each side, to see the whole of the
+      // months at its edges.
       db.bill.findMany({
         where: {
           billScheduleId: { in: schedules.map((s) => s.id) },
           dueDate: {
-            gte: new Date(now.getTime() - (LOOKBACK_DAYS + 2) * 86_400_000),
-            lte: new Date(now.getTime() + (HORIZON_DAYS + 2) * 86_400_000),
+            gte: new Date(now.getTime() - (LOOKBACK_DAYS + 33) * DAY_MS),
+            lte: new Date(now.getTime() + (HORIZON_DAYS + 33) * DAY_MS),
           },
         },
         select: { billScheduleId: true, dueDate: true },
@@ -176,33 +200,69 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
     investment: new Map(investments.map((i) => [i.id, i.name])),
   };
   const loanById = new Map(loans.map((loan) => [loan.id, loan]));
+  const recurrenceOf = new Map(schedules.map((s) => [s.id, s.recurrence]));
   const alreadyBilled = new Set(
-    existing.map(
-      (bill) => `${bill.billScheduleId}:${bill.dueDate.toISOString()}`,
-    ),
+    existing.flatMap((bill) => {
+      const recurrence =
+        bill.billScheduleId && recurrenceOf.get(bill.billScheduleId);
+      return recurrence
+        ? [
+            scheduleBillKey(
+              bill.billScheduleId!,
+              billingPeriodOf(recurrence, calendarDayOf(bill.dueDate)),
+            ),
+          ]
+        : [];
+    }),
   );
 
   let billsCreated = 0;
   let skippedNoAmount = 0;
+  let failed = 0;
+  let firstError: string | undefined;
   for (const schedule of schedules) {
+    try {
+      const result = await generateForSchedule(schedule);
+      billsCreated += result.billsCreated;
+      skippedNoAmount += result.skippedNoAmount;
+    } catch (error) {
+      // One bad schedule must not stop the others; it's retried next run
+      // (its `nextDueDate` hasn't moved).
+      failed += 1;
+      const message = error instanceof Error ? error.message : String(error);
+      firstError ??= `Schedule ${schedule.id}: ${message}`;
+      console.error(`[bills] Schedule ${schedule.id} failed`, error);
+    }
+  }
+  return { billsCreated, skippedNoAmount, failed, firstError };
+
+  async function generateForSchedule(schedule: BillSchedule) {
+    let billsCreated = 0;
     const today = todayInTimeZone(
       timeZoneOf.get(schedule.ownerId) ?? resolveTimeZone(null),
       now,
     );
     if (schedule.defaultAmount == null || schedule.defaultAmount <= 0) {
-      skippedNoAmount += 1;
       // Nothing to bill until its terms change (which sets a new date).
       await recordNextDueDate(schedule, null);
-      continue;
+      return { billsCreated, skippedNoAmount: 1 };
     }
+    // Catch up after missed runs, but not past the day the terms were set.
+    const windowStart = addDays(today, -LOOKBACK_DAYS);
+    const billFrom = schedule.billFrom
+      ? calendarDayOf(schedule.billFrom)
+      : null;
     const due = occurrencesBetween(
       schedule,
-      addDays(today, -LOOKBACK_DAYS),
+      billFrom && billFrom > windowStart ? billFrom : windowStart,
       addDays(today, HORIZON_DAYS),
     );
 
     for (const { day, installment } of due) {
-      const key = `${schedule.id}:${dateOnly(day).toISOString()}`;
+      const key = scheduleBillKey(
+        schedule.id,
+        billingPeriodOf(schedule.recurrence, day),
+      );
       if (alreadyBilled.has(key)) continue;
 
       // An EMI's split into interest and principal, from the loan's terms.
@@ -224,7 +284,7 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
         await createBill({
           ownerId: schedule.ownerId,
           householdId: schedule.householdId ?? undefined,
-          generationKey: scheduleBillKey(schedule.id, day),
+          generationKey: key,
           category: schedule.category,
           direction: reminderCategoryConfig(schedule.category).incoming
             ? "INFLOW"
@@ -260,9 +320,8 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
       start && start > pastHorizon ? start : pastHorizon,
     );
     await recordNextDueDate(schedule, next ? dateOnly(next.day) : null);
+    return { billsCreated, skippedNoAmount: 0 };
   }
-
-  return { billsCreated, skippedNoAmount };
 }
 
 async function recordNextDueDate(schedule: BillSchedule, next: Date | null) {

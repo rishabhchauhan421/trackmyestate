@@ -39,10 +39,28 @@ export type NotificationJobWithMetadata = Omit<NotificationJob, "metadata"> & {
 /** Outcome of a channel attempting to deliver one job. */
 export type ChannelSendResult =
   | { ok: true; providerMessageId?: string }
-  | { ok: false; retryable: boolean; reason: string };
+  | {
+      ok: false;
+      retryable: boolean;
+      reason: string;
+      /**
+       * The provider is throttling us: nothing is wrong with this job, so
+       * it doesn't cost an attempt, and the run stops sending until the
+       * next one.
+       */
+      rateLimited?: boolean;
+    };
 
 export type ChannelSender = (
   job: NotificationJobWithMetadata,
+) => Promise<ChannelSendResult>;
+
+/**
+ * Sends several jobs for one recipient as a single message (a digest).
+ * Always called with at least two jobs.
+ */
+export type ChannelDigestSender = (
+  jobs: NotificationJobWithMetadata[],
 ) => Promise<ChannelSendResult>;
 
 /**

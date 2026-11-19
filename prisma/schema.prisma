@@ -466,6 +466,11 @@ model BillSchedule {
   // whenever the terms change; null once there's nothing left to bill. A
   // schedule without one yet is always read (and gets one).
   nextDueDate   DateTime?
+  // The earliest day the generator may bill (date-only): the day the terms
+  // were last changed, or the day a schedule that started long ago was
+  // added. Stops its catch-up window from creating bills for days that had
+  // already passed. Unset = no limit beyond `startDate`.
+  billFrom      DateTime?
   defaultAmount Float?
   currency      Currency?
   tenureMonths  Int?
@@ -1056,4 +1061,10 @@ model CronRun {
   lastSucceededAt DateTime?
   lastFailedAt    DateTime?
   lastError       String?
+  // Set when the last successful run still skipped records that threw (see
+  // `recordCronRun`); cleared by a clean run.
+  lastWarning     String?
+  // Where a run that ran out of time stopped, so the next one carries on
+  // from there instead of starting over (the reminder generator).
+  cursor          String?
 }

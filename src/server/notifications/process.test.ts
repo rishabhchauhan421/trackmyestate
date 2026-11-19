@@ -12,10 +12,23 @@ import {
 import type { NotificationJobWithMetadata } from "./types";
 
 jest.mock("~/server/db");
-jest.mock("./engine", () => ({
-  MAX_SEND_ATTEMPTS: 3,
-  dispatchNotificationJob: jest.fn(),
-}));
+// Each job is its own recipient here, so `dispatchNotificationJobs` gets
+// them one at a time; grouping is covered in `pipeline.test.ts`.
+jest.mock("./engine", () => {
+  const dispatchNotificationJob = jest.fn();
+  return {
+    MAX_SEND_ATTEMPTS: 3,
+    digestKey: (job: { id: string }) => job.id,
+    dispatchNotificationJob,
+    dispatchNotificationJobs: async (jobs: unknown[]) => {
+      const outcomes: unknown[] = [];
+      for (const job of jobs) {
+        outcomes.push(await dispatchNotificationJob(job));
+      }
+      return outcomes;
+    },
+  };
+});
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const dispatchMock = dispatchNotificationJob as jest.Mock;
@@ -66,6 +79,7 @@ describe("processDueNotificationJobs", () => {
         SENT: 2,
         SKIPPED: 1,
         RETRY_SCHEDULED: 0,
+        RATE_LIMITED: 0,
         FAILED: 0,
         ALREADY_CLAIMED: 0,
         CANCELLED: 0,

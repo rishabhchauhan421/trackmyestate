@@ -8,7 +8,7 @@ import {
   runReminderGeneration,
 } from "~/server/actions/admin-jobs";
 import { HORIZON_DAYS, LOOKBACK_DAYS } from "~/server/bills/generate";
-import { cronHealth, type CronJobHealth } from "~/server/cron-runs";
+import { cronHealth, sendHealth, type CronJobHealth } from "~/server/cron-runs";
 import { getJobsOverview } from "~/server/queries/admin";
 import { formatDateTime } from "../notifications/format";
 
@@ -77,13 +77,14 @@ function JobCard({
         ))}
       </dl>
       <p
-        className={`text-xs ${health?.late ? "font-semibold text-danger" : "text-muted"}`}
+        className={`text-xs ${health?.late || health?.lastWarning ? "font-semibold text-danger" : "text-muted"}`}
       >
         {health?.lastSucceededAt
           ? `Last succeeded ${formatDateTime(health.lastSucceededAt)}`
           : "Hasn't run yet"}
         {health?.late && " · late: check Vercel Cron"}
         {health?.lastError && ` · last error: ${health.lastError}`}
+        {health?.lastWarning && ` · ${health.lastWarning}`}
       </p>
       <form action={action} className="mt-auto">
         <SubmitButton variant="outline" className="w-full">
@@ -100,9 +101,10 @@ export default async function AdminJobsPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const [overview, health, params] = await Promise.all([
+  const [overview, health, sending, params] = await Promise.all([
     getJobsOverview(),
     cronHealth(),
+    sendHealth(),
     searchParams,
   ]);
   const healthOf = (job: CronJobHealth["job"]) =>
@@ -118,12 +120,26 @@ export default async function AdminJobsPage({
       />
 
       {message && <Notice tone="success">{message}</Notice>}
+      {sending.failing && (
+        <Notice tone="error">
+          Most reminders are failing: {sending.failed} failed and {sending.sent}{" "}
+          sent in the last 24 hours. Check the email provider&apos;s API key and
+          sending domain.
+        </Notice>
+      )}
+      {sending.stuck && (
+        <Notice tone="error">
+          Reminders are stuck: the oldest has been due for{" "}
+          {sending.oldestDueMinutes} minutes. Check that the send job is
+          running.
+        </Notice>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <JobCard
           title="1 · Generate bills"
           schedule="Daily, 8:30 am IST"
-          description={`Turns every active schedule (utilities, EMIs…) into bills due from ${LOOKBACK_DAYS} days ago to ${HORIZON_DAYS} days ahead. Never creates the same bill twice.`}
+          description={`Turns every active schedule (utilities, EMIs…) into bills due from ${LOOKBACK_DAYS} days ago to ${HORIZON_DAYS} days ahead. Bills each period once, and never days before a schedule's terms were last set.`}
           stats={[
             { label: "Active schedules", value: overview.activeSchedules },
             { label: "Unpaid, next 35 days", value: overview.upcomingBills },
@@ -134,7 +150,7 @@ export default async function AdminJobsPage({
         <JobCard
           title="2 · Queue reminders"
           schedule="Hourly"
-          description="Works out which reminders fall today for each unpaid bill, in each owner's time zone, and queues them for their send time."
+          description="Works out which reminders fall today for each unpaid bill, in each owner's time zone, and queues them for their send time. Also queues any that were missed yesterday."
           stats={[
             { label: "Queued, not yet due", value: overview.scheduledJobs },
             { label: "Due to send now", value: overview.dueJobs },
@@ -145,7 +161,7 @@ export default async function AdminJobsPage({
         <JobCard
           title="3 · Send reminders"
           schedule="Every 15 min"
-          description="Sends queued reminders that are due, retries temporary failures, and cancels ones for bills that have been paid."
+          description="Sends queued reminders that are due (one email per person), retries temporary failures, and cancels ones for bills that have been paid."
           stats={[
             { label: "Sent, last 24 h", value: overview.sentLast24h },
             {

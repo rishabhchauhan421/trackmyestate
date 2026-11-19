@@ -212,6 +212,8 @@ describe("createLoan", () => {
         // later, stored as a date-only value.
         startDate: new Date("2024-05-05"),
         nextDueDate: new Date("2024-05-05"),
+        // An old loan bills from today, not from last month's EMI.
+        billFrom: expect.any(Date) as Date,
         dueDay: 5,
         dueMonth: null,
         endDate: null,
@@ -336,6 +338,8 @@ describe("updateLoan", () => {
         // Still starts 5 Apr 2024; EMIs moved to the 10th → first on 10 Apr.
         startDate: new Date("2024-04-10"),
         nextDueDate: new Date("2024-04-10"),
+        // New terms bill from today on.
+        billFrom: expect.any(Date) as Date,
         dueDay: 10,
         dueMonth: null,
         endDate: null,

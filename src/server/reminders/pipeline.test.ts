@@ -391,6 +391,137 @@ describe("generating reminders", () => {
     const keys = jobs().map((j) => j.idempotencyKey);
     expect(new Set(keys).size).toBe(keys.length);
   });
+
+  it("queues yesterday's reminder today if it was never queued", async () => {
+    const s = await seedPortfolio();
+    // Nothing ran on 5 Oct. On 6 Oct the utility bill (due 8 Oct) is two
+    // days away, a day past its "3 days before" reminder.
+    const nextDay = new Date("2026-10-06T01:00:00Z");
+    await generateReminders(at(nextDay));
+
+    const [job] = jobsFor(s.util.id).filter(
+      (j) => j.recipient === "ananya@example.in",
+    );
+    expect(job?.title).toBe("BESCOM electricity: ₹4,120 due in 2 days");
+    expect(job?.idempotencyKey).toContain(":DUE_DATE:-3:");
+    // 09:00 IST on 6 Oct.
+    expect(job?.scheduledFor).toEqual(new Date("2026-10-06T03:30:00Z"));
+  });
+
+  it("doesn't repeat yesterday's reminder when it was queued", async () => {
+    const s = await seedPortfolio();
+    await generateReminders(at(EARLY_MORNING));
+    const before = jobsFor(s.util.id).length;
+
+    await generateReminders(at(new Date("2026-10-06T01:00:00Z")));
+
+    expect(jobsFor(s.util.id)).toHaveLength(before);
+  });
+
+  it("reminds about what's still owed on a part-paid bill", async () => {
+    const s = await seedPortfolio();
+    await db.bill.update({
+      where: { id: s.util.id },
+      data: { status: "PARTIALLY_PAID", paidAmount: 112000 } as never,
+    });
+
+    await generateReminders(at(EARLY_MORNING));
+
+    expect(
+      jobsFor(s.util.id).find((j) => j.recipient === "ananya@example.in")
+        ?.title,
+    ).toBe("BESCOM electricity: ₹3,000 due in 3 days");
+  });
+
+  it("also reminds the other members of the bill's household", async () => {
+    const s = await seedPortfolio();
+    const partner = await db.user.create({
+      data: { name: "Vikram Rao", email: "vikram@example.in" } as never,
+    });
+    for (const userId of [s.user.id, partner.id]) {
+      await db.householdMember.create({
+        data: { householdId: "hh-1", userId } as never,
+      });
+    }
+    await db.bill.update({
+      where: { id: s.emi.id },
+      data: { householdId: "hh-1" } as never,
+    });
+
+    await generateReminders(at(EARLY_MORNING));
+
+    const recipients = jobsFor(s.emi.id).map((j) => j.recipient);
+    expect(recipients.sort()).toEqual([
+      "ananya@example.in",
+      "vikram@example.in",
+    ]);
+    // They can settle it too, so they get the same links as the owner.
+    expect(
+      jobsFor(s.emi.id).every(
+        (j) =>
+          (j.metadata as { actionLabel: string }).actionLabel === "Mark paid",
+      ),
+    ).toBe(true);
+    // Bills of other households don't reach them.
+    expect(
+      jobs().filter((j) => j.recipient === "vikram@example.in"),
+    ).toHaveLength(1);
+  });
+
+  it("carries on next run from where a run out of time stopped", async () => {
+    const s = await seedPortfolio();
+    const extra = GENERATOR_BATCH * 2 + 37;
+    for (let i = 0; i < extra; i++) {
+      await db.bill.create({
+        data: {
+          ownerId: s.user.id,
+          category: "EMI",
+          status: "DUE",
+          direction: "OUTFLOW",
+          description: `EMI ${i}`,
+          amount: 100000,
+          dueDate: dueOct(5),
+        } as never,
+      });
+    }
+    const outOfTime = { timeBudgetMs: 0 };
+
+    const first = await generateReminders(at(EARLY_MORNING), outOfTime);
+    const second = await generateReminders(at(EARLY_MORNING), outOfTime);
+    const third = await generateReminders(at(EARLY_MORNING), outOfTime);
+
+    expect([first.hasMore, second.hasMore, third.hasMore]).toEqual([
+      true,
+      true,
+      false,
+    ]);
+    expect(first.scanned + second.scanned + third.scanned).toBe(
+      rows("bill").filter((b) => b.status !== "PAID" && !b.deletedAt).length,
+    );
+    expect(jobs()).toHaveLength(5 + extra);
+    // The next run starts from the top again.
+    expect(rows("cronRun")[0]).toMatchObject({
+      job: "reminders",
+      cursor: null,
+    });
+  });
+
+  it("carries on past a bill that fails, and reports it", async () => {
+    const s = await seedPortfolio();
+    const create = db.notificationJob.create.bind(db.notificationJob);
+    jest.spyOn(db.notificationJob, "create").mockImplementation((async (args: {
+      data: { billId: string };
+    }) => {
+      if (args.data.billId === s.emi.id) throw new Error("database blip");
+      return create(args as never);
+    }) as never);
+
+    const summary = await generateReminders(at(EARLY_MORNING));
+
+    expect(summary.failed).toBe(1);
+    expect(summary.firstError).toContain(`Bill ${s.emi.id}`);
+    expect(summary.queued).toBe(4);
+  });
 });
 
 describe("sending reminders", () => {
@@ -404,7 +535,9 @@ describe("sending reminders", () => {
 
     const due = await processDueNotificationJobs(at(AFTER_NINE));
     expect(due.outcomes.SENT).toBe(5);
-    expect(mockSend).toHaveBeenCalledTimes(5);
+    // The owner's four reminders go out as one email; the spouse's one
+    // on its own.
+    expect(mockSend).toHaveBeenCalledTimes(2);
     for (const job of jobs()) {
       expect(job.status).toBe("SENT");
       expect(job.sentAt).toBeInstanceOf(Date);
@@ -416,13 +549,13 @@ describe("sending reminders", () => {
     await generateReminders(at(EARLY_MORNING));
     await processDueNotificationJobs(at(AFTER_NINE));
 
-    const toOwner = sentEmails().find(
-      (e) => e.to === "ananya@example.in" && e.subject.startsWith("BESCOM"),
-    )!;
+    const toOwner = sentEmails().find((e) => e.to === "ananya@example.in")!;
+    expect(toOwner.subject).toMatch(/^4 reminders: .+ and 3 more$/);
+    expect(toOwner.text).toContain("BESCOM electricity: ₹4,120 due in 3 days");
     expect(toOwner.html).toContain(
       `https://trackmyestate.app/bills/${s.util.id}`,
     );
-    expect(toOwner.text).toContain("Mark it paid");
+    expect(toOwner.text).toContain("Mark paid: https://trackmyestate.app/");
 
     const toSpouse = sentEmails().find((e) => e.to === "spouse@example.in")!;
     expect(toSpouse.subject).toBe("BESCOM electricity: ₹4,120 due in 3 days");
@@ -493,6 +626,78 @@ describe("sending reminders", () => {
     expect(sentEmails().some((e) => e.subject.startsWith("Home loan"))).toBe(
       false,
     );
+  });
+
+  it("sends one person's reminders as a single email, once", async () => {
+    const s = await seedPortfolio();
+    await generateReminders(at(EARLY_MORNING));
+    await processDueNotificationJobs(at(AFTER_NINE));
+
+    const digests = mockSend.mock.calls.filter(
+      ([email]) => (email as { to: string }).to === "ananya@example.in",
+    );
+    expect(digests).toHaveLength(1);
+    const [email, options] = digests[0] as [
+      { text: string; html: string },
+      { idempotencyKey: string },
+    ];
+    // Every bill, each with its own links.
+    for (const bill of [s.util, s.emi, s.premium, s.rent]) {
+      expect(email.html).toContain(
+        `https://trackmyestate.app/bills/${bill.id}`,
+      );
+    }
+    expect(email.text).toContain("Mark received: https://trackmyestate.app/");
+    // A repeat of the same send is a no-op at the provider.
+    expect(options.idempotencyKey).toMatch(
+      /^notification-digest\/[0-9a-f]{64}$/,
+    );
+    // All four jobs share the one email's result.
+    expect(
+      jobs()
+        .filter((j) => j.recipient === "ananya@example.in")
+        .map((j) => [j.status, j.providerMessageId]),
+    ).toEqual(Array(4).fill(["SENT", "msg"]));
+  });
+
+  it("leaves a paid bill out of the digest", async () => {
+    const s = await seedPortfolio();
+    await generateReminders(at(EARLY_MORNING));
+    await db.bill.update({
+      where: { id: s.emi.id },
+      data: { status: "PAID" } as never,
+    });
+
+    await processDueNotificationJobs(at(AFTER_NINE));
+
+    const toOwner = sentEmails().find((e) => e.to === "ananya@example.in")!;
+    expect(toOwner.subject).toMatch(/^3 reminders: /);
+    expect(toOwner.text).not.toContain("Home loan EMI");
+  });
+
+  it("stops when rate limited, without spending the jobs' attempts", async () => {
+    await seedPortfolio();
+    await generateReminders(at(EARLY_MORNING));
+    mockSend.mockResolvedValue({
+      data: null,
+      error: { statusCode: 429, message: "Too many requests" },
+    });
+
+    const summary = await processDueNotificationJobs(at(AFTER_NINE));
+
+    // The first send was throttled, so nothing else was tried.
+    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(summary.hasMore).toBe(true);
+    expect(summary.outcomes.FAILED).toBe(0);
+    expect(jobs().every((j) => j.status === "SCHEDULED")).toBe(true);
+    expect(jobs().every((j) => j.retryCount === 0)).toBe(true);
+
+    // The next run sends everything.
+    mockSend.mockResolvedValue({ data: { id: "msg" }, error: null });
+    const later = await processDueNotificationJobs(
+      at(new Date(AFTER_NINE.getTime() + 15 * 60 * 1000)),
+    );
+    expect(later.outcomes.SENT).toBe(5);
   });
 
   it("retries a temporary failure with backoff, then sends", async () => {
@@ -787,10 +992,10 @@ describe("guests", () => {
     await generateReminders(at(EARLY_MORNING));
     await processDueNotificationJobs(at(AFTER_NINE));
 
-    const utilityEmails = sentEmails().filter((e) =>
-      e.subject.startsWith("BESCOM"),
+    const addresses = jobsFor(s.util.id).map((j) =>
+      String(j.recipient).toLowerCase(),
     );
-    const addresses = utilityEmails.map((e) => e.to.toLowerCase());
+    expect(jobsFor(s.util.id).every((j) => j.status === "SENT")).toBe(true);
     expect(addresses.sort()).toEqual([
       "ananya@example.in",
       "spouse@example.in",

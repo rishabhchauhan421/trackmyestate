@@ -43,6 +43,8 @@ describe("sendEmail", () => {
         to: "owner@example.com",
         subject: "Rent due in 3 days",
       }),
+      // A repeat of the same job's send is a no-op on Resend's side.
+      { idempotencyKey: `notification-job/${JOB.id}` },
     );
     expect(result).toEqual({ ok: true, providerMessageId: "resend-msg-1" });
   });
@@ -63,6 +65,7 @@ describe("sendEmail", () => {
       ok: false,
       retryable: false,
       reason: "Invalid from address",
+      rateLimited: false,
     });
   });
 
@@ -82,6 +85,7 @@ describe("sendEmail", () => {
       ok: false,
       retryable: true,
       reason: "Something went wrong",
+      rateLimited: false,
     });
   });
 

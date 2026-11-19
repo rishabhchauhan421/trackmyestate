@@ -5,7 +5,7 @@ import { NextRequest } from "next/server";
 
 import { db, resetMemoryDb, rows } from "~/server/__testing__/memory-db";
 import { cronRoute } from "./cron-route";
-import { cronHealth, recordCronRun } from "./cron-runs";
+import { cronHealth, recordCronRun, sendHealth } from "./cron-runs";
 
 jest.mock("~/server/db", () =>
   jest.requireActual<Record<string, unknown>>("~/server/__testing__/memory-db"),
@@ -38,6 +38,72 @@ describe("recordCronRun", () => {
       job: "reminders",
       lastError: "db down",
       lastFailedAt: expect.any(Date) as Date,
+    });
+  });
+});
+
+describe("recordCronRun warnings", () => {
+  it("notes records a successful run had to skip, until a clean run", async () => {
+    await recordCronRun("bills", async () => ({
+      failed: 2,
+      firstError: "Schedule s1: bad data",
+    }));
+    expect(
+      (await cronHealth(NOW)).find((j) => j.job === "bills"),
+    ).toMatchObject({ lastWarning: "2 records failed: Schedule s1: bad data" });
+
+    await recordCronRun("bills", async () => ({ failed: 0 }));
+    expect(rows("cronRun")[0]).toMatchObject({ lastWarning: null });
+  });
+});
+
+describe("sendHealth", () => {
+  let n = 0;
+  const job = (data: Record<string, unknown>) =>
+    db.notificationJob.create({
+      data: {
+        scheduledFor: minutesAgo(5),
+        idempotencyKey: `job:${n++}`,
+        ...data,
+      } as never,
+    });
+
+  beforeEach(() => {
+    jest.useFakeTimers({ now: NOW, doNotFake: ["nextTick", "setImmediate"] });
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("is healthy when reminders go out and the odd one fails", async () => {
+    for (let i = 0; i < 6; i++) await job({ status: "SENT" });
+    await job({ status: "FAILED" });
+    await job({ status: "SCHEDULED", scheduledFor: minutesAgo(10) });
+
+    expect(await sendHealth(NOW)).toEqual({
+      sent: 6,
+      failed: 1,
+      oldestDueMinutes: 0,
+      stuck: false,
+      failing: false,
+    });
+  });
+
+  it("is failing when most reminders in the last day failed", async () => {
+    for (let i = 0; i < 5; i++) await job({ status: "FAILED" });
+    await job({ status: "SENT" });
+
+    expect(await sendHealth(NOW)).toMatchObject({ failing: true });
+  });
+
+  it("is stuck when a due reminder has waited over an hour", async () => {
+    jest.setSystemTime(minutesAgo(300));
+    await job({ status: "SCHEDULED", scheduledFor: minutesAgo(90) });
+    jest.setSystemTime(NOW);
+
+    expect(await sendHealth(NOW)).toMatchObject({
+      oldestDueMinutes: 90,
+      stuck: true,
     });
   });
 });

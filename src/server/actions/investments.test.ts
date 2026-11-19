@@ -200,6 +200,7 @@ describe("investment returns", () => {
         recurrence: "YEARLY",
         startDate: new Date("2030-01-10"),
         nextDueDate: new Date("2030-01-10"),
+        billFrom: null,
         dueDay: 10,
         dueMonth: 1,
         endDate: null,

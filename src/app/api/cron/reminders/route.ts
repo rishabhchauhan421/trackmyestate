@@ -7,7 +7,7 @@
 import { cronRoute } from "~/server/cron-route";
 import { generateReminders } from "~/server/reminders/generate";
 
-// Comfortably above the generator's time budget (`TIME_BUDGET_MS`, 45s).
-export const maxDuration = 60;
+// Comfortably above the generator's time budget (`TIME_BUDGET_MS`, 4 min).
+export const maxDuration = 300;
 
 export const GET = cronRoute("reminders", () => generateReminders());
