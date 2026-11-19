@@ -94,6 +94,9 @@ Fonts: `font-display` = Bricolage Grotesque (headings, figures),
 - The app shell (`AppShell` → `SidebarLayout`) gives every signed-in page a
   264px dark sidebar and a content column capped at `max-w-300` (1200px) with
   `space-y-7` between sections. Don't add another page-level wrapper.
+- While a page loads its data, the content column shows the skeleton in
+  `src/app/(app)/loading.tsx` (pulsing `bg-sunken-2` bars in card outlines).
+  Add a section's own `loading.tsx` only if its layout differs a lot.
 - Card grids: `grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4` for
   stats; `md:grid-cols-2 xl:grid-cols-3` for item cards; main + aside is
   `grid-cols-1 lg:grid-cols-3` with the main column `lg:col-span-2`.
@@ -150,7 +153,7 @@ artboards use raw hex values that map to the tokens in the table).
 | `Properties.dc.html`              | `src/app/(app)/properties/page.tsx`                                                                                  |
 | `PropertyDetail.dc.html`          | `src/app/(app)/properties/[id]/page.tsx`                                                                             |
 | `AddProperty.dc.html`             | `src/app/(app)/properties/new/page.tsx`                                                                              |
-| `Landing.dc.html`                 | `src/app/page.tsx`                                                                                                   |
+| `Landing.dc.html`                 | `src/app/_home/home.tsx`                                                                                             |
 | `SignIn.dc.html`                  | `src/app/(auth)/login/page.tsx` (also forgot/reset password)                                                         |
 | `SettingsNav.dc.html`             | `src/app/(app)/settings/settings-nav.tsx`, `settings/layout.tsx`                                                     |
 | `SettingsGeneral.dc.html`         | `src/app/(app)/settings/page.tsx`                                                                                    |

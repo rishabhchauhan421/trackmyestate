@@ -46,3 +46,6 @@ yarn-error.log*
 .idea
 # next-agents-md
 .next-docs/
+
+# prisma generated client (rebuilt by `prisma generate` on postinstall)
+/generated/

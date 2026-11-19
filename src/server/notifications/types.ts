@@ -8,7 +8,6 @@ import type { NotificationJob } from "../../../generated/prisma";
 
 /** Structured `metadata` a job may carry, read by channel senders/templates. */
 export interface NotificationJobMetadata {
-  /** Deep link into the app for this job's underlying entity, if any. */
   /**
    * Where the email's button goes. Omitted = the app's home page; `null` =
    * no button (for recipients without an account).
@@ -16,6 +15,13 @@ export interface NotificationJobMetadata {
   actionUrl?: string | null;
   /** Button text for `actionUrl`; defaults to "View in TrackMyEstate". */
   actionLabel?: string;
+  /**
+   * A second, plain link under the button (e.g. "View in TrackMyEstate"
+   * beside a "Mark paid" button). Shown only when there is a button.
+   */
+  secondaryActionUrl?: string;
+  /** Link text for `secondaryActionUrl`. */
+  secondaryActionLabel?: string;
   /** Set on a guest's reminder, so it can be cancelled if they stop. */
   guestId?: string;
   /**

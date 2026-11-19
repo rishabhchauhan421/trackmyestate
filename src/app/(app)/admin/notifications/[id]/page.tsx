@@ -130,8 +130,11 @@ export default async function AdminNotificationPage({
   const { job, owner, bill, guest, recipientRole } = detail;
   const channel = CHANNEL_LABELS[job.channel] ?? job.channel;
   const metadata = (job.metadata ?? {}) as Record<string, unknown>;
+  // Signed links act without sign-in, so the signature isn't shown here.
   const actionUrl =
-    typeof metadata.actionUrl === "string" ? metadata.actionUrl : null;
+    typeof metadata.actionUrl === "string"
+      ? metadata.actionUrl.replace(/([?&]sig=)[^&]+/, "$1…")
+      : null;
 
   return (
     <>

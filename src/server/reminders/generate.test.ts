@@ -86,8 +86,15 @@ describe("generateReminders", () => {
         // 09:00 in India on 5 Oct.
         scheduledFor: new Date("2026-10-05T03:30:00Z"),
         idempotencyKey: "reminder:bill-1:DUE_DATE:-3:EMAIL:owner@example.com",
+        // The button settles the bill from the email (a signed link); the
+        // plain link under it opens the bill.
         metadata: {
-          actionUrl: "https://trackmyestate.app/bills/bill-1",
+          actionUrl: expect.stringContaining(
+            "https://trackmyestate.app/reminders/paid?bill=bill-1&sig=",
+          ) as string,
+          actionLabel: "Mark paid",
+          secondaryActionUrl: "https://trackmyestate.app/bills/bill-1",
+          secondaryActionLabel: "View in TrackMyEstate",
         },
       }),
     );
@@ -211,7 +218,9 @@ describe("generateReminders", () => {
     expect(enqueueMock).toHaveBeenCalledWith(
       expect.objectContaining({
         title: "Rent · Whitefield: ₹32,000 expected today",
-        metadata: { actionUrl: "https://trackmyestate.app/bills/bill-1" },
+        metadata: expect.objectContaining({
+          actionLabel: "Mark received",
+        }) as unknown,
       }),
     );
   });

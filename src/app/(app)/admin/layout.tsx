@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { getSession, isAdmin } from "~/server/better-auth/server";
+import { getFreshSession, isAdmin } from "~/server/better-auth/server";
 
 /**
  * Everything under `/admin` is platform-wide (all users, not just the
@@ -11,7 +11,7 @@ import { getSession, isAdmin } from "~/server/better-auth/server";
 export default async function AdminLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const session = await getSession();
+  const session = await getFreshSession();
   if (!session) redirect("/login");
   if (!isAdmin(session.user)) redirect("/dashboard");
 

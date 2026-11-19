@@ -31,7 +31,7 @@ import {
   REMINDER_OFFSET_PRESETS,
 } from "~/lib/reminders";
 import { isValidTimeZone, normalizeTimeZone } from "~/lib/time-zone";
-import { getSession } from "~/server/better-auth/server";
+import { getSession, refreshSessionCache } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 import { toFormState, type FormState } from "~/server/form-state";
 import {
@@ -59,6 +59,8 @@ export async function updateGeneralSettings(formData: FormData) {
     where: { id: session.user.id },
     data: { name, timezone, currency },
   });
+  // The sidebar shows the name from the session's cookie copy.
+  await refreshSessionCache();
 
   revalidatePath("/settings");
   redirect("/settings?saved=general");

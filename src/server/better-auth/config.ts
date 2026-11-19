@@ -18,6 +18,14 @@ import { sendPasswordResetEmail, sendVerificationEmail } from "./emails";
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 128;
 
+/**
+ * How long a signed copy of the session is trusted from the cookie before
+ * the database is asked again. Signing out elsewhere, a ban or a password
+ * reset can take this long to reach another device; admin checks skip the
+ * copy (`getFreshSession`).
+ */
+export const SESSION_COOKIE_CACHE_SECONDS = 5 * 60;
+
 /** How long an emailed "confirm your email" link stays valid. */
 export const VERIFICATION_LINK_TTL_SECONDS = 24 * 60 * 60;
 
@@ -32,6 +40,15 @@ export const auth = betterAuth({
       // better-auth's default random string id, which isn't valid MongoDB
       // ObjectId hex and fails against the `@db.ObjectId` columns.
       generateId: false,
+    },
+  },
+  session: {
+    // Most requests read the session from a signed cookie instead of two
+    // database lookups. Server Components can't write cookies, so
+    // `src/proxy.ts` renews the copy when it runs out.
+    cookieCache: {
+      enabled: true,
+      maxAge: SESSION_COOKIE_CACHE_SECONDS,
     },
   },
   emailAndPassword: {

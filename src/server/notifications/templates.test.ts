@@ -79,4 +79,42 @@ describe("renderNotificationEmail without a button", () => {
       "Bill due\n\nBody\n\nView in TrackMyEstate: https://trackmyestate.app/timeline",
     );
   });
+
+  it("adds a plain second link under the button when the job has one", () => {
+    const { html, text } = renderNotificationEmail({
+      title: "BESCOM electricity: ₹4,120 due today",
+      body: "Body",
+      metadata: {
+        actionUrl: "https://trackmyestate.app/reminders/paid?bill=b&sig=s",
+        actionLabel: "Mark paid",
+        secondaryActionUrl: "https://trackmyestate.app/bills/b",
+        secondaryActionLabel: "View in TrackMyEstate",
+      },
+    });
+
+    expect(html).toContain(">Mark paid</a>");
+    expect(html).toContain(
+      '<a href="https://trackmyestate.app/bills/b" style="color: #0f6e5d;">View in TrackMyEstate</a>',
+    );
+    expect(text).toContain(
+      "Mark paid: https://trackmyestate.app/reminders/paid?bill=b&sig=s",
+    );
+    expect(text).toContain(
+      "View in TrackMyEstate: https://trackmyestate.app/bills/b",
+    );
+  });
+
+  it("shows no second link when the email has no button", () => {
+    const { html } = renderNotificationEmail({
+      title: "Title",
+      body: "Body",
+      metadata: {
+        actionUrl: null,
+        secondaryActionUrl: "https://trackmyestate.app/bills/b",
+        secondaryActionLabel: "View in TrackMyEstate",
+      },
+    });
+
+    expect(html).not.toContain("<a ");
+  });
 });

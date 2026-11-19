@@ -1,4 +1,4 @@
-import { getSession, isAdmin } from "~/server/better-auth/server";
+import { getFreshSession, isAdmin } from "~/server/better-auth/server";
 import { generateBills } from "~/server/bills/generate";
 import { processDueNotificationJobs } from "~/server/notifications/process";
 import { generateReminders } from "~/server/reminders/generate";
@@ -9,7 +9,7 @@ import {
 } from "./admin-jobs";
 
 jest.mock("~/server/better-auth/server", () => ({
-  getSession: jest.fn(),
+  getFreshSession: jest.fn(),
   isAdmin: jest.fn(),
 }));
 jest.mock("~/server/bills/generate", () => ({ generateBills: jest.fn() }));
@@ -28,12 +28,14 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-const getSessionMock = getSession as jest.Mock;
+const getFreshSessionMock = getFreshSession as jest.Mock;
 const isAdminMock = isAdmin as unknown as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
-  getSessionMock.mockResolvedValue({ user: { id: "admin-1", role: "admin" } });
+  getFreshSessionMock.mockResolvedValue({
+    user: { id: "admin-1", role: "admin" },
+  });
   isAdminMock.mockReturnValue(true);
 });
 
@@ -103,7 +105,7 @@ describe("admin jobs", () => {
   });
 
   it("sends a signed-out visitor to sign in", async () => {
-    getSessionMock.mockResolvedValue(null);
+    getFreshSessionMock.mockResolvedValue(null);
 
     await expect(runBillGeneration()).rejects.toThrow("REDIRECT:/login");
     expect(generateBills).not.toHaveBeenCalled();

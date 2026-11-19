@@ -8,11 +8,11 @@
  * (`~/server/bills/generate`, via `createBill` in `~/server/bills/create`,
  * which deliberately lives outside this `"use server"` file so it can't
  * become a public endpoint).
- * `recordBillPayment` is the one mutation an owner does trigger directly,
- * from the bill's page (`/bills/[id]`).
+ * `recordBillPayment` is the mutation an owner triggers directly, from the
+ * bill's page (`/bills/[id]`); the "Mark paid" link in a reminder email is
+ * `~/server/actions/bill-paid-link`.
  */
 
-import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { z } from "zod";
@@ -27,10 +27,14 @@ import {
   optionalText,
   parseFormData,
 } from "~/lib/form";
+import {
+  applyBillPayment,
+  isOpenBill,
+  revalidateBillPages,
+} from "~/server/bills/pay";
 import { db } from "~/server/db";
 import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
-import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
 /** The "record a payment" form on a bill's page. */
 const recordPaymentSchema = z.object({
@@ -53,96 +57,33 @@ async function requireOwnedBill(billId: string, householdId: string) {
   return bill;
 }
 
-const isOpen = (status: string) =>
-  (OPEN_PAYMENT_STATUSES as readonly string[]).includes(status);
-
 /**
- * Records a payment against a bill: a `PaymentTransaction` for the money
- * that moved, and the bill's running `paidAmount` and status. The bill is
- * PAID once the payments cover what was due, or when the owner says this
- * payment settles it; otherwise it's PARTIALLY_PAID. Settling an EMI also
- * takes its principal share off the loan's outstanding balance. The writes
- * happen in one transaction so the totals can't drift from the payments.
+ * Records a payment against a bill from its page — see `applyBillPayment`
+ * for what gets written. A partial payment leaves the bill open.
  */
 export async function recordBillPayment(billId: string, formData: FormData) {
   const scope = await requireScope();
   const bill = await requireOwnedBill(billId, scope.householdId);
-  if (!isOpen(bill.status)) {
+  if (!isOpenBill(bill.status)) {
     throw new FormError("This bill is already closed");
   }
 
   const fields = parseFormData(recordPaymentSchema, formData);
 
-  await db.$transaction(async (tx) => {
-    // Read again inside the transaction so two payments saved at once
-    // can't both start from the same total.
-    const current = await tx.bill.findFirst({
-      where: { id: bill.id, householdId: scope.householdId },
-    });
-    if (!current || !isOpen(current.status)) {
-      throw new FormError("This bill is already closed");
-    }
+  const recorded = await applyBillPayment(
+    { id: bill.id, householdId: scope.householdId },
+    {
+      payerId: scope.userId,
+      amount: fields.amount,
+      paidOn: fields.paidOn,
+      method: fields.method,
+      reference: fields.reference,
+      settles: fields.settles,
+    },
+  );
+  if (!recorded) throw new FormError("This bill is already closed");
 
-    await tx.paymentTransaction.create({
-      data: {
-        ownerId: scope.userId,
-        householdId: scope.householdId,
-        category: current.category,
-        billId: current.id,
-        propertyId: current.propertyId,
-        leaseId: current.leaseId,
-        loanId: current.loanId,
-        policyId: current.policyId,
-        investmentId: current.investmentId,
-        amount: fields.amount,
-        currency: current.currency,
-        paymentMethod: fields.method,
-        referenceNumber: fields.reference,
-        paidAt: fields.paidOn,
-      },
-    });
-
-    const paidSoFar =
-      current.status === "PARTIALLY_PAID" ? (current.paidAmount ?? 0) : 0;
-    const totalPaid = paidSoFar + fields.amount;
-    const settled = fields.settles || totalPaid >= current.amount;
-
-    await tx.bill.update({
-      where: { id: current.id },
-      data: {
-        paidAmount: totalPaid,
-        status: settled ? "PAID" : "PARTIALLY_PAID",
-        paidDate: settled ? fields.paidOn : null,
-      },
-    });
-
-    // A paid EMI repays its principal share of the loan.
-    if (settled && current.loanId && current.principalComponent) {
-      const loan = await tx.loan.findFirst({
-        where: { id: current.loanId },
-        select: { outstandingBalance: true },
-      });
-      if (loan) {
-        await tx.loan.update({
-          where: { id: current.loanId },
-          data: {
-            outstandingBalance: Math.max(
-              loan.outstandingBalance - current.principalComponent,
-              0,
-            ),
-          },
-        });
-      }
-    }
-  });
-
-  revalidatePath(`/bills/${bill.id}`);
-  revalidatePath("/dashboard");
-  revalidatePath("/timeline");
-  if (bill.propertyId) {
-    revalidatePath(`/properties/${bill.propertyId}`);
-    revalidatePath(`/properties/${bill.propertyId}/utilities`);
-  }
+  revalidateBillPages(bill);
   redirect(`/bills/${bill.id}?saved=1`);
 }
 

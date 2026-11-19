@@ -14,6 +14,7 @@ import {
   zonedTimeToUtc,
 } from "~/lib/time-zone";
 import { db } from "~/server/db";
+import { billPaidUrl } from "~/server/bills/paid-link";
 import { guestOptOutUrl, recipientOptOutUrl } from "~/server/guests/opt-out";
 import { enqueueNotificationJob } from "~/server/notifications/enqueue";
 import { normalizeEmail } from "~/server/notifications/suppression";
@@ -198,12 +199,13 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
           .filter((email) => !suppressed(email, owner.id))
       : [];
 
+    const incoming = reminderCategoryConfig(bill.category).incoming;
     const { title, body } = reminderMessage({
       name: bill.description ?? EVENT_CATEGORY_LABELS[bill.category],
       amount: bill.amount,
       dueDay,
       offsetDays,
-      incoming: reminderCategoryConfig(bill.category).incoming,
+      incoming,
       currency: bill.currency ?? owner.currency,
     });
     // What anyone other than the owner sees: who it's from, and only the
@@ -257,7 +259,14 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
           channel: "EMAIL",
           recipient: owner.email,
           body,
-          metadata: { actionUrl: actionUrlFor(bill) },
+          // One click settles it without signing in; only the owner's own
+          // email gets this link.
+          metadata: {
+            actionUrl: billPaidUrl(bill.id),
+            actionLabel: incoming ? "Mark received" : "Mark paid",
+            secondaryActionUrl: actionUrlFor(bill),
+            secondaryActionLabel: "View in TrackMyEstate",
+          },
           idempotencyKey: `${keyPrefix}:${owner.email}`,
         });
       }
@@ -304,7 +313,7 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
   return queued;
 }
 
-/** Where the reminder's button takes you. */
+/** The bill's page in the app (sign-in required). */
 function actionUrlFor(bill: BillForReminder) {
   return `${env.NEXT_PUBLIC_SITE_URL}/bills/${bill.id}`;
 }

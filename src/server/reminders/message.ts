@@ -57,8 +57,8 @@ export function reminderMessage({
   }
 
   const body = incoming
-    ? `${name} — ${money}, expected on ${formatDay(dueDay)}.\nMark it received in TrackMyEstate once it arrives.`
-    : `${name} — ${money}, due on ${formatDay(dueDay)}.\nMark it paid in TrackMyEstate once it's done, and we'll stop reminding you.`;
+    ? `${name} — ${money}, expected on ${formatDay(dueDay)}.\nMark it received once it arrives, and we'll stop reminding you.`
+    : `${name} — ${money}, due on ${formatDay(dueDay)}.\nMark it paid once it's done, and we'll stop reminding you.`;
 
   return { title, body };
 }

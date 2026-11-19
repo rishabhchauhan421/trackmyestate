@@ -8,14 +8,14 @@
 
 import { redirect } from "next/navigation";
 
-import { getSession, isAdmin } from "~/server/better-auth/server";
+import { getFreshSession, isAdmin } from "~/server/better-auth/server";
 import { generateBills } from "~/server/bills/generate";
 import { recordCronRun } from "~/server/cron-runs";
 import { processDueNotificationJobs } from "~/server/notifications/process";
 import { generateReminders } from "~/server/reminders/generate";
 
 async function requireAdmin() {
-  const session = await getSession();
+  const session = await getFreshSession();
   if (!session) redirect("/login");
   if (!isAdmin(session.user)) throw new Error("Only admins can run jobs");
 }

@@ -9,7 +9,7 @@ import {
   cancelNotification,
   retryNotification,
 } from "~/server/actions/admin-notifications";
-import { getSession, isAdmin } from "~/server/better-auth/server";
+import { getFreshSession, isAdmin } from "~/server/better-auth/server";
 import {
   getNotificationDetail,
   getNotificationLog,
@@ -22,7 +22,7 @@ jest.mock("~/server/db", () =>
   jest.requireActual<Record<string, unknown>>("~/server/__testing__/memory-db"),
 );
 jest.mock("~/server/better-auth/server", () => ({
-  getSession: jest.fn(),
+  getFreshSession: jest.fn(),
   isAdmin: jest.fn(),
 }));
 jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
@@ -59,7 +59,7 @@ function job(input: JobInput = {}) {
 beforeEach(async () => {
   resetMemoryDb();
   jest.clearAllMocks();
-  (getSession as jest.Mock).mockResolvedValue({
+  (getFreshSession as jest.Mock).mockResolvedValue({
     user: { id: "admin-1", role: "admin" },
   });
   (isAdmin as unknown as jest.Mock).mockReturnValue(true);
@@ -249,7 +249,7 @@ describe("retryNotification / cancelNotification", () => {
     await expect(retryNotification(failed.id)).rejects.toThrow("Only admins");
     await expect(cancelNotification(failed.id)).rejects.toThrow("Only admins");
 
-    (getSession as jest.Mock).mockResolvedValue(null);
+    (getFreshSession as jest.Mock).mockResolvedValue(null);
     await expect(retryNotification(failed.id)).rejects.toThrow(
       "REDIRECT:/login",
     );

@@ -36,6 +36,15 @@ export function renderNotificationEmail(
     typeof job.metadata?.actionLabel === "string"
       ? job.metadata.actionLabel
       : "View in TrackMyEstate";
+  const secondary =
+    actionUrl &&
+    typeof job.metadata?.secondaryActionUrl === "string" &&
+    typeof job.metadata?.secondaryActionLabel === "string"
+      ? {
+          url: job.metadata.secondaryActionUrl,
+          label: job.metadata.secondaryActionLabel,
+        }
+      : null;
 
   const html = `
 <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 0 auto; color: #1f2937;">
@@ -43,12 +52,14 @@ export function renderNotificationEmail(
   <h1 style="font-size: 20px; margin: 0 0 12px;">${escapeHtml(job.title)}</h1>
   <p style="font-size: 15px; line-height: 1.5; margin: 0 0 24px; white-space: pre-line;">${escapeHtml(job.body)}</p>
   ${actionUrl ? `<a href="${escapeHtml(actionUrl)}" style="display: inline-block; background: #0f6e5d; color: #ffffff; text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 14px;">${escapeHtml(actionLabel)}</a>` : ""}
+  ${secondary ? `<p style="font-size: 14px; margin: 16px 0 0;"><a href="${escapeHtml(secondary.url)}" style="color: #0f6e5d;">${escapeHtml(secondary.label)}</a></p>` : ""}
 </div>`.trim();
 
   const text = [
     job.title,
     job.body,
     ...(actionUrl ? [`${actionLabel}: ${actionUrl}`] : []),
+    ...(secondary ? [`${secondary.label}: ${secondary.url}`] : []),
   ].join("\n\n");
 
   return { subject: job.title, html, text };

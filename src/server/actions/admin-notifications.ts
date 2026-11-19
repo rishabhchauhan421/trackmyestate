@@ -9,11 +9,11 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { getSession, isAdmin } from "~/server/better-auth/server";
+import { getFreshSession, isAdmin } from "~/server/better-auth/server";
 import { db } from "~/server/db";
 
 async function requireAdmin() {
-  const session = await getSession();
+  const session = await getFreshSession();
   if (!session) redirect("/login");
   if (!isAdmin(session.user)) {
     throw new Error("Only admins can manage notifications");

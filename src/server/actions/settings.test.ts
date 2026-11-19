@@ -23,6 +23,7 @@ jest.mock("~/server/email/send", () => ({
 }));
 jest.mock("~/server/better-auth/server", () => ({
   getSession: jest.fn(),
+  refreshSessionCache: jest.fn(),
 }));
 jest.mock("next/cache", () => ({
   revalidatePath: jest.fn(),

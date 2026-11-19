@@ -2,7 +2,7 @@
 
 import * as Headless from "@headlessui/react";
 import clsx from "clsx";
-import React, { forwardRef } from "react";
+import React, { forwardRef, useState } from "react";
 
 import { Link } from "./link";
 import { TouchTarget } from "./touch-target";
@@ -123,6 +123,11 @@ export const SidebarItem = forwardRef(function SidebarItem(
   ),
   ref: React.ForwardedRef<HTMLAnchorElement | HTMLButtonElement>,
 ) {
+  // Fetch the whole page as soon as the pointer or a finger lands on the
+  // link, so it's usually there by the time the click finishes. Before
+  // that, only the default (the loading skeleton) is fetched.
+  const [intent, setIntent] = useState(false);
+
   // Icons use `text-*` (currentColor), not `fill-*`: the app's icons are
   // outline icons drawn with `stroke="currentColor"`, and filling them turns
   // the selected one into a solid blob.
@@ -141,6 +146,10 @@ export const SidebarItem = forwardRef(function SidebarItem(
       {typeof props.href === "string" ? (
         <Headless.CloseButton
           as={Link}
+          prefetch={intent ? true : null}
+          onMouseEnter={() => setIntent(true)}
+          onTouchStart={() => setIntent(true)}
+          onFocus={() => setIntent(true)}
           {...props}
           className={classes}
           data-current={current ? "true" : undefined}
