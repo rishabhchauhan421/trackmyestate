@@ -199,6 +199,7 @@ describe("investment returns", () => {
         category: "INVESTMENT_RETURN",
         recurrence: "YEARLY",
         startDate: new Date("2030-01-10"),
+        nextDueDate: new Date("2030-01-10"),
         dueDay: 10,
         dueMonth: 1,
         endDate: null,

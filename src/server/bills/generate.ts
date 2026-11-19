@@ -2,10 +2,10 @@ import "server-only";
 
 import type { BillSchedule } from "../../../generated/prisma";
 import { amortizationRow } from "~/lib/amortization";
-import { addDays, dateOnly } from "~/lib/calendar-day";
+import { addDays, calendarDayOf, dateOnly } from "~/lib/calendar-day";
 import { BILL_TYPE_LABELS, EVENT_CATEGORY_LABELS } from "~/lib/labels";
 import { reminderCategoryConfig } from "~/lib/reminders";
-import { occurrencesBetween } from "~/lib/schedule";
+import { nextOccurrence, occurrencesBetween } from "~/lib/schedule";
 import { resolveTimeZone, todayInTimeZone } from "~/lib/time-zone";
 import { db } from "~/server/db";
 import { createBill, isUniqueConstraintError, scheduleBillKey } from "./create";
@@ -25,6 +25,10 @@ import { NOT_SOFT_DELETED } from "~/server/queries/shared";
  * moment can't both insert it — and the job can run as often as needed:
  * daily by `/api/cron/bills`, on demand from the admin portal, and for a
  * single schedule right after it's created.
+ *
+ * Each schedule remembers its `nextDueDate` — the first day it hasn't
+ * billed yet — so a run reads only the schedules with something due within
+ * the horizon (an index on `active, nextDueDate`), not every schedule.
  */
 
 export const HORIZON_DAYS = 35;
@@ -58,9 +62,24 @@ export async function generateBills(
   };
   let cursor: string | undefined;
 
+  // Schedules with a bill due by the horizon's end anywhere in the world
+  // (a day past UTC's, for zones ahead of it), or not yet given a date.
+  const dueBy = dateOnly(
+    addDays(todayInTimeZone("UTC", now), HORIZON_DAYS + 1),
+  );
   for (;;) {
     const schedules = await db.billSchedule.findMany({
-      where: ACTIVE_SCHEDULE,
+      where: {
+        ...ACTIVE_SCHEDULE,
+        AND: [
+          {
+            OR: [
+              { nextDueDate: { lte: dueBy } },
+              { nextDueDate: { isSet: false } },
+            ],
+          },
+        ],
+      },
       orderBy: { id: "asc" },
       take: BATCH_SIZE,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
@@ -166,14 +185,16 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
   let billsCreated = 0;
   let skippedNoAmount = 0;
   for (const schedule of schedules) {
-    if (schedule.defaultAmount == null || schedule.defaultAmount <= 0) {
-      skippedNoAmount += 1;
-      continue;
-    }
     const today = todayInTimeZone(
       timeZoneOf.get(schedule.ownerId) ?? resolveTimeZone(null),
       now,
     );
+    if (schedule.defaultAmount == null || schedule.defaultAmount <= 0) {
+      skippedNoAmount += 1;
+      // Nothing to bill until its terms change (which sets a new date).
+      await recordNextDueDate(schedule, null);
+      continue;
+    }
     const due = occurrencesBetween(
       schedule,
       addDays(today, -LOOKBACK_DAYS),
@@ -229,9 +250,29 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
       }
       alreadyBilled.add(key);
     }
+
+    // The next day to bill is the first one past this run's horizon (or
+    // the start, if that's later still); none once the schedule has ended.
+    const pastHorizon = addDays(today, HORIZON_DAYS + 1);
+    const start = schedule.startDate ? calendarDayOf(schedule.startDate) : null;
+    const next = nextOccurrence(
+      schedule,
+      start && start > pastHorizon ? start : pastHorizon,
+    );
+    await recordNextDueDate(schedule, next ? dateOnly(next.day) : null);
   }
 
   return { billsCreated, skippedNoAmount };
+}
+
+async function recordNextDueDate(schedule: BillSchedule, next: Date | null) {
+  // Unchanged dates need no write. Null is always written: a field that was
+  // never set also reads as null, and only a stored null stops the scans.
+  if (next && schedule.nextDueDate?.getTime() === next.getTime()) return;
+  await db.billSchedule.update({
+    where: { id: schedule.id },
+    data: { nextDueDate: next },
+  });
 }
 
 /** "BESCOM electricity · Indiranagar 2BHK", "Home loan EMI · SBI", … */

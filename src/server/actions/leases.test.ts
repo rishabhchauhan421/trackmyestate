@@ -304,6 +304,7 @@ describe("createLease rent schedule", () => {
         category: "RENT",
         recurrence: "MONTHLY",
         startDate: new Date("2026-07-05"),
+        nextDueDate: new Date("2026-07-05"),
         dueDay: 5,
         dueMonth: null,
         endDate: new Date("2027-05-31"),

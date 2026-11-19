@@ -461,6 +461,11 @@ model BillSchedule {
   dueMonth      Int?
   // Last day a bill can fall on (e.g. a lease's end date). No end if unset.
   endDate       DateTime?
+  // The first due day the generator hasn't billed yet (date-only), so each
+  // run reads only schedules with something due soon. Set to `startDate`
+  // whenever the terms change; null once there's nothing left to bill. A
+  // schedule without one yet is always read (and gets one).
+  nextDueDate   DateTime?
   defaultAmount Float?
   currency      Currency?
   tenureMonths  Int?
@@ -483,6 +488,7 @@ model BillSchedule {
   @@index([loanId])
   @@index([policyId])
   @@index([householdId])
+  @@index([active, nextDueDate])
 }
 
 model Bill {

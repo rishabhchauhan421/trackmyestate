@@ -211,6 +211,7 @@ describe("createLoan", () => {
         // Loan starts 5 Apr 2024 with EMIs on the 5th: the first is a month
         // later, stored as a date-only value.
         startDate: new Date("2024-05-05"),
+        nextDueDate: new Date("2024-05-05"),
         dueDay: 5,
         dueMonth: null,
         endDate: null,
@@ -334,6 +335,7 @@ describe("updateLoan", () => {
         recurrence: "MONTHLY",
         // Still starts 5 Apr 2024; EMIs moved to the 10th → first on 10 Apr.
         startDate: new Date("2024-04-10"),
+        nextDueDate: new Date("2024-04-10"),
         dueDay: 10,
         dueMonth: null,
         endDate: null,

@@ -245,6 +245,7 @@ exports.Prisma.BillScheduleScalarFieldEnum = {
   dueDay: 'dueDay',
   dueMonth: 'dueMonth',
   endDate: 'endDate',
+  nextDueDate: 'nextDueDate',
   defaultAmount: 'defaultAmount',
   currency: 'currency',
   tenureMonths: 'tenureMonths',

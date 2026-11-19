@@ -148,6 +148,8 @@ export async function saveSchedule(
     endDate: terms.endDate ?? null,
     tenureMonths: terms.tenureMonths ?? null,
     defaultAmount: terms.defaultAmount,
+    // Billing restarts from the start: the generator moves it on.
+    nextDueDate: terms.startDate,
   };
 
   if (!existing) {

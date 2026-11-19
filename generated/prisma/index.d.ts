@@ -12761,6 +12761,7 @@ export namespace Prisma {
     dueDay: number | null
     dueMonth: number | null
     endDate: Date | null
+    nextDueDate: Date | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -12791,6 +12792,7 @@ export namespace Prisma {
     dueDay: number | null
     dueMonth: number | null
     endDate: Date | null
+    nextDueDate: Date | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -12821,6 +12823,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth: number
     endDate: number
+    nextDueDate: number
     defaultAmount: number
     currency: number
     tenureMonths: number
@@ -12867,6 +12870,7 @@ export namespace Prisma {
     dueDay?: true
     dueMonth?: true
     endDate?: true
+    nextDueDate?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -12897,6 +12901,7 @@ export namespace Prisma {
     dueDay?: true
     dueMonth?: true
     endDate?: true
+    nextDueDate?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -12927,6 +12932,7 @@ export namespace Prisma {
     dueDay?: true
     dueMonth?: true
     endDate?: true
+    nextDueDate?: true
     defaultAmount?: true
     currency?: true
     tenureMonths?: true
@@ -13044,6 +13050,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth: number | null
     endDate: Date | null
+    nextDueDate: Date | null
     defaultAmount: number | null
     currency: $Enums.Currency | null
     tenureMonths: number | null
@@ -13093,6 +13100,7 @@ export namespace Prisma {
     dueDay?: boolean
     dueMonth?: boolean
     endDate?: boolean
+    nextDueDate?: boolean
     defaultAmount?: boolean
     currency?: boolean
     tenureMonths?: boolean
@@ -13138,6 +13146,7 @@ export namespace Prisma {
     dueDay?: boolean
     dueMonth?: boolean
     endDate?: boolean
+    nextDueDate?: boolean
     defaultAmount?: boolean
     currency?: boolean
     tenureMonths?: boolean
@@ -13147,7 +13156,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "startDate" | "dueDay" | "dueMonth" | "endDate" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
+  export type BillScheduleOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "ownerId" | "householdId" | "category" | "propertyId" | "leaseId" | "loanId" | "policyId" | "investmentId" | "billType" | "provider" | "accountNumber" | "meterNumber" | "billingType" | "autoGenerateBill" | "recurrence" | "startDate" | "dueDay" | "dueMonth" | "endDate" | "nextDueDate" | "defaultAmount" | "currency" | "tenureMonths" | "active" | "deletedAt" | "createdAt" | "updatedAt" | "recipients", ExtArgs["result"]["billSchedule"]>
   export type BillScheduleInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     owner?: boolean | UserDefaultArgs<ExtArgs>
     household?: boolean | BillSchedule$householdArgs<ExtArgs>
@@ -13199,6 +13208,7 @@ export namespace Prisma {
       dueDay: number
       dueMonth: number | null
       endDate: Date | null
+      nextDueDate: Date | null
       defaultAmount: number | null
       currency: $Enums.Currency | null
       tenureMonths: number | null
@@ -13631,6 +13641,7 @@ export namespace Prisma {
     readonly dueDay: FieldRef<"BillSchedule", 'Int'>
     readonly dueMonth: FieldRef<"BillSchedule", 'Int'>
     readonly endDate: FieldRef<"BillSchedule", 'DateTime'>
+    readonly nextDueDate: FieldRef<"BillSchedule", 'DateTime'>
     readonly defaultAmount: FieldRef<"BillSchedule", 'Float'>
     readonly currency: FieldRef<"BillSchedule", 'Currency'>
     readonly tenureMonths: FieldRef<"BillSchedule", 'Int'>
@@ -33731,6 +33742,7 @@ export namespace Prisma {
     dueDay: 'dueDay',
     dueMonth: 'dueMonth',
     endDate: 'endDate',
+    nextDueDate: 'nextDueDate',
     defaultAmount: 'defaultAmount',
     currency: 'currency',
     tenureMonths: 'tenureMonths',
@@ -35244,6 +35256,7 @@ export namespace Prisma {
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
     endDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -35286,6 +35299,7 @@ export namespace Prisma {
     dueDay?: SortOrder
     dueMonth?: SortOrder
     endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -35331,6 +35345,7 @@ export namespace Prisma {
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
     endDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -35373,6 +35388,7 @@ export namespace Prisma {
     dueDay?: SortOrder
     dueMonth?: SortOrder
     endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -35411,6 +35427,7 @@ export namespace Prisma {
     dueDay?: IntWithAggregatesFilter<"BillSchedule"> | number
     dueMonth?: IntNullableWithAggregatesFilter<"BillSchedule"> | number | null
     endDate?: DateTimeNullableWithAggregatesFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableWithAggregatesFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableWithAggregatesFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableWithAggregatesFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableWithAggregatesFilter<"BillSchedule"> | number | null
@@ -38110,6 +38127,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -38152,6 +38170,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -38179,6 +38198,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -38220,6 +38240,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -38255,6 +38276,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -38278,6 +38300,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -38308,6 +38331,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -41184,6 +41208,7 @@ export namespace Prisma {
     dueDay?: SortOrder
     dueMonth?: SortOrder
     endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -41221,6 +41246,7 @@ export namespace Prisma {
     dueDay?: SortOrder
     dueMonth?: SortOrder
     endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -41251,6 +41277,7 @@ export namespace Prisma {
     dueDay?: SortOrder
     dueMonth?: SortOrder
     endDate?: SortOrder
+    nextDueDate?: SortOrder
     defaultAmount?: SortOrder
     currency?: SortOrder
     tenureMonths?: SortOrder
@@ -48062,6 +48089,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -48102,6 +48130,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -48755,6 +48784,7 @@ export namespace Prisma {
     dueDay?: IntFilter<"BillSchedule"> | number
     dueMonth?: IntNullableFilter<"BillSchedule"> | number | null
     endDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
+    nextDueDate?: DateTimeNullableFilter<"BillSchedule"> | Date | string | null
     defaultAmount?: FloatNullableFilter<"BillSchedule"> | number | null
     currency?: EnumCurrencyNullableFilter<"BillSchedule"> | $Enums.Currency | null
     tenureMonths?: IntNullableFilter<"BillSchedule"> | number | null
@@ -49523,6 +49553,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -49563,6 +49594,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -50656,6 +50688,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -50696,6 +50729,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -52511,6 +52545,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -52552,6 +52587,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -53217,6 +53253,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53257,6 +53294,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -53846,6 +53884,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -53886,6 +53925,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -54692,6 +54732,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -54732,6 +54773,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -55654,6 +55696,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -55694,6 +55737,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -57680,6 +57724,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -57721,6 +57766,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -58289,6 +58335,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -58329,6 +58376,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -58898,6 +58946,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -58939,6 +58988,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -59491,6 +59541,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -59531,6 +59582,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -60404,6 +60456,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -60445,6 +60498,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -61042,6 +61096,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -61082,6 +61137,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -61629,6 +61685,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -61669,6 +61726,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -62436,6 +62494,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -63109,6 +63168,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -63148,6 +63208,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -63181,6 +63242,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -63537,6 +63599,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -63876,6 +63939,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -63915,6 +63979,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -63948,6 +64013,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -64558,6 +64624,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -64705,6 +64772,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -64744,6 +64812,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -64777,6 +64846,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -65926,6 +65996,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -66091,6 +66162,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -66130,6 +66202,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -66163,6 +66236,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -66623,6 +66697,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -66788,6 +66863,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -66827,6 +66903,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -66860,6 +66937,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -67320,6 +67398,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -67467,6 +67546,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -67506,6 +67586,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -67539,6 +67620,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -68135,6 +68217,7 @@ export namespace Prisma {
     dueDay: number
     dueMonth?: number | null
     endDate?: Date | string | null
+    nextDueDate?: Date | string | null
     defaultAmount?: number | null
     currency?: $Enums.Currency | null
     tenureMonths?: number | null
@@ -68550,6 +68633,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -68589,6 +68673,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null
@@ -68622,6 +68707,7 @@ export namespace Prisma {
     dueDay?: IntFieldUpdateOperationsInput | number
     dueMonth?: NullableIntFieldUpdateOperationsInput | number | null
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    nextDueDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     defaultAmount?: NullableFloatFieldUpdateOperationsInput | number | null
     currency?: NullableEnumCurrencyFieldUpdateOperationsInput | $Enums.Currency | null
     tenureMonths?: NullableIntFieldUpdateOperationsInput | number | null

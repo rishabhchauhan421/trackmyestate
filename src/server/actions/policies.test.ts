@@ -212,6 +212,7 @@ describe("policy premiums and payouts", () => {
         category: "PREMIUM",
         recurrence: "YEARLY",
         startDate: new Date("2026-01-10"),
+        nextDueDate: new Date("2026-01-10"),
         dueDay: 10,
         dueMonth: 1,
         // A 20-year policy from 10 Jan 2022.

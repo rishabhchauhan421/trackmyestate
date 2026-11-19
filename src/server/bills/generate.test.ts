@@ -361,6 +361,84 @@ describe("generateBills", () => {
   });
 });
 
+describe("nextDueDate", () => {
+  const utility = {
+    category: "UTILITY_BILL",
+    startDate: new Date("2026-01-10"),
+    dueDay: 10,
+    defaultAmount: 100,
+  };
+  const nextDue = (id: string) =>
+    (
+      rows("billSchedule").find((s) => s.id === id)!.nextDueDate as
+        Date | null | undefined
+    )
+      ?.toISOString()
+      .slice(0, 10) ?? null;
+
+  it("moves on to the first day past the horizon", async () => {
+    const user = await owner();
+    const s = await schedule(user.id, utility);
+
+    await generateBills(NOW);
+
+    // Billed up to 5 Oct + 35 days = 9 Nov, so 10 Nov is next.
+    expect(dueDays(s.id).at(-1)).toBe("2026-10-10");
+    expect(nextDue(s.id)).toBe("2026-11-10");
+  });
+
+  it("reads only schedules with something due soon", async () => {
+    const user = await owner();
+    await schedule(user.id, {
+      ...utility,
+      nextDueDate: new Date("2027-03-10"),
+    });
+    const due = await schedule(user.id, {
+      ...utility,
+      nextDueDate: new Date("2026-10-10"),
+    });
+
+    const summary = await generateBills(NOW);
+
+    expect(summary.schedulesScanned).toBe(1);
+    expect(dueDays(due.id).length).toBeGreaterThan(0);
+  });
+
+  it("waits for a schedule that starts after the horizon", async () => {
+    const user = await owner();
+    const s = await schedule(user.id, {
+      ...utility,
+      recurrence: "YEARLY",
+      startDate: new Date("2028-06-01"),
+      dueDay: 1,
+      dueMonth: 6,
+    });
+
+    await generateBills(NOW);
+
+    expect(nextDue(s.id)).toBe("2028-06-01");
+    expect((await generateBills(NOW)).schedulesScanned).toBe(0);
+  });
+
+  it("stops reading a schedule that has ended or has no amount", async () => {
+    const user = await owner();
+    const ended = await schedule(user.id, {
+      ...utility,
+      endDate: new Date("2026-09-30"),
+    });
+    const noAmount = await schedule(user.id, {
+      ...utility,
+      defaultAmount: undefined,
+    });
+
+    await generateBills(NOW);
+
+    expect(nextDue(ended.id)).toBeNull();
+    expect(nextDue(noAmount.id)).toBeNull();
+    expect((await generateBills(NOW)).schedulesScanned).toBe(0);
+  });
+});
+
 describe("generateBillsForSchedule", () => {
   it("generates just that schedule's bills", async () => {
     const user = await owner();
