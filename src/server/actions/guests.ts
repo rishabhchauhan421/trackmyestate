@@ -18,6 +18,7 @@ import { db } from "~/server/db";
 import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import { sendGuestWelcomeEmail } from "~/server/guests/emails";
+import { checkGuestCapacity, claimGuestInvite } from "~/server/guests/invites";
 import { getGuestForOwner } from "~/server/queries/guests";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 
@@ -157,20 +158,16 @@ export async function createGuest(formData: FormData) {
     guest.propertyScope === "some" ? guest.propertyIds : [],
   );
 
+  await checkGuestCapacity(scope.userId);
+  const emailed = guest.email !== null && guest.channels.includes("EMAIL");
+  if (emailed) await claimGuestInvite(scope.userId, guest.email!);
+
   const created = await db.guest.create({
     data: { ownerId: scope.userId, ...guestData(guest, propertyIds) },
   });
 
   // Tell them before the first reminder arrives, with a way to stop.
-  if (created.email && created.channels.includes("EMAIL")) {
-    await sendGuestWelcomeEmail({
-      guestId: created.id,
-      to: created.email,
-      guestName: created.name,
-      ownerName: scope.user.name,
-      categories: created.categories,
-    });
-  }
+  if (emailed) await welcome(created, scope.userId, scope.user.name);
 
   revalidatePath("/settings/guests");
   redirect("/settings/guests?saved=added");
@@ -187,13 +184,46 @@ export async function updateGuest(guestId: string, formData: FormData) {
     guest.propertyScope === "some" ? guest.propertyIds : [],
   );
 
-  await db.guest.update({
+  // A new address (or email newly switched on) is a new invite: it gets
+  // the same checks and its own welcome email.
+  const wasEmailed =
+    existing.email !== null && existing.channels.includes("EMAIL");
+  const emailed = guest.email !== null && guest.channels.includes("EMAIL");
+  const newAddress =
+    emailed &&
+    (!wasEmailed ||
+      existing.email!.trim().toLowerCase() !== guest.email!.toLowerCase());
+  if (newAddress) await claimGuestInvite(scope.userId, guest.email!);
+
+  const updated = await db.guest.update({
     where: { id: guestId },
     data: guestData(guest, propertyIds),
   });
+  if (newAddress) await welcome(updated, scope.userId, scope.user.name);
 
   revalidatePath("/settings/guests");
   redirect("/settings/guests?saved=updated");
+}
+
+async function welcome(
+  guest: {
+    id: string;
+    email: string | null;
+    name: string;
+    categories: EventCategory[];
+  },
+  ownerId: string,
+  ownerName: string,
+) {
+  if (!guest.email) return;
+  await sendGuestWelcomeEmail({
+    guestId: guest.id,
+    ownerId,
+    to: guest.email,
+    guestName: guest.name,
+    ownerName,
+    categories: guest.categories as [EventCategory, ...EventCategory[]],
+  });
 }
 
 export async function pauseGuest(guestId: string) {

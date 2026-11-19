@@ -14,8 +14,9 @@ import {
   zonedTimeToUtc,
 } from "~/lib/time-zone";
 import { db } from "~/server/db";
-import { guestOptOutUrl } from "~/server/guests/opt-out";
+import { guestOptOutUrl, recipientOptOutUrl } from "~/server/guests/opt-out";
 import { enqueueNotificationJob } from "~/server/notifications/enqueue";
+import { normalizeEmail } from "~/server/notifications/suppression";
 import {
   NOT_SOFT_DELETED,
   OPEN_PAYMENT_STATUSES,
@@ -141,6 +142,24 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
     },
   });
 
+  // Addresses that unsubscribed from an owner's emails, or from everyone's.
+  const candidateEmails = [
+    ...guests.flatMap((guest) => (guest.email ? [guest.email] : [])),
+    ...schedules.flatMap((s) => (s.recipients ?? []).map((r) => r.email)),
+  ].map(normalizeEmail);
+  const suppressions = candidateEmails.length
+    ? await db.emailSuppression.findMany({
+        where: { email: { in: [...new Set(candidateEmails)] } },
+        select: { email: true, ownerId: true },
+      })
+    : [];
+  const suppressed = (email: string, ownerId: string) =>
+    suppressions.some(
+      (row) =>
+        row.email === normalizeEmail(email) &&
+        (row.ownerId === null || row.ownerId === ownerId),
+    );
+
   let queued = 0;
   for (const bill of bills) {
     const owner = ownerById.get(bill.ownerId);
@@ -175,6 +194,7 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
       ? (scheduleById.get(bill.billScheduleId)?.recipients ?? [])
           .filter((recipient) => recipient.notifyOnDue)
           .map((recipient) => recipient.email)
+          .filter((email) => !suppressed(email, owner.id))
       : [];
 
     const { title, body } = reminderMessage({
@@ -246,8 +266,12 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
           channel: "EMAIL",
           recipient: email,
           body: sharedBody,
-          // No button: recipients have no account to open.
-          metadata: { actionUrl: null },
+          // No link into the app (they have no account): a stop link.
+          metadata: {
+            actionUrl: recipientOptOutUrl(owner.id, email),
+            actionLabel: "Stop these reminders",
+            thirdParty: true,
+          },
           idempotencyKey: `${keyPrefix}:${email}`,
         });
       }
@@ -258,6 +282,7 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
     // or is paused before it goes out.
     for (const guest of guestsToday) {
       if (!guest.email || !guest.channels.includes("EMAIL")) continue;
+      if (suppressed(guest.email, owner.id)) continue;
       if (!claim(guest.email)) continue;
       await enqueue({
         ...base,
@@ -268,6 +293,7 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
           actionUrl: guestOptOutUrl(guest.id),
           actionLabel: "Stop these reminders",
           guestId: guest.id,
+          thirdParty: true,
         },
         idempotencyKey: `${keyPrefix}:guest:${guest.id}`,
       });
@@ -278,9 +304,5 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
 
 /** Where the reminder's button takes you. */
 function actionUrlFor(bill: BillForReminder) {
-  const base = env.NEXT_PUBLIC_SITE_URL;
-  if (bill.category === "UTILITY_BILL" && bill.propertyId) {
-    return `${base}/properties/${bill.propertyId}/utilities/bills/${bill.id}`;
-  }
-  return `${base}/timeline`;
+  return `${env.NEXT_PUBLIC_SITE_URL}/bills/${bill.id}`;
 }

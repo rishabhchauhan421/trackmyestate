@@ -1019,3 +1019,22 @@ model AuthThrottle {
   count       Int
   windowStart DateTime
 }
+
+// Addresses that asked not to be emailed on someone's behalf: a guest who
+// used "stop these reminders", a utility recipient who unsubscribed. Keyed
+// by address (lower-cased), so deleting and re-adding the guest, or adding
+// them to another utility, doesn't start the emails again. `ownerId` is the
+// user whose emails they stopped; null means every user's. Only emails sent
+// on a user's behalf to other people are checked — never a user's own.
+model EmailSuppression {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  // `${ownerId ?? "*"}:${email}`, so each (owner, address) is stored once.
+  key       String   @unique
+  email     String
+  ownerId   String?  @db.ObjectId
+  // GUEST_OPT_OUT, RECIPIENT_UNSUBSCRIBE or ALL_USERS.
+  reason    String
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}

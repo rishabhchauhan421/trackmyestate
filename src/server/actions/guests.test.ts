@@ -64,6 +64,15 @@ beforeEach(() => {
     id: "guest-1",
     ...(data as object),
   })) as never);
+  dbMock.guest.update.mockImplementation((async ({ data }: never) => ({
+    id: "guest-1",
+    ...(data as object),
+  })) as never);
+  // No one unsubscribed, no guests yet, and today's invites not used up.
+  dbMock.emailSuppression.findMany.mockResolvedValue([]);
+  dbMock.guest.count.mockResolvedValue(0);
+  dbMock.authThrottle.updateMany.mockResolvedValue({ count: 0 });
+  dbMock.authThrottle.upsert.mockResolvedValue({} as never);
 });
 
 describe("createGuest", () => {
@@ -87,6 +96,7 @@ describe("createGuest", () => {
     });
     expect(welcomeMock).toHaveBeenCalledWith({
       guestId: "guest-1",
+      ownerId: "user-1",
       to: "radha@example.com",
       guestName: "Radha Rao",
       ownerName: "Ananya Rao",
@@ -137,6 +147,48 @@ describe("createGuest", () => {
     });
   });
 
+  it("won't email an address that unsubscribed from this owner", async () => {
+    dbMock.emailSuppression.findMany.mockResolvedValue([
+      { email: "radha@example.com" },
+    ] as never);
+
+    await expect(createGuest(guestForm())).rejects.toThrow(
+      "This person asked not to get reminders from you",
+    );
+    expect(dbMock.emailSuppression.findMany).toHaveBeenCalledWith({
+      where: {
+        key: { in: ["user-1:radha@example.com", "*:radha@example.com"] },
+      },
+      select: { email: true },
+    });
+    expect(dbMock.guest.create).not.toHaveBeenCalled();
+    expect(welcomeMock).not.toHaveBeenCalled();
+  });
+
+  it("caps how many guests an owner can have", async () => {
+    dbMock.guest.count.mockResolvedValue(25);
+
+    await expect(createGuest(guestForm())).rejects.toThrow(
+      "You can have up to 25 guests",
+    );
+    expect(dbMock.guest.create).not.toHaveBeenCalled();
+  });
+
+  it("caps how many guests an owner can invite in a day", async () => {
+    dbMock.authThrottle.updateMany.mockResolvedValue({ count: 1 });
+    dbMock.authThrottle.findUnique.mockResolvedValue({ count: 11 } as never);
+
+    await expect(createGuest(guestForm())).rejects.toThrow(
+      "You've added a lot of guests today",
+    );
+    expect(dbMock.authThrottle.updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ key: "guest-invite:user-1" }),
+      }),
+    );
+    expect(dbMock.guest.create).not.toHaveBeenCalled();
+  });
+
   it("refuses someone else's property", async () => {
     dbMock.property.findMany.mockResolvedValue([] as never);
 
@@ -169,7 +221,11 @@ describe("createGuest", () => {
 
 describe("updating a guest", () => {
   it("updates only the owner's own guest", async () => {
-    dbMock.guest.findFirst.mockResolvedValue({ id: "guest-1" } as never);
+    dbMock.guest.findFirst.mockResolvedValue({
+      id: "guest-1",
+      email: "radha@example.com",
+      channels: ["EMAIL"],
+    } as never);
 
     await expect(
       updateGuest("guest-1", guestForm({ when: "dueDay" })),
@@ -182,6 +238,42 @@ describe("updating a guest", () => {
       where: { id: "guest-1" },
       data: expect.objectContaining({ dueDayOnly: true }),
     });
+    // Same address: no new invite.
+    expect(dbMock.authThrottle.updateMany).not.toHaveBeenCalled();
+    expect(welcomeMock).not.toHaveBeenCalled();
+  });
+
+  it("treats a new address as a new invite", async () => {
+    dbMock.guest.findFirst.mockResolvedValue({
+      id: "guest-1",
+      email: "radha@example.com",
+      channels: ["EMAIL"],
+    } as never);
+
+    await expect(
+      updateGuest("guest-1", guestForm({ email: "radha.rao@example.com" })),
+    ).rejects.toThrow("REDIRECT:/settings/guests?saved=updated");
+
+    expect(dbMock.authThrottle.updateMany).toHaveBeenCalled();
+    expect(welcomeMock).toHaveBeenCalledWith(
+      expect.objectContaining({ to: "radha.rao@example.com" }),
+    );
+  });
+
+  it("won't switch a guest to an address that unsubscribed", async () => {
+    dbMock.guest.findFirst.mockResolvedValue({
+      id: "guest-1",
+      email: "radha@example.com",
+      channels: ["EMAIL"],
+    } as never);
+    dbMock.emailSuppression.findMany.mockResolvedValue([
+      { email: "old@example.com" },
+    ] as never);
+
+    await expect(
+      updateGuest("guest-1", guestForm({ email: "old@example.com" })),
+    ).rejects.toThrow("asked not to get reminders");
+    expect(dbMock.guest.update).not.toHaveBeenCalled();
   });
 
   it("refuses a guest that isn't the owner's", async () => {

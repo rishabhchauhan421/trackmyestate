@@ -57,6 +57,7 @@ beforeEach(() => {
   ] as never);
   dbMock.notificationRule.findMany.mockResolvedValue([]);
   dbMock.guest.findMany.mockResolvedValue([]);
+  dbMock.emailSuppression.findMany.mockResolvedValue([]);
   dbMock.billSchedule.findMany.mockResolvedValue([
     {
       id: "sched-1",
@@ -86,8 +87,7 @@ describe("generateReminders", () => {
         scheduledFor: new Date("2026-10-05T03:30:00Z"),
         idempotencyKey: "reminder:bill-1:DUE_DATE:-3:EMAIL:owner@example.com",
         metadata: {
-          actionUrl:
-            "https://trackmyestate.app/properties/prop-1/utilities/bills/bill-1",
+          actionUrl: "https://trackmyestate.app/bills/bill-1",
         },
       }),
     );
@@ -103,6 +103,43 @@ describe("generateReminders", () => {
       ([job]) => (job as { recipient: string }).recipient,
     );
     expect(recipients).toEqual(["owner@example.com", "spouse@example.com"]);
+    // A recipient's email carries a signed stop link, not a link into the app.
+    const [, [spouseJob]] = enqueueMock.mock.calls as [[unknown], [unknown]];
+    expect(spouseJob).toMatchObject({
+      metadata: {
+        actionLabel: "Stop these reminders",
+        thirdParty: true,
+        actionUrl: expect.stringContaining(
+          "/reminders/stop?owner=user-1&email=spouse%40example.com&sig=",
+        ) as string,
+      },
+    });
+  });
+
+  it("leaves out recipients who unsubscribed from this owner or everyone", async () => {
+    dbMock.billSchedule.findMany.mockResolvedValue([
+      {
+        id: "sched-1",
+        recipients: [
+          { name: "Spouse", email: "Spouse@Example.com", notifyOnDue: true },
+          { name: "Tenant", email: "tenant@example.com", notifyOnDue: true },
+          { name: "Friend", email: "friend@example.com", notifyOnDue: true },
+        ],
+      },
+    ] as never);
+    dbMock.emailSuppression.findMany.mockResolvedValue([
+      { email: "spouse@example.com", ownerId: "user-1" },
+      { email: "tenant@example.com", ownerId: null },
+      { email: "friend@example.com", ownerId: "someone-else" },
+    ] as never);
+    dbMock.bill.findMany.mockResolvedValueOnce([bill()] as never);
+
+    await generateReminders(now);
+
+    const recipients = enqueueMock.mock.calls.map(
+      ([job]) => (job as { recipient: string }).recipient,
+    );
+    expect(recipients).toEqual(["owner@example.com", "friend@example.com"]);
   });
 
   it("queues nothing on a day no reminder falls on", async () => {
@@ -174,7 +211,7 @@ describe("generateReminders", () => {
     expect(enqueueMock).toHaveBeenCalledWith(
       expect.objectContaining({
         title: "Rent · Whitefield: ₹32,000 expected today",
-        metadata: { actionUrl: "https://trackmyestate.app/timeline" },
+        metadata: { actionUrl: "https://trackmyestate.app/bills/bill-1" },
       }),
     );
   });

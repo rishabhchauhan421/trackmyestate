@@ -33,6 +33,7 @@ const MODELS = [
   "lease",
   "investment",
   "paymentTransaction",
+  "emailSuppression",
 ] as const;
 type Model = (typeof MODELS)[number];
 
@@ -53,6 +54,7 @@ const UNIQUE: Partial<Record<Model, string[]>> = {
   notificationJob: ["idempotencyKey"],
   bill: ["generationKey"],
   user: ["email"],
+  emailSuppression: ["key"],
 };
 
 const store: Record<Model, Doc[]> = Object.fromEntries(
@@ -270,6 +272,15 @@ function makeDelegate(model: Model) {
       checkUnique(model, doc, doc.id);
       all()[index] = doc;
       return clone(doc);
+    },
+    async upsert(args: {
+      where: Where;
+      create: Record<string, unknown>;
+      update: Record<string, unknown>;
+    }) {
+      return findIndex(args.where) === -1
+        ? this.create({ data: args.create })
+        : this.update({ where: args.where, data: args.update });
     },
     async updateMany(args: { where?: Where; data: Record<string, unknown> }) {
       let count = 0;

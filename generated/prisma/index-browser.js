@@ -510,6 +510,15 @@ exports.Prisma.AuthThrottleScalarFieldEnum = {
   windowStart: 'windowStart'
 };
 
+exports.Prisma.EmailSuppressionScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  email: 'email',
+  ownerId: 'ownerId',
+  reason: 'reason',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -718,7 +727,8 @@ exports.Prisma.ModelName = {
   HouseholdMember: 'HouseholdMember',
   AppMigration: 'AppMigration',
   RateLimit: 'RateLimit',
-  AuthThrottle: 'AuthThrottle'
+  AuthThrottle: 'AuthThrottle',
+  EmailSuppression: 'EmailSuppression'
 };
 
 /**

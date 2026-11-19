@@ -7,6 +7,7 @@ import "server-only";
 
 import { db } from "~/server/db";
 import { CHANNEL_SENDERS } from "./registry";
+import { isEmailSuppressed } from "./suppression";
 import { NotImplementedChannelError } from "./types";
 import type { NotificationJobWithMetadata } from "./types";
 
@@ -102,6 +103,20 @@ export async function dispatchNotificationJob(
       });
       return "CANCELLED";
     }
+  }
+
+  // Someone emailed on the owner's behalf who has since unsubscribed (from
+  // this owner, or from everyone) doesn't get it.
+  if (
+    job.channel === "EMAIL" &&
+    (job.metadata?.thirdParty === true || typeof guestId === "string") &&
+    (await isEmailSuppressed(job.recipient, job.ownerId))
+  ) {
+    await db.notificationJob.update({
+      where: { id: job.id },
+      data: { status: "CANCELLED", failedReason: "Recipient unsubscribed" },
+    });
+    return "CANCELLED";
   }
 
   try {

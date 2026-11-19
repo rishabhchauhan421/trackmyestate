@@ -18,6 +18,11 @@ export interface NotificationJobMetadata {
   actionLabel?: string;
   /** Set on a guest's reminder, so it can be cancelled if they stop. */
   guestId?: string;
+  /**
+   * Sent on the owner's behalf to someone else (a guest, a utility's
+   * recipient): checked against the suppression list before sending.
+   */
+  thirdParty?: boolean;
   [key: string]: unknown;
 }
 
