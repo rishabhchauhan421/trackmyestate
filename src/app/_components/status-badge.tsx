@@ -14,6 +14,8 @@ const STATUS_STYLES: Record<string, string> = {
   LAPSED: DANGER,
   MATURED: NEUTRAL,
   CLAIMED: NEUTRAL,
+  // A timeline event a schedule will bill but hasn't yet.
+  PROJECTED: "bg-sunken-2 text-muted",
   // Notification jobs
   SENT: OK,
   SCHEDULED: "bg-accent-soft text-accent-strong",

@@ -12,6 +12,7 @@ const OWNER_ID = "owner-1";
 
 beforeEach(() => {
   mockReset(dbMock);
+  dbMock.billSchedule.findMany.mockResolvedValue([]);
 });
 
 describe("getTimelineEvents", () => {
@@ -122,6 +123,96 @@ describe("getTimelineEvents", () => {
     await getTimelineEvents(OWNER_ID, "month", "all");
     expect(dbMock.bill.findMany.mock.calls[2]?.[0]?.where).not.toHaveProperty(
       "direction",
+    );
+  });
+});
+
+describe("projected events", () => {
+  const NOW = new Date("2026-06-15T06:30:00Z"); // 15 Jun in India
+
+  const premium = {
+    id: "sched-1",
+    category: "PREMIUM",
+    recurrence: "QUARTERLY",
+    dueDay: 10,
+    dueMonth: null,
+    startDate: new Date("2026-04-10"),
+    endDate: null,
+    createdAt: new Date("2026-04-01"),
+    tenureMonths: null,
+    defaultAmount: 900_000,
+    currency: null,
+    policy: { id: "pol-1", insurer: "LIC" },
+    property: null,
+    lease: null,
+    loan: null,
+    investment: null,
+    billType: null,
+    provider: null,
+  };
+
+  it("adds what a schedule will bill later in the range", async () => {
+    dbMock.bill.findMany.mockResolvedValue([
+      {
+        id: "bill-1",
+        billScheduleId: "sched-1",
+        category: "PREMIUM",
+        direction: "OUTFLOW",
+        dueDate: new Date("2026-07-10"),
+        amount: 900_000,
+        currency: null,
+        status: "DUE",
+        description: "LIC premium",
+      },
+    ] as never);
+    dbMock.billSchedule.findMany.mockResolvedValue([premium] as never);
+
+    const events = await getTimelineEvents(
+      OWNER_ID,
+      "year",
+      "all",
+      "Asia/Kolkata",
+      NOW,
+    );
+
+    // April's premium is in the past with no bill: not projected. July's
+    // bill exists; October's is projected.
+    expect(
+      events.map((e) => [
+        e.dueDate.toISOString().slice(0, 10),
+        e.status,
+        e.billId,
+      ]),
+    ).toEqual([
+      ["2026-07-10", "DUE", "bill-1"],
+      ["2026-10-10", "PROJECTED", null],
+    ]);
+    expect(events[1]).toMatchObject({
+      projected: true,
+      direction: "OUTFLOW",
+      amount: 900_000,
+      description: "Premium · LIC",
+    });
+  });
+
+  it("only projects the direction asked for", async () => {
+    dbMock.bill.findMany.mockResolvedValue([]);
+    dbMock.billSchedule.findMany.mockResolvedValue([premium] as never);
+
+    await expect(
+      getTimelineEvents(OWNER_ID, "year", "inflow", "Asia/Kolkata", NOW),
+    ).resolves.toEqual([]);
+  });
+
+  it("looks only at the household's active schedules", async () => {
+    dbMock.bill.findMany.mockResolvedValue([]);
+
+    await getTimelineEvents(OWNER_ID, "month", "all");
+
+    expect(dbMock.billSchedule.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { householdId: OWNER_ID, active: true },
+      }),
     );
   });
 });

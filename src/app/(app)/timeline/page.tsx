@@ -71,7 +71,7 @@ export default async function TimelinePage({
     <>
       <PageHeader
         title="Timeline"
-        description="What do I pay this month, and what money is coming back to me — and when."
+        description="What do I pay this month, and what money is coming back to me — and when. Projected items are bills your schedules will add closer to the date."
       />
 
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -122,12 +122,16 @@ export default async function TimelinePage({
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-ink">
-                    <Link
-                      href={`/bills/${event.id}`}
-                      className="hover:text-accent-strong"
-                    >
-                      {event.description ?? CATEGORY_LABELS[event.category]}
-                    </Link>
+                    {event.billId ? (
+                      <Link
+                        href={`/bills/${event.billId}`}
+                        className="hover:text-accent-strong"
+                      >
+                        {event.description}
+                      </Link>
+                    ) : (
+                      event.description
+                    )}
                   </p>
                   <p className="mt-0.5 text-xs text-muted">
                     {formatDate(event.dueDate)} ·{" "}
