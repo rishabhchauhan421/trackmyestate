@@ -25,6 +25,7 @@ import {
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
 } from "~/server/better-auth/config";
+import { allowAuthAttempt, RATE_LIMITED_MESSAGE } from "~/server/rate-limit";
 
 const requestResetSchema = z.object({
   email: email("Enter a valid email"),
@@ -62,6 +63,12 @@ export async function requestPasswordReset(formData: FormData) {
   } catch (err) {
     const message = errorMessage(err, "Enter a valid email");
     redirect(`/forgot-password?error=${encodeURIComponent(message)}`);
+  }
+
+  if (!(await allowAuthAttempt("passwordReset", fields.email))) {
+    redirect(
+      `/forgot-password?error=${encodeURIComponent(RATE_LIMITED_MESSAGE)}`,
+    );
   }
 
   try {

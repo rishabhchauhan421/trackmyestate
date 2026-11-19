@@ -997,3 +997,23 @@ model AppMigration {
   name  String   @unique
   ranAt DateTime @default(now())
 }
+
+/// better-auth's own rate limiter for the `/api/auth/*` HTTP endpoints
+/// (`rateLimit.storage: "database"` in `src/server/better-auth/config.ts`),
+/// so limits hold across serverless instances.
+model RateLimit {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  key         String @unique
+  count       Int
+  lastRequest BigInt
+}
+
+/// Fixed-window attempt counters for the sign-in, sign-up, password reset
+/// and verification-email Server Actions (`src/server/rate-limit.ts`).
+/// `key` is "<action>:ip:<address>" or "<action>:email:<address>".
+model AuthThrottle {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  key         String   @unique
+  count       Int
+  windowStart DateTime
+}

@@ -1,6 +1,7 @@
 import { APIError } from "better-auth";
 
 import { auth } from "~/server/better-auth";
+import { allowAuthAttempt } from "~/server/rate-limit";
 import { requestPasswordReset, resetPassword } from "./password-reset";
 
 // better-auth is ESM-only, which Jest can't load; only `APIError`'s shape
@@ -27,6 +28,10 @@ jest.mock("~/server/better-auth/config", () => ({
   PASSWORD_MIN_LENGTH: 8,
   PASSWORD_MAX_LENGTH: 128,
 }));
+jest.mock("~/server/rate-limit", () => ({
+  allowAuthAttempt: jest.fn(),
+  RATE_LIMITED_MESSAGE: "Too many attempts",
+}));
 jest.mock("next/headers", () => ({
   headers: jest.fn(async () => new Headers()),
 }));
@@ -38,6 +43,7 @@ jest.mock("next/navigation", () => ({
 
 const requestMock = auth.api.requestPasswordReset as unknown as jest.Mock;
 const resetMock = auth.api.resetPassword as unknown as jest.Mock;
+const allowMock = allowAuthAttempt as jest.Mock;
 
 function form(fields: Record<string, string>) {
   const formData = new FormData();
@@ -48,9 +54,23 @@ function form(fields: Record<string, string>) {
 beforeEach(() => {
   requestMock.mockReset().mockResolvedValue({ status: true });
   resetMock.mockReset().mockResolvedValue({ status: true });
+  allowMock.mockReset().mockResolvedValue(true);
 });
 
 describe("requestPasswordReset", () => {
+  it("refuses once the email or IP has asked too often", async () => {
+    allowMock.mockResolvedValue(false);
+
+    await expect(
+      requestPasswordReset(form({ email: "owner@example.com" })),
+    ).rejects.toThrow("REDIRECT:/forgot-password?error=Too%20many%20attempts");
+    expect(allowMock).toHaveBeenCalledWith(
+      "passwordReset",
+      "owner@example.com",
+    );
+    expect(requestMock).not.toHaveBeenCalled();
+  });
+
   it("asks better-auth to email a link back to /reset-password", async () => {
     await expect(
       requestPasswordReset(form({ email: " owner@example.com " })),

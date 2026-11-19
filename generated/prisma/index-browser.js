@@ -495,6 +495,20 @@ exports.Prisma.AppMigrationScalarFieldEnum = {
   ranAt: 'ranAt'
 };
 
+exports.Prisma.RateLimitScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  count: 'count',
+  lastRequest: 'lastRequest'
+};
+
+exports.Prisma.AuthThrottleScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  count: 'count',
+  windowStart: 'windowStart'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -701,7 +715,9 @@ exports.Prisma.ModelName = {
   Guest: 'Guest',
   Household: 'Household',
   HouseholdMember: 'HouseholdMember',
-  AppMigration: 'AppMigration'
+  AppMigration: 'AppMigration',
+  RateLimit: 'RateLimit',
+  AuthThrottle: 'AuthThrottle'
 };
 
 /**

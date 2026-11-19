@@ -67,7 +67,7 @@ export function SiteHeader({
             <Link href="/login" className={`${navLinkClass} hidden sm:block`}>
               Sign in
             </Link>
-            <Button href="/login" color="slate" className="max-sm:hidden">
+            <Button href="/sign-up" color="slate" className="max-sm:hidden">
               Get started free
             </Button>
           </>
@@ -91,7 +91,7 @@ export function SiteHeader({
                 <Link href="/login" className={navLinkClass}>
                   Sign in
                 </Link>
-                <Button href="/login" color="slate" className="mt-1 sm:hidden">
+                <Button href="/sign-up" color="slate" className="mt-1 sm:hidden">
                   Get started free
                 </Button>
               </>
