@@ -5,10 +5,13 @@ import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
 import { createInvestmentForm } from "~/server/actions/investments";
+import { currencySymbol } from "~/lib/format";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 
 export default async function NewInvestmentPage() {
-  await requireScope();
+  const scope = await requireScope();
+  const symbol = currencySymbol(await getUserCurrency(scope.userId));
 
   return (
     <>
@@ -77,7 +80,7 @@ export default async function NewInvestmentPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Capital deployed (₹)</span>
+            <span className={labelClass}>Capital deployed ({symbol})</span>
             <input
               type="number"
               name="capitalDeployed"
@@ -89,7 +92,7 @@ export default async function NewInvestmentPage() {
           </label>
           <label className="block">
             <span className={labelClass}>
-              Current estimated value (₹, optional)
+              Current estimated value ({symbol}, optional)
             </span>
             <input
               type="number"

@@ -14,7 +14,7 @@ import {
 import { PropertiesIcon } from "~/app/_components/icons";
 import { Breadcrumbs, propertyCrumbs } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
-import { daysUntil, formatDate, formatDueIn, formatINR } from "~/lib/format";
+import { daysUntil, formatDate, formatDueIn, formatMoney } from "~/lib/format";
 import {
   EVENT_CATEGORY_LABELS,
   OWNERSHIP_TYPE_LABELS,
@@ -22,7 +22,7 @@ import {
   PROPERTY_TYPE_LABELS,
 } from "~/lib/labels";
 import { requireScope } from "~/server/households";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getAllBillsForProperty } from "~/server/queries/bills";
 import { getLeasesForProperty } from "~/server/queries/leases";
 import { getPropertyForHousehold } from "~/server/queries/properties";
@@ -43,11 +43,15 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
-  const [bills, leases, timeZone] = await Promise.all([
+  const [bills, leases, timeZone, userCurrency] = await Promise.all([
     getAllBillsForProperty(id),
     getLeasesForProperty(id),
     getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
   ]);
+  // A property's rent, deposits and bills are in its own currency.
+  const currency = property.currency ?? userCurrency;
+  const money = (amount: number) => formatMoney(amount, currency);
 
   const activeLeases = leases.filter((lease) => lease.active);
   const monthlyRent = activeLeases.reduce((s, l) => s + l.rentAmount, 0);
@@ -146,7 +150,7 @@ export default async function PropertyDetailPage({
       >
         <StatCard
           label="Current value"
-          value={value != null ? formatINR(value) : "—"}
+          value={value != null ? money(value) : "—"}
           hint={
             gain != null ? (
               <span
@@ -156,7 +160,7 @@ export default async function PropertyDetailPage({
                 )}
               >
                 {gain >= 0 ? "+" : "−"}
-                {formatINR(Math.abs(gain))} since purchase
+                {money(Math.abs(gain))} since purchase
               </span>
             ) : (
               "Add a purchase price to track gain"
@@ -165,7 +169,7 @@ export default async function PropertyDetailPage({
         />
         <StatCard
           label="Monthly rent"
-          value={monthlyRent > 0 ? formatINR(monthlyRent) : "—"}
+          value={monthlyRent > 0 ? money(monthlyRent) : "—"}
           hint={
             activeLeases.length > 0
               ? `${activeLeases.length} active ${activeLeases.length === 1 ? "lease" : "leases"}`
@@ -176,14 +180,12 @@ export default async function PropertyDetailPage({
           label="Gross rental yield"
           value={grossYield != null ? `${grossYield.toFixed(1)}%` : "—"}
           hint={
-            monthlyRent > 0
-              ? `${formatINR(monthlyRent * 12)} a year`
-              : undefined
+            monthlyRent > 0 ? `${money(monthlyRent * 12)} a year` : undefined
           }
         />
         <StatCard
           label="Open bills"
-          value={formatINR(openTotal)}
+          value={money(openTotal)}
           hint={
             nextOpen ? (
               <span
@@ -255,12 +257,12 @@ export default async function PropertyDetailPage({
                       <p className="text-[0.8125rem] text-muted">
                         {lease.room?.label ?? "Whole property"} · since{" "}
                         {formatDate(lease.leaseStart)} · deposit{" "}
-                        {formatINR(lease.depositAmount)}
+                        {money(lease.depositAmount)}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="text-[0.9375rem] font-semibold text-ink">
-                        {formatINR(lease.rentAmount)}
+                        {money(lease.rentAmount)}
                       </p>
                       <p className="text-xs text-muted">
                         {lease.rentDueDay
@@ -336,7 +338,7 @@ export default async function PropertyDetailPage({
                         </td>
                         <td className="px-6 py-3.5 text-right font-semibold whitespace-nowrap text-ink">
                           {bill.direction === "INFLOW" && "+"}
-                          {formatINR(bill.amount)}
+                          {money(bill.amount)}
                         </td>
                       </tr>
                     ))}
@@ -357,7 +359,7 @@ export default async function PropertyDetailPage({
               label="Purchase price"
               value={
                 property.purchasePrice != null
-                  ? formatINR(property.purchasePrice)
+                  ? money(property.purchasePrice)
                   : undefined
               }
             />

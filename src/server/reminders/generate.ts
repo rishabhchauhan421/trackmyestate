@@ -119,6 +119,7 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
         email: true,
         timezone: true,
         reminderHour: true,
+        currency: true,
       },
     }),
     getEffectiveRemindersForOwners(ownerIds),
@@ -203,6 +204,7 @@ async function queueRemindersForBills(bills: BillForReminder[], now: Date) {
       dueDay,
       offsetDays,
       incoming: reminderCategoryConfig(bill.category).incoming,
+      currency: bill.currency ?? owner.currency,
     });
     // What anyone other than the owner sees: who it's from, and only the
     // item, amount and due date (no "mark it paid" — they have no account).

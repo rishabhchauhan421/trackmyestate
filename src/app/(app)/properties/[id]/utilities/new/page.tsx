@@ -8,9 +8,10 @@ import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
 import { todayInTimeZone } from "~/lib/time-zone";
 import { createUtilityForm } from "~/server/actions/utilities";
+import { currencySymbol } from "~/lib/format";
 import { requireScope } from "~/server/households";
 import { getPropertyForHousehold } from "~/server/queries/properties";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { BillingFields } from "./billing-fields";
 
 export default async function NewUtilityPage({
@@ -24,6 +25,9 @@ export default async function NewUtilityPage({
   if (!property) {
     notFound();
   }
+  const symbol = currencySymbol(
+    property.currency ?? (await getUserCurrency(scope.userId)),
+  );
   const timeZone = await getUserTimeZone(scope.userId);
 
   return (
@@ -95,7 +99,7 @@ export default async function NewUtilityPage({
           </label>
         </div>
 
-        <BillingFields />
+        <BillingFields symbol={symbol} />
 
         <label className="block">
           <span className={labelClass}>First due date</span>

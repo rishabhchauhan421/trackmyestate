@@ -9,7 +9,7 @@ import { controlClass, labelClass } from "~/app/_components/form";
  * bill's amount is only an estimate, so its label says "Approx. amount"
  * and switches as soon as the billing type changes.
  */
-export function BillingFields() {
+export function BillingFields({ symbol }: { symbol: string }) {
   const [billingType, setBillingType] = useState("VARIABLE");
   const variable = billingType === "VARIABLE";
 
@@ -29,7 +29,7 @@ export function BillingFields() {
       </label>
       <label className="block">
         <span className={labelClass}>
-          {variable ? "Approx. amount (₹)" : "Amount (₹)"}
+          {variable ? `Approx. amount (${symbol})` : `Amount (${symbol})`}
         </span>
         <input
           type="number"

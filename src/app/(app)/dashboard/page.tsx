@@ -10,14 +10,21 @@ import {
   UploadIcon,
 } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
+import type { Currency } from "../../../../generated/prisma";
 import {
   daysUntil,
   formatDueIn,
-  formatINR,
+  formatMoney,
   formatShortDate,
 } from "~/lib/format";
+import {
+  addTotals,
+  amountIn,
+  formatTotals,
+  type MoneyTotals,
+} from "~/lib/money-totals";
 import { requireScope } from "~/server/households";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getDashboardData } from "~/server/queries/dashboard";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -57,10 +64,12 @@ function toneFor(
   return "plain";
 }
 
-function signedAmount(bill: { direction: string; amount: number }) {
-  return bill.direction === "INFLOW"
-    ? `+${formatINR(bill.amount)}`
-    : formatINR(bill.amount);
+function signedAmount(
+  bill: { direction: string; amount: number; currency: Currency | null },
+  currency: Currency,
+) {
+  const money = formatMoney(bill.amount, bill.currency ?? currency);
+  return bill.direction === "INFLOW" ? `+${money}` : money;
 }
 
 function plural(count: number, word: string) {
@@ -69,9 +78,14 @@ function plural(count: number, word: string) {
 
 export default async function DashboardPage() {
   const scope = await requireScope();
-  const timeZone = await getUserTimeZone(scope.userId);
+  const [timeZone, currency] = await Promise.all([
+    getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
+  ]);
+  const money = (totals: MoneyTotals) => formatTotals(totals, currency);
   const {
     netWorth,
+    assets,
     propertyValue,
     investmentValue,
     loanOutstanding,
@@ -80,7 +94,7 @@ export default async function DashboardPage() {
     expectedInflows,
     attentionItems,
     upcoming,
-  } = await getDashboardData(scope.householdId, timeZone);
+  } = await getDashboardData(scope.householdId, timeZone, new Date(), currency);
 
   const firstName = scope.user.name?.split(" ")[0];
   const overdueCount = attentionItems.filter(
@@ -98,8 +112,12 @@ export default async function DashboardPage() {
           .filter(Boolean)
           .join(" and ") + ".";
 
-  const assets = propertyValue + investmentValue;
-  const flowMax = Math.max(upcomingOutflows, expectedInflows, 1);
+  // Bars compare amounts in the user's own currency (others can't be
+  // compared without conversion); the figures beside them show them all.
+  const inflowBar = amountIn(expectedInflows, currency);
+  const outflowBar = amountIn(upcomingOutflows, currency);
+  const flowMax = Math.max(inflowBar, outflowBar, 1);
+  const net = addTotals(expectedInflows, upcomingOutflows, -1);
 
   return (
     <>
@@ -127,22 +145,22 @@ export default async function DashboardPage() {
         <StatCard
           tone="dark"
           label="Net worth"
-          value={formatINR(netWorth)}
-          hint={`${formatINR(assets)} assets − ${formatINR(loanOutstanding)} loans`}
+          value={money(netWorth)}
+          hint={`${money(assets)} assets − ${money(loanOutstanding)} loans`}
         />
         <StatCard
           label="Insurance cover"
-          value={formatINR(totalCoverage)}
+          value={money(totalCoverage)}
           hint="Across active policies"
         />
         <StatCard
           label="Going out · next 30 days"
-          value={formatINR(upcomingOutflows)}
+          value={money(upcomingOutflows)}
           hint="EMIs, premiums & bills"
         />
         <StatCard
           label="Coming in · next 30 days"
-          value={formatINR(expectedInflows)}
+          value={money(expectedInflows)}
           hint="Rent, payouts & returns"
           valueClassName="text-accent"
         />
@@ -212,7 +230,7 @@ export default async function DashboardPage() {
                           : "text-ink",
                       )}
                     >
-                      {signedAmount(item)}
+                      {signedAmount(item, currency)}
                     </span>
                   </li>
                 );
@@ -228,22 +246,23 @@ export default async function DashboardPage() {
             </h2>
             <FlowBar
               label="Coming in"
-              amount={expectedInflows}
+              value={money(expectedInflows)}
+              amount={inflowBar}
               max={flowMax}
               barClassName="bg-accent"
               amountClassName="text-accent"
             />
             <FlowBar
               label="Going out"
-              amount={upcomingOutflows}
+              value={money(upcomingOutflows)}
+              amount={outflowBar}
               max={flowMax}
               barClassName="bg-ink"
             />
             <p className="text-[0.8125rem] text-muted">
               Net{" "}
               <strong className="font-semibold text-ink">
-                {expectedInflows - upcomingOutflows < 0 ? "−" : "+"}
-                {formatINR(Math.abs(expectedInflows - upcomingOutflows))}
+                {formatTotals(net, currency, { signed: true })}
               </strong>{" "}
               over the next month.
             </p>
@@ -253,32 +272,32 @@ export default async function DashboardPage() {
             <h2 id="mix" className="text-base font-semibold text-ink">
               Portfolio
             </h2>
-            {assets > 0 && (
+            {amountIn(assets, currency) > 0 && (
               <div className="flex h-3 gap-0.5 overflow-hidden rounded-full">
                 <div
                   className="bg-accent"
-                  style={{ flexGrow: propertyValue }}
+                  style={{ flexGrow: amountIn(propertyValue, currency) }}
                 />
                 <div
                   className="bg-mint"
-                  style={{ flexGrow: investmentValue }}
+                  style={{ flexGrow: amountIn(investmentValue, currency) }}
                 />
               </div>
             )}
             <dl className="space-y-2.5 text-[0.8125rem]">
               <MixRow
                 label="Properties"
-                value={formatINR(propertyValue)}
+                value={money(propertyValue)}
                 swatch="bg-accent"
               />
               <MixRow
                 label="Investments"
-                value={formatINR(investmentValue)}
+                value={money(investmentValue)}
                 swatch="bg-mint"
               />
               <MixRow
                 label="Loans"
-                value={`−${formatINR(loanOutstanding)}`}
+                value={`−${money(loanOutstanding)}`}
                 swatch="border-2 border-ink"
               />
             </dl>
@@ -328,7 +347,7 @@ export default async function DashboardPage() {
                       bill.direction === "INFLOW" ? "text-accent" : "text-ink",
                     )}
                   >
-                    {signedAmount(bill)}
+                    {signedAmount(bill, currency)}
                   </span>
                 </li>
               );
@@ -342,12 +361,16 @@ export default async function DashboardPage() {
 
 function FlowBar({
   label,
+  value,
   amount,
   max,
   barClassName,
   amountClassName,
 }: {
   label: string;
+  /** The figure shown, in every currency. */
+  value: string;
+  /** The bar's length: the amount in the user's currency. */
   amount: number;
   max: number;
   barClassName: string;
@@ -358,7 +381,7 @@ function FlowBar({
       <div className="flex justify-between text-[0.8125rem]">
         <span className="text-muted">{label}</span>
         <span className={clsx("font-semibold text-ink", amountClassName)}>
-          {formatINR(amount)}
+          {value}
         </span>
       </div>
       <div className="h-2.5 overflow-hidden rounded-full bg-sunken-2">

@@ -4,6 +4,8 @@ import {
   formatDate,
   formatDueIn,
   formatINR,
+  formatMoney,
+  currencySymbol,
   formatShortDate,
   toDateInputValue,
 } from "./format";
@@ -137,5 +139,27 @@ describe("formatBillAmount", () => {
 
   it("leaves exact amounts as plain rupees", () => {
     expect(formatBillAmount(4120, false)).toBe(formatINR(4120));
+  });
+});
+
+describe("formatMoney", () => {
+  it("formats each currency in its own style", () => {
+    expect(formatMoney(123_456_00, "INR")).toBe("₹1,23,456");
+    expect(formatMoney(123_456_00, "USD")).toBe("$123,456");
+    expect(formatMoney(1_000_00, "GBP")).toBe("£1,000");
+  });
+
+  it("falls back to rupees without a currency", () => {
+    expect(formatMoney(1_000_00, null)).toBe("₹1,000");
+  });
+});
+
+describe("currencySymbol", () => {
+  it("gives the symbol, or the code where there's no symbol", () => {
+    expect(currencySymbol("INR")).toBe("₹");
+    expect(currencySymbol("USD")).toBe("$");
+    expect(currencySymbol("EUR")).toBe("€");
+    expect(currencySymbol(null)).toBe("₹");
+    expect(currencySymbol("AED")).toMatch(/AED|د\.إ/);
   });
 });

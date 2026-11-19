@@ -5,7 +5,7 @@ import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
-import { toDateInputValue } from "~/lib/format";
+import { currencySymbol, toDateInputValue } from "~/lib/format";
 import { fromMinorUnits } from "~/lib/money";
 import {
   deleteLeaseForm,
@@ -13,6 +13,7 @@ import {
   updateLeaseForm,
 } from "~/server/actions/leases";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import { getDocumentsForLease } from "~/server/queries/documents";
 import {
   getLeaseForHousehold,
@@ -38,6 +39,11 @@ export default async function EditLeasePage({
   if (lease?.propertyId !== id) {
     notFound();
   }
+  const symbol = currencySymbol(
+    lease.currency ??
+      property.currency ??
+      (await getUserCurrency(scope.userId)),
+  );
 
   const [rooms, canDelete, documents] = await Promise.all([
     getRoomsForProperty(id),
@@ -81,7 +87,7 @@ export default async function EditLeasePage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Rent amount (₹/month)</span>
+            <span className={labelClass}>Rent amount ({symbol}/month)</span>
             <input
               type="number"
               name="rentAmount"
@@ -93,7 +99,7 @@ export default async function EditLeasePage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Deposit amount (₹)</span>
+            <span className={labelClass}>Deposit amount ({symbol})</span>
             <input
               type="number"
               name="depositAmount"

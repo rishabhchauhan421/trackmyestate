@@ -12,8 +12,11 @@ import type { PolicyPaymentDefaults } from "~/server/queries/policies";
  */
 export function PolicyPaymentFields({
   defaults,
+  symbol,
 }: {
   defaults?: PolicyPaymentDefaults;
+  /** The policy's currency symbol (see `currencySymbol`). */
+  symbol: string;
 }) {
   return (
     <>
@@ -30,6 +33,7 @@ export function PolicyPaymentFields({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Field label="Amount">
           <MoneyInput
+            symbol={symbol}
             name="premiumAmount"
             defaultValue={optionalFromMinorUnits(defaults?.premiumAmount) ?? ""}
           />
@@ -72,6 +76,7 @@ export function PolicyPaymentFields({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Field label="Amount">
           <MoneyInput
+            symbol={symbol}
             name="payoutAmount"
             defaultValue={optionalFromMinorUnits(defaults?.payoutAmount) ?? ""}
           />

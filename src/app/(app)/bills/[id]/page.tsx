@@ -17,14 +17,19 @@ import { PageHeader, type Crumb } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { billAsset, billTitle } from "~/lib/bill-context";
-import { formatBillAmount, formatDate, formatINR } from "~/lib/format";
+import {
+  currencySymbol,
+  formatBillAmount,
+  formatDate,
+  formatMoney,
+} from "~/lib/format";
 import { PAYMENT_METHOD_LABELS } from "~/lib/labels";
 import { fromMinorUnits } from "~/lib/money";
 import { todayInTimeZone } from "~/lib/time-zone";
 import { recordBillPaymentForm } from "~/server/actions/bills";
 import { requireScope } from "~/server/households";
 import { getBillForHousehold } from "~/server/queries/bills";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
 export default async function BillPage({
@@ -39,11 +44,14 @@ export default async function BillPage({
     searchParams,
     requireScope(),
   ]);
-  const [bill, timeZone] = await Promise.all([
+  const [bill, timeZone, userCurrency] = await Promise.all([
     getBillForHousehold(id, scope.householdId),
     getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
   ]);
   if (!bill) notFound();
+  const currency = bill.currency ?? userCurrency;
+  const money = (amount: number) => formatMoney(amount, currency);
 
   const title = billTitle(bill);
   const asset = billAsset(bill);
@@ -68,7 +76,7 @@ export default async function BillPage({
       <PageHeader
         breadcrumbs={breadcrumbs}
         title={title}
-        description={`${formatBillAmount(bill.amount, approx)} · ${
+        description={`${formatBillAmount(bill.amount, approx, currency)} · ${
           inflow ? "expected" : "due"
         } ${formatDate(bill.dueDate)}`}
       />
@@ -91,7 +99,7 @@ export default async function BillPage({
                 title={inflow ? "Record money received" : "Record a payment"}
                 description={
                   paidSoFar > 0
-                    ? `${formatINR(paidSoFar)} recorded so far, ${formatINR(outstanding)} left.`
+                    ? `${money(paidSoFar)} recorded so far, ${money(outstanding)} left.`
                     : undefined
                 }
               >
@@ -106,6 +114,7 @@ export default async function BillPage({
                   </Field>
                   <Field label="Amount">
                     <MoneyInput
+                      symbol={currencySymbol(currency)}
                       name="amount"
                       required
                       defaultValue={fromMinorUnits(outstanding)}
@@ -157,7 +166,7 @@ export default async function BillPage({
               {bill.status === "PAID"
                 ? `${inflow ? "Received" : "Paid"} ${
                     bill.paidDate ? formatDate(bill.paidDate) : ""
-                  }${bill.paidAmount != null ? ` · ${formatINR(bill.paidAmount)}` : ""}`
+                  }${bill.paidAmount != null ? ` · ${money(bill.paidAmount)}` : ""}`
                 : "This bill is closed."}
             </Card>
           )}
@@ -185,7 +194,7 @@ export default async function BillPage({
                       </span>
                     </span>
                     <span className="font-semibold text-ink">
-                      {formatINR(payment.amount)}
+                      {money(payment.amount)}
                     </span>
                   </li>
                 ))}
@@ -203,7 +212,7 @@ export default async function BillPage({
               <StatusBadge status={bill.status} />
             </DetailRow>
             <DetailRow label={inflow ? "Expected" : "Amount due"}>
-              {formatBillAmount(bill.amount, approx)}
+              {formatBillAmount(bill.amount, approx, currency)}
             </DetailRow>
             <DetailRow label="Due">{formatDate(bill.dueDate)}</DetailRow>
             {bill.installmentNumber != null && (

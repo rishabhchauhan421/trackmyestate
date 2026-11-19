@@ -6,10 +6,13 @@ import { PageHeader } from "~/app/_components/page-header";
 import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-payment-fields";
 import { POLICY_TYPE_LABELS } from "~/lib/labels";
 import { createPolicyForm } from "~/server/actions/policies";
+import { currencySymbol } from "~/lib/format";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 
 export default async function NewPolicyPage() {
-  await requireScope();
+  const scope = await requireScope();
+  const symbol = currencySymbol(await getUserCurrency(scope.userId));
 
   return (
     <>
@@ -112,7 +115,7 @@ export default async function NewPolicyPage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Sum assured (₹, optional)</span>
+            <span className={labelClass}>Sum assured ({symbol}, optional)</span>
             <input
               type="number"
               name="sumAssured"
@@ -122,7 +125,9 @@ export default async function NewPolicyPage() {
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Room rent limit (₹, optional)</span>
+            <span className={labelClass}>
+              Room rent limit ({symbol}, optional)
+            </span>
             <input
               type="number"
               name="roomRentLimit"
@@ -158,7 +163,7 @@ export default async function NewPolicyPage() {
           </label>
         </div>
 
-        <PolicyPaymentFields />
+        <PolicyPaymentFields symbol={symbol} />
 
         <FormActions>
           <Button href="/insurance" variant="outline">

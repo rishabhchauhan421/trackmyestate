@@ -215,6 +215,7 @@ async function generateBillsForSchedules(schedules: BillSchedule[], now: Date) {
           policyId: schedule.policyId ?? undefined,
           investmentId: schedule.investmentId ?? undefined,
           amount: schedule.defaultAmount,
+          currency: schedule.currency,
           dueDay: day,
           description: describe(schedule, names),
           installmentNumber: schedule.tenureMonths ? installment : undefined,

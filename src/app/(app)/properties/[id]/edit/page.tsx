@@ -9,7 +9,9 @@ import {
   deletePropertyForm,
   updatePropertyForm,
 } from "~/server/actions/properties";
+import { currencySymbol } from "~/lib/format";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import {
   getPropertyForHousehold,
   hasDependentRecordsForProperty,
@@ -28,6 +30,9 @@ export default async function EditPropertyPage({
   if (!property) {
     notFound();
   }
+  const symbol = currencySymbol(
+    property.currency ?? (await getUserCurrency(scope.userId)),
+  );
 
   const hasDependents = await hasDependentRecordsForProperty(id);
 
@@ -45,7 +50,7 @@ export default async function EditPropertyPage({
           data-gtm-event="property_updated"
           className="min-w-0 flex-1 space-y-4"
         >
-          <PropertyFormFields property={property} />
+          <PropertyFormFields property={property} symbol={symbol} />
           <FormActions>
             <Button href={`/properties/${id}`} variant="outline">
               Cancel

@@ -5,11 +5,12 @@ import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
-import { toDateInputValue } from "~/lib/format";
+import { currencySymbol, toDateInputValue } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
 import { deleteLoanForm, updateLoanForm } from "~/server/actions/loans";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import {
   getLoanForHousehold,
   hasPaymentsForLoan,
@@ -28,6 +29,9 @@ export default async function EditLoanPage({
   if (!loan) {
     notFound();
   }
+  const symbol = currencySymbol(
+    loan.currency ?? (await getUserCurrency(scope.userId)),
+  );
   const properties = await getPropertyOptionsForHousehold(scope.householdId);
   const canDelete = !(await hasPaymentsForLoan(id));
 
@@ -78,7 +82,7 @@ export default async function EditLoanPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Principal (₹)</span>
+            <span className={labelClass}>Principal ({symbol})</span>
             <input
               type="number"
               name="principal"
@@ -117,7 +121,7 @@ export default async function EditLoanPage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>EMI amount (₹)</span>
+            <span className={labelClass}>EMI amount ({symbol})</span>
             <input
               type="number"
               name="emiAmount"
@@ -157,7 +161,7 @@ export default async function EditLoanPage({
         </div>
 
         <label className="block">
-          <span className={labelClass}>Outstanding balance (₹)</span>
+          <span className={labelClass}>Outstanding balance ({symbol})</span>
           <input
             type="number"
             name="outstandingBalance"

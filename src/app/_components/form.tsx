@@ -59,11 +59,15 @@ export function Select({
   return <select {...props} className={clsx(controlClass, className)} />;
 }
 
-/** A number input with a "₹" prefix, for amounts. */
+/**
+ * A number input with a currency prefix, for amounts. Pass `symbol` from
+ * `currencySymbol` (the record's or the user's currency); it defaults to ₹.
+ */
 export function MoneyInput({
   className,
+  symbol = "₹",
   ...props
-}: Omit<ComponentPropsWithoutRef<"input">, "type">) {
+}: Omit<ComponentPropsWithoutRef<"input">, "type"> & { symbol?: string }) {
   return (
     <span
       className={clsx(
@@ -72,7 +76,7 @@ export function MoneyInput({
       )}
     >
       <span className="flex items-center border-r border-line bg-sunken px-3 text-[0.9375rem] text-muted">
-        ₹
+        {symbol}
       </span>
       <input
         type="number"

@@ -5,7 +5,7 @@ import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
-import { toDateInputValue } from "~/lib/format";
+import { currencySymbol, toDateInputValue } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
 import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
 import {
@@ -13,6 +13,7 @@ import {
   updateInvestmentForm,
 } from "~/server/actions/investments";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import {
   getInvestmentForHousehold,
   hasPaymentsForInvestment,
@@ -30,6 +31,9 @@ export default async function EditInvestmentPage({
   if (!investment) {
     notFound();
   }
+  const symbol = currencySymbol(
+    investment.currency ?? (await getUserCurrency(scope.userId)),
+  );
   const canDelete = !(await hasPaymentsForInvestment(id));
 
   return (
@@ -101,7 +105,7 @@ export default async function EditInvestmentPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Capital deployed (₹)</span>
+            <span className={labelClass}>Capital deployed ({symbol})</span>
             <input
               type="number"
               name="capitalDeployed"
@@ -114,7 +118,7 @@ export default async function EditInvestmentPage({
           </label>
           <label className="block">
             <span className={labelClass}>
-              Current estimated value (₹, optional)
+              Current estimated value ({symbol}, optional)
             </span>
             <input
               type="number"

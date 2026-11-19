@@ -19,7 +19,7 @@ import {
   removeUtilityRecipient,
 } from "~/server/actions/utilities";
 import { requireScope } from "~/server/households";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getPropertyForHousehold } from "~/server/queries/properties";
 import {
   getActiveUtilitiesForProperty,
@@ -38,11 +38,13 @@ export default async function PropertyUtilitiesPage({
     notFound();
   }
 
-  const [utilities, bills, timeZone] = await Promise.all([
+  const [utilities, bills, timeZone, userCurrency] = await Promise.all([
     getActiveUtilitiesForProperty(id),
     getUtilityBillsForProperty(id),
     getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
   ]);
+  const currency = property.currency ?? userCurrency;
   const today = todayInTimeZone(timeZone);
   const OPEN = ["DUE", "OVERDUE", "PARTIALLY_PAID"];
 
@@ -96,6 +98,7 @@ export default async function PropertyUtilitiesPage({
                               {formatBillAmount(
                                 utility.defaultAmount,
                                 utility.billingType === "VARIABLE",
+                                utility.currency ?? currency,
                               )}
                             </>
                           )}
@@ -119,6 +122,7 @@ export default async function PropertyUtilitiesPage({
                               dueDate={next.dueDate}
                               amount={next.amount}
                               approx={utility.billingType === "VARIABLE"}
+                              currency={utility.currency ?? currency}
                               timeZone={timeZone}
                             />
                           ) : null;
@@ -225,6 +229,7 @@ export default async function PropertyUtilitiesPage({
                               bill.amount,
                               bill.utility.billingType === "VARIABLE" &&
                                 bill.status !== "PAID",
+                              bill.currency ?? currency,
                             )}{" "}
                             · due {formatDate(bill.dueDate)}
                           </p>

@@ -4,11 +4,14 @@ import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { createPropertyForm } from "~/server/actions/properties";
+import { currencySymbol } from "~/lib/format";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import { PropertyFormFields } from "../_components/property-form-fields";
 
 export default async function NewPropertyPage() {
-  await requireScope();
+  const scope = await requireScope();
+  const symbol = currencySymbol(await getUserCurrency(scope.userId));
 
   return (
     <>
@@ -27,7 +30,7 @@ export default async function NewPropertyPage() {
           data-gtm-event="property_created"
           className="min-w-0 flex-1 space-y-4"
         >
-          <PropertyFormFields />
+          <PropertyFormFields symbol={symbol} />
           <FormActions>
             <Button href="/properties" variant="outline">
               Cancel

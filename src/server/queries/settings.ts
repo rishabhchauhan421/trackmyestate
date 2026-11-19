@@ -12,6 +12,15 @@ export async function getUserTimeZone(userId: string) {
   return resolveTimeZone(user?.timezone);
 }
 
+/** The user's currency (Settings › General): amounts without one use it. */
+export async function getUserCurrency(userId: string) {
+  const user = await db.user.findUnique({
+    where: { id: userId },
+    select: { currency: true },
+  });
+  return user?.currency ?? "INR";
+}
+
 /** What Settings shows about the user: profile, region and channels. */
 export async function getUserSettings(userId: string) {
   const user = await db.user.findUnique({

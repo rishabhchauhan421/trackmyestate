@@ -6,7 +6,9 @@ import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { createLeaseForm } from "~/server/actions/leases";
+import { currencySymbol } from "~/lib/format";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getRoomsForProperty } from "~/server/queries/rentals";
 
@@ -24,6 +26,9 @@ export default async function NewLeasePage({
   if (!property) {
     notFound();
   }
+  const symbol = currencySymbol(
+    property.currency ?? (await getUserCurrency(scope.userId)),
+  );
   // Self-occupied properties can't be rented out — the link to this page
   // is disabled, but a direct visit still needs to be turned away.
   if (property.type === "SELF_OCCUPIED") {
@@ -113,7 +118,7 @@ export default async function NewLeasePage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Rent amount (₹/month)</span>
+            <span className={labelClass}>Rent amount ({symbol}/month)</span>
             <input
               type="number"
               name="rentAmount"
@@ -124,7 +129,7 @@ export default async function NewLeasePage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Deposit amount (₹)</span>
+            <span className={labelClass}>Deposit amount ({symbol})</span>
             <input
               type="number"
               name="depositAmount"

@@ -3,9 +3,9 @@ import { EmptyState } from "~/app/_components/empty-state";
 import { TimelineIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
-import { formatDate, formatINR } from "~/lib/format";
+import { formatDate, formatMoney } from "~/lib/format";
 import { requireScope } from "~/server/households";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import {
   getTimelineEvents,
   type TimelineFilter,
@@ -59,7 +59,10 @@ export default async function TimelinePage({
     : "all";
 
   const scope = await requireScope();
-  const timeZone = await getUserTimeZone(scope.userId);
+  const [timeZone, currency] = await Promise.all([
+    getUserTimeZone(scope.userId),
+    getUserCurrency(scope.userId),
+  ]);
   const events = await getTimelineEvents(
     scope.householdId,
     range,
@@ -146,7 +149,7 @@ export default async function TimelinePage({
                     }`}
                   >
                     {event.direction === "INFLOW" ? "+" : "-"}
-                    {formatINR(event.amount)}
+                    {formatMoney(event.amount, event.currency ?? currency)}
                   </span>
                 </div>
               </li>

@@ -7,6 +7,7 @@
 import "server-only";
 
 import type {
+  Currency,
   EventCategory,
   FinancialEventType,
 } from "../../../generated/prisma";
@@ -50,6 +51,8 @@ export async function createBill(args: {
   policyId?: string;
   investmentId?: string;
   amount: number;
+  /** The schedule's currency; none = the owner's. */
+  currency?: Currency | null;
   /**
    * The due date as a calendar day, "YYYY-MM-DD" — not a `Date`, so a
    * caller can't hand over an instant that lands on a different day in
@@ -87,6 +90,7 @@ export async function createBill(args: {
     principalComponent,
     interestComponent,
     generationKey,
+    currency,
   } = args;
 
   return db.bill.create({
@@ -103,6 +107,7 @@ export async function createBill(args: {
       investmentId,
       dueDate: dateOnly(dueDay),
       amount,
+      currency: currency ?? undefined,
       status: "DUE",
       description,
       installmentNumber,

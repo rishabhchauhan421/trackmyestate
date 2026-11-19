@@ -4,14 +4,15 @@ import { EmptyState } from "~/app/_components/empty-state";
 import { NextDue } from "~/app/_components/next-due";
 import { LoansIcon } from "~/app/_components/icons";
 import { PageHeader } from "~/app/_components/page-header";
-import { formatINR } from "~/lib/format";
+import { formatMoney } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { requireScope } from "~/server/households";
-import { getUserTimeZone } from "~/server/queries/settings";
+import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getLoans } from "~/server/queries/loans";
 
 export default async function LoansPage() {
   const scope = await requireScope();
+  const currency = await getUserCurrency(scope.userId);
   const timeZone = await getUserTimeZone(scope.userId);
   const loans = await getLoans(scope.householdId, timeZone);
 
@@ -55,7 +56,10 @@ export default async function LoansPage() {
                   </div>
                   <div className="text-right">
                     <p className="text-sm font-semibold text-ink">
-                      {formatINR(loan.outstandingBalance)}
+                      {formatMoney(
+                        loan.outstandingBalance,
+                        loan.currency ?? currency,
+                      )}
                     </p>
                     <p className="text-xs text-muted">outstanding</p>
                   </div>
@@ -64,6 +68,7 @@ export default async function LoansPage() {
                       label="Next EMI"
                       dueDate={nextEmi.dueDate}
                       amount={nextEmi.amount}
+                      currency={loan.currency ?? currency}
                       timeZone={timeZone}
                     />
                   )}

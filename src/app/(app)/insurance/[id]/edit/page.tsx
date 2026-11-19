@@ -6,11 +6,12 @@ import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-payment-fields";
-import { toDateInputValue } from "~/lib/format";
+import { currencySymbol, toDateInputValue } from "~/lib/format";
 import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from "~/lib/labels";
 import { optionalFromMinorUnits } from "~/lib/money";
 import { deletePolicyForm, updatePolicyForm } from "~/server/actions/policies";
 import { requireScope } from "~/server/households";
+import { getUserCurrency } from "~/server/queries/settings";
 import {
   getPolicyForHousehold,
   getPolicyPaymentDefaults,
@@ -29,6 +30,9 @@ export default async function EditPolicyPage({
   if (!policy) {
     notFound();
   }
+  const symbol = currencySymbol(
+    policy.currency ?? (await getUserCurrency(scope.userId)),
+  );
 
   const [canDelete, paymentDefaults] = await Promise.all([
     hasPaymentsForPolicy(id).then((paid) => !paid),
@@ -158,7 +162,7 @@ export default async function EditPolicyPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <label className="block">
-            <span className={labelClass}>Sum assured (₹, optional)</span>
+            <span className={labelClass}>Sum assured ({symbol}, optional)</span>
             <input
               type="number"
               name="sumAssured"
@@ -169,7 +173,9 @@ export default async function EditPolicyPage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Room rent limit (₹, optional)</span>
+            <span className={labelClass}>
+              Room rent limit ({symbol}, optional)
+            </span>
             <input
               type="number"
               name="roomRentLimit"
@@ -208,7 +214,7 @@ export default async function EditPolicyPage({
           </label>
         </div>
 
-        <PolicyPaymentFields defaults={paymentDefaults} />
+        <PolicyPaymentFields defaults={paymentDefaults} symbol={symbol} />
 
         <FormActions>
           <Button href="/insurance" variant="outline">
