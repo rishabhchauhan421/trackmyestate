@@ -122,7 +122,12 @@ export default async function TimelinePage({
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-medium text-ink">
-                    {event.description ?? CATEGORY_LABELS[event.category]}
+                    <Link
+                      href={`/bills/${event.id}`}
+                      className="hover:text-accent-strong"
+                    >
+                      {event.description ?? CATEGORY_LABELS[event.category]}
+                    </Link>
                   </p>
                   <p className="mt-0.5 text-xs text-muted">
                     {formatDate(event.dueDate)} ·{" "}

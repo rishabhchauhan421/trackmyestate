@@ -317,10 +317,13 @@ export default async function PropertyDetailPage({
                     {bills.map((bill) => (
                       <tr key={bill.id}>
                         <td className="px-6 py-3.5">
-                          <p className="font-medium text-ink">
+                          <Link
+                            href={`/bills/${bill.id}`}
+                            className="font-medium text-ink hover:text-accent-strong"
+                          >
                             {bill.description ??
                               EVENT_CATEGORY_LABELS[bill.category]}
-                          </p>
+                          </Link>
                           <p className="text-xs text-muted">
                             {EVENT_CATEGORY_LABELS[bill.category]}
                           </p>

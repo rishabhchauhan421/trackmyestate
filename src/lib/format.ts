@@ -89,11 +89,6 @@ export function formatDueIn(
  * A bill or schedule amount, marked "Approx." when it's only an estimate —
  * a variable (usage-based) utility's amount until the bill is actually paid.
  */
-export function formatBillAmount(
-  amountMinor: number,
-  approx: boolean,
-): string {
-  return approx
-    ? `Approx. ${formatINR(amountMinor)}`
-    : formatINR(amountMinor);
+export function formatBillAmount(amountMinor: number, approx: boolean): string {
+  return approx ? `Approx. ${formatINR(amountMinor)}` : formatINR(amountMinor);
 }

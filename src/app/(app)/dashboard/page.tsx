@@ -185,7 +185,12 @@ export default async function DashboardPage() {
                     </span>
                     <div className="min-w-0 flex-1 basis-52">
                       <p className="truncate text-sm font-medium text-ink">
-                        {item.description ?? CATEGORY_LABELS[item.category]}
+                        <Link
+                          href={`/bills/${item.id}`}
+                          className="hover:text-accent-strong"
+                        >
+                          {item.description ?? CATEGORY_LABELS[item.category]}
+                        </Link>
                       </p>
                       <p className="text-[0.8125rem] text-muted">
                         Due {formatShortDate(item.dueDate)}
@@ -311,9 +316,12 @@ export default async function DashboardPage() {
                     {formatShortDate(bill.dueDate)}
                     {days === 0 && " · Today"}
                   </span>
-                  <span className="line-clamp-2 text-sm font-medium text-ink">
+                  <Link
+                    href={`/bills/${bill.id}`}
+                    className="line-clamp-2 text-sm font-medium text-ink hover:text-accent-strong"
+                  >
                     {bill.description ?? CATEGORY_LABELS[bill.category]}
-                  </span>
+                  </Link>
                   <span
                     className={clsx(
                       "mt-auto text-sm font-semibold",

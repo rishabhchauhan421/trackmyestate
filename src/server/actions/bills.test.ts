@@ -1,9 +1,10 @@
 import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 
 import type { PrismaClient } from "../../../generated/prisma";
-import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
-import { markBillPaid } from "./bills";
+import { db } from "~/server/db";
+import { HOUSEHOLD_ID } from "~/server/__testing__/households-mock";
+import { recordBillPayment } from "./bills";
 
 jest.mock("~/server/db");
 jest.mock("~/server/households", () =>
@@ -11,12 +12,8 @@ jest.mock("~/server/households", () =>
     "~/server/__testing__/households-mock",
   ),
 );
-jest.mock("~/server/better-auth/server", () => ({
-  getSession: jest.fn(),
-}));
-jest.mock("next/cache", () => ({
-  revalidatePath: jest.fn(),
-}));
+jest.mock("~/server/better-auth/server", () => ({ getSession: jest.fn() }));
+jest.mock("next/cache", () => ({ revalidatePath: jest.fn() }));
 jest.mock("next/navigation", () => ({
   redirect: jest.fn((path: string) => {
     throw new Error(`REDIRECT:${path}`);
@@ -25,166 +22,195 @@ jest.mock("next/navigation", () => ({
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
 const getSessionMock = getSession as jest.Mock;
-const { redirect } = jest.requireMock<{
-  redirect: jest.Mock;
-}>("next/navigation");
-const { revalidatePath } = jest.requireMock<{
-  revalidatePath: jest.Mock;
-}>("next/cache");
+const { revalidatePath } = jest.requireMock<{ revalidatePath: jest.Mock }>(
+  "next/cache",
+);
 
-const SESSION = { user: { id: "user-1", email: "owner@example.com" } };
+/** ₹1,500.00 due, in paise. */
+const BILL = {
+  id: "bill-1",
+  ownerId: "user-1",
+  householdId: HOUSEHOLD_ID,
+  category: "UTILITY_BILL",
+  direction: "OUTFLOW",
+  propertyId: "prop-1",
+  leaseId: null,
+  loanId: null,
+  policyId: null,
+  investmentId: null,
+  currency: null,
+  amount: 150_000,
+  paidAmount: null,
+  status: "DUE",
+};
+
+function paymentForm(fields: Record<string, string> = {}) {
+  const all: Record<string, string> = {
+    paidOn: "2026-06-15",
+    amount: "1500",
+    method: "UPI",
+    reference: "UTR123",
+    settles: "on",
+    ...fields,
+  };
+  const formData = new FormData();
+  for (const [key, value] of Object.entries(all)) {
+    if (value !== "") formData.set(key, value);
+  }
+  return formData;
+}
+
+function billIs(bill: Record<string, unknown>) {
+  dbMock.bill.findFirst.mockResolvedValue({ ...BILL, ...bill } as never);
+}
 
 beforeEach(() => {
   mockReset(dbMock);
-  getSessionMock.mockReset().mockResolvedValue(SESSION);
-  redirect.mockClear();
   revalidatePath.mockClear();
+  getSessionMock.mockReset().mockResolvedValue({ user: { id: "user-1" } });
+  dbMock.$transaction.mockImplementation((async (
+    fn: (tx: typeof dbMock) => Promise<unknown>,
+  ) => fn(dbMock)));
+  billIs({});
 });
 
-describe("markBillPaid", () => {
-  function buildPaidForm(paidOn: string | null = "2026-06-15") {
-    const formData = new FormData();
-    if (paidOn !== null) formData.set("paidOn", paidOn);
-    return formData;
-  }
-
-  it("redirects to / when there is no session", async () => {
+describe("recordBillPayment", () => {
+  it("sends a signed-out visitor to sign in", async () => {
     getSessionMock.mockResolvedValue(null);
-
-    await expect(markBillPaid("bill-1", buildPaidForm())).rejects.toThrow(
-      "REDIRECT:/",
+    await expect(recordBillPayment("bill-1", paymentForm())).rejects.toThrow(
+      "REDIRECT:/login",
     );
   });
 
-  it("throws when the bill doesn't belong to this owner", async () => {
+  it("refuses a bill outside the household", async () => {
     dbMock.bill.findFirst.mockResolvedValue(null);
-
-    await expect(markBillPaid("bill-1", buildPaidForm())).rejects.toThrow(
+    await expect(recordBillPayment("bill-1", paymentForm())).rejects.toThrow(
       "Bill not found",
     );
-    expect(dbMock.bill.update).not.toHaveBeenCalled();
+    expect(dbMock.bill.findFirst).toHaveBeenCalledWith({
+      where: { id: "bill-1", householdId: HOUSEHOLD_ID },
+    });
   });
 
-  it("rejects marking paid without a paidOn date", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      propertyId: "prop-1",
-      amount: 1500,
-    } as never);
-
-    await expect(markBillPaid("bill-1", buildPaidForm(null))).rejects.toThrow(
-      "Enter the date the bill was paid",
+  it("records the payment and marks the bill paid", async () => {
+    await expect(recordBillPayment("bill-1", paymentForm())).rejects.toThrow(
+      "REDIRECT:/bills/bill-1?saved=1",
     );
-    expect(dbMock.bill.update).not.toHaveBeenCalled();
-  });
 
-  it("rejects marking paid with a blank paidOn date", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      propertyId: "prop-1",
-      amount: 1500,
-    } as never);
-
-    await expect(markBillPaid("bill-1", buildPaidForm("   "))).rejects.toThrow(
-      "Enter the date the bill was paid",
-    );
-    expect(dbMock.bill.update).not.toHaveBeenCalled();
-  });
-
-  it("rejects an unparseable paidOn date", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      propertyId: "prop-1",
-      amount: 1500,
-    } as never);
-
-    await expect(
-      markBillPaid("bill-1", buildPaidForm("not-a-date")),
-    ).rejects.toThrow("Enter a valid paid date");
-    expect(dbMock.bill.update).not.toHaveBeenCalled();
-  });
-
-  it("marks a property-scoped bill paid and redirects back to the utilities page", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      propertyId: "prop-1",
-      amount: 1500,
-    } as never);
-
-    await expect(
-      markBillPaid("bill-1", buildPaidForm("2026-06-15")),
-    ).rejects.toThrow("REDIRECT:/properties/prop-1/utilities");
-
+    expect(dbMock.paymentTransaction.create).toHaveBeenCalledWith({
+      data: {
+        ownerId: "user-1",
+        householdId: HOUSEHOLD_ID,
+        category: "UTILITY_BILL",
+        billId: "bill-1",
+        propertyId: "prop-1",
+        leaseId: null,
+        loanId: null,
+        policyId: null,
+        investmentId: null,
+        amount: 150_000,
+        currency: null,
+        paymentMethod: "UPI",
+        referenceNumber: "UTR123",
+        paidAt: new Date("2026-06-15"),
+      },
+    });
     expect(dbMock.bill.update).toHaveBeenCalledWith({
       where: { id: "bill-1" },
-      data: expect.objectContaining({
+      data: {
+        paidAmount: 150_000,
         status: "PAID",
-        paidAmount: 1500,
         paidDate: new Date("2026-06-15"),
-      }),
+      },
     });
+    expect(revalidatePath).toHaveBeenCalledWith("/dashboard");
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/utilities");
   });
 
-  it("does not redirect for a bill with no propertyId (no dedicated page exists yet)", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-2",
-      ownerId: "user-1",
-      category: "EMI",
-      propertyId: null,
-      amount: 71_250,
-    } as never);
+  it("settles a variable bill at a different amount when ticked", async () => {
+    await expect(
+      recordBillPayment("bill-1", paymentForm({ amount: "1234.50" })),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.bill.update).toHaveBeenCalledWith({
+      where: { id: "bill-1" },
+      data: expect.objectContaining({ paidAmount: 123_450, status: "PAID" }),
+    });
+  });
+
+  it("leaves a part payment open", async () => {
+    await expect(
+      recordBillPayment("bill-1", paymentForm({ amount: "500", settles: "" })),
+    ).rejects.toThrow("REDIRECT:");
+
+    expect(dbMock.bill.update).toHaveBeenCalledWith({
+      where: { id: "bill-1" },
+      data: { paidAmount: 50_000, status: "PARTIALLY_PAID", paidDate: null },
+    });
+  });
+
+  it("adds to earlier part payments and closes once covered", async () => {
+    billIs({ status: "PARTIALLY_PAID", paidAmount: 50_000 });
 
     await expect(
-      markBillPaid("bill-2", buildPaidForm()),
-    ).resolves.toBeUndefined();
-    expect(redirect).not.toHaveBeenCalled();
-  });
-
-  it("records paidAmount as 0 for a free/zero-amount bill", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      propertyId: "prop-1",
-      amount: 0,
-    } as never);
-
-    await expect(markBillPaid("bill-1", buildPaidForm())).rejects.toThrow(
-      "REDIRECT:",
-    );
+      recordBillPayment("bill-1", paymentForm({ amount: "1000", settles: "" })),
+    ).rejects.toThrow("REDIRECT:");
 
     expect(dbMock.bill.update).toHaveBeenCalledWith({
       where: { id: "bill-1" },
-      data: expect.objectContaining({ paidAmount: 0 }),
+      data: {
+        paidAmount: 150_000,
+        status: "PAID",
+        paidDate: new Date("2026-06-15"),
+      },
     });
   });
 
-  it("is idempotent: marking an already-PAID bill paid again still succeeds", async () => {
-    dbMock.bill.findFirst.mockResolvedValue({
-      id: "bill-1",
-      ownerId: "user-1",
-      category: "UTILITY_BILL",
-      propertyId: "prop-1",
-      amount: 1500,
-      status: "PAID",
-    } as never);
+  it("ignores a stale paidAmount on a bill that isn't part-paid", async () => {
+    billIs({ status: "OVERDUE", paidAmount: 99_999 });
 
-    await expect(markBillPaid("bill-1", buildPaidForm())).rejects.toThrow(
-      "REDIRECT:",
-    );
+    await expect(
+      recordBillPayment("bill-1", paymentForm({ amount: "100", settles: "" })),
+    ).rejects.toThrow("REDIRECT:");
 
     expect(dbMock.bill.update).toHaveBeenCalledWith({
       where: { id: "bill-1" },
-      data: expect.objectContaining({ status: "PAID" }),
+      data: expect.objectContaining({ paidAmount: 10_000 }),
     });
+  });
+
+  it.each(["PAID", "CANCELLED", "REFUNDED"])(
+    "refuses a %s bill",
+    async (status) => {
+      billIs({ status });
+      await expect(recordBillPayment("bill-1", paymentForm())).rejects.toThrow(
+        "This bill is already closed",
+      );
+      expect(dbMock.paymentTransaction.create).not.toHaveBeenCalled();
+    },
+  );
+
+  it("refuses when another payment closed it first", async () => {
+    dbMock.bill.findFirst
+      .mockResolvedValueOnce(BILL as never)
+      .mockResolvedValueOnce({ ...BILL, status: "PAID" } as never);
+
+    await expect(recordBillPayment("bill-1", paymentForm())).rejects.toThrow(
+      "This bill is already closed",
+    );
+    expect(dbMock.paymentTransaction.create).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    [{ paidOn: "" }, "Enter the date it was paid"],
+    [{ paidOn: "not-a-date" }, "Enter a valid date"],
+    [{ amount: "" }, "Enter the amount paid"],
+    [{ amount: "0" }, "Enter an amount greater than zero"],
+    [{ method: "BARTER" }, "Choose how it was paid"],
+  ])("rejects %p", async (fields, message) => {
+    await expect(
+      recordBillPayment("bill-1", paymentForm(fields)),
+    ).rejects.toThrow(message);
+    expect(dbMock.$transaction).not.toHaveBeenCalled();
   });
 });

@@ -66,39 +66,3 @@ export async function getUtilityBillsForProperty(propertyId: string) {
     utility: utilityById.get(bill.billScheduleId!)!,
   }));
 }
-
-/**
- * A single utility `Bill`, scoped to `householdId` — for the bill detail/mark-
- * paid page. Returns `null` for a nonexistent bill *or* one belonging to
- * someone else, same rationale as `getPropertyForHousehold`. `Bill.householdId` is
- * denormalized directly onto the row, so ownership is checked without a
- * join.
- */
-export async function getUtilityBillForHousehold(
-  utilityBillId: string,
-  householdId: string,
-) {
-  const bill = await db.bill.findFirst({
-    where: { id: utilityBillId, category: "UTILITY_BILL", householdId },
-    include: { property: { select: { id: true, name: true } } },
-  });
-  if (!bill) return null;
-
-  const utility = await db.billSchedule.findFirst({
-    where: { id: bill.billScheduleId! },
-    select: { billType: true, billingType: true, provider: true },
-  });
-  if (!utility) return null;
-
-  // A utility Bill always has a propertyId (set at generation time), so its
-  // `property` relation is never actually null here.
-  return {
-    ...bill,
-    utility: {
-      type: utility.billType!,
-      provider: utility.provider,
-      billingType: utility.billingType,
-    },
-    property: bill.property!,
-  };
-}

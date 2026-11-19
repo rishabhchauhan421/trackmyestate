@@ -210,7 +210,7 @@ export default async function PropertyUtilitiesPage({
                   {bills.map((bill) => (
                     <li key={bill.id}>
                       <Link
-                        href={`/properties/${id}/utilities/bills/${bill.id}`}
+                        href={`/bills/${bill.id}`}
                         className="flex items-center justify-between gap-4 px-5 py-4 transition hover:bg-sunken"
                       >
                         <div className="min-w-0">

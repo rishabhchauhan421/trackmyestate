@@ -8,8 +8,8 @@
  * (`~/server/bills/generate`, via `createBill` in `~/server/bills/create`,
  * which deliberately lives outside this `"use server"` file so it can't
  * become a public endpoint).
- * `markBillPaid` is the one mutation an owner does trigger directly, from a
- * bill's own edit page.
+ * `recordBillPayment` is the one mutation an owner does trigger directly,
+ * from the bill's page (`/bills/[id]`).
  */
 
 import { revalidatePath } from "next/cache";
@@ -17,13 +17,32 @@ import { redirect } from "next/navigation";
 
 import { z } from "zod";
 
-import { date, parseFormData } from "~/lib/form";
+import { PaymentMethod } from "../../../generated/prisma";
+import {
+  checkbox,
+  date,
+  enumValue,
+  money,
+  optionalText,
+  parseFormData,
+} from "~/lib/form";
 import { db } from "~/server/db";
 import { requireScope } from "~/server/households";
+import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
-/** The "mark paid" form on a bill's edit page. */
-const markBillPaidSchema = z.object({
-  paidOn: date("Enter a valid paid date", "Enter the date the bill was paid"),
+/** The "record a payment" form on a bill's page. */
+const recordPaymentSchema = z.object({
+  paidOn: date("Enter a valid date", "Enter the date it was paid"),
+  amount: money(
+    "Enter an amount greater than zero",
+    { positive: true },
+    "Enter the amount paid",
+  ),
+  method: enumValue(PaymentMethod, "Choose how it was paid"),
+  reference: optionalText(),
+  // Ticked: this payment closes the bill even if the amount differs from
+  // what was due (a variable bill came in lower, a discount, rounding).
+  settles: checkbox(),
 });
 
 async function requireOwnedBill(billId: string, householdId: string) {
@@ -32,28 +51,75 @@ async function requireOwnedBill(billId: string, householdId: string) {
   return bill;
 }
 
+const isOpen = (status: string) =>
+  (OPEN_PAYMENT_STATUSES as readonly string[]).includes(status);
+
 /**
- * Marks a bill paid. Called from the bill's own edit page, where `paidOn`
- * is a required date input — the bill was actually paid on that date, not
- * necessarily today. Idempotent: marking an already-PAID bill paid again
- * just re-applies the same update.
+ * Records a payment against a bill: a `PaymentTransaction` for the money
+ * that moved, and the bill's running `paidAmount` and status. The bill is
+ * PAID once the payments cover what was due, or when the owner says this
+ * payment settles it; otherwise it's PARTIALLY_PAID. Both writes happen in
+ * one transaction so the total can't drift from the payments.
  */
-export async function markBillPaid(billId: string, formData: FormData) {
+export async function recordBillPayment(billId: string, formData: FormData) {
   const scope = await requireScope();
   const bill = await requireOwnedBill(billId, scope.householdId);
+  if (!isOpen(bill.status)) {
+    throw new Error("This bill is already closed");
+  }
 
-  const { paidOn: paidDate } = parseFormData(markBillPaidSchema, formData);
+  const fields = parseFormData(recordPaymentSchema, formData);
 
-  await db.bill.update({
-    where: { id: billId },
-    data: { status: "PAID", paidDate, paidAmount: bill.amount },
+  await db.$transaction(async (tx) => {
+    // Read again inside the transaction so two payments saved at once
+    // can't both start from the same total.
+    const current = await tx.bill.findFirst({
+      where: { id: bill.id, householdId: scope.householdId },
+    });
+    if (!current || !isOpen(current.status)) {
+      throw new Error("This bill is already closed");
+    }
+
+    await tx.paymentTransaction.create({
+      data: {
+        ownerId: scope.userId,
+        householdId: scope.householdId,
+        category: current.category,
+        billId: current.id,
+        propertyId: current.propertyId,
+        leaseId: current.leaseId,
+        loanId: current.loanId,
+        policyId: current.policyId,
+        investmentId: current.investmentId,
+        amount: fields.amount,
+        currency: current.currency,
+        paymentMethod: fields.method,
+        referenceNumber: fields.reference,
+        paidAt: fields.paidOn,
+      },
+    });
+
+    const paidSoFar =
+      current.status === "PARTIALLY_PAID" ? (current.paidAmount ?? 0) : 0;
+    const totalPaid = paidSoFar + fields.amount;
+    const settled = fields.settles || totalPaid >= current.amount;
+
+    await tx.bill.update({
+      where: { id: current.id },
+      data: {
+        paidAmount: totalPaid,
+        status: settled ? "PAID" : "PARTIALLY_PAID",
+        paidDate: settled ? fields.paidOn : null,
+      },
+    });
   });
 
-  // Only property-scoped categories (utility bills, rent) have a bills list
-  // page to bounce back to today — other categories just get their status
-  // synced above until their own page exists.
+  revalidatePath(`/bills/${bill.id}`);
+  revalidatePath("/dashboard");
+  revalidatePath("/timeline");
   if (bill.propertyId) {
+    revalidatePath(`/properties/${bill.propertyId}`);
     revalidatePath(`/properties/${bill.propertyId}/utilities`);
-    redirect(`/properties/${bill.propertyId}/utilities`);
   }
+  redirect(`/bills/${bill.id}?saved=1`);
 }

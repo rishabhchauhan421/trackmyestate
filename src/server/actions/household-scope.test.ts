@@ -8,7 +8,7 @@ import { mockReset, type DeepMockProxy } from "jest-mock-extended";
 import type { PrismaClient } from "../../../generated/prisma";
 import { db } from "~/server/db";
 import { HOUSEHOLD_ID } from "~/server/__testing__/households-mock";
-import { markBillPaid } from "./bills";
+import { recordBillPayment } from "./bills";
 import { updateInvestment } from "./investments";
 import { createLease, updateLease } from "./leases";
 import { updateLoan } from "./loans";
@@ -57,7 +57,7 @@ describe("household scoping", () => {
     ["updateInvestment", () => updateInvestment("x1", form({})), "investment"],
     ["updateLoan", () => updateLoan("x1", form({})), "loan"],
     ["deactivateUtility", () => deactivateUtility("x1"), "billSchedule"],
-    ["markBillPaid", () => markBillPaid("x1", form({})), "bill"],
+    ["recordBillPayment", () => recordBillPayment("x1", form({})), "bill"],
   ] as const)(
     "%s looks the record up in the household",
     async (_name, run, model) => {
