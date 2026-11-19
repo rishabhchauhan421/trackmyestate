@@ -1,10 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
-import { createLease } from "~/server/actions/leases";
+import { createLeaseForm } from "~/server/actions/leases";
 import { requireScope } from "~/server/households";
 import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getRoomsForProperty } from "~/server/queries/rentals";
@@ -43,8 +44,8 @@ export default async function NewLeasePage({
         description="Start a new lease for this property — the whole property, or one of its rental units."
       />
 
-      <form
-        action={createLease}
+      <ActionForm
+        action={createLeaseForm}
         data-gtm-event="lease_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -159,7 +160,7 @@ export default async function NewLeasePage({
           </Button>
           <SubmitButton>Save lease</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

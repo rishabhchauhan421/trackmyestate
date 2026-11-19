@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
@@ -8,8 +9,8 @@ import { toDateInputValue } from "~/lib/format";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
 import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
 import {
-  deleteInvestment,
-  updateInvestment,
+  deleteInvestmentForm,
+  updateInvestmentForm,
 } from "~/server/actions/investments";
 import { requireScope } from "~/server/households";
 import {
@@ -43,8 +44,8 @@ export default async function EditInvestmentPage({
         description="Update this investment's details, including its current estimated value."
       />
 
-      <form
-        action={updateInvestment.bind(null, investment.id)}
+      <ActionForm
+        action={updateInvestmentForm.bind(null, investment.id)}
         data-gtm-event="investment_updated"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -171,7 +172,7 @@ export default async function EditInvestmentPage({
           </Button>
           <SubmitButton>Save changes</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
@@ -182,8 +183,8 @@ export default async function EditInvestmentPage({
               : "Returns have been received on this investment, so it can't be deleted."}
           </p>
         </div>
-        <form
-          action={deleteInvestment.bind(null, investment.id)}
+        <ActionForm
+          action={deleteInvestmentForm.bind(null, investment.id)}
           data-gtm-event="investment_deleted"
         >
           <SubmitButton
@@ -194,7 +195,7 @@ export default async function EditInvestmentPage({
           >
             Delete investment
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
     </>
   );

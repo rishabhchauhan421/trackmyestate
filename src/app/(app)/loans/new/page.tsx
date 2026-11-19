@@ -1,9 +1,10 @@
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
-import { createLoan } from "~/server/actions/loans";
+import { createLoanForm } from "~/server/actions/loans";
 import { requireScope } from "~/server/households";
 import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 
@@ -22,8 +23,8 @@ export default async function NewLoanPage() {
         description="Track a loan's principal, EMI and outstanding balance."
       />
 
-      <form
-        action={createLoan}
+      <ActionForm
+        action={createLoanForm}
         data-gtm-event="loan_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -167,7 +168,7 @@ export default async function NewLoanPage() {
           </Button>
           <SubmitButton>Save loan</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

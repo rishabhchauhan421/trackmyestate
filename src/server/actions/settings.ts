@@ -16,6 +16,7 @@ import {
 } from "../../../generated/prisma";
 import {
   enumValue,
+  FormError,
   number,
   optionalText,
   parseFormData,
@@ -32,6 +33,7 @@ import {
 import { isValidTimeZone, normalizeTimeZone } from "~/lib/time-zone";
 import { getSession } from "~/server/better-auth/server";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import {
   renderTransactionalEmail,
   sendTransactionalEmail,
@@ -161,16 +163,20 @@ export async function updateReminderSettings(formData: FormData) {
       formData.getAll(offsetsField(category)),
     );
     if (!result.success) {
-      throw new Error(result.error.issues[0]?.message ?? "Invalid reminders");
+      throw new FormError(
+        result.error.issues[0]?.message ?? "Invalid reminders",
+      );
     }
     const channels = channelsListSchema.safeParse(
       formData.getAll(channelsField(category)),
     );
     if (!channels.success) {
-      throw new Error(channels.error.issues[0]?.message ?? "Invalid channels");
+      throw new FormError(
+        channels.error.issues[0]?.message ?? "Invalid channels",
+      );
     }
     if (result.data.length > 0 && channels.data.length === 0) {
-      throw new Error(
+      throw new FormError(
         "Choose at least one channel for each kind you're reminded about",
       );
     }
@@ -196,7 +202,7 @@ export async function resetCategoryReminders(category: EventCategory) {
   if (!session) redirect("/login");
 
   const config = REMINDER_CATEGORIES.find((c) => c.category === category);
-  if (!config) throw new Error("Unknown reminder category");
+  if (!config) throw new FormError("Unknown reminder category");
 
   await saveCategoryReminders(
     session.user.id,
@@ -207,4 +213,27 @@ export async function resetCategoryReminders(category: EventCategory) {
 
   revalidatePath("/settings/reminders");
   redirect("/settings/reminders?saved=reminders");
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function updateGeneralSettingsForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateGeneralSettings(formData));
+}
+
+export async function updateChannelSettingsForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateChannelSettings(formData));
+}
+
+export async function updateReminderSettingsForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateReminderSettings(formData));
 }

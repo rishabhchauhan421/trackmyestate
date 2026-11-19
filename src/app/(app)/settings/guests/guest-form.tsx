@@ -1,4 +1,5 @@
 import type { Guest } from "../../../../../generated/prisma";
+import { ActionForm, type FormState } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import {
@@ -42,7 +43,7 @@ export function GuestForm({
   properties,
   submitLabel,
 }: {
-  action: (formData: FormData) => Promise<void>;
+  action: (state: FormState, formData: FormData) => Promise<FormState>;
   guest?: Guest;
   properties: { id: string; name: string }[];
   submitLabel: string;
@@ -50,7 +51,7 @@ export function GuestForm({
   const someProperties = (guest?.propertyIds.length ?? 0) > 0;
 
   return (
-    <form
+    <ActionForm
       action={action}
       data-gtm-event={guest ? "guest_updated" : "guest_added"}
       className="space-y-6 rounded-card border border-line bg-surface p-5 sm:p-6"
@@ -238,6 +239,6 @@ export function GuestForm({
         </Button>
         <SubmitButton>{submitLabel}</SubmitButton>
       </FormActions>
-    </form>
+    </ActionForm>
   );
 }

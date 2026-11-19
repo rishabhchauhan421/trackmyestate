@@ -27,6 +27,7 @@ import { z } from "zod";
 import { addDays, calendarDayOf, dateOnly } from "~/lib/calendar-day";
 import {
   date,
+  FormError,
   money,
   number,
   optionalDate,
@@ -37,6 +38,7 @@ import {
 import { firstDueDayAfter } from "~/lib/schedule";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import {
   hasPaymentHistory,
@@ -56,9 +58,9 @@ async function requireRentableProperty(propertyId: string) {
   const property = await db.property.findFirst({
     where: { id: propertyId, householdId: scope.householdId },
   });
-  if (!property) throw new Error("Property not found");
+  if (!property) throw new FormError("Property not found");
   if (property.type === "SELF_OCCUPIED") {
-    throw new Error("Self-occupied properties can't have leases");
+    throw new FormError("Self-occupied properties can't have leases");
   }
   return { scope, property };
 }
@@ -73,7 +75,7 @@ async function requireOwnedLease(leaseId: string, householdId: string) {
   const lease = await db.lease.findFirst({
     where: { id: leaseId, property: { householdId } },
   });
-  if (!lease) throw new Error("Lease not found");
+  if (!lease) throw new FormError("Lease not found");
   return lease;
 }
 
@@ -111,6 +113,13 @@ function rentTerms(lease: {
   };
 }
 
+/** A lease can't end before it starts (it may end the day it starts). */
+function requireEndAfterStart(leaseStart: Date, leaseEnd: Date | null) {
+  if (leaseEnd && leaseEnd < leaseStart) {
+    throw new FormError("The lease can't end before it starts", "leaseEnd");
+  }
+}
+
 /** The "Add lease" form: the terms plus who the tenant is. */
 const createLeaseSchema = leaseTermsSchema.extend({
   propertyId: text("Property not found"),
@@ -134,11 +143,12 @@ export async function createLease(formData: FormData) {
     depositAmount,
     rentDueDay,
   } = parseFormData(createLeaseSchema, formData);
+  requireEndAfterStart(leaseStart, leaseEnd);
   const { scope, property } = await requireRentableProperty(propertyId);
 
   if (roomId) {
     const room = await db.room.findFirst({ where: { id: roomId, propertyId } });
-    if (!room) throw new Error("Rental unit not found");
+    if (!room) throw new FormError("Rental unit not found");
   }
 
   const today = await todayFor(scope.userId);
@@ -189,12 +199,13 @@ export async function updateLease(leaseId: string, formData: FormData) {
   const lease = await requireOwnedLease(leaseId, scope.householdId);
   const { roomId, rentAmount, depositAmount, leaseEnd, rentDueDay } =
     parseFormData(leaseTermsSchema, formData);
+  requireEndAfterStart(lease.leaseStart, leaseEnd);
 
   if (roomId) {
     const room = await db.room.findFirst({
       where: { id: roomId, propertyId: lease.propertyId },
     });
-    if (!room) throw new Error("Rental unit not found");
+    if (!room) throw new FormError("Rental unit not found");
   }
 
   const today = await todayFor(scope.userId);
@@ -269,7 +280,9 @@ export async function deleteLease(leaseId: string) {
   const lease = await requireOwnedLease(leaseId, scope.householdId);
 
   if (await hasPaymentHistory(db, { leaseId })) {
-    throw new Error("Cannot delete a lease that has rent received on record");
+    throw new FormError(
+      "Cannot delete a lease that has rent received on record",
+    );
   }
 
   const today = await todayFor(scope.userId);
@@ -285,4 +298,37 @@ export async function deleteLease(leaseId: string) {
 
   revalidatePath(`/properties/${lease.propertyId}/leases`);
   redirect(`/properties/${lease.propertyId}/leases`);
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createLeaseForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createLease(formData));
+}
+
+export async function updateLeaseForm(
+  leaseId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateLease(leaseId, formData));
+}
+
+export async function endLeaseForm(
+  leaseId: string,
+  _state: FormState,
+  _formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => endLease(leaseId));
+}
+
+export async function deleteLeaseForm(
+  leaseId: string,
+  _state: FormState,
+  _formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => deleteLease(leaseId));
 }

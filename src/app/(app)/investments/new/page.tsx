@@ -1,9 +1,10 @@
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { INVESTMENT_TYPE_LABELS } from "~/lib/labels";
-import { createInvestment } from "~/server/actions/investments";
+import { createInvestmentForm } from "~/server/actions/investments";
 import { requireScope } from "~/server/households";
 
 export default async function NewInvestmentPage() {
@@ -20,8 +21,8 @@ export default async function NewInvestmentPage() {
         description="Log a new investment to track its capital deployed and current value over time."
       />
 
-      <form
-        action={createInvestment}
+      <ActionForm
+        action={createInvestmentForm}
         data-gtm-event="investment_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -137,7 +138,7 @@ export default async function NewInvestmentPage() {
           </Button>
           <SubmitButton>Save investment</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

@@ -1,12 +1,17 @@
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { fromMinorUnits } from "~/lib/money";
-import { deleteLease, endLease, updateLease } from "~/server/actions/leases";
+import {
+  deleteLeaseForm,
+  endLeaseForm,
+  updateLeaseForm,
+} from "~/server/actions/leases";
 import { requireScope } from "~/server/households";
 import { getDocumentsForLease } from "~/server/queries/documents";
 import {
@@ -51,8 +56,8 @@ export default async function EditLeasePage({
         description="Change this lease's terms, end it, or remove it if it was added by mistake."
       />
 
-      <form
-        action={updateLease.bind(null, lease.id)}
+      <ActionForm
+        action={updateLeaseForm.bind(null, lease.id)}
         data-gtm-event="lease_updated"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -135,7 +140,7 @@ export default async function EditLeasePage({
           </Button>
           <SubmitButton>Save changes</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
@@ -146,8 +151,8 @@ export default async function EditLeasePage({
               : "This lease has already ended."}
           </p>
         </div>
-        <form
-          action={endLease.bind(null, lease.id)}
+        <ActionForm
+          action={endLeaseForm.bind(null, lease.id)}
           data-gtm-event="lease_ended"
         >
           <SubmitButton
@@ -158,7 +163,7 @@ export default async function EditLeasePage({
           >
             End lease
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
@@ -170,8 +175,8 @@ export default async function EditLeasePage({
               : "Rent has been received on this lease, so it can't be deleted — end the lease instead."}
           </p>
         </div>
-        <form
-          action={deleteLease.bind(null, lease.id)}
+        <ActionForm
+          action={deleteLeaseForm.bind(null, lease.id)}
           data-gtm-event="lease_deleted"
         >
           <SubmitButton
@@ -182,7 +187,7 @@ export default async function EditLeasePage({
           >
             Delete lease
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
 
       <label className="block max-w-xl space-y-2 rounded-card border border-line bg-surface p-6">

@@ -28,6 +28,7 @@ import {
 import {
   date,
   enumValue,
+  FormError,
   optionalDate,
   optionalEnumValue,
   optionalMoney,
@@ -39,6 +40,7 @@ import {
 import { oneOffTerms, policyEndDate, premiumTerms } from "~/lib/schedule-terms";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import { NOT_SOFT_DELETED } from "~/server/queries/shared";
 import {
@@ -53,7 +55,7 @@ async function requireOwnedPolicy(policyId: string, householdId: string) {
   const policy = await db.policy.findFirst({
     where: { id: policyId, householdId, ...NOT_SOFT_DELETED },
   });
-  if (!policy) throw new Error("Policy not found");
+  if (!policy) throw new FormError("Policy not found");
   return policy;
 }
 
@@ -77,7 +79,10 @@ const policyFieldsSchema = z.object({
   }),
   sumAssured: optionalMoney("Enter a valid sum assured"),
   roomRentLimit: optionalMoney("Enter a valid room rent limit"),
-  coPayPercent: optionalNumber("Enter a valid co-pay percent"),
+  coPayPercent: optionalNumber("Enter a co-pay percent from 0 to 100", {
+    min: 0,
+    max: 100,
+  }),
   waitingPeriodMonths: optionalNumber("Enter a valid waiting period", {
     int: true,
     min: 0,
@@ -298,7 +303,7 @@ export async function deletePolicy(policyId: string) {
   await requireOwnedPolicy(policyId, scope.householdId);
 
   if (await hasPaymentHistory(db, { policyId })) {
-    throw new Error(
+    throw new FormError(
       "Cannot delete a policy that has premiums or payouts on record",
     );
   }
@@ -314,4 +319,29 @@ export async function deletePolicy(policyId: string) {
 
   revalidatePath("/insurance");
   redirect("/insurance");
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createPolicyForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createPolicy(formData));
+}
+
+export async function updatePolicyForm(
+  policyId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updatePolicy(policyId, formData));
+}
+
+export async function deletePolicyForm(
+  policyId: string,
+  _state: FormState,
+  _formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => deletePolicy(policyId));
 }

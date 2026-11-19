@@ -3,13 +3,14 @@
 import type { ReactNode } from "react";
 import { useFormStatus } from "react-dom";
 
+import { useActionFormPending } from "~/app/_components/action-form";
 import { Button, type ButtonProps } from "~/app/_components/button";
 
 /**
  * A form's submit button that disables itself and shows a spinner while
  * the form's Server Action runs — and through the redirect that follows —
  * so a slow response can't be submitted twice. Must sit inside the
- * `<form>` it submits (`useFormStatus` reads the nearest parent form).
+ * `<form>` or `ActionForm` it submits.
  */
 export function SubmitButton({
   children,
@@ -20,7 +21,11 @@ export function SubmitButton({
   /** Shown instead of `children` while pending, e.g. "Signing in…". */
   pendingLabel?: ReactNode;
 }) {
-  const { pending } = useFormStatus();
+  // A plain `<form action>` reports through `useFormStatus`; an
+  // `ActionForm` (which submits in a transition) through its context.
+  const status = useFormStatus();
+  const actionFormPending = useActionFormPending();
+  const pending = status.pending || actionFormPending;
 
   return (
     <Button

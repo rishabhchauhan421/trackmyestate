@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
@@ -7,7 +8,7 @@ import { PageHeader } from "~/app/_components/page-header";
 import { toDateInputValue } from "~/lib/format";
 import { LOAN_TYPE_LABELS } from "~/lib/labels";
 import { fromMinorUnits, optionalFromMinorUnits } from "~/lib/money";
-import { deleteLoan, updateLoan } from "~/server/actions/loans";
+import { deleteLoanForm, updateLoanForm } from "~/server/actions/loans";
 import { requireScope } from "~/server/households";
 import {
   getLoanForHousehold,
@@ -42,8 +43,8 @@ export default async function EditLoanPage({
         description="Update this loan's terms and outstanding balance."
       />
 
-      <form
-        action={updateLoan.bind(null, loan.id)}
+      <ActionForm
+        action={updateLoanForm.bind(null, loan.id)}
         data-gtm-event="loan_updated"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -193,7 +194,7 @@ export default async function EditLoanPage({
           </Button>
           <SubmitButton>Save changes</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
@@ -204,8 +205,8 @@ export default async function EditLoanPage({
               : "EMIs have been paid on this loan, so it can't be deleted."}
           </p>
         </div>
-        <form
-          action={deleteLoan.bind(null, loan.id)}
+        <ActionForm
+          action={deleteLoanForm.bind(null, loan.id)}
           data-gtm-event="loan_deleted"
         >
           <SubmitButton
@@ -216,7 +217,7 @@ export default async function EditLoanPage({
           >
             Delete loan
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
     </>
   );

@@ -119,12 +119,15 @@ describe("createInvestment", () => {
     expect(dbMock.investment.create).not.toHaveBeenCalled();
   });
 
-  it("rejects a non-numeric target ROI", async () => {
-    await expect(
-      createInvestment(buildInvestmentForm({ targetRoiPercent: "abc" })),
-    ).rejects.toThrow("Enter a valid target ROI");
-    expect(dbMock.investment.create).not.toHaveBeenCalled();
-  });
+  it.each(["abc", "-101", "1001"])(
+    "rejects a target ROI of %s",
+    async (roi) => {
+      await expect(
+        createInvestment(buildInvestmentForm({ targetRoiPercent: roi })),
+      ).rejects.toThrow("Enter a target return from -100% to 1000%");
+      expect(dbMock.investment.create).not.toHaveBeenCalled();
+    },
+  );
 
   it("rejects a non-numeric current estimated value", async () => {
     await expect(

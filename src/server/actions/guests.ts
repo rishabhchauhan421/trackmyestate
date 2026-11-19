@@ -13,7 +13,9 @@ import { z } from "zod";
 import type { EventCategory, ReminderChannel } from "../../../generated/prisma";
 import { normalizeIndianMobile } from "~/lib/phone";
 import { REMINDER_CATEGORIES } from "~/lib/reminders";
+import { FormError } from "~/lib/form";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import { sendGuestWelcomeEmail } from "~/server/guests/emails";
 import { getGuestForOwner } from "~/server/queries/guests";
@@ -111,7 +113,7 @@ function parseGuestForm(formData: FormData) {
     when: one("when") || "schedule",
   });
   if (!result.success) {
-    throw new Error(
+    throw new FormError(
       result.error.issues[0]?.message ?? "Check the guest's details",
     );
   }
@@ -126,7 +128,7 @@ async function ownedPropertyIds(householdId: string, propertyIds: string[]) {
     select: { id: true },
   });
   if (owned.length !== new Set(propertyIds).size) {
-    throw new Error("Property not found");
+    throw new FormError("Property not found");
   }
   return owned.map((property) => property.id);
 }
@@ -177,7 +179,7 @@ export async function createGuest(formData: FormData) {
 export async function updateGuest(guestId: string, formData: FormData) {
   const scope = await requireScope();
   const existing = await getGuestForOwner(guestId, scope.userId);
-  if (!existing) throw new Error("Guest not found");
+  if (!existing) throw new FormError("Guest not found");
 
   const guest = parseGuestForm(formData);
   const propertyIds = await ownedPropertyIds(
@@ -197,7 +199,7 @@ export async function updateGuest(guestId: string, formData: FormData) {
 export async function pauseGuest(guestId: string) {
   const scope = await requireScope();
   if (!(await getGuestForOwner(guestId, scope.userId))) {
-    throw new Error("Guest not found");
+    throw new FormError("Guest not found");
   }
   await db.guest.update({
     where: { id: guestId },
@@ -210,9 +212,9 @@ export async function pauseGuest(guestId: string) {
 export async function resumeGuest(guestId: string) {
   const scope = await requireScope();
   const guest = await getGuestForOwner(guestId, scope.userId);
-  if (!guest) throw new Error("Guest not found");
+  if (!guest) throw new FormError("Guest not found");
   if (guest.optedOutAt) {
-    throw new Error("This guest stopped reminders themselves");
+    throw new FormError("This guest stopped reminders themselves");
   }
   await db.guest.update({ where: { id: guestId }, data: { pausedAt: null } });
   revalidatePath("/settings/guests");
@@ -221,11 +223,28 @@ export async function resumeGuest(guestId: string) {
 export async function removeGuest(guestId: string) {
   const scope = await requireScope();
   if (!(await getGuestForOwner(guestId, scope.userId))) {
-    throw new Error("Guest not found");
+    throw new FormError("Guest not found");
   }
   await db.guest.update({
     where: { id: guestId },
     data: { deletedAt: new Date() },
   });
   revalidatePath("/settings/guests");
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createGuestForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createGuest(formData));
+}
+
+export async function updateGuestForm(
+  guestId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateGuest(guestId, formData));
 }

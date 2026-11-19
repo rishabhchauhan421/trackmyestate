@@ -32,6 +32,7 @@ import { LoanType } from "../../../generated/prisma";
 import {
   date,
   enumValue,
+  FormError,
   money,
   number,
   optionalMoney,
@@ -43,6 +44,7 @@ import { calendarDayOf, dateOnly } from "~/lib/calendar-day";
 import { firstDueDayAfter } from "~/lib/schedule";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import {
   hasPaymentHistory,
@@ -54,7 +56,7 @@ import {
 
 async function requireOwnedLoan(loanId: string, householdId: string) {
   const loan = await db.loan.findFirst({ where: { id: loanId, householdId } });
-  if (!loan) throw new Error("Loan not found");
+  if (!loan) throw new FormError("Loan not found");
   return loan;
 }
 
@@ -67,7 +69,10 @@ const loanFieldsSchema = z
     lender: text("Enter a lender"),
     type: enumValue(LoanType, "Choose a loan type"),
     principal: money("Enter a valid principal amount", { positive: true }),
-    interestRatePercent: number("Enter a valid interest rate", { min: 0 }),
+    interestRatePercent: number("Enter an interest rate from 0 to 100%", {
+      min: 0,
+      max: 100,
+    }),
     tenureMonths: number("Enter a valid tenure in months", {
       int: true,
       positive: true,
@@ -102,7 +107,7 @@ async function requireOwnedLinkedProperty(
   const property = await db.property.findFirst({
     where: { id: linkedPropertyId, householdId },
   });
-  if (!property) throw new Error("Property not found");
+  if (!property) throw new FormError("Property not found");
   return linkedPropertyId;
 }
 
@@ -226,7 +231,7 @@ export async function deleteLoan(loanId: string) {
   const loan = await requireOwnedLoan(loanId, scope.householdId);
 
   if (await hasPaymentHistory(db, { loanId })) {
-    throw new Error("Cannot delete a loan that has EMI payments on record");
+    throw new FormError("Cannot delete a loan that has EMI payments on record");
   }
 
   const today = await todayFor(scope.userId);
@@ -242,4 +247,29 @@ export async function deleteLoan(loanId: string) {
   if (loan.linkedPropertyId)
     revalidatePath(`/properties/${loan.linkedPropertyId}`);
   redirect("/loans");
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createLoanForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createLoan(formData));
+}
+
+export async function updateLoanForm(
+  loanId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateLoan(loanId, formData));
+}
+
+export async function deleteLoanForm(
+  loanId: string,
+  _state: FormState,
+  _formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => deleteLoan(loanId));
 }

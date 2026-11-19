@@ -1,10 +1,14 @@
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
-import { deleteProperty, updateProperty } from "~/server/actions/properties";
+import {
+  deletePropertyForm,
+  updatePropertyForm,
+} from "~/server/actions/properties";
 import { requireScope } from "~/server/households";
 import {
   getPropertyForHousehold,
@@ -36,8 +40,8 @@ export default async function EditPropertyPage({
       />
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
-        <form
-          action={updateProperty.bind(null, property.id)}
+        <ActionForm
+          action={updatePropertyForm.bind(null, property.id)}
           data-gtm-event="property_updated"
           className="min-w-0 flex-1 space-y-4"
         >
@@ -48,7 +52,7 @@ export default async function EditPropertyPage({
             </Button>
             <SubmitButton>Save changes</SubmitButton>
           </FormActions>
-        </form>
+        </ActionForm>
 
         <aside className="space-y-3 rounded-card border border-danger/25 bg-surface p-5 lg:w-72">
           <h2 className="text-sm font-semibold text-ink">Delete property</h2>
@@ -57,8 +61,8 @@ export default async function EditPropertyPage({
               ? "This property has leases, rental units, utilities or bills on record, so it can't be deleted."
               : "Permanently removes this property. Only possible when it has no leases, rental units, utilities or bills on record."}
           </p>
-          <form
-            action={deleteProperty.bind(null, property.id)}
+          <ActionForm
+            action={deletePropertyForm.bind(null, property.id)}
             data-gtm-event="property_deleted"
           >
             <SubmitButton
@@ -74,7 +78,7 @@ export default async function EditPropertyPage({
             >
               Delete property
             </SubmitButton>
-          </form>
+          </ActionForm>
         </aside>
       </div>
     </>

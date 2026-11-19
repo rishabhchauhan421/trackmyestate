@@ -1,10 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
-import { createRental } from "~/server/actions/rentals";
+import { createRentalForm } from "~/server/actions/rentals";
 import { requireScope } from "~/server/households";
 import { getPropertyForHousehold } from "~/server/queries/properties";
 
@@ -36,8 +37,8 @@ export default async function NewRentalPage({
         description="A room, floor or unit within this property that gets rented out on its own. Create a lease for it afterwards."
       />
 
-      <form
-        action={createRental}
+      <ActionForm
+        action={createRentalForm}
         data-gtm-event="rental_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -77,7 +78,7 @@ export default async function NewRentalPage({
           </Button>
           <SubmitButton>Save rental unit</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

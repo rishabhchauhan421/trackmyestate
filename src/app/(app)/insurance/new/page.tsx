@@ -1,10 +1,11 @@
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
 import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-payment-fields";
 import { POLICY_TYPE_LABELS } from "~/lib/labels";
-import { createPolicy } from "~/server/actions/policies";
+import { createPolicyForm } from "~/server/actions/policies";
 import { requireScope } from "~/server/households";
 
 export default async function NewPolicyPage() {
@@ -21,8 +22,8 @@ export default async function NewPolicyPage() {
         description="Track a policy's premium due dates, sum assured, maturity payouts and claims."
       />
 
-      <form
-        action={createPolicy}
+      <ActionForm
+        action={createPolicyForm}
         data-gtm-event="policy_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -165,7 +166,7 @@ export default async function NewPolicyPage() {
           </Button>
           <SubmitButton>Save policy</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

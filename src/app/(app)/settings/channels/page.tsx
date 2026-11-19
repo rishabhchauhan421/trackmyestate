@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
@@ -9,7 +10,7 @@ import { formatPhone, localMobileDigits } from "~/lib/phone";
 import { REMINDER_HOURS, formatReminderHour } from "~/lib/reminders";
 import {
   sendTestEmail,
-  updateChannelSettings,
+  updateChannelSettingsForm,
 } from "~/server/actions/settings";
 import { requireScope } from "~/server/households";
 import { getUserSettings } from "~/server/queries/settings";
@@ -68,8 +69,8 @@ export default async function ChannelSettingsPage({
   const message = saved ? SAVED_MESSAGES[saved] : undefined;
 
   return (
-    <form
-      action={updateChannelSettings}
+    <ActionForm
+      action={updateChannelSettingsForm}
       data-gtm-event="channels_updated"
       className="space-y-4"
     >
@@ -215,6 +216,6 @@ export default async function ChannelSettingsPage({
       <FormActions>
         <SubmitButton>Save changes</SubmitButton>
       </FormActions>
-    </form>
+    </ActionForm>
   );
 }

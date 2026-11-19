@@ -1,5 +1,5 @@
 import { Breadcrumbs } from "~/app/_components/page-header";
-import { createGuest } from "~/server/actions/guests";
+import { createGuestForm } from "~/server/actions/guests";
 import { requireScope } from "~/server/households";
 import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
 import { GuestForm } from "../guest-form";
@@ -23,7 +23,7 @@ export default async function NewGuestPage() {
         </p>
       </div>
       <GuestForm
-        action={createGuest}
+        action={createGuestForm}
         properties={properties}
         submitLabel="Add guest"
       />

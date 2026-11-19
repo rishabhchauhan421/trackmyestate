@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
 import {
@@ -11,7 +12,7 @@ import {
 } from "~/app/_components/form";
 import { CURRENCY_LABELS } from "~/lib/labels";
 import { timeZoneOptions } from "~/lib/time-zone";
-import { updateGeneralSettings } from "~/server/actions/settings";
+import { updateGeneralSettingsForm } from "~/server/actions/settings";
 import { requireScope } from "~/server/households";
 import { getUserSettings } from "~/server/queries/settings";
 import { TimeZoneField } from "./time-zone-field";
@@ -37,8 +38,8 @@ export default async function GeneralSettingsPage({
     .join("");
 
   return (
-    <form
-      action={updateGeneralSettings}
+    <ActionForm
+      action={updateGeneralSettingsForm}
       data-gtm-event="general_settings_updated"
       className="space-y-4"
     >
@@ -113,6 +114,6 @@ export default async function GeneralSettingsPage({
       <FormActions>
         <SubmitButton>Save changes</SubmitButton>
       </FormActions>
-    </form>
+    </ActionForm>
   );
 }

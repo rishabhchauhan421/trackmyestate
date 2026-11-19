@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { Card } from "~/app/_components/card";
 import { Notice } from "~/app/_components/form";
@@ -8,7 +9,7 @@ import { CheckIcon } from "~/app/_components/icons";
 import { formatReminderHour, reminderCategoryConfig } from "~/lib/reminders";
 import {
   resetCategoryReminders,
-  updateReminderSettings,
+  updateReminderSettingsForm,
 } from "~/server/actions/settings";
 import { requireScope } from "~/server/households";
 import { getGuests } from "~/server/queries/guests";
@@ -80,7 +81,10 @@ export default async function ReminderSettingsPage({
         </Link>
       </section>
 
-      <form action={updateReminderSettings} data-gtm-event="reminders_updated">
+      <ActionForm
+        action={updateReminderSettingsForm}
+        data-gtm-event="reminders_updated"
+      >
         <Card aria-labelledby="schedule">
           <div className="space-y-1 border-b border-line-soft px-5 py-4 sm:px-6">
             <h2 id="schedule" className="text-base font-semibold text-ink">
@@ -226,7 +230,7 @@ export default async function ReminderSettingsPage({
             <SubmitButton>Save reminders</SubmitButton>
           </div>
         </Card>
-      </form>
+      </ActionForm>
     </>
   );
 }

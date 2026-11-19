@@ -15,8 +15,15 @@ import { redirect } from "next/navigation";
 
 import { z } from "zod";
 
-import { optionalNumber, optionalText, parseFormData, text } from "~/lib/form";
+import {
+  FormError,
+  optionalNumber,
+  optionalText,
+  parseFormData,
+  text,
+} from "~/lib/form";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 
 /** The "Add rental unit" form. */
@@ -37,9 +44,9 @@ async function requireRentableProperty(propertyId: string) {
   const property = await db.property.findFirst({
     where: { id: propertyId, householdId: scope.householdId },
   });
-  if (!property) throw new Error("Property not found");
+  if (!property) throw new FormError("Property not found");
   if (property.type === "SELF_OCCUPIED") {
-    throw new Error("Self-occupied properties can't have rental units");
+    throw new FormError("Self-occupied properties can't have rental units");
   }
   return { scope, property };
 }
@@ -63,4 +70,13 @@ export async function createRental(formData: FormData) {
 
   revalidatePath(`/properties/${propertyId}/rentals`);
   redirect(`/properties/${propertyId}/rentals`);
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createRentalForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createRental(formData));
 }

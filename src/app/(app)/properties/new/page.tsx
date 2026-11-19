@@ -1,8 +1,9 @@
 import { Button } from "~/app/_components/button";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions } from "~/app/_components/form";
 import { PageHeader } from "~/app/_components/page-header";
-import { createProperty } from "~/server/actions/properties";
+import { createPropertyForm } from "~/server/actions/properties";
 import { requireScope } from "~/server/households";
 import { PropertyFormFields } from "../_components/property-form-fields";
 
@@ -21,8 +22,8 @@ export default async function NewPropertyPage() {
       />
 
       <div className="flex flex-col-reverse gap-6 lg:flex-row lg:items-start">
-        <form
-          action={createProperty}
+        <ActionForm
+          action={createPropertyForm}
           data-gtm-event="property_created"
           className="min-w-0 flex-1 space-y-4"
         >
@@ -33,7 +34,7 @@ export default async function NewPropertyPage() {
             </Button>
             <SubmitButton>Save property</SubmitButton>
           </FormActions>
-        </form>
+        </ActionForm>
 
         <aside className="rounded-card border border-line bg-surface p-5 lg:w-72">
           <h2 className="text-sm font-semibold text-ink">After you save</h2>

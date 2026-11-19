@@ -91,7 +91,11 @@ export function SiteHeader({
                 <Link href="/login" className={navLinkClass}>
                   Sign in
                 </Link>
-                <Button href="/sign-up" color="slate" className="mt-1 sm:hidden">
+                <Button
+                  href="/sign-up"
+                  color="slate"
+                  className="mt-1 sm:hidden"
+                >
                   Get started free
                 </Button>
               </>

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import { Breadcrumbs } from "~/app/_components/page-header";
-import { updateGuest } from "~/server/actions/guests";
+import { updateGuestForm } from "~/server/actions/guests";
 import { requireScope } from "~/server/households";
 import { getGuestForOwner } from "~/server/queries/guests";
 import { getPropertyOptionsForHousehold } from "~/server/queries/properties";
@@ -30,7 +30,7 @@ export default async function EditGuestPage({
       />
       <h2 className="text-xl font-semibold text-ink">Edit {guest.name}</h2>
       <GuestForm
-        action={updateGuest.bind(null, guest.id)}
+        action={updateGuestForm.bind(null, guest.id)}
         guest={guest}
         properties={properties}
         submitLabel="Save changes"

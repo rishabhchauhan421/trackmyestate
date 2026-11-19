@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { notFound } from "next/navigation";
 
@@ -13,7 +14,7 @@ import { StatusBadge } from "~/app/_components/status-badge";
 import { formatBillAmount, formatDate } from "~/lib/format";
 import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
 import {
-  addUtilityRecipient,
+  addUtilityRecipientForm,
   deactivateUtility,
   removeUtilityRecipient,
 } from "~/server/actions/utilities";
@@ -164,8 +165,8 @@ export default async function PropertyUtilitiesPage({
                         </ul>
                       )}
 
-                      <form
-                        action={addUtilityRecipient.bind(null, utility.id)}
+                      <ActionForm
+                        action={addUtilityRecipientForm.bind(null, utility.id)}
                         data-gtm-event="utility_recipient_added"
                         className="mt-2 flex flex-wrap gap-2"
                       >
@@ -187,7 +188,7 @@ export default async function PropertyUtilitiesPage({
                         <SubmitButton variant="outline" size="sm">
                           Add
                         </SubmitButton>
-                      </form>
+                      </ActionForm>
                     </div>
                   </div>
                 ))}

@@ -4,7 +4,13 @@ import type { PrismaClient } from "../../../generated/prisma";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
 import { getSession } from "~/server/better-auth/server";
-import { createLoan, deleteLoan, updateLoan } from "./loans";
+import {
+  createLoan,
+  createLoanForm,
+  deleteLoan,
+  deleteLoanForm,
+  updateLoan,
+} from "./loans";
 
 jest.mock("~/server/db");
 jest.mock("~/server/bills/generate", () => ({
@@ -25,6 +31,10 @@ jest.mock("next/navigation", () => ({
   redirect: jest.fn((path: string) => {
     throw new Error(`REDIRECT:${path}`);
   }),
+  // Lets the test's stand-in redirect through `toFormState`.
+  unstable_rethrow: (err: unknown) => {
+    if (err instanceof Error && err.message.startsWith("REDIRECT:")) throw err;
+  },
 }));
 
 const dbMock = db as unknown as DeepMockProxy<PrismaClient>;
@@ -92,10 +102,10 @@ describe("createLoan", () => {
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
-  it("rejects a negative interest rate", async () => {
+  it.each(["-1", "101"])("rejects an interest rate of %s%%", async (rate) => {
     await expect(
-      createLoan(buildLoanForm({ interestRatePercent: "-1" })),
-    ).rejects.toThrow("Enter a valid interest rate");
+      createLoan(buildLoanForm({ interestRatePercent: rate })),
+    ).rejects.toThrow("Enter an interest rate from 0 to 100%");
     expect(dbMock.loan.create).not.toHaveBeenCalled();
   });
 
@@ -457,5 +467,32 @@ describe("deleteLoan", () => {
     });
     expect(revalidatePath).toHaveBeenCalledWith("/loans");
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1");
+  });
+});
+
+describe("form twins", () => {
+  it("returns a validation error to the form instead of throwing", async () => {
+    await expect(
+      createLoanForm({ error: null }, buildLoanForm({ lender: "" })),
+    ).resolves.toEqual({ error: "Enter a lender", field: "lender" });
+    expect(dbMock.loan.create).not.toHaveBeenCalled();
+  });
+
+  it("returns a refusal to the form", async () => {
+    dbMock.loan.findFirst.mockResolvedValue({ id: "loan-1" } as never);
+    dbMock.bill.findFirst.mockResolvedValue({ id: "bill-1" } as never);
+
+    await expect(
+      deleteLoanForm("loan-1", { error: null }, new FormData()),
+    ).resolves.toEqual({
+      error: "Cannot delete a loan that has EMI payments on record",
+    });
+  });
+
+  it("still redirects on success", async () => {
+    dbMock.loan.create.mockResolvedValue({ id: "loan-1" } as never);
+    await expect(
+      createLoanForm({ error: null }, buildLoanForm()),
+    ).rejects.toThrow("REDIRECT:/loans");
   });
 });

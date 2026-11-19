@@ -22,11 +22,13 @@ import {
   checkbox,
   date,
   enumValue,
+  FormError,
   money,
   optionalText,
   parseFormData,
 } from "~/lib/form";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
 
@@ -47,7 +49,7 @@ const recordPaymentSchema = z.object({
 
 async function requireOwnedBill(billId: string, householdId: string) {
   const bill = await db.bill.findFirst({ where: { id: billId, householdId } });
-  if (!bill) throw new Error("Bill not found");
+  if (!bill) throw new FormError("Bill not found");
   return bill;
 }
 
@@ -66,7 +68,7 @@ export async function recordBillPayment(billId: string, formData: FormData) {
   const scope = await requireScope();
   const bill = await requireOwnedBill(billId, scope.householdId);
   if (!isOpen(bill.status)) {
-    throw new Error("This bill is already closed");
+    throw new FormError("This bill is already closed");
   }
 
   const fields = parseFormData(recordPaymentSchema, formData);
@@ -78,7 +80,7 @@ export async function recordBillPayment(billId: string, formData: FormData) {
       where: { id: bill.id, householdId: scope.householdId },
     });
     if (!current || !isOpen(current.status)) {
-      throw new Error("This bill is already closed");
+      throw new FormError("This bill is already closed");
     }
 
     await tx.paymentTransaction.create({
@@ -142,4 +144,14 @@ export async function recordBillPayment(billId: string, formData: FormData) {
     revalidatePath(`/properties/${bill.propertyId}/utilities`);
   }
   redirect(`/bills/${bill.id}?saved=1`);
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function recordBillPaymentForm(
+  billId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => recordBillPayment(billId, formData));
 }

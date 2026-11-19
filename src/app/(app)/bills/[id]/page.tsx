@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { Card, CardHeader } from "~/app/_components/card";
 import {
@@ -20,7 +21,7 @@ import { formatBillAmount, formatDate, formatINR } from "~/lib/format";
 import { PAYMENT_METHOD_LABELS } from "~/lib/labels";
 import { fromMinorUnits } from "~/lib/money";
 import { todayInTimeZone } from "~/lib/time-zone";
-import { recordBillPayment } from "~/server/actions/bills";
+import { recordBillPaymentForm } from "~/server/actions/bills";
 import { requireScope } from "~/server/households";
 import { getBillForHousehold } from "~/server/queries/bills";
 import { getUserTimeZone } from "~/server/queries/settings";
@@ -81,8 +82,8 @@ export default async function BillPage({
       <div className="grid max-w-5xl grid-cols-1 items-start gap-4 lg:grid-cols-3">
         <div className="space-y-4 lg:col-span-2">
           {open ? (
-            <form
-              action={recordBillPayment.bind(null, bill.id)}
+            <ActionForm
+              action={recordBillPaymentForm.bind(null, bill.id)}
               data-gtm-event="bill_payment_recorded"
               className="space-y-4"
             >
@@ -150,7 +151,7 @@ export default async function BillPage({
                   {inflow ? "Mark received" : "Mark paid"}
                 </SubmitButton>
               </FormActions>
-            </form>
+            </ActionForm>
           ) : (
             <Card className="p-5 text-sm text-ink-2 sm:p-6">
               {bill.status === "PAID"

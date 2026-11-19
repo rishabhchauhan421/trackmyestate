@@ -183,6 +183,15 @@ describe("createPolicy", () => {
   });
 });
 
+describe("policy validation", () => {
+  it.each(["-1", "101"])("rejects a co-pay of %s%%", async (coPay) => {
+    await expect(
+      createPolicy(buildPolicyForm({ coPayPercent: coPay })),
+    ).rejects.toThrow("Enter a co-pay percent from 0 to 100");
+    expect(dbMock.policy.create).not.toHaveBeenCalled();
+  });
+});
+
 describe("policy premiums and payouts", () => {
   it("creates a premium schedule until the policy's term ends", async () => {
     await expect(

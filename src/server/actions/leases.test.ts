@@ -328,6 +328,23 @@ describe("createLease rent schedule", () => {
     });
   });
 
+  it("refuses a lease that ends before it starts", async () => {
+    await expect(
+      createLease(
+        buildLeaseForm({ leaseStart: "2026-06-10", leaseEnd: "2026-06-09" }),
+      ),
+    ).rejects.toThrow("The lease can't end before it starts");
+    expect(dbMock.lease.create).not.toHaveBeenCalled();
+  });
+
+  it("refuses moving an existing lease's end before its start", async () => {
+    dbMock.lease.findFirst.mockResolvedValue(EXISTING_LEASE as never);
+    await expect(
+      updateLease("lease-1", buildLeaseUpdateForm({ leaseEnd: "2026-05-31" })),
+    ).rejects.toThrow("The lease can't end before it starts");
+    expect(dbMock.lease.update).not.toHaveBeenCalled();
+  });
+
   it("requires a rent due day", async () => {
     await expect(
       createLease(buildLeaseForm({ rentDueDay: "" })),

@@ -165,6 +165,22 @@ describe("createProperty", () => {
 });
 
 describe("updateProperty", () => {
+  it("won't mark a property with a tenant self-occupied", async () => {
+    dbMock.property.findFirst.mockResolvedValue({ id: "prop-1" } as never);
+    dbMock.lease.findFirst.mockResolvedValue({ id: "lease-1" } as never);
+
+    await expect(
+      updateProperty("prop-1", buildPropertyForm({ type: "SELF_OCCUPIED" })),
+    ).rejects.toThrow(
+      "End this property's active leases before marking it self-occupied",
+    );
+    expect(dbMock.lease.findFirst).toHaveBeenCalledWith({
+      where: { propertyId: "prop-1", active: true },
+      select: { id: true },
+    });
+    expect(dbMock.property.update).not.toHaveBeenCalled();
+  });
+
   it("redirects to / when there is no session", async () => {
     getSessionMock.mockResolvedValue(null);
 

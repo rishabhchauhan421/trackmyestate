@@ -30,6 +30,7 @@ import {
   date,
   email,
   enumValue,
+  FormError,
   money,
   optionalEnumValue,
   optionalText,
@@ -39,6 +40,7 @@ import {
 import { todayInTimeZone } from "~/lib/time-zone";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import { getUserTimeZone } from "~/server/queries/settings";
 import { retireSchedules, todayFor } from "~/server/schedules/lifecycle";
@@ -79,7 +81,7 @@ async function requireOwnedProperty(propertyId: string) {
   const property = await db.property.findFirst({
     where: { id: propertyId, householdId: scope.householdId },
   });
-  if (!property) throw new Error("Property not found");
+  if (!property) throw new FormError("Property not found");
   return { scope, property };
 }
 
@@ -88,7 +90,7 @@ async function requireOwnedUtility(utilityId: string, householdId: string) {
   const utility = await db.billSchedule.findFirst({
     where: { id: utilityId, category: "UTILITY_BILL", householdId },
   });
-  if (!utility) throw new Error("Utility not found");
+  if (!utility) throw new FormError("Utility not found");
   return utility;
 }
 
@@ -117,7 +119,7 @@ export async function createUtility(formData: FormData) {
   // the input's date (parsed as UTC midnight) vs. today where the user is.
   const today = todayInTimeZone(await getUserTimeZone(scope.userId));
   if (firstDueDate.toISOString().slice(0, 10) < today) {
-    throw new Error("The first due date can't be in the past");
+    throw new FormError("The first due date can't be in the past");
   }
 
   const schedule = await db.billSchedule.create({
@@ -205,4 +207,21 @@ export async function removeUtilityRecipient(utilityId: string, email: string) {
   });
 
   revalidatePath(`/properties/${utility.propertyId}/utilities`);
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createUtilityForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createUtility(formData));
+}
+
+export async function addUtilityRecipientForm(
+  utilityId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => addUtilityRecipient(utilityId, formData));
 }

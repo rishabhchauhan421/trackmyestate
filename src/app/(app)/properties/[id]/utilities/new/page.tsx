@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
 import { PageHeader, propertyCrumbs } from "~/app/_components/page-header";
 import { BILL_TYPE_LABELS, UTILITY_RECURRENCE_LABELS } from "~/lib/labels";
 import { todayInTimeZone } from "~/lib/time-zone";
-import { createUtility } from "~/server/actions/utilities";
+import { createUtilityForm } from "~/server/actions/utilities";
 import { requireScope } from "~/server/households";
 import { getPropertyForHousehold } from "~/server/queries/properties";
 import { getUserTimeZone } from "~/server/queries/settings";
@@ -36,8 +37,8 @@ export default async function NewUtilityPage({
         description="Set up a recurring bill schedule for this property. Bills are generated automatically, on the date of each cycle's first reminder — you can add who to notify afterwards."
       />
 
-      <form
-        action={createUtility}
+      <ActionForm
+        action={createUtilityForm}
         data-gtm-event="utility_created"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -117,7 +118,7 @@ export default async function NewUtilityPage({
           </Button>
           <SubmitButton>Save utility</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
     </>
   );
 }

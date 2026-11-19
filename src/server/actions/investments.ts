@@ -18,6 +18,7 @@ import { InvestmentType } from "../../../generated/prisma";
 import {
   date,
   enumValue,
+  FormError,
   money,
   optionalDate,
   optionalMoney,
@@ -29,6 +30,7 @@ import {
 import { expectedReturnAmount, oneOffTerms } from "~/lib/schedule-terms";
 import { generateBillsForSchedule } from "~/server/bills/generate";
 import { db } from "~/server/db";
+import { toFormState, type FormState } from "~/server/form-state";
 import { requireScope } from "~/server/households";
 import {
   hasPaymentHistory,
@@ -45,7 +47,7 @@ async function requireOwnedInvestment(
   const investment = await db.investment.findFirst({
     where: { id: investmentId, householdId },
   });
-  if (!investment) throw new Error("Investment not found");
+  if (!investment) throw new FormError("Investment not found");
   return investment;
 }
 
@@ -60,7 +62,11 @@ const investmentFieldsSchema = z.object({
   }),
   expectedReturnType: optionalText(),
   expectedReturnDate: optionalDate("Enter a valid expected return date"),
-  targetRoiPercent: optionalNumber("Enter a valid target ROI"),
+  // A loss can be at most 100%; a 1000% target is a typo, not a plan.
+  targetRoiPercent: optionalNumber(
+    "Enter a target return from -100% to 1000%",
+    { min: -100, max: 1000 },
+  ),
   currentEstimatedValue: optionalMoney("Enter a valid current estimated value"),
 });
 
@@ -171,7 +177,9 @@ export async function deleteInvestment(investmentId: string) {
   await requireOwnedInvestment(investmentId, scope.householdId);
 
   if (await hasPaymentHistory(db, { investmentId })) {
-    throw new Error("Cannot delete an investment that has returns on record");
+    throw new FormError(
+      "Cannot delete an investment that has returns on record",
+    );
   }
 
   const today = await todayFor(scope.userId);
@@ -185,4 +193,29 @@ export async function deleteInvestment(investmentId: string) {
 
   revalidatePath("/investments");
   redirect("/investments");
+}
+
+// Form twins for `ActionForm` (see `~/server/form-state`).
+
+export async function createInvestmentForm(
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => createInvestment(formData));
+}
+
+export async function updateInvestmentForm(
+  investmentId: string,
+  _state: FormState,
+  formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => updateInvestment(investmentId, formData));
+}
+
+export async function deleteInvestmentForm(
+  investmentId: string,
+  _state: FormState,
+  _formData: FormData,
+): Promise<FormState> {
+  return toFormState(() => deleteInvestment(investmentId));
 }

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
@@ -8,7 +9,7 @@ import { PolicyPaymentFields } from "~/app/(app)/insurance/_components/policy-pa
 import { toDateInputValue } from "~/lib/format";
 import { POLICY_STATUS_LABELS, POLICY_TYPE_LABELS } from "~/lib/labels";
 import { optionalFromMinorUnits } from "~/lib/money";
-import { deletePolicy, updatePolicy } from "~/server/actions/policies";
+import { deletePolicyForm, updatePolicyForm } from "~/server/actions/policies";
 import { requireScope } from "~/server/households";
 import {
   getPolicyForHousehold,
@@ -46,8 +47,8 @@ export default async function EditPolicyPage({
         description="Update this policy's details, including its status."
       />
 
-      <form
-        action={updatePolicy.bind(null, policy.id)}
+      <ActionForm
+        action={updatePolicyForm.bind(null, policy.id)}
         data-gtm-event="policy_updated"
         className="max-w-3xl space-y-5 rounded-card border border-line bg-surface p-6"
       >
@@ -215,7 +216,7 @@ export default async function EditPolicyPage({
           </Button>
           <SubmitButton>Save changes</SubmitButton>
         </FormActions>
-      </form>
+      </ActionForm>
 
       <div className="max-w-3xl space-y-4 rounded-card border border-line bg-surface p-6">
         <div>
@@ -226,8 +227,8 @@ export default async function EditPolicyPage({
               : "Premiums or payouts have been recorded on this policy, so it can't be deleted."}
           </p>
         </div>
-        <form
-          action={deletePolicy.bind(null, policy.id)}
+        <ActionForm
+          action={deletePolicyForm.bind(null, policy.id)}
           data-gtm-event="policy_deleted"
         >
           <SubmitButton
@@ -238,7 +239,7 @@ export default async function EditPolicyPage({
           >
             Delete policy
           </SubmitButton>
-        </form>
+        </ActionForm>
       </div>
     </>
   );
