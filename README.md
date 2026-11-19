@@ -94,8 +94,10 @@ OAuth and email/password (including password reset). Email goes out through
    ```bash
    pnpm dev
    ```
-   Open http://localhost:3000 and sign in with Google (or register with
-   email/password).
+   Open http://localhost:3000 and sign in with Google, or sign up with
+   email and password at `/sign-up`. Email accounts must confirm their address
+   first: without `RESEND_API_KEY` the verification link is printed in the
+   server console.
 
 **Important:** after any `prisma/schema.prisma` change, run `pnpm db:push` _and_
 restart `pnpm dev`. The dev server caches a single `PrismaClient` instance across
@@ -133,7 +135,10 @@ pnpm db:push                                # then create the new indexes
 
 Then deploy the code. The November 2026 steps give every bill a unique
 `generationKey` (soft-deleting any duplicate bills found), convert money from
-rupees to paise, and create a personal household for every user.
+rupees to paise, create a personal household for every user, and give every
+active lease a rent schedule. `pnpm db:push` also creates the indexes for
+`BillSchedule.nextDueDate`, `EmailSuppression`, `CronRun` and the auth
+rate-limit tables.
 
 ## Granting the first admin
 
@@ -155,16 +160,25 @@ can go through the admin UI (`auth.api.setRole`) instead of the script.
 
 - **Auth** — sign in / sign up / sign out (Google OAuth + email/password) and
   **forgot / reset password** (single-use emailed link valid for 1 hour; resetting
-  signs out every other session). Every `(app)` route is guarded server-side.
+  signs out every other session). Email sign-ups must verify their address
+  before signing in, and sign-in, sign-up, reset and verification emails are
+  rate limited per IP and per address (`src/server/rate-limit.ts`, stored in
+  MongoDB). Every `(app)` route is guarded server-side.
 - **Dashboard** — net worth, insurance cover, next-30-days in/out, portfolio mix,
   a "needs attention" list (overdue or due within 7 days) and the next six dates.
-- **Timeline** — every bill, filterable by period and by inflow/outflow.
+- **Timeline** — every bill, filterable by period and by inflow/outflow, plus
+  "projected" rows for what active schedules will bill later in the range.
+- **Bills** — one page per bill (`/bills/[id]`): its asset, status, payments
+  and a "Record payment" form (part payments; a settled EMI reduces the
+  loan's outstanding balance).
 - **Properties** — totals, type filters and cards; a detail page with key figures
   (value, rent, rental yield, open bills), current lease and bills; add/edit.
   Per property: **leases**, **rental units** and **utilities** (recurring bill
   schedules with recipients; amounts of variable utilities show as "Approx." until
   paid; first due date can't be in the past).
-- **Insurance, Investments, Loans** — lists with add/edit/delete.
+- **Insurance, Investments, Loans** — lists with add/edit/delete. A policy
+  can have a premium schedule and a payout; an investment an expected
+  return; a lease its monthly rent. Each becomes bills and reminders.
 - **Documents** — lists `Document` rows (no upload flow yet).
 - **Settings** — four tabs: **General** (name, time zone, currency),
   **Reminders** (when and how, per kind of payment — see below),
@@ -178,6 +192,15 @@ can go through the admin UI (`auth.api.setRole`) instead of the script.
   or cancel a queued one).
 
 Every form validates on the server with zod (field helpers in `src/lib/form.ts`).
+A validation problem is thrown as a `FormError` and shown on the form: each
+action has a `…Form` twin wrapped in `toFormState` (`src/server/form-state.ts`),
+which `ActionForm` (`src/app/_components/action-form.tsx`) calls through
+`useActionState` without clearing what the user typed. Anything else that
+goes wrong reaches the `error.tsx` boundaries.
+
+Amounts are shown in the record's currency, or the user's (Settings ›
+General) when it has none, and totals are kept per currency
+(`src/lib/money-totals.ts`) rather than added across currencies.
 
 ## Bills
 
@@ -188,11 +211,18 @@ in each owner's time zone — enough for the earliest reminder, and enough to
 catch up after missed runs. It never creates the same schedule-and-day bill
 twice, so it's safe to run any number of times.
 
-- It runs daily as part of **`/api/cron/daily`** (see [Scheduled
-  jobs](#scheduled-jobs)); `/api/cron/bills` runs it alone.
+- It runs daily from **`/api/cron/bills`** (see [Scheduled
+  jobs](#scheduled-jobs)), reading only schedules whose stored
+  `nextDueDate` falls within the horizon.
 - **Admin › Jobs** (`/admin/jobs`) runs it — or the reminder and sending
   jobs — on demand, and shows their queues.
-- A new utility or loan generates its first bills straight away.
+- A new utility, loan, lease, premium, payout or expected return generates
+  its first bills straight away.
+- Every asset action changes schedules through one place,
+  `src/server/schedules/lifecycle.ts`: changing the terms removes the
+  upcoming unpaid bills so they're regenerated from the new terms, ending
+  or deleting an asset retires its schedules, and paid bills are never
+  touched.
 
 A schedule's dates come from `src/lib/schedule.ts`: anchored on its
 `startDate` (first due date; a loan's first EMI after it starts),
@@ -222,9 +252,16 @@ bill is still unpaid).
 - **Guests** (`Guest` model, Settings › Guests) get the owner's reminders for
   the kinds of payment — and optionally the properties — they were added for,
   on the owner's schedule or only on the due day. They get one welcome email
-  when added, and every email carries a signed "stop these reminders" link to
-  the public `/reminders/stop` page. A guest who stops can't be resumed by
-  the owner.
+  when added (queued and sent at once through the same notification queue),
+  and every email carries a signed "stop these reminders" link to the public
+  `/reminders/stop` page. A guest who stops can't be resumed by the owner.
+- **Utility recipients** get the same signed stop link in every reminder.
+- **Suppression list:** stopping adds the address to `EmailSuppression`,
+  for that owner or, if they choose, for everyone. Reminders and welcome
+  emails to a suppressed address aren't queued, and a queued one is
+  cancelled before sending, so deleting and re-adding a guest doesn't
+  restart the emails. An owner can have up to 25 guests and add 10 new
+  guest addresses a day (`src/server/guests/invites.ts`).
 - **Channels:** email is live (Resend). SMS and WhatsApp numbers can be saved
   for the owner and guests, but nothing is sent to them until those
   providers are connected; push is a placeholder.
@@ -233,25 +270,26 @@ bill is still unpaid).
 
 ### Scheduled jobs
 
-Vercel's Hobby plan only allows crons that run **once a day**, so:
+Vercel Cron runs every job on its own schedule (`vercel.json`, Vercel Pro):
 
-| Schedule                     | Runs                                          | Calls                                                   |
-| ---------------------------- | --------------------------------------------- | ------------------------------------------------------- |
-| Daily, 03:30 UTC (09:00 IST) | Vercel Cron (`vercel.json`)                   | `/api/cron/daily` — bills, then reminders, then sending |
-| Hourly at :05                | GitHub Actions (`.github/workflows/cron.yml`) | `/api/cron/reminders`                                   |
-| Every 15 minutes             | GitHub Actions                                | `/api/cron/notifications`                               |
+| Schedule                     | Calls                     | Does                         |
+| ---------------------------- | ------------------------- | ---------------------------- |
+| Every 15 minutes             | `/api/cron/notifications` | Sends due reminders          |
+| Hourly at :05                | `/api/cron/reminders`     | Queues today's reminders     |
+| Daily, 03:00 UTC (08:30 IST) | `/api/cron/bills`         | Generates the upcoming bills |
 
-The daily run alone is enough for India-based users on the default 9 am
-send time. The GitHub Actions runs make other send times and time zones
-exact; they need two repository secrets — `APP_URL` (the deployed URL) and
-`CRON_SECRET` (same as the app's). On Vercel Pro you could instead put the
-hourly and 15-minute schedules straight into `vercel.json`.
+Every cron route requires `Authorization: Bearer $CRON_SECRET` (Vercel Cron
+sends it), and every job is idempotent, so late, repeated or overlapping
+runs are harmless. `/api/cron/daily` runs all three in order for a manual
+catch-up, and the GitHub Actions workflow (`.github/workflows/cron.yml`)
+can call any of them by hand.
 
-Every cron route requires `Authorization: Bearer $CRON_SECRET`, and every
-job is idempotent, so late, repeated or overlapping runs are harmless.
-Admins can run any job from **Admin › Jobs**, and see what was sent (or why
-it failed) in **Admin › Notifications**. Run `pnpm db:push` after pulling
-this — the log needs the new `NotificationJob` indexes.
+**Missed runs:** each run is recorded in `CronRun`. `GET /api/health/cron`
+returns 200 while every job has succeeded within two of its intervals, and
+503 naming the late ones otherwise. Point an uptime monitor at it to be
+alerted. Admins see each job's last success, and can run any job, in
+**Admin › Jobs**, and see what was sent (or why it failed) in **Admin ›
+Notifications**.
 
 ## Design system
 
@@ -263,16 +301,16 @@ there too.
 
 ## What's next
 
-- Premium and rent schedules: policies and leases don't create a
-  `BillSchedule` yet (utilities and loans do), so their bills aren't
-  generated automatically.
 - WhatsApp and SMS delivery (a provider such as Twilio/MSG91/Meta), with
   phone verification and WhatsApp opt-in for owners and guests; quiet hours
   and the weekly digest; per-item reminder overrides. Existing per-utility
   recipients could then be folded into Guests.
+- Sharing a household: inviting a member, and sending reminders to every
+  member rather than only the owner.
+- Choosing a currency per property, policy or investment (records follow the
+  user's currency until then), and conversion for totals across currencies.
 - Reminders anchored on a premium's grace-period end (`Bill.gracePeriodDays`).
 - Document upload; "Mark paid" links inside reminder emails.
-- Surfacing `Currency` and `PaymentTransaction` in the UI.
 
 ## Testing
 
