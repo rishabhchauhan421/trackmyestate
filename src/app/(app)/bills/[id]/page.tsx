@@ -79,6 +79,19 @@ export default async function BillPage({
         description={`${formatBillAmount(bill.amount, approx, currency)} · ${
           inflow ? "expected" : "due"
         } ${formatDate(bill.dueDate)}`}
+        action={
+          // A property due was typed in by hand, so it can be corrected.
+          open &&
+          bill.category === "PROPERTY_DUE" &&
+          bill.property && (
+            <Button
+              href={`/properties/${bill.property.id}/dues/${bill.id}/edit`}
+              variant="outline"
+            >
+              Edit
+            </Button>
+          )
+        }
       />
 
       {saved && (

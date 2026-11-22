@@ -1,4 +1,5 @@
 import { Button } from "~/app/_components/button";
+import { NotesField } from "~/app/_components/notes-field";
 import { ActionForm } from "~/app/_components/action-form";
 import { SubmitButton } from "~/app/_components/submit-button";
 import { FormActions, controlClass, labelClass } from "~/app/_components/form";
@@ -134,6 +135,8 @@ export default async function NewInvestmentPage() {
             className={`${controlClass} sm:w-40`}
           />
         </label>
+
+        <NotesField />
 
         <FormActions>
           <Button href="/investments" variant="outline">

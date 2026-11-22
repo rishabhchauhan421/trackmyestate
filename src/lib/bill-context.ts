@@ -15,6 +15,8 @@ export interface BillContextInput {
   loan?: { id: string; lender: string } | null;
   policy?: { id: string; insurer: string } | null;
   investment?: { id: string; name: string } | null;
+  /** The property issue a PROPERTY_DUE was added under, if any. */
+  propertyIssue?: { id: string; title: string; propertyId: string } | null;
   billSchedule?: { billType: BillType | null; provider: string | null } | null;
 }
 
@@ -45,6 +47,12 @@ export function billAsset(
     return {
       label: bill.lease.tenantName,
       href: `/properties/${bill.lease.propertyId}/leases`,
+    };
+  }
+  if (bill.propertyIssue) {
+    return {
+      label: bill.propertyIssue.title,
+      href: `/properties/${bill.propertyIssue.propertyId}/issues/${bill.propertyIssue.id}`,
     };
   }
   if (bill.property) {

@@ -26,6 +26,10 @@ import {
 import { requireScope } from "~/server/households";
 import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getDashboardData } from "~/server/queries/dashboard";
+import { getOpenIssuesForHousehold } from "~/server/queries/issues";
+import { dateOnly } from "~/lib/calendar-day";
+import { nextKeyDate } from "~/lib/issues";
+import { todayInTimeZone } from "~/lib/time-zone";
 
 const CATEGORY_LABELS: Record<string, string> = {
   RENT: "Rent",
@@ -36,6 +40,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   INVESTMENT_RETURN: "Return",
   CLAIM_SETTLEMENT: "Claim settlement",
   CUSTOM: "Custom",
+  PROPERTY_DUE: "Property due",
 };
 
 type Tone = "danger" | "warn" | "in" | "plain";
@@ -95,6 +100,8 @@ export default async function DashboardPage() {
     attentionItems,
     upcoming,
   } = await getDashboardData(scope.householdId, timeZone, new Date(), currency);
+  const openIssues = await getOpenIssuesForHousehold(scope.householdId);
+  const today = dateOnly(todayInTimeZone(timeZone));
 
   const firstName = scope.user.name?.split(" ")[0];
   const overdueCount = attentionItems.filter(
@@ -240,6 +247,37 @@ export default async function DashboardPage() {
         </Card>
 
         <div className="space-y-4">
+          {openIssues.length > 0 && (
+            <Card aria-labelledby="open-issues">
+              <CardHeader title={<span id="open-issues">Open issues</span>} />
+              <ul className="divide-y divide-line-soft">
+                {openIssues.map((issue) => {
+                  const next = nextKeyDate(issue.keyDates, today);
+                  return (
+                    <li key={issue.id} className="px-5 py-3.5 sm:px-6">
+                      <p className="truncate text-sm font-medium text-ink">
+                        <Link
+                          href={`/properties/${issue.propertyId}/issues/${issue.id}`}
+                          className="hover:text-accent-strong"
+                        >
+                          {issue.title}
+                        </Link>
+                      </p>
+                      <p className="text-[0.8125rem] text-muted">
+                        {issue.property.name}
+                        {next
+                          ? ` · ${next.label} ${formatShortDate(next.date)}`
+                          : issue.nextDue
+                            ? ` · payment due ${formatShortDate(issue.nextDue.dueDate)}`
+                            : " · nothing scheduled"}
+                      </p>
+                    </li>
+                  );
+                })}
+              </ul>
+            </Card>
+          )}
+
           <Card aria-labelledby="cashflow" className="space-y-4 p-5 sm:p-6">
             <h2 id="cashflow" className="text-base font-semibold text-ink">
               Next 30 days

@@ -32,6 +32,8 @@ export interface EnqueueNotificationJobArgs {
   loanId?: string;
   policyId?: string;
   investmentId?: string;
+  /** For a property issue's own alerts (see `~/server/issues/alerts`). */
+  propertyIssueId?: string;
   batchGroup?: string;
   metadata?: NotificationJobMetadata;
   /**

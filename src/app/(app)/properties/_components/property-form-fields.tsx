@@ -1,3 +1,4 @@
+import { NotesField } from "~/app/_components/notes-field";
 import type { Property } from "../../../../../generated/prisma";
 import {
   ChoiceCards,
@@ -188,6 +189,10 @@ export function PropertyFormFields({
             />
           </Field>
         </div>
+      </FormSection>
+
+      <FormSection title="Notes" optional>
+        <NotesField defaultValue={property?.notes} />
       </FormSection>
     </>
   );

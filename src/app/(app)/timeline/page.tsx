@@ -33,6 +33,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   INVESTMENT_RETURN: "Return",
   CLAIM_SETTLEMENT: "Claim settlement",
   CUSTOM: "Custom",
+  PROPERTY_DUE: "Property due",
 };
 
 function isRange(value: string | undefined): value is TimelineRange {

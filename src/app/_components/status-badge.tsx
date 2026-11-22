@@ -22,6 +22,10 @@ const STATUS_STYLES: Record<string, string> = {
   PROCESSING: WARN,
   FAILED: DANGER,
   SKIPPED: NEUTRAL,
+  // Property issues
+  OPEN: WARN,
+  RESOLVED: OK,
+  DROPPED: NEUTRAL,
 };
 
 const FALLBACK_STYLE = NEUTRAL;

@@ -150,6 +150,23 @@ async function claimAndCheck(
     if (reason) return cancel(job, reason);
   }
 
+  // An issue's alert (a key date, "Finalise this?") isn't sent once the
+  // issue is resolved, dropped or removed.
+  if (job.propertyIssueId && !job.billId) {
+    const issue = await db.propertyIssue.findUnique({
+      where: { id: job.propertyIssueId },
+      select: { status: true, deletedAt: true },
+    });
+    const reason = !issue
+      ? "Issue no longer exists"
+      : issue.deletedAt
+        ? "Issue was removed"
+        : issue.status !== "OPEN"
+          ? `Issue is ${issue.status.toLowerCase()}`
+          : null;
+    if (reason) return cancel(job, reason);
+  }
+
   // A guest who stopped reminders, was paused or was removed since the job
   // was queued doesn't get it.
   const guestId = job.metadata?.guestId;

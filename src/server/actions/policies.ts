@@ -29,6 +29,7 @@ import {
   date,
   enumValue,
   FormError,
+  notes,
   optionalDate,
   optionalEnumValue,
   optionalMoney,
@@ -87,6 +88,7 @@ const policyFieldsSchema = z.object({
     int: true,
     min: 0,
   }),
+  notes: notes(),
 });
 
 /** The premium and payout fields: each group is all-or-nothing. */

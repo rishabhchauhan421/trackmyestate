@@ -123,6 +123,24 @@ model Verification {
 // Embedded Document Types (MongoDB Native)
 // ---------------------------------------------------------------------------
 
+// A dated milestone on a `PropertyIssue` (next hearing, filing deadline,
+// expected decision). `date` is a date-only value (see
+// src/lib/calendar-day.ts). `id` is a uuid, so alerts can be keyed to it.
+type IssueKeyDate {
+  id    String
+  label String
+  date  DateTime
+  done  Boolean  @default(false)
+}
+
+// One entry in a `PropertyIssue`'s dated log.
+type IssueNote {
+  id         String
+  at         DateTime
+  authorName String
+  text       String
+}
+
 type Recipient {
   name         String
   email        String
@@ -279,6 +297,26 @@ enum EventCategory {
   PAYOUT
   CLAIM_SETTLEMENT
   CUSTOM
+  // A one-off amount due on a property (a builder instalment, conversion
+  // charges, stamp duty, a settlement), optionally under a `PropertyIssue`.
+  PROPERTY_DUE
+}
+
+// What stops a property from being fully clear. The type only sets the
+// wording; every type can hold payments and key dates.
+enum PropertyIssueType {
+  DISPUTE
+  FREEHOLD_CONVERSION
+  PENDING_DUES
+  REGISTRATION
+  OTHER
+}
+
+enum PropertyIssueStatus {
+  OPEN
+  RESOLVED
+  // No longer applies (added by mistake, withdrawn, superseded).
+  DROPPED
 }
 
 enum FinancialEventType {
@@ -342,12 +380,21 @@ model Property {
   purchaseDate          DateTime?
   photos                String[]
 
+  // Opt-in for a leasehold property: when the owner switched on freehold
+  // check-ins, sent every six months from this day until it's converted
+  // (see src/server/issues/alerts.ts). Unset = off.
+  freeholdAlertsSince DateTime?
+
+  // Free text for whatever the fields above can't hold.
+  notes String?
+
   deletedAt DateTime?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
   rooms             Room[]
   leases            Lease[]
+  issues            PropertyIssue[]
   policies          Policy[] // Insurance policies covering this property
   billSchedules     BillSchedule[]
   bills             Bill[]
@@ -389,7 +436,8 @@ model Lease {
   room       Room?    @relation(fields: [roomId], references: [id])
 
   tenantName    String    @map("name")
-  tenantPhone   String    @map("phone")
+  // Optional: older leases all have one, new ones may not.
+  tenantPhone   String?   @map("phone")
   tenantEmail   String?   @map("email")
   leaseStart    DateTime
   leaseEnd      DateTime?
@@ -398,6 +446,9 @@ model Lease {
   depositAmount Float
   currency      Currency?
   active        Boolean   @default(true)
+
+  // Free text for whatever the fields above can't hold.
+  notes String?
 
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -511,18 +562,22 @@ model Bill {
   direction FinancialEventType
 
   // Exclusive Arcs
-  billScheduleId String?       @db.ObjectId
-  billSchedule   BillSchedule? @relation(fields: [billScheduleId], references: [id], onDelete: SetNull)
-  propertyId     String?       @db.ObjectId
-  property       Property?     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
-  leaseId        String?       @db.ObjectId
-  lease          Lease?        @relation(fields: [leaseId], references: [id], onDelete: Cascade)
-  loanId         String?       @db.ObjectId
-  loan           Loan?         @relation(fields: [loanId], references: [id], onDelete: Cascade)
-  policyId       String?       @db.ObjectId
-  policy         Policy?       @relation(fields: [policyId], references: [id], onDelete: Cascade)
-  investmentId   String?       @db.ObjectId
-  investment     Investment?   @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  billScheduleId  String?        @db.ObjectId
+  billSchedule    BillSchedule?  @relation(fields: [billScheduleId], references: [id], onDelete: SetNull)
+  propertyId      String?        @db.ObjectId
+  property        Property?      @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  leaseId         String?        @db.ObjectId
+  lease           Lease?         @relation(fields: [leaseId], references: [id], onDelete: Cascade)
+  loanId          String?        @db.ObjectId
+  loan            Loan?          @relation(fields: [loanId], references: [id], onDelete: Cascade)
+  policyId        String?        @db.ObjectId
+  policy          Policy?        @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  investmentId    String?        @db.ObjectId
+  investment      Investment?    @relation(fields: [investmentId], references: [id], onDelete: Cascade)
+  // Not an arc of its own: a PROPERTY_DUE bill always has `propertyId`,
+  // and this too when it was added under one of the property's issues.
+  propertyIssueId String?        @db.ObjectId
+  propertyIssue   PropertyIssue? @relation(fields: [propertyIssueId], references: [id], onDelete: SetNull)
 
   // One key per bill a schedule generates ("<scheduleId>:<YYYY-MM-DD>"), so
   // two overlapping generator runs can't both create it: the second insert
@@ -569,6 +624,53 @@ model Bill {
   @@index([leaseId])
   @@index([loanId])
   @@index([householdId])
+  @@index([propertyIssueId])
+}
+
+// Something that stops a property from being fully clear: a dispute, a
+// pending freehold conversion, unpaid dues, a pending registration. It
+// carries key dates and a dated log itself; what's owed under it is
+// ordinary `Bill`s (category PROPERTY_DUE) pointing back here. Both raise
+// alerts until it's resolved or dropped (see src/server/issues/alerts.ts).
+model PropertyIssue {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  // Who created it; everyone in `householdId` can see and change it.
+  ownerId     String   @db.ObjectId
+  householdId String   @db.ObjectId
+  propertyId  String   @db.ObjectId
+  property    Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  type         PropertyIssueType
+  status       PropertyIssueStatus @default(OPEN)
+  title        String
+  description  String?
+  // The other side: a person, builder, authority or court.
+  counterparty String?
+  // A case, application or allotment number.
+  reference    String?
+
+  // Date-only values (see src/lib/calendar-day.ts).
+  openedOn   DateTime
+  resolvedOn DateTime?
+  // How it ended, written when it's resolved or dropped.
+  outcome    String?
+
+  keyDates IssueKeyDate[]
+  notes    IssueNote[]
+
+  // When someone last changed it (a note, a date, a payment added): what
+  // the "gone quiet" alert measures from.
+  lastActivityAt DateTime @default(now())
+
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  bills Bill[]
+
+  @@index([propertyId])
+  @@index([householdId, status])
+  @@index([status])
 }
 
 // ---------------------------------------------------------------------------
@@ -604,6 +706,9 @@ model Policy {
   // Optional link — e.g. a HOME policy insuring a specific property
   propertyId String?   @db.ObjectId
   property   Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  // Free text for whatever the fields above can't hold.
+  notes String?
 
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -643,6 +748,9 @@ model Investment {
   expectedReturnDate    DateTime?
   targetRoiPercent      Float?
   currentEstimatedValue Float?
+
+  // Free text for whatever the fields above can't hold.
+  notes String?
 
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -686,6 +794,9 @@ model Loan {
   linkedPolicy       Policy?     @relation(fields: [linkedPolicyId], references: [id], onDelete: SetNull)
   linkedInvestmentId String?     @db.ObjectId
   linkedInvestment   Investment? @relation(fields: [linkedInvestmentId], references: [id], onDelete: SetNull)
+
+  // Free text for whatever the fields above can't hold.
+  notes String?
 
   deletedAt DateTime?
   createdAt DateTime  @default(now())
@@ -849,6 +960,10 @@ model NotificationJob {
   investmentId   String?       @db.ObjectId
   investment     Investment?   @relation(fields: [investmentId], references: [id], onDelete: Cascade)
 
+  // Set on a property issue's alerts (which have no bill), so resolving the
+  // issue can cancel the ones still queued.
+  propertyIssueId String? @db.ObjectId
+
   scheduledFor DateTime
   status       NotificationStatus @default(SCHEDULED)
 
@@ -876,6 +991,7 @@ model NotificationJob {
   // The admin notification log: newest first, optionally per channel.
   @@index([scheduledFor])
   @@index([channel, scheduledFor])
+  @@index([propertyIssueId])
 }
 
 // ---------------------------------------------------------------------------

@@ -271,11 +271,19 @@ function PropertyCard({
         <span className="absolute top-3.5 right-3.5 rounded-full bg-surface px-2.5 py-1 text-xs font-semibold text-ink-2">
           {PROPERTY_TYPE_LABELS[property.type]}
         </span>
-        {overdue.length > 0 && (
-          <span className="absolute top-3.5 left-3.5 rounded-full bg-danger-soft px-2.5 py-1 text-xs font-semibold text-danger">
-            {overdue.length} overdue
-          </span>
-        )}
+        <div className="absolute top-3.5 left-3.5 flex flex-wrap gap-1.5">
+          {overdue.length > 0 && (
+            <span className="rounded-full bg-danger-soft px-2.5 py-1 text-xs font-semibold text-danger">
+              {overdue.length} overdue
+            </span>
+          )}
+          {property.openIssueCount > 0 && (
+            <span className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn">
+              {property.openIssueCount} open{" "}
+              {property.openIssueCount === 1 ? "issue" : "issues"}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="flex flex-1 flex-col gap-3.5 p-5">

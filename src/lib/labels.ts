@@ -18,6 +18,8 @@ import type {
   PolicyType,
   PremiumFrequency,
   PropertyCategory,
+  PropertyIssueStatus,
+  PropertyIssueType,
   PropertyType,
 } from "../../generated/prisma";
 
@@ -133,6 +135,23 @@ export const EVENT_CATEGORY_LABELS: Record<EventCategory, string> = {
   PAYOUT: "Payout",
   CLAIM_SETTLEMENT: "Claim settlement",
   CUSTOM: "Custom",
+  PROPERTY_DUE: "Property due",
+};
+
+/** Display label for each `PropertyIssueType`. */
+export const ISSUE_TYPE_LABELS: Record<PropertyIssueType, string> = {
+  DISPUTE: "Dispute",
+  FREEHOLD_CONVERSION: "Freehold conversion",
+  PENDING_DUES: "Pending dues",
+  REGISTRATION: "Registration or possession",
+  OTHER: "Other",
+};
+
+/** Display label for each `PropertyIssueStatus`. */
+export const ISSUE_STATUS_LABELS: Record<PropertyIssueStatus, string> = {
+  OPEN: "Open",
+  RESOLVED: "Resolved",
+  DROPPED: "Dropped",
 };
 
 /** Display label for each `NotificationStatus` (used on the admin overview's notification-engine health tiles). */

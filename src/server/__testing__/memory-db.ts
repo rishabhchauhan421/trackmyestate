@@ -36,6 +36,7 @@ const MODELS = [
   "emailSuppression",
   "cronRun",
   "householdMember",
+  "propertyIssue",
 ] as const;
 type Model = (typeof MODELS)[number];
 
@@ -49,6 +50,7 @@ const DEFAULTS: Partial<Record<Model, Record<string, unknown>>> = {
   notificationRule: { anchor: "DUE_DATE", active: true },
   guest: { dueDayOnly: false },
   billSchedule: { active: true },
+  propertyIssue: { status: "OPEN", keyDates: [], notes: [] },
 };
 
 /** Fields with a unique index, per model (besides `id`). */

@@ -60,6 +60,7 @@ export async function getBillForHousehold(billId: string, householdId: string) {
       loan: { select: { id: true, lender: true } },
       policy: { select: { id: true, insurer: true, policyNumber: true } },
       investment: { select: { id: true, name: true } },
+      propertyIssue: { select: { id: true, title: true, propertyId: true } },
       billSchedule: {
         select: { id: true, billType: true, provider: true, billingType: true },
       },

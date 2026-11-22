@@ -24,6 +24,7 @@ export const SOFT_DELETE_MODELS: ReadonlySet<string> = new Set([
   "NotificationRule",
   "Document",
   "Guest",
+  "PropertyIssue",
 ]);
 
 /** Read operations whose `where` gets the not-deleted filter. */

@@ -180,6 +180,7 @@ describe("createLoan", () => {
         startDate: new Date("2024-04-05"),
         outstandingBalance: 480000000,
         linkedPropertyId: null,
+        notes: null,
       },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/loans");

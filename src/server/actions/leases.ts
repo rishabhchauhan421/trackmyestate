@@ -29,8 +29,10 @@ import {
   date,
   FormError,
   money,
+  notes,
   number,
   optionalDate,
+  optionalMoney,
   optionalText,
   parseFormData,
   text,
@@ -82,9 +84,13 @@ async function requireOwnedLease(leaseId: string, householdId: string) {
 /** The lease terms shared by the "Add lease" and "Change lease" forms. */
 const leaseTermsSchema = z.object({
   roomId: optionalText(),
+  notes: notes(),
   leaseEnd: optionalDate("Enter a valid lease end date"),
   rentAmount: money("Enter a valid rent amount", { positive: true }),
-  depositAmount: money("Enter a valid deposit amount", { min: 0 }),
+  // Optional: left blank, the lease is saved with no deposit (0).
+  depositAmount: optionalMoney("Enter a valid deposit amount", {
+    min: 0,
+  }).transform((amount) => amount ?? 0),
   // Day of the month (1-31) rent is due: drives the lease's rent bills.
   rentDueDay: number(
     "Enter a valid rent due day (1-31)",
@@ -124,7 +130,7 @@ function requireEndAfterStart(leaseStart: Date, leaseEnd: Date | null) {
 const createLeaseSchema = leaseTermsSchema.extend({
   propertyId: text("Property not found"),
   tenantName: text("Enter the tenant's name"),
-  tenantPhone: text("Enter the tenant's phone number"),
+  tenantPhone: optionalText(),
   tenantEmail: optionalText(),
   leaseStart: date("Enter a valid lease start date"),
 });
@@ -142,6 +148,7 @@ export async function createLease(formData: FormData) {
     rentAmount,
     depositAmount,
     rentDueDay,
+    notes: leaseNotes,
   } = parseFormData(createLeaseSchema, formData);
   requireEndAfterStart(leaseStart, leaseEnd);
   const { scope, property } = await requireRentableProperty(propertyId);
@@ -165,6 +172,7 @@ export async function createLease(formData: FormData) {
         rentAmount,
         rentDueDay,
         depositAmount,
+        notes: leaseNotes,
         currency: property.currency,
         active: true,
       },
@@ -197,8 +205,14 @@ export async function createLease(formData: FormData) {
 export async function updateLease(leaseId: string, formData: FormData) {
   const scope = await requireScope();
   const lease = await requireOwnedLease(leaseId, scope.householdId);
-  const { roomId, rentAmount, depositAmount, leaseEnd, rentDueDay } =
-    parseFormData(leaseTermsSchema, formData);
+  const {
+    roomId,
+    rentAmount,
+    depositAmount,
+    leaseEnd,
+    rentDueDay,
+    notes: leaseNotes,
+  } = parseFormData(leaseTermsSchema, formData);
   requireEndAfterStart(lease.leaseStart, leaseEnd);
 
   if (roomId) {
@@ -212,7 +226,14 @@ export async function updateLease(leaseId: string, formData: FormData) {
   const scheduleId = await db.$transaction(async (tx) => {
     await tx.lease.update({
       where: { id: leaseId },
-      data: { roomId, rentAmount, rentDueDay, depositAmount, leaseEnd },
+      data: {
+        roomId,
+        rentAmount,
+        rentDueDay,
+        depositAmount,
+        leaseEnd,
+        notes: leaseNotes,
+      },
     });
     if (!lease.active) return null;
     // New rent, due day or end date replaces the upcoming unpaid rent.
