@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { NotesField } from "~/app/_components/notes-field";
 import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -215,6 +216,8 @@ export default async function EditPolicyPage({
         </div>
 
         <PolicyPaymentFields defaults={paymentDefaults} symbol={symbol} />
+
+        <NotesField defaultValue={policy.notes} />
 
         <FormActions>
           <Button href="/insurance" variant="outline">

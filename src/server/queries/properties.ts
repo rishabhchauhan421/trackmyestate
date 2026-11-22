@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "~/server/db";
+import { countOpenIssuesByProperty } from "~/server/queries/issues";
 import {
   NOT_SOFT_DELETED,
   OPEN_PAYMENT_STATUSES,
@@ -12,7 +13,8 @@ import {
  * "Overdue amount" across all of them. `Bill.propertyId` has no back-relation
  * on `Property` for `include`-ing here in one query (see the `Bill` model
  * comment in `schema.prisma`), so open bills are batch-fetched and grouped
- * in application code instead. Deleted properties (see `deleteProperty` in
+ * in application code instead. Each also carries how many issues are open
+ * on it (see `PropertyIssue`). Deleted properties (see `deleteProperty` in
  * `~/server/actions/properties`) are excluded.
  */
 export async function getProperties(householdId: string) {
@@ -23,6 +25,7 @@ export async function getProperties(householdId: string) {
   });
 
   const propertyIds = properties.map((property) => property.id);
+  const openIssueCounts = await countOpenIssuesByProperty(propertyIds);
   const openBills = propertyIds.length
     ? await db.bill.findMany({
         where: {
@@ -45,6 +48,8 @@ export async function getProperties(householdId: string) {
   return properties.map((property) => ({
     ...property,
     openBills: openBillsByProperty.get(property.id) ?? [],
+    /** Disputes, pending conversions and the like still open on it. */
+    openIssueCount: openIssueCounts.get(property.id) ?? 0,
   }));
 }
 

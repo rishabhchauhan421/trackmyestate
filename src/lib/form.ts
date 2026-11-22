@@ -80,6 +80,25 @@ export function optionalText() {
     .transform((value) => value ?? null);
 }
 
+/** Longest free-text note an asset accepts. */
+export const NOTES_MAX_LENGTH = 5000;
+
+/** An asset's optional free-text notes; blank becomes `null`. */
+export function notes() {
+  return z
+    .preprocess(
+      blankToUndefined,
+      z
+        .string()
+        .max(
+          NOTES_MAX_LENGTH,
+          `Keep notes under ${NOTES_MAX_LENGTH} characters`,
+        )
+        .optional(),
+    )
+    .transform((value) => value ?? null);
+}
+
 /** A required email address. */
 export function email(message: string) {
   return z.preprocess(blankToUndefined, z.email(messages(message)));

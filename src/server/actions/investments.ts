@@ -20,6 +20,7 @@ import {
   enumValue,
   FormError,
   money,
+  notes,
   optionalDate,
   optionalMoney,
   optionalNumber,
@@ -68,6 +69,7 @@ const investmentFieldsSchema = z.object({
     { min: -100, max: 1000 },
   ),
   currentEstimatedValue: optionalMoney("Enter a valid current estimated value"),
+  notes: notes(),
 });
 
 type InvestmentFields = z.output<typeof investmentFieldsSchema>;

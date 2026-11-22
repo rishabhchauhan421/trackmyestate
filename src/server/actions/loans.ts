@@ -34,6 +34,7 @@ import {
   enumValue,
   FormError,
   money,
+  notes,
   number,
   optionalMoney,
   optionalText,
@@ -88,6 +89,7 @@ const loanFieldsSchema = z
       min: 0,
     }),
     linkedPropertyId: optionalText(),
+    notes: notes(),
   })
   .transform((fields) => ({
     ...fields,
@@ -150,6 +152,7 @@ export async function createLoan(formData: FormData) {
         startDate: fields.startDate,
         outstandingBalance: fields.outstandingBalance,
         linkedPropertyId,
+        notes: fields.notes,
       },
     });
     return saveSchedule(tx, {
@@ -195,6 +198,7 @@ export async function updateLoan(loanId: string, formData: FormData) {
         startDate: fields.startDate,
         outstandingBalance: fields.outstandingBalance,
         linkedPropertyId,
+        notes: fields.notes,
       },
     });
     // A changed EMI, due day or tenure replaces the upcoming unpaid EMIs.

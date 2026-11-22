@@ -14,16 +14,23 @@ import {
 import { PropertiesIcon } from "~/app/_components/icons";
 import { Breadcrumbs, propertyCrumbs } from "~/app/_components/page-header";
 import { StatusBadge } from "~/app/_components/status-badge";
+import { SubmitButton } from "~/app/_components/submit-button";
+import { dateOnly } from "~/lib/calendar-day";
+import { nextKeyDate } from "~/lib/issues";
+import { todayInTimeZone } from "~/lib/time-zone";
 import { daysUntil, formatDate, formatDueIn, formatMoney } from "~/lib/format";
 import {
   EVENT_CATEGORY_LABELS,
+  ISSUE_TYPE_LABELS,
   OWNERSHIP_TYPE_LABELS,
   PROPERTY_CATEGORY_LABELS,
   PROPERTY_TYPE_LABELS,
 } from "~/lib/labels";
+import { setFreeholdAlerts } from "~/server/actions/issues";
 import { requireScope } from "~/server/households";
 import { getUserCurrency, getUserTimeZone } from "~/server/queries/settings";
 import { getAllBillsForProperty } from "~/server/queries/bills";
+import { getIssuesForProperty } from "~/server/queries/issues";
 import { getLeasesForProperty } from "~/server/queries/leases";
 import { getPropertyForHousehold } from "~/server/queries/properties";
 import { OPEN_PAYMENT_STATUSES } from "~/server/queries/shared";
@@ -43,15 +50,20 @@ export default async function PropertyDetailPage({
     notFound();
   }
 
-  const [bills, leases, timeZone, userCurrency] = await Promise.all([
+  const [bills, leases, issues, timeZone, userCurrency] = await Promise.all([
     getAllBillsForProperty(id),
     getLeasesForProperty(id),
+    getIssuesForProperty(id),
     getUserTimeZone(scope.userId),
     getUserCurrency(scope.userId),
   ]);
   // A property's rent, deposits and bills are in its own currency.
   const currency = property.currency ?? userCurrency;
   const money = (amount: number) => formatMoney(amount, currency);
+
+  const openIssues = issues.filter((issue) => issue.status === "OPEN");
+  const closedIssues = issues.length - openIssues.length;
+  const today = dateOnly(todayInTimeZone(timeZone));
 
   const activeLeases = leases.filter((lease) => lease.active);
   const monthlyRent = activeLeases.reduce((s, l) => s + l.rentAmount, 0);
@@ -105,6 +117,15 @@ export default async function PropertyDetailPage({
                 <span className="rounded-full bg-accent-soft px-2.5 py-1 text-xs font-semibold text-accent-strong">
                   {PROPERTY_TYPE_LABELS[property.type]}
                 </span>
+                {openIssues.length > 0 && (
+                  <a
+                    href="#issues"
+                    className="rounded-full bg-warn-soft px-2.5 py-1 text-xs font-semibold text-warn"
+                  >
+                    {openIssues.length} open{" "}
+                    {openIssues.length === 1 ? "issue" : "issues"}
+                  </a>
+                )}
               </div>
               <p className="text-sm text-muted">
                 {[
@@ -137,6 +158,12 @@ export default async function PropertyDetailPage({
                 </DropdownItem>
                 <DropdownItem href={`/properties/${id}/utilities/new`}>
                   Add a utility
+                </DropdownItem>
+                <DropdownItem href={`/properties/${id}/issues/new`}>
+                  Add an issue
+                </DropdownItem>
+                <DropdownItem href={`/properties/${id}/dues/new`}>
+                  Add a future payment
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -256,8 +283,9 @@ export default async function PropertyDetailPage({
                       </p>
                       <p className="text-[0.8125rem] text-muted">
                         {lease.room?.label ?? "Whole property"} · since{" "}
-                        {formatDate(lease.leaseStart)} · deposit{" "}
-                        {money(lease.depositAmount)}
+                        {formatDate(lease.leaseStart)}
+                        {lease.depositAmount > 0 &&
+                          ` · deposit ${money(lease.depositAmount)}`}
                       </p>
                     </div>
                     <div className="text-right">
@@ -276,16 +304,92 @@ export default async function PropertyDetailPage({
             </Card>
           )}
 
+          <Card aria-labelledby="issues">
+            <CardHeader
+              title={<span id="issues">Issues</span>}
+              action={
+                <Link
+                  href={`/properties/${id}/issues/new`}
+                  className="hover:text-accent-strong"
+                >
+                  Add issue
+                </Link>
+              }
+            />
+            {issues.length === 0 ? (
+              <p className="px-6 py-8 text-sm text-muted">
+                Nothing open on this property. If there&apos;s a dispute, a
+                pending freehold conversion or dues still to pay, add it here to
+                track its dates and payments and be reminded of them.
+              </p>
+            ) : (
+              <ul className="divide-y divide-line-soft">
+                {issues.map((issue) => {
+                  const next = nextKeyDate(issue.keyDates, today);
+                  return (
+                    <li
+                      key={issue.id}
+                      className="flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-4 sm:px-6"
+                    >
+                      <div className="min-w-0 flex-1 basis-56">
+                        <Link
+                          href={`/properties/${id}/issues/${issue.id}`}
+                          className="text-[0.9375rem] font-semibold text-ink hover:text-accent-strong"
+                        >
+                          {issue.title}
+                        </Link>
+                        <p className="text-[0.8125rem] text-muted">
+                          {ISSUE_TYPE_LABELS[issue.type]}
+                          {issue.status === "OPEN"
+                            ? next
+                              ? ` · ${next.label} ${formatDate(next.date)}`
+                              : issue.nextDue
+                                ? ` · next payment ${formatDate(issue.nextDue.dueDate)}`
+                                : " · nothing scheduled"
+                            : issue.resolvedOn
+                              ? ` · closed ${formatDate(issue.resolvedOn)}`
+                              : ""}
+                        </p>
+                      </div>
+                      {issue.owed > 0 && (
+                        <div className="text-right">
+                          <p className="text-[0.9375rem] font-semibold text-ink">
+                            {money(issue.owed)}
+                          </p>
+                          <p className="text-xs text-muted">still to pay</p>
+                        </div>
+                      )}
+                      <StatusBadge status={issue.status} />
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
+            {closedIssues > 0 && openIssues.length === 0 && (
+              <p className="border-t border-line-soft px-6 py-3 text-xs text-muted">
+                No open issues. {closedIssues} closed, kept as history.
+              </p>
+            )}
+          </Card>
+
           <Card aria-labelledby="bills">
             <CardHeader
               title={<span id="bills">Bills</span>}
               action={
-                <Link
-                  href={`/properties/${id}/utilities`}
-                  className="hover:text-accent-strong"
-                >
-                  Utilities & bills →
-                </Link>
+                <span className="flex flex-wrap gap-x-4 gap-y-1">
+                  <Link
+                    href={`/properties/${id}/dues/new`}
+                    className="hover:text-accent-strong"
+                  >
+                    Add future payment
+                  </Link>
+                  <Link
+                    href={`/properties/${id}/utilities`}
+                    className="hover:text-accent-strong"
+                  >
+                    Utilities & bills →
+                  </Link>
+                </span>
               }
             />
             {bills.length === 0 ? (
@@ -392,6 +496,37 @@ export default async function PropertyDetailPage({
               value={property.uniquePropertyId ?? undefined}
             />
           </dl>
+          {property.notes && (
+            <div className="space-y-1 border-t border-line-soft pt-3.5">
+              <h3 className="text-sm font-medium text-ink">Notes</h3>
+              <p className="text-sm whitespace-pre-line text-muted">
+                {property.notes}
+              </p>
+            </div>
+          )}
+          {property.ownershipType === "LEASEHOLD" && (
+            <form
+              action={setFreeholdAlerts.bind(
+                null,
+                id,
+                !property.freeholdAlertsSince,
+              )}
+              className="space-y-2.5 border-t border-line-soft pt-3.5"
+            >
+              <p className="text-sm font-medium text-ink">
+                Freehold reminders are{" "}
+                {property.freeholdAlertsSince ? "on" : "off"}
+              </p>
+              <p className="text-xs text-muted">
+                {property.freeholdAlertsSince
+                  ? "You get a check-in email every 6 months until this property is converted to freehold."
+                  : "Optional: a check-in email every 6 months to look at converting this property to freehold."}
+              </p>
+              <SubmitButton size="sm" variant="outline">
+                {property.freeholdAlertsSince ? "Turn off" : "Remind me"}
+              </SubmitButton>
+            </form>
+          )}
         </Card>
       </div>
     </>

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { NotesField } from "~/app/_components/notes-field";
 import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -191,6 +192,8 @@ export default async function EditLoanPage({
             against a property you own.
           </span>
         </label>
+
+        <NotesField defaultValue={loan.notes} />
 
         <FormActions>
           <Button href="/loans" variant="outline">

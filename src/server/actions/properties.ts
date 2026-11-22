@@ -25,6 +25,7 @@ import {
 import {
   enumValue,
   FormError,
+  notes,
   optionalDate,
   optionalEnumValue,
   optionalMoney,
@@ -68,6 +69,7 @@ const propertyFieldsSchema = z.object({
   purchasePrice: optionalMoney("Enter a valid purchase price"),
   currentEstimatedValue: optionalMoney("Enter a valid current estimated value"),
   purchaseDate: optionalDate("Enter a valid purchase date"),
+  notes: notes(),
 });
 
 /** Creates a new `Property` for the signed-in owner. */

@@ -130,10 +130,37 @@ describe("createLease", () => {
     await expect(
       createLease(buildLeaseForm({ tenantName: "   " })),
     ).rejects.toThrow("Enter the tenant's name");
-    await expect(
-      createLease(buildLeaseForm({ tenantPhone: "" })),
-    ).rejects.toThrow("Enter the tenant's phone number");
     expect(dbMock.lease.create).not.toHaveBeenCalled();
+  });
+
+  it("saves a lease without a tenant phone or a deposit", async () => {
+    dbMock.property.findFirst.mockResolvedValue(RENTED_PROPERTY as never);
+
+    await expect(
+      createLease(buildLeaseForm({ tenantPhone: "", depositAmount: "" })),
+    ).rejects.toThrow("REDIRECT:/properties/prop-1/leases");
+
+    expect(dbMock.lease.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        tenantName: "Asha Rao",
+        tenantPhone: null,
+        depositAmount: 0,
+      }) as unknown,
+    });
+  });
+
+  it("saves the lease's notes", async () => {
+    dbMock.property.findFirst.mockResolvedValue(RENTED_PROPERTY as never);
+
+    await expect(
+      createLease(buildLeaseForm({ notes: " Keys with the caretaker. " })),
+    ).rejects.toThrow("REDIRECT:/properties/prop-1/leases");
+
+    expect(dbMock.lease.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        notes: "Keys with the caretaker.",
+      }) as unknown,
+    });
   });
 
   it("rejects an unparseable lease start date", async () => {
@@ -183,6 +210,7 @@ describe("createLease", () => {
         rentAmount: 2500000,
         rentDueDay: 5,
         depositAmount: 5000000,
+        notes: null,
         currency: "INR",
         active: true,
       },
@@ -426,6 +454,7 @@ describe("updateLease", () => {
         rentDueDay: 5,
         depositAmount: 5400000,
         leaseEnd: null,
+        notes: null,
       },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/properties/prop-1/leases");

@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 
+import { NotesField } from "~/app/_components/notes-field";
 import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -85,13 +86,8 @@ export default async function NewLeasePage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Tenant phone</span>
-            <input
-              type="tel"
-              name="tenantPhone"
-              required
-              className={controlClass}
-            />
+            <span className={labelClass}>Tenant phone (optional)</span>
+            <input type="tel" name="tenantPhone" className={controlClass} />
           </label>
         </div>
 
@@ -129,13 +125,14 @@ export default async function NewLeasePage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Deposit amount ({symbol})</span>
+            <span className={labelClass}>
+              Deposit amount ({symbol}, optional)
+            </span>
             <input
               type="number"
               name="depositAmount"
               min="0"
               step="1"
-              required
               className={controlClass}
             />
           </label>
@@ -158,6 +155,8 @@ export default async function NewLeasePage({
             to your timeline and remind you if it hasn&apos;t arrived.
           </span>
         </label>
+
+        <NotesField />
 
         <FormActions>
           <Button href={`/properties/${id}/leases`} variant="outline">

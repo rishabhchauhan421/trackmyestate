@@ -15,12 +15,17 @@ jest.mock("~/env", () => ({
 jest.mock("~/server/reminders/generate", () => ({
   generateReminders: jest.fn(),
 }));
+jest.mock("~/server/issues/alerts", () => ({
+  generateIssueAlerts: jest.fn(),
+}));
 
 import { GET } from "./route";
 import { generateReminders } from "~/server/reminders/generate";
+import { generateIssueAlerts } from "~/server/issues/alerts";
 import { env } from "~/env";
 
 const generateMock = generateReminders as jest.Mock;
+const issueAlertsMock = generateIssueAlerts as jest.Mock;
 
 function buildRequest(authorization?: string) {
   const headers: HeadersInit = authorization ? { authorization } : {};
@@ -31,6 +36,9 @@ function buildRequest(authorization?: string) {
 
 beforeEach(() => {
   generateMock.mockReset();
+  issueAlertsMock
+    .mockReset()
+    .mockResolvedValue({ scanned: 0, queued: 0, failed: 0 });
 });
 
 describe("GET /api/cron/reminders", () => {
@@ -59,7 +67,12 @@ describe("GET /api/cron/reminders", () => {
   });
 
   it("queues today's reminders and returns the summary when authorized", async () => {
-    generateMock.mockResolvedValue({ scanned: 12, queued: 3, hasMore: false });
+    generateMock.mockResolvedValue({
+      scanned: 12,
+      queued: 3,
+      failed: 0,
+      hasMore: false,
+    });
 
     const response = await GET(buildRequest("Bearer test-secret"));
 
@@ -68,7 +81,31 @@ describe("GET /api/cron/reminders", () => {
     await expect(response.json()).resolves.toEqual({
       scanned: 12,
       queued: 3,
+      failed: 0,
       hasMore: false,
+      issues: { scanned: 0, queued: 0, failed: 0 },
+    });
+  });
+
+  it("reports an issue alert that failed as a skipped record", async () => {
+    generateMock.mockResolvedValue({
+      scanned: 1,
+      queued: 0,
+      failed: 0,
+      hasMore: false,
+    });
+    issueAlertsMock.mockResolvedValue({
+      scanned: 2,
+      queued: 1,
+      failed: 1,
+      firstError: "Issue issue-1: boom",
+    });
+
+    const response = await GET(buildRequest("Bearer test-secret"));
+
+    await expect(response.json()).resolves.toMatchObject({
+      failed: 1,
+      firstError: "Issue issue-1: boom",
     });
   });
 });

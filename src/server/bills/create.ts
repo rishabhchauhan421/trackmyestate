@@ -56,6 +56,8 @@ export async function createBill(args: {
   loanId?: string;
   policyId?: string;
   investmentId?: string;
+  /** For a PROPERTY_DUE under one of the property's issues. */
+  propertyIssueId?: string;
   amount: number;
   /** The schedule's currency; none = the owner's. */
   currency?: Currency | null;
@@ -89,6 +91,7 @@ export async function createBill(args: {
     loanId,
     policyId,
     investmentId,
+    propertyIssueId,
     amount,
     dueDay,
     description,
@@ -111,6 +114,7 @@ export async function createBill(args: {
       loanId,
       policyId,
       investmentId,
+      propertyIssueId,
       dueDate: dateOnly(dueDay),
       amount,
       currency: currency ?? undefined,

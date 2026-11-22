@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { NotesField } from "~/app/_components/notes-field";
 import { ActionForm } from "~/app/_components/action-form";
 import { Button } from "~/app/_components/button";
 import { SubmitButton } from "~/app/_components/submit-button";
@@ -99,14 +100,19 @@ export default async function EditLeasePage({
             />
           </label>
           <label className="block">
-            <span className={labelClass}>Deposit amount ({symbol})</span>
+            <span className={labelClass}>
+              Deposit amount ({symbol}, optional)
+            </span>
             <input
               type="number"
               name="depositAmount"
               min="0"
               step="1"
-              required
-              defaultValue={fromMinorUnits(lease.depositAmount)}
+              defaultValue={
+                lease.depositAmount > 0
+                  ? fromMinorUnits(lease.depositAmount)
+                  : undefined
+              }
               className={controlClass}
             />
           </label>
@@ -139,6 +145,8 @@ export default async function EditLeasePage({
             />
           </label>
         </div>
+
+        <NotesField defaultValue={lease.notes} />
 
         <FormActions>
           <Button href={`/properties/${id}/leases`} variant="outline">

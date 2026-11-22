@@ -77,9 +77,13 @@ export default async function PropertyLeasesPage({
                           {lease.tenantName}
                         </p>
                         <p className="mt-0.5 text-xs text-muted">
-                          {lease.tenantPhone}
-                          {lease.tenantEmail && <> · {lease.tenantEmail}</>}
-                          {lease.room && <> · {lease.room.label}</>}
+                          {[
+                            lease.tenantPhone,
+                            lease.tenantEmail,
+                            lease.room?.label,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ") || "No contact details"}
                         </p>
                       </div>
                       <div className="text-right">

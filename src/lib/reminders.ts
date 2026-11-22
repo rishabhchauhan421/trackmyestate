@@ -81,6 +81,13 @@ export const REMINDER_CATEGORIES: ReminderCategoryConfig[] = [
     defaultOffsets: [0, 7],
   },
   {
+    category: "PROPERTY_DUE",
+    label: "Property dues",
+    description: "Instalments, charges and other dues on a property",
+    incoming: false,
+    defaultOffsets: [-14, -3, 0, 3],
+  },
+  {
     category: "CUSTOM",
     label: "Other",
     description: "Anything else you've added with a date",
